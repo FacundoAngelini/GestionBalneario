@@ -1,10 +1,12 @@
 package com.Gestion.MiBalnearioGestion.Recursos;
 
+import com.Gestion.MiBalnearioGestion.Empleados.SectorEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name="Recurso")
+@Inheritance(strategy = InheritanceType.JOINED) // une las tablas hijas para que compartan la misma pk, sin necesidad de hacer onetomay ya que esto lo hace atuomatico, puede ser single pero vana quedar muchas celdas nulas
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,11 +18,14 @@ public class RecursoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name= "nombre_recurso", unique = true, nullable = false)
+    @Column(name= "nombre_recurso",nullable = false)
     private String nombre;
 
-
+    @Column(name="recurso_activo", nullable = false)
     private boolean esReservable;
 
-    private String descripcion;
+    @ManyToOne
+    @JoinColumn(name="sector_id", nullable = false)
+    private SectorEntity sector; // aca quedaa la fk
+
 }

@@ -10,8 +10,14 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class CarpaEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CarpaEntity extends RecursoEntity{
+   @Column(name="numero_carpa", unique = true, nullable = false)
+    private int numero;
+
+   @Column(name="capacidad_carpa", nullable = false)
+    private int pasillo;
+
+   @Column(name="capacidad_carpa", nullable = false)
+    private int capacidad;
+
 }
