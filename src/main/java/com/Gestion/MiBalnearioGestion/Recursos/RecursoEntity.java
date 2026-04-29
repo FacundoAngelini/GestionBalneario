@@ -1,8 +1,12 @@
 package com.Gestion.MiBalnearioGestion.Recursos;
 
 import com.Gestion.MiBalnearioGestion.Empleados.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="Recurso")
@@ -27,5 +31,12 @@ public class RecursoEntity {
     @ManyToOne
     @JoinColumn(name="sector_id", nullable = false)
     private SectorEntity sector; // aca quedaa la fk
+
+    @ManyToMany(mappedBy = "recurso")
+    private List<ReservaEntity> reservas=new ArrayList<>();
+
+    @OneToMany(mappedBy = "recurso")
+    private List<PrecioRecursoEntity> precioRecurso = new ArrayList<>();
+
 
 }
