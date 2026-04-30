@@ -4,6 +4,7 @@ import com.Gestion.MiBalnearioGestion.Recursos.MesaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name="pedido_mesa")
@@ -11,7 +12,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class PedidoMesaEntity extends PedidoEntity {
 
     @ManyToOne

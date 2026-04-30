@@ -4,6 +4,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 public class PedidoEntity {
 
@@ -46,6 +47,6 @@ public class PedidoEntity {
 
     private List<EmpleadoEntity> empleados = new ArrayList<>();
 
-    @OneToOne(mappedBy = "pago")
+    @OneToOne(mappedBy = "pedido")
     private TicketEntity ticket;
 }

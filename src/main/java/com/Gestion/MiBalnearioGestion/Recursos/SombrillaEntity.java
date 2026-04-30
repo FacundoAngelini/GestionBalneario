@@ -2,11 +2,13 @@ package com.Gestion.MiBalnearioGestion.Recursos;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 @Table(name="sombrillas")
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SombrillaEntity extends RecursoEntity {

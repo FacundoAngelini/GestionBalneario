@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Pedidos;
 import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Table(name="pedidos_reserva")
 @Entity
@@ -10,7 +11,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class PedidoReservaEntity extends PedidoEntity{
 
     @ManyToOne

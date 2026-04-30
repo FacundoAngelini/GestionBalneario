@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Recursos;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Table(name="canchas")
 @Entity
@@ -9,7 +10,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class CanchaEntity extends RecursoEntity {
     @Enumerated(EnumType.STRING) // es mejor Sting y no oirdinal, ya que ordinal lo uarda como 0,1,2 y si luego lo camnio, se rompe todo
     @Column(name="tipo_cancha", nullable = false)

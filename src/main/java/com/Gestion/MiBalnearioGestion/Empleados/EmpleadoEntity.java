@@ -46,12 +46,10 @@ public class EmpleadoEntity {
     @JoinColumn(name="rol_id", nullable = false)
     private RolEntity rol;
 
-    @ManyToMany(mappedBy = "empleado")
+    @ManyToMany(mappedBy = "empleados")
     private List<PedidoEntity> pedidos = new ArrayList<>();
 
     @OneToMany(mappedBy = "empleado")
     private List<TicketEntity> tickets = new ArrayList<>();
-
-
 
 }

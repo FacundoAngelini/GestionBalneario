@@ -2,13 +2,14 @@ package com.Gestion.MiBalnearioGestion.Recursos;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "carpas")
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 public class CarpaEntity extends RecursoEntity{
    @Column(name="numero_carpa", unique = true, nullable = false)
