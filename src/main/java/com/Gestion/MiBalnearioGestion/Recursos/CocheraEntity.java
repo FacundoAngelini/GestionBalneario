@@ -1,0 +1,16 @@
+package com.Gestion.MiBalnearioGestion.Recursos;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import lombok.*;
+
+@Table(name="Cocheras")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CocheraEntity extends RecursoEntity {
+    @Column(name="numero_cochera", unique=true, nullable = false)
+    private int numero_cochera;
+}
