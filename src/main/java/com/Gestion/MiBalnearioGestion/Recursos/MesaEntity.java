@@ -2,8 +2,12 @@ package com.Gestion.MiBalnearioGestion.Recursos;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name="Mesas")
 @Entity
@@ -18,4 +22,7 @@ public class MesaEntity extends RecursoEntity {
 
     @Column(name="capacidad_mesa", nullable = false)
     private int capacidad;
+
+    @OneToMany(mappedBy = "mesa")
+    private List<MesaEntity> mesas = new ArrayList<>();
 }

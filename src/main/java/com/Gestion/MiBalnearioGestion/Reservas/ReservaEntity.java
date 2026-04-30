@@ -1,6 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Reservas;
 
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.PedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.PedidoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.RecursoEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -51,5 +53,11 @@ public class ReservaEntity {
 
     @OneToOne(mappedBy = "reserva")
     private PagosReservaEntity pagosReserva;
+
+    @OneToMany(mappedBy = "reserva")
+    private List<PedidoEntity> pedidos=new ArrayList<>();
+
+    @OneToMany(mappedBy = "reserva")
+    private List<PedidoReservaEntity> pedidoReserva;
 
 }
