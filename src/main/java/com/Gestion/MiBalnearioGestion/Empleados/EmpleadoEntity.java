@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.PedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.TicketEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,6 +48,9 @@ public class EmpleadoEntity {
 
     @ManyToMany(mappedBy = "empleado")
     private List<PedidoEntity> pedidos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "empleado")
+    private List<TicketEntity> tickets = new ArrayList<>();
 
 
 

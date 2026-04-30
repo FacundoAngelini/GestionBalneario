@@ -45,4 +45,7 @@ public class PedidoEntity {
     )
 
     private List<EmpleadoEntity> empleados = new ArrayList<>();
+
+    @OneToOne(mappedBy = "pago")
+    private TicketEntity ticket;
 }

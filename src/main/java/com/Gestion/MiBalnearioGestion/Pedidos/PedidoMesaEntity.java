@@ -17,4 +17,7 @@ public class PedidoMesaEntity extends PedidoEntity {
     @ManyToOne
     @JoinColumn(name = "mesa_id", nullable = false)
     private MesaEntity mesa;
+
+    @OneToOne(mappedBy = "pedido_mesa")
+    private PagoPedidoMesa pagoPedidoMesa;
 }
