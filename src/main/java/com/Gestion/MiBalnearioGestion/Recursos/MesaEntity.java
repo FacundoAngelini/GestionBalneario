@@ -1,5 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Recursos;
 
+import com.Gestion.MiBalnearioGestion.Pedidos.PedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.PedidoMesaEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -24,5 +26,5 @@ public class MesaEntity extends RecursoEntity {
     private int capacidad;
 
     @OneToMany(mappedBy = "mesa")
-    private List<MesaEntity> mesas = new ArrayList<>();
+    private List<PedidoMesaEntity> pedidos = new ArrayList<>();
 }
