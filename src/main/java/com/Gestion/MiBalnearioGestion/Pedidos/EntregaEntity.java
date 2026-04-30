@@ -26,4 +26,8 @@ public class EntregaEntity {
     @ManyToOne
     @JoinColumn(name="empleado_id", nullable = false)
     private EmpleadoEntity empleado;
+
+    @OneToOne
+    @JoinColumn(name="pago_pedido_reserva", nullable = false)
+    private PagoPedidoReserva pagoPedidoReserva;
 }

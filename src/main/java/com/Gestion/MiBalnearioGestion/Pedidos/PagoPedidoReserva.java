@@ -14,6 +14,6 @@ public class PagoPedidoReserva extends PagoEntity {
     @JoinColumn(name="pedido_reserva_id", nullable = false)
     private PedidoReservaEntity pedidoReserva;
 
-    @OneToOne(mappedBy = "reserva")
+    @OneToOne(mappedBy = "pagoPedidoReserva")
     private EntregaEntity entrega;
 }

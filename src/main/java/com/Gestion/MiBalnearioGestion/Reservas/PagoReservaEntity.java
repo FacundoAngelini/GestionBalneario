@@ -7,7 +7,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="pago_pedido_reserva")
+@Table(name="pago_reserva")
 public class PagoReservaEntity extends PagoEntity {
     @OneToOne
     @JoinColumn(name="reserva_id", nullable = false)

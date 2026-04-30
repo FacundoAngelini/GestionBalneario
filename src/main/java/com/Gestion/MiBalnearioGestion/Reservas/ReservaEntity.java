@@ -52,9 +52,6 @@ public class ReservaEntity {
     private List<RecursoEntity> recursos=new ArrayList<>();
 
     @OneToMany(mappedBy = "reserva")
-    private List<PedidoEntity> pedidos=new ArrayList<>();
-
-    @OneToMany(mappedBy = "reserva")
     private List<PedidoReservaEntity> pedidoReserva;
 
     @OneToOne(mappedBy = "reserva")

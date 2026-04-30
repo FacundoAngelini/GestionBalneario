@@ -38,7 +38,7 @@ public class PagoEntity {
     @Column(name="descuento", nullable = false)
     private double descuento;
 
-    @OneToOne(mappedBy = "pagos")
+    @OneToOne(mappedBy = "pagoEntity")
     private TicketEntity ticket;
 
 
