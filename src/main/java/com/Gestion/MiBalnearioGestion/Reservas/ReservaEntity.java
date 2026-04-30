@@ -55,6 +55,6 @@ public class ReservaEntity {
     private List<PedidoReservaEntity> pedidoReserva;
 
     @OneToOne(mappedBy = "reserva")
-    private PagoReservaEntity pagosReservaa;
+    private PagoReservaEntity pagosReservaaa;
 
 }
