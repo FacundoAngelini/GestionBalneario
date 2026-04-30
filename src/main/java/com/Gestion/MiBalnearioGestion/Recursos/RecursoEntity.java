@@ -33,7 +33,7 @@ public class RecursoEntity {
     @JoinColumn(name="sector_id", nullable = false)
     private SectorEntity sector; // aca quedaa la fk
 
-    @ManyToMany(mappedBy = "recurso")
+    @ManyToMany(mappedBy = "recursos")
     private List<ReservaEntity> reservas=new ArrayList<>();
 
     @OneToMany(mappedBy = "recurso")

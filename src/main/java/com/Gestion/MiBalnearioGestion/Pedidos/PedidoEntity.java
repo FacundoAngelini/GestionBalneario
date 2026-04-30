@@ -34,10 +34,6 @@ public class PedidoEntity {
     @OneToMany(mappedBy = "pedido")
     private List<DetallePedidoEntity> detallePedidos;
 
-    @ManyToOne
-    @JoinColumn(name="reserva_id", nullable = false)
-    private ReservaEntity reserva;
-
     @ManyToMany
     @JoinTable(
             name="pedido_empleados",
@@ -47,6 +43,4 @@ public class PedidoEntity {
 
     private List<EmpleadoEntity> empleados = new ArrayList<>();
 
-    @OneToOne(mappedBy = "pedido")
-    private TicketEntity ticket;
 }

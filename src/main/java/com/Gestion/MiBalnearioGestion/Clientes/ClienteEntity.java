@@ -43,6 +43,4 @@ public class ClienteEntity {
     @OneToMany(mappedBy = "cliente")
     private List<ReservaEntity> reservas = new ArrayList<>();
 
-
-
 }
