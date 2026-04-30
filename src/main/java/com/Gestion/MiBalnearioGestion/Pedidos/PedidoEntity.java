@@ -1,10 +1,12 @@
 package com.Gestion.MiBalnearioGestion.Pedidos;
 
+import com.Gestion.MiBalnearioGestion.Empleados.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,4 +36,13 @@ public class PedidoEntity {
     @ManyToOne
     @JoinColumn(name="reserva_id", nullable = false)
     private ReservaEntity reserva;
+
+    @ManyToMany
+    @JoinTable(
+            name="pedido_empleados",
+            joinColumns = @JoinColumn(name="pedido_id"),
+            inverseJoinColumns = @JoinColumn(name="empleado_id")
+    )
+
+    private List<EmpleadoEntity> empleados = new ArrayList<>();
 }

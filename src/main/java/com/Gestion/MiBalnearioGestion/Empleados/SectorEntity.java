@@ -25,4 +25,8 @@ public class SectorEntity {
     @OneToMany(mappedBy = "sector")
     private List<RecursoEntity> recursos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "sector")
+    private List<EmpleadoEntity> empleados;
+
+
 }
