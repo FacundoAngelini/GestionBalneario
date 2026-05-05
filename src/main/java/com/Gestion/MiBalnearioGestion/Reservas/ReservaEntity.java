@@ -1,9 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Reservas;
 
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
-import com.Gestion.MiBalnearioGestion.Pagos.PagoReservaEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.PedidoReservaEntity;
-import com.Gestion.MiBalnearioGestion.Recursos.RecursoEntity;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoReservaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
