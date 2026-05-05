@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Pedidos;
 
+import com.Gestion.MiBalnearioGestion.Pagos.PagoPedidoMesa;
 import com.Gestion.MiBalnearioGestion.Recursos.MesaEntity;
-import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

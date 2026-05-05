@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Reservas;
 
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.PedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pagos.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.PedidoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.RecursoEntity;
 import jakarta.persistence.*;

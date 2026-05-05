@@ -1,6 +1,7 @@
-package com.Gestion.MiBalnearioGestion.Pedidos;
+package com.Gestion.MiBalnearioGestion.Pagos;
 
-import com.Gestion.MiBalnearioGestion.Pagos.PagoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.EntregaEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.PedidoReservaEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;

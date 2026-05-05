@@ -1,8 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos;
 
-import com.Gestion.MiBalnearioGestion.Pedidos.TicketEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.UuidGenerator;
