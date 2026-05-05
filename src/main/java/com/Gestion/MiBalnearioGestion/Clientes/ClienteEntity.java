@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -34,9 +35,6 @@ public class ClienteEntity {
     @Column(name="email", unique = true, nullable = false)
     private String email;
 
-    @Column(name="contrasenia", nullable = false)
-    private String contrasenia;
-
     @Column(name="telefono", unique = true, nullable = false)
     private String telefono;
 
@@ -48,5 +46,9 @@ public class ClienteEntity {
 
     @OneToMany(mappedBy = "cliente")
     private List<ReservaEntity> reservas = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name="usuario_id", nullable= false)
+    private UsuarioEntity usuario;
 
 }
