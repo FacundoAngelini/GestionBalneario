@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 
@@ -20,6 +21,10 @@ public class PagoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @UuidGenerator
+    private String publicId;
 
     @Column(name="monto", nullable = false)
     private double monto;
