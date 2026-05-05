@@ -1,5 +1,6 @@
-package com.Gestion.MiBalnearioGestion.Empleados;
+package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
+import com.Gestion.MiBalnearioGestion.Empleados.EtipoRol;
 import jakarta.persistence.*;
 import lombok.*;
 
