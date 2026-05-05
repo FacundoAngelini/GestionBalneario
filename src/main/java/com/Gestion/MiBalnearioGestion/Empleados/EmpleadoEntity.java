@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Empleados;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.PedidoEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.TicketEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -56,5 +57,9 @@ public class EmpleadoEntity {
 
     @OneToMany(mappedBy = "empleado")
     private List<TicketEntity> tickets = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name="usuario_id", nullable= false)
+    private UsuarioEntity usuario;
 
 }
