@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Empleados;
+package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
 import com.Gestion.MiBalnearioGestion.Recursos.RecursoEntity;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos;
 
-import com.Gestion.MiBalnearioGestion.Empleados.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;

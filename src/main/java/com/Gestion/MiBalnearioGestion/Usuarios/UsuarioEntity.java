@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Usuarios;
 
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
