@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos;
 
-import com.Gestion.MiBalnearioGestion.Empleados.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;

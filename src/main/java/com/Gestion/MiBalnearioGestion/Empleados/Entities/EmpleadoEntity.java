@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Empleados;
+package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.PedidoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.TicketEntity;
