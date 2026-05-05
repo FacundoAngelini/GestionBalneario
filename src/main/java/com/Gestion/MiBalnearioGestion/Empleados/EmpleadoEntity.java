@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.PedidoEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.TicketEntity;
+import com.Gestion.MiBalnearioGestion.Pagos.TicketEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import jakarta.persistence.*;
 import lombok.*;
