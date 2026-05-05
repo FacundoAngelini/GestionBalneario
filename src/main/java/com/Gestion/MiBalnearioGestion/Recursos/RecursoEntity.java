@@ -5,6 +5,7 @@ import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,10 @@ public class RecursoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @UuidGenerator
+    private String publicId;
 
     @Column(name= "nombre_recurso",nullable = false)
     private String nombre;

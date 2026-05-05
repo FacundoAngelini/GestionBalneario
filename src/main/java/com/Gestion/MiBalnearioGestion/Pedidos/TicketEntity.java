@@ -4,6 +4,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.PagoEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,10 @@ public class TicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @UuidGenerator
+    private String publicId;
 
     @Column(name="fecha_ticket", nullable = false)
     private LocalDateTime fechaTicket;

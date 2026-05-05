@@ -26,7 +26,7 @@ public class DetallePedidoEntity {
 
     @ManyToMany
     @JoinTable(
-            name="detalle_pedido",
+            name="detalle_productos",
             joinColumns = @JoinColumn(name="detalle_id"),
             inverseJoinColumns = @JoinColumn(name="producto_id")
     )
