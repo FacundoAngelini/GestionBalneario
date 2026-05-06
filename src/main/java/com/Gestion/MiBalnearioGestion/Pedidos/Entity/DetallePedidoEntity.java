@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Pedidos.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,10 @@ public class DetallePedidoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @UuidGenerator
+    private String publicId;
 
     @Column(name="cantidad", nullable = false)
     private int cantidad;

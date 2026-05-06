@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Recursos.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 
@@ -16,6 +17,11 @@ public class PrecioRecursoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @UuidGenerator
+    private String publicId;
+
 
     @Column(name="precio", nullable = false)
     private double precio;
