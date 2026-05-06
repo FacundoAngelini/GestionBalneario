@@ -18,4 +18,13 @@ public class GlobalExcepcionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneral(
+                                            Exception ex,
+                                            HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(500, "Error interno del servidor");
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.internalServerError().body(error);
+    }
+
 }
