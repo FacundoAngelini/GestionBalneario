@@ -13,6 +13,8 @@ import lombok.Setter;
 public class ClienteDTO {
     private String nombre;
     private String apellido;
+
+    private int dni;
     private String email;
     private String telefono;
 

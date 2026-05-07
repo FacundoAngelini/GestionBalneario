@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
@@ -21,11 +23,11 @@ public class ClienteService {
     @Transactional
     public ClienteEntity crearCliente(ClienteDTO dto) {
 
-        //anotar metodo en la interfaz
-        if (clienteRepository.existsByDni(dto.getDni())) {
+
+        if (clienteRepository.findByDni(dto.getDni()).isPresent()) {
             throw new RuntimeException("Ya existe un cliente con ese DNI");
         }
-        if (clienteRepository.existsByEmail(dto.getEmail())) {
+        if (clienteRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Ya existe un cliente con ese email");
         }
 
@@ -36,4 +38,6 @@ public class ClienteService {
         cliente.setUsuario(usuarioGuardado);
         return clienteRepository.save(cliente);
     }
+
+
 }
