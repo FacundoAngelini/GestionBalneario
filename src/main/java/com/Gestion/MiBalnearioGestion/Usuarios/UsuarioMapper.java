@@ -1,13 +1,12 @@
 package com.Gestion.MiBalnearioGestion.Usuarios;
 
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
-import com.Gestion.MiBalnearioGestion.Common.Configuracion.Imapper;
+import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UsuarioMapper implements Imapper<UsuarioEntity, UsuarioDTO> {
+public class UsuarioMapper implements IMapper<UsuarioEntity, UsuarioDTO> {
     @Autowired
     private ModelMapper modelMApper;
 

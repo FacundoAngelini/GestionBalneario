@@ -1,20 +1,16 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
-@Table(name="direccion")
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Embedded
+@Embeddable
 public class DireccionEntity {
+
     @Column(name = "calle", nullable = false)
     private String calle;
 
