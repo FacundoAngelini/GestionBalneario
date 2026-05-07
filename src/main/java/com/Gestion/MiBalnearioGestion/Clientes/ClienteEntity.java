@@ -27,6 +27,9 @@ public class ClienteEntity {
     @UuidGenerator
     private String publicId;
 
+    @Column(name="dni",unique = true,nullable = false)
+    private int dni;
+
     @Column(name="nombre", nullable = false)
     private String nombre;
 
