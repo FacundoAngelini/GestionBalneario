@@ -11,5 +11,14 @@ public interface ClientesRepository extends JpaRepository<ClienteEntity,Long> {
 
     boolean existePorIdPublico(UUID IdPublico);
     void borrarPorIdPublico(UUID IdPublico);
+
+    boolean existsByDni(Integer dni);
+
+    boolean existsByEmail(String email);
     Optional<ClienteEntity> buscarPorIdPublico(UUID IdPublico);
+
+    Optional<ClienteEntity> findByDni(Integer dni);
+
+    Optional<ClienteEntity> findByEmail(String email);
 }
+

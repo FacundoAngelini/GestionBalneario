@@ -4,6 +4,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name="entregas")
@@ -16,6 +17,10 @@ public class EntregaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @UuidGenerator
+    private String publicId;
 
     @Column(name="estado_entrega", nullable = false)
     private boolean estadoEntrega;

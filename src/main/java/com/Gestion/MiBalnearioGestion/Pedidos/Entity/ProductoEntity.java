@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Pedidos.Entity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,10 @@ public class ProductoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @UuidGenerator
+    private String publicId;
 
     @Column(name="nombre", unique = true, nullable = false)
     private String nombre;
