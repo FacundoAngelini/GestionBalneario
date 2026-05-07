@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Clientes;
 import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -33,6 +34,7 @@ public class ClienteEntity {
     private String apellido;
 
     @Column(name="email", unique = true, nullable = false)
+    @Email
     private String email;
 
     @Column(name="telefono", unique = true, nullable = false)

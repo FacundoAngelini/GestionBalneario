@@ -13,7 +13,7 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(EntidadNoEncontradaException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(EntidadNoEncontradaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(404,"El usuario no fue encontrado : "+ ex.getMessage());
+        ErrorResponse error = new ErrorResponse(404,"La entidad no fue encontrada : "+ ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
