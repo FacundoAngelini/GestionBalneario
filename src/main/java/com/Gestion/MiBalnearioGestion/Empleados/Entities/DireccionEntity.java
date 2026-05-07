@@ -3,18 +3,13 @@ package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Table(name="direccion")
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Embedded
+@Embeddable
 public class DireccionEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(name = "calle", nullable = false)
     private String calle;
