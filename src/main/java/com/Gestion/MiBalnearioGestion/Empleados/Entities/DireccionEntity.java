@@ -1,9 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Table(name="direccion")
@@ -15,6 +12,10 @@ import lombok.*;
 @Builder
 @Embedded
 public class DireccionEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "calle", nullable = false)
     private String calle;
 
