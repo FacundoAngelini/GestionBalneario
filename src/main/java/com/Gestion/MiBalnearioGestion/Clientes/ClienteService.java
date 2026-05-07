@@ -34,7 +34,7 @@ public class ClienteService {
         UsuarioEntity usuario = usuarioMapper.converToEntity(dto.getUsuario(), UsuarioEntity.class);
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
 
-        ClienteEntity cliente = clienteMapper.converToEntity(dto, ClienteEntity.class);
+        ClienteEntity cliente = clienteMapper.convertToEntity(dto, ClienteEntity.class);
         cliente.setUsuario(usuarioGuardado);
         return clienteRepository.save(cliente);
     }
