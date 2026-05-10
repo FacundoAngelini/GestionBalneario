@@ -33,7 +33,7 @@ public class ClienteService {
             throw new RuntimeException("Ya existe un cliente con ese DNI");
         }
         if (clienteRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Ya existe un cliente con ese email");
+            throw new RuntimeException("Ya existe un cliente con ese email"); // no deberia ser runtime
         }
 
         UsuarioEntity usuario = usuarioMapper.converToEntity(dto.getUsuario(), UsuarioEntity.class);
@@ -46,14 +46,16 @@ public class ClienteService {
 
     public void borrarCliente(UUID IDpublico)
     {
-        ClienteEntity buscado = clienteRepository.buscarPorIdPublico(IDpublico)
+        ClienteEntity buscado = clienteRepository.
+                buscarPorIdPublico(IDpublico)
                 .orElseThrow(()-> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
         clienteRepository.delete(buscado);
     }
 
-
+    @Transactional
     public ClienteDTO actualizarCliente(UUID IDpublico, ClienteDTO clienteUpdateDTO) {
-        ClienteEntity cliente = clienteRepository.buscarPorIdPublico(IDpublico)
+        ClienteEntity cliente = clienteRepository
+                .buscarPorIdPublico(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
 
 
@@ -67,13 +69,17 @@ public class ClienteService {
     }
 
     public ClienteDTO buscarPorIDpublico(UUID IDpublico) {
-        return clienteRepository.buscarPorIdPublico(IDpublico)
+        return clienteRepository.
+                buscarPorIdPublico(IDpublico)
                 .map(clienteMapper::convertToDTO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró :" , IDpublico.toString()));
     }
 
     public List<ClienteDTO> findAll() {
-        return clienteRepository.findAll().stream().map(clienteMapper::convertToDTO).toList();
+        return clienteRepository.findAll().
+                stream().
+                map(clienteMapper::convertToDTO).
+                toList();
     }
 
 }
