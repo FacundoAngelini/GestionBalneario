@@ -41,13 +41,13 @@ public class ClienteService {
 
         ClienteEntity cliente = clienteMapper.convertToEntity(dto, ClienteEntity.class);
         cliente.setUsuario(usuarioGuardado);
-        return clienteRepository.save(cliente);
+        return clienteRepository.save(cliente); //devolver dto al front
     }
 
     public void borrarCliente(UUID IDpublico)
     {
         ClienteEntity buscado = clienteRepository.
-                buscarPorIdPublico(IDpublico)
+                findByIdPublico(IDpublico)
                 .orElseThrow(()-> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
         clienteRepository.delete(buscado);
     }
@@ -55,7 +55,7 @@ public class ClienteService {
     @Transactional
     public ClienteDTO actualizarCliente(UUID IDpublico, ClienteDTO clienteUpdateDTO) {
         ClienteEntity cliente = clienteRepository
-                .buscarPorIdPublico(IDpublico)
+                .findByIdPublico(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
 
 
@@ -70,7 +70,7 @@ public class ClienteService {
 
     public ClienteDTO buscarPorIDpublico(UUID IDpublico) {
         return clienteRepository.
-                buscarPorIdPublico(IDpublico)
+                findByIdPublico(IDpublico)
                 .map(clienteMapper::convertToDTO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró :" , IDpublico.toString()));
     }

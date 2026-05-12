@@ -18,7 +18,7 @@ public class EntidadNoEncontradaException extends NoSuchElementException {
         this.timestamp=Instant.now();
     }
 
-    public EntidadNoEncontradaException(String mensaje, String entidad, String campo, Object valor, Instant timestamp) {
+    public EntidadNoEncontradaException(String mensaje, String entidad, String campo, Object valor) {
         super(mensaje);
         this.entidad = entidad;
         this.campo = campo;
