@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ClienteService {
+public class ClienteService implements IClienteService {
 
     private final ClientesRepository clienteRepository;
     private final UsuarioRepository usuarioRepository;
@@ -26,7 +26,7 @@ public class ClienteService {
 
     //FALTA AGREGAR FUNCIONES EN LA INTERFAZ ESPECIFICA DE CLIENTE SERVICE POR SI MIGRAMOS
     @Transactional
-    public ClienteEntity crearCliente(ClienteDTO dto) {
+    public ClienteDTO crearCliente(ClienteDTO dto) {
 
 
         if (clienteRepository.findByDni(dto.getDni()).isPresent()) {
@@ -36,12 +36,13 @@ public class ClienteService {
             throw new RuntimeException("Ya existe un cliente con ese email"); // no deberia ser runtime
         }
 
-        UsuarioEntity usuario = usuarioMapper.converToEntity(dto.getUsuario(), UsuarioEntity.class);
+        UsuarioEntity usuario = usuarioMapper.convertToEntity(dto.getUsuario(), UsuarioEntity.class);
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
 
         ClienteEntity cliente = clienteMapper.convertToEntity(dto, ClienteEntity.class);
         cliente.setUsuario(usuarioGuardado);
-        return clienteRepository.save(cliente); //devolver dto al front
+        ClienteEntity guardado = clienteRepository.save(cliente);
+        return clienteMapper.convertToDTO(guardado);
     }
 
     public void borrarCliente(UUID IDpublico)
@@ -75,7 +76,7 @@ public class ClienteService {
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró :" , IDpublico.toString()));
     }
 
-    public List<ClienteDTO> findAll() {
+    public List<ClienteDTO> listarTodos() {
         return clienteRepository.findAll().
                 stream().
                 map(clienteMapper::convertToDTO).

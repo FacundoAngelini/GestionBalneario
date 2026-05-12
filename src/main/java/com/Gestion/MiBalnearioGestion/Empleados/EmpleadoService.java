@@ -6,7 +6,6 @@ import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorios.EmpleadosRepository;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
@@ -14,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,7 +39,7 @@ public class EmpleadoService {
             throw new ExEntidadExistente("Ya existe un empleado con ese cuit", "EmpleadoEntity");
         }
 
-        UsuarioEntity usuario = usuarioMapper.converToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
+        UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
 
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado, EmpleadoEntity.class);
