@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,7 +15,7 @@ import lombok.Setter;
 public class ClienteDTO {
     private String nombre;
     private String apellido;
-
+    private UUID publicId;
     private int dni;
     private String email;
     private String telefono;

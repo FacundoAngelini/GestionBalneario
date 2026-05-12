@@ -1,4 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Empleados;
+
+import com.Gestion.MiBalnearioGestion.Empleados.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
