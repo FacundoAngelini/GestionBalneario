@@ -10,6 +10,8 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity,Long> {
 
     boolean existePorIdPublico(UUID idPublico);
     void borrarPorIDPublico(UUID idPublico);
+    Optional<UsuarioEntity> findByUsuario(String nombre_de_usuario);
 
-    Optional<UsuarioEntity>buscarPorIdPublica (UUID idPublico);
+
+    Optional<UsuarioEntity>findByIdPublica (UUID idPublico);
 }

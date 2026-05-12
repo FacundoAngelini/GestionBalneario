@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class EmpleadoService implements IEmpleadoServicio {
+public class EmpleadoService implements IEmpleadoService {
     private final EmpleadosRepository empleadosRepositorio;
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoMapper empleadoMapper;

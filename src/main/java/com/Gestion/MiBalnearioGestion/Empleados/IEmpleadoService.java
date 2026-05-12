@@ -5,7 +5,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import java.util.List;
 import java.util.UUID;
 
-public interface IEmpleadoServicio {
+public interface IEmpleadoService {
 
     EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado);
     void borrarEmpleado(UUID IDpublico);

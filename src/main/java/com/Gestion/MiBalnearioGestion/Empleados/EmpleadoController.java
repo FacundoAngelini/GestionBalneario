@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmpleadoController {
 
-    private final IEmpleadoServicio empleadoService;
+    private final IEmpleadoService empleadoService;
 
     @GetMapping
     ResponseEntity<List<EmpleadoDTO>> listarTodos(){
