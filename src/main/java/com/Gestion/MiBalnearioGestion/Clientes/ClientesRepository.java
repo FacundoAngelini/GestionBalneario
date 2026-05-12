@@ -15,7 +15,7 @@ public interface ClientesRepository extends JpaRepository<ClienteEntity,Long> {
     boolean existsByDni(Integer dni);
 
     boolean existsByEmail(String email);
-    Optional<ClienteEntity> buscarPorIdPublico(UUID IdPublico);
+    Optional<ClienteEntity> findByIdPublico(UUID IdPublico);
 
     Optional<ClienteEntity> findByDni(Integer dni);
 

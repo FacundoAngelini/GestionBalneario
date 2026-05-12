@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
+import com.Gestion.MiBalnearioGestion.Empleados.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
@@ -32,8 +33,9 @@ public class EmpleadoEntity {
     @Column(name="nombre", nullable = false)
     private String nombre;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="estado_empleado", nullable = false)
-    private boolean estadoEmpleado;
+    private EEstadoEmpleado estadoEmpleado;
 
     @Column(name="apellido", nullable = false)
     private String apellido;
