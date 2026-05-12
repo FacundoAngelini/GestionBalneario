@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.UUID;
+
 @Table(name="usuarios")
 @Getter
 @Setter
@@ -23,7 +25,7 @@ public class UsuarioEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Column(name="username", unique = true, nullable = false, updatable = false)
     private String username;

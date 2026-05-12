@@ -10,12 +10,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmpleadoDTO {
     private String nombre;
+    private UUID IDpublico;
     private String apellido;
     private int dni;
     private String email;
@@ -26,5 +29,20 @@ public class EmpleadoDTO {
     @NotNull(message = "La direccion no puede estar vacia")
     private DireccionEntity direccion;
     private UsuarioDTO usuario;
+    //METODOS DE CREACION = CRUD
+    // METODOS DE BUSQUEDA Y FRILYRADO = ATRIBUTO
+    /* PASOS A SEGUIR=
+    CREAR CRUD DE COBTROLADOR (CREAR, BUSCAR, ACTUALIZAR Y BOORAR)
+
+    IMPLEMNETAR VAIDATION API
+
+    HACER OPEN API Y DTOS
+
+    LOGIN
+
+    IMPLEMENTAR METODOS DE BUSQUEDA Y FILTRADO EN EL CONTROLADOR
+
+
+     */
 
 }

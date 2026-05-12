@@ -6,7 +6,6 @@ import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorios.EmpleadosRepository;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
@@ -14,19 +13,19 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class EmpleadoService {
+public class EmpleadoService implements IEmpleadoServicio {
     private final EmpleadosRepository empleadosRepositorio;
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoMapper empleadoMapper;
     private final UsuarioMapper usuarioMapper;
 
     @Transactional
+    @Override
     public EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado){ // no deberia devolver una entity para el controller
 
         if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent()){
@@ -41,7 +40,7 @@ public class EmpleadoService {
             throw new ExEntidadExistente("Ya existe un empleado con ese cuit", "EmpleadoEntity");
         }
 
-        UsuarioEntity usuario = usuarioMapper.converToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
+        UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
 
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado, EmpleadoEntity.class);
@@ -52,6 +51,7 @@ public class EmpleadoService {
     }
 
     @Transactional
+    @Override
     public void borrarEmpleado(UUID IDpublico)
     {
         EmpleadoEntity buscado = empleadosRepositorio.
@@ -62,6 +62,7 @@ public class EmpleadoService {
     }
 
     @Transactional
+    @Override
     public EmpleadoDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto) {
         EmpleadoEntity empleado = empleadosRepositorio
                 .findByIdPublico(IDpublico)
@@ -90,7 +91,7 @@ public class EmpleadoService {
 
         return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
     }
-
+/*
     @Transactional
     public EmpleadoDTO actualizarSueldo(UUID IDpublico, double sueldo){
         EmpleadoEntity empleado = empleadosRepositorio
@@ -125,8 +126,9 @@ public class EmpleadoService {
                 .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no encontrado", idPublico.toString()));
         empleado.setSector(sector);
         return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
-    }
+    }*/  // HACER UN METODO POR DTO SIN ATRIBUTOS
 
+    @Override
     public EmpleadoDTO buscarPorIDpublico(UUID IDpublico) {
         return empleadosRepositorio.
                 findByIdPublico(IDpublico)
@@ -134,7 +136,7 @@ public class EmpleadoService {
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
     }
 
-
+    @Override
     public List<EmpleadoDTO> buscarTodos() {
         return empleadosRepositorio.findAll().
                 stream().

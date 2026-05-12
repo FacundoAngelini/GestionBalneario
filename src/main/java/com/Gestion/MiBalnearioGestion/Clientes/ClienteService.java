@@ -36,7 +36,7 @@ public class ClienteService {
             throw new RuntimeException("Ya existe un cliente con ese email"); // no deberia ser runtime
         }
 
-        UsuarioEntity usuario = usuarioMapper.converToEntity(dto.getUsuario(), UsuarioEntity.class);
+        UsuarioEntity usuario = usuarioMapper.convertToEntity(dto.getUsuario(), UsuarioEntity.class);
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
 
         ClienteEntity cliente = clienteMapper.convertToEntity(dto, ClienteEntity.class);
