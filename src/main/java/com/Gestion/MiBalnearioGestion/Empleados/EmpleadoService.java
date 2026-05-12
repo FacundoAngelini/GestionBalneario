@@ -18,13 +18,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class EmpleadoService {
+public class EmpleadoService implements IEmpleadoServicio {
     private final EmpleadosRepository empleadosRepositorio;
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoMapper empleadoMapper;
     private final UsuarioMapper usuarioMapper;
 
     @Transactional
+    @Override
     public EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado){ // no deberia devolver una entity para el controller
 
         if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent()){
@@ -50,6 +51,7 @@ public class EmpleadoService {
     }
 
     @Transactional
+    @Override
     public void borrarEmpleado(UUID IDpublico)
     {
         EmpleadoEntity buscado = empleadosRepositorio.
@@ -60,6 +62,7 @@ public class EmpleadoService {
     }
 
     @Transactional
+    @Override
     public EmpleadoDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto) {
         EmpleadoEntity empleado = empleadosRepositorio
                 .findByIdPublico(IDpublico)
@@ -88,7 +91,7 @@ public class EmpleadoService {
 
         return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
     }
-
+/*
     @Transactional
     public EmpleadoDTO actualizarSueldo(UUID IDpublico, double sueldo){
         EmpleadoEntity empleado = empleadosRepositorio
@@ -123,8 +126,9 @@ public class EmpleadoService {
                 .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no encontrado", idPublico.toString()));
         empleado.setSector(sector);
         return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
-    }
+    }*/  // HACER UN METODO POR DTO SIN ATRIBUTOS
 
+    @Override
     public EmpleadoDTO buscarPorIDpublico(UUID IDpublico) {
         return empleadosRepositorio.
                 findByIdPublico(IDpublico)
@@ -132,7 +136,7 @@ public class EmpleadoService {
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
     }
 
-
+    @Override
     public List<EmpleadoDTO> buscarTodos() {
         return empleadosRepositorio.findAll().
                 stream().

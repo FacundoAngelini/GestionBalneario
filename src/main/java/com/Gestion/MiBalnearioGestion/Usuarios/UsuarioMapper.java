@@ -17,4 +17,7 @@ public class UsuarioMapper implements IMapper<UsuarioEntity, UsuarioDTO> {
     public UsuarioEntity convertToEntity(UsuarioDTO usuario_A_DTO, Class<UsuarioEntity> usuarioEntityClass)
     {return modelMApper.map(usuario_A_DTO, UsuarioEntity.class);
     }
+
+
+
 }

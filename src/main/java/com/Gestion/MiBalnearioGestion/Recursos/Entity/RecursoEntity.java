@@ -9,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name="Recurso")
@@ -26,7 +27,7 @@ public class RecursoEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Column(name= "nombre_recurso",nullable = false)
     private String nombre;

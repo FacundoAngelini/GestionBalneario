@@ -10,6 +10,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "pedidos")
@@ -27,7 +28,7 @@ public class PedidoEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Column(name="fecha_pedido", nullable = false)
     private LocalDate fechaPedido;
