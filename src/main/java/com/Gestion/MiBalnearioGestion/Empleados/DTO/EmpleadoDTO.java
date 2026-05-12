@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
+import com.Gestion.MiBalnearioGestion.Empleados.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.DireccionEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ public class EmpleadoDTO {
     private String email;
     private double sueldo;
     private String cuit;
+    private EEstadoEmpleado estado;
     @Valid
     @NotNull(message = "La direccion no puede estar vacia")
     private DireccionEntity direccion;

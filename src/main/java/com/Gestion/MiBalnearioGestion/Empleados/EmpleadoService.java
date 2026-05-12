@@ -1,11 +1,10 @@
 package com.Gestion.MiBalnearioGestion.Empleados;
-
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.ExEntidadExistente;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorios.EmpleadosRepository;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
@@ -15,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,18 +27,18 @@ public class EmpleadoService {
     private final UsuarioMapper usuarioMapper;
 
     @Transactional
-    public EmpleadoEntity crearEmpleado (EmpleadoDTO dtoEmpleado){
+    public EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado){ // no deberia devolver una entity para el controller
 
         if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent()){
-            throw new RuntimeException("Ya existe un cliente con ese DNI");
+            throw new ExEntidadExistente("Ya existe un empleado con ese DNI", "EmpleadoEntity");
         }
 
         if (empleadosRepositorio.findByEmail(dtoEmpleado.getEmail()).isPresent()) {
-            throw new RuntimeException("Ya existe un cliente con ese email");
+            throw new ExEntidadExistente("Ya existe un empleado con ese email", "EmpleadoEntity");
         }
 
         if(empleadosRepositorio.findByCuit(dtoEmpleado.getCuit()).isPresent()){
-            throw new RuntimeException("Ya existe un cliente con ese cuit");
+            throw new ExEntidadExistente("Ya existe un empleado con ese cuit", "EmpleadoEntity");
         }
 
         UsuarioEntity usuario = usuarioMapper.converToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
@@ -46,7 +46,9 @@ public class EmpleadoService {
 
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado, EmpleadoEntity.class);
         empleado.setUsuario(usuarioGuardado);
-        return empleadosRepositorio.save(empleado);
+        empleado.setEstadoEmpleado(EEstadoEmpleado.ACTIVO);
+        EmpleadoEntity guardado= empleadosRepositorio.save(empleado);
+        return empleadoMapper.convertToDTO(guardado);
     }
 
     @Transactional
@@ -55,7 +57,8 @@ public class EmpleadoService {
         EmpleadoEntity buscado = empleadosRepositorio.
         findByIdPublico(IDpublico)
                 .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
-        empleadosRepositorio.delete(buscado);
+        buscado.setEstadoEmpleado(EEstadoEmpleado.INACTIVO);
+        empleadosRepositorio.save(buscado);
     }
 
     @Transactional
@@ -64,9 +67,64 @@ public class EmpleadoService {
                 .findByIdPublico(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
 
-       EmpleadoEntity actualizado = empleadosRepositorio.save(empleado);
+       empleadoMapper.updateEntityFromDTO(empleadoDto, empleado);
 
-        return empleadoMapper.convertToDTO(actualizado);
+       if(empleadosRepositorio.findByDni(empleadoDto.getDni())
+               .filter(e->!e.getPublicId().equals(IDpublico))
+               .isPresent()){
+           throw new ExEntidadExistente("Ya existe un empleado con ese dni", "EmpleadoEntity");
+       }
+
+       if(empleadosRepositorio.findByEmail(empleadoDto.getEmail())
+               .filter(e-> !e.getPublicId().equals(IDpublico))
+               .isPresent()) {
+           throw new ExEntidadExistente("Ya existe un empleado con ese email", "EmpleadoEntity");
+       }
+
+       if(empleadosRepositorio.findByCuit(empleado.getCuit())
+               .filter(e->!e.getPublicId().equals(IDpublico))
+               .isPresent()){
+           throw new ExEntidadExistente("Ya existe un empleado con ese cuit", "EmpleadoEntity");
+       }
+
+
+        return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
+    }
+
+    @Transactional
+    public EmpleadoDTO actualizarSueldo(UUID IDpublico, double sueldo){
+        EmpleadoEntity empleado = empleadosRepositorio
+                .findByIdPublico(IDpublico)
+                .orElseThrow(()->new EntidadNoEncontradaException("Empleado no encntrado :", IDpublico.toString()));
+        empleado.setSueldo(sueldo);
+        return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
+    }
+
+    @Transactional
+    public EmpleadoDTO cambiarEstado(UUID idPublico, EEstadoEmpleado nuevoEstado) {
+        EmpleadoEntity empleado = empleadosRepositorio
+                .findByIdPublico(idPublico)
+                .orElseThrow(()->new EntidadNoEncontradaException("Empleado no encontrado", idPublico.toString()));
+        empleado.setEstadoEmpleado(nuevoEstado);
+        return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
+    }
+
+    @Transactional
+    public EmpleadoDTO cambiarRol(UUID idPublico, RolEntity rol) {
+        EmpleadoEntity empleado = empleadosRepositorio
+                .findByIdPublico(idPublico)
+                .orElseThrow(()->new EntidadNoEncontradaException("Empleado no encontrado", idPublico.toString()));
+        empleado.setRol(rol);
+        return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
+    }
+
+    @Transactional
+    public EmpleadoDTO cambiarSector(UUID idPublico, SectorEntity sector) {
+        EmpleadoEntity empleado =empleadosRepositorio
+                .findByIdPublico(idPublico)
+                .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no encontrado", idPublico.toString()));
+        empleado.setSector(sector);
+        return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
     }
 
     public EmpleadoDTO buscarPorIDpublico(UUID IDpublico) {
@@ -77,11 +135,88 @@ public class EmpleadoService {
     }
 
 
-    public List<EmpleadoDTO> findAll() {
+    public List<EmpleadoDTO> buscarTodos() {
         return empleadosRepositorio.findAll().
                 stream().
                 map(empleadoMapper::convertToDTO).
                 toList();
     }
 
+    public List<EmpleadoDTO> buscarPorEstado(EEstadoEmpleado estado) {
+        return empleadosRepositorio.findByEstado(estado)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorEstadoActivo(EEstadoEmpleado estado) {
+        return buscarPorEstado(EEstadoEmpleado.ACTIVO);
+    }
+
+    public List<EmpleadoDTO> buscarPorEstadoInactivo(EEstadoEmpleado estado) {
+        return buscarPorEstado(EEstadoEmpleado.INACTIVO);
+    }
+
+    public List<EmpleadoDTO> buscarPorRol(RolEntity rol){
+        return empleadosRepositorio.findByRol(rol)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorSector(SectorEntity sector){
+        return empleadosRepositorio.findBySector(sector)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorNombre(String nombre){
+        return empleadosRepositorio.findByNombre(nombre)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorApellido(String apellido){
+        return empleadosRepositorio.findByApellido(apellido)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorCuit(String cuit){
+        return empleadosRepositorio.findByCuit(cuit)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorEmail(String email){
+        return empleadosRepositorio.findByEmail(email)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorDni(int dni){
+        return empleadosRepositorio.findByDni(dni)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorNombreYApellido(String nombre, String apellido){
+        return empleadosRepositorio.findByNombreAndApellido(nombre,apellido)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
+
+    public List<EmpleadoDTO> buscarPorSueldo(double sueldo){
+        return empleadosRepositorio.findBySueldo(sueldo)
+                .stream()
+                .map(empleadoMapper::convertToDTO)
+                .toList();
+    }
 }
