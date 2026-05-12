@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Empleados.Repositorios;
+package com.Gestion.MiBalnearioGestion.Empleados;
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
