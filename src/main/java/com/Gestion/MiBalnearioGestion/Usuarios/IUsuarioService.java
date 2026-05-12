@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IUsuarioService {
-    public UsuarioDTO crearUsuario (UsuarioDTO dtoUsuario);
-    public List<UsuarioDTO> listarUsuarios();
+    UsuarioDTO crearUsuario (UsuarioDTO dtoUsuario);
+    List<UsuarioDTO> buscarTodosUsuarios();
     UsuarioDTO buscarPorIdPublica(UUID idPublica);
     UsuarioDTO actualizarUsuario (UUID idPublica, UsuarioDTO dtoUsuario);
-    void BorrarUsuario (UUID idPublica);
+    UsuarioDTO buscarPorNombreUsuario(String nombreUsuario);
+    void borrarUsuario (UUID idPublica);
 }

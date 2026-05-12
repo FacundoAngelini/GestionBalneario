@@ -2,9 +2,6 @@ package com.Gestion.MiBalnearioGestion.Usuarios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.ExEntidadExistente;
-import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.EEstadoEmpleado;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +31,7 @@ public class UsuarioService implements IUsuarioService{
     }
 
     @Override
-    public List<UsuarioDTO> listarUsuarios(){
+    public List<UsuarioDTO> buscarTodosUsuarios(){
         return usuarioRepositorio.findAll().
                 stream().
                 map(usuarioMapper::convertToDTO)
@@ -47,6 +44,14 @@ public class UsuarioService implements IUsuarioService{
                 findByIdPublica(idPublica)
                 .map(usuarioMapper::convertToDTO)
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro un usuario con esa id", "UsuarioEntity"));
+    }
+
+    @Override
+    public UsuarioDTO buscarPorNombreUsuario(String nombreUsuario){
+        return usuarioRepositorio.
+                findByNombreUsuario(nombreUsuario)
+                .map(usuarioMapper::convertToDTO)
+                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
     }
 
     @Transactional
@@ -65,7 +70,7 @@ public class UsuarioService implements IUsuarioService{
 
     @Transactional
     @Override
-    public void BorrarUsuario (UUID idPublica){
+    public void borrarUsuario (UUID idPublica){
         UsuarioEntity usuario = usuarioRepositorio
                 .findByIdPublica(idPublica)
                 .orElseThrow(()-> new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));

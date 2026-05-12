@@ -29,7 +29,7 @@ public class EmpleadoController {
 
     @PostMapping
     ResponseEntity<EmpleadoDTO> crearEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo){
-        return new ResponseEntity<EmpleadoDTO>(empleadoService.crearEmpleado(EmpleadoNuevo),HttpStatus.CREATED);
+        return new ResponseEntity<>(empleadoService.crearEmpleado(EmpleadoNuevo),HttpStatus.CREATED);
     }
 
     @PutMapping("{/empleadoID}")
