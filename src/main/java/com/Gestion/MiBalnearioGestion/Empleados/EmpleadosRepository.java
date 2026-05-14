@@ -4,14 +4,16 @@ import com.Gestion.MiBalnearioGestion.Empleados.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.ProductoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface EmpleadosRepository extends JpaRepository<EmpleadoEntity,Long> {
+public interface EmpleadosRepository extends JpaRepository<EmpleadoEntity,Long>, JpaSpecificationExecutor<ProductoEntity> {
 
     boolean existePorIdPublico(UUID IdPublico);
     void borrarPorIdPublico(UUID IdPublico);

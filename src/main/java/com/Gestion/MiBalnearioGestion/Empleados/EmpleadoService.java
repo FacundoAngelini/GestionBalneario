@@ -137,7 +137,7 @@ public class EmpleadoService implements IEmpleadoService {
     }
 
     @Override
-    public List<EmpleadoDTO> buscarTodos() {
+    public List<EmpleadoDTO> buscarTodos()  {// deberia tener filtrados despues
         return empleadosRepositorio.findAll().
                 stream().
                 map(empleadoMapper::convertToDTO).
