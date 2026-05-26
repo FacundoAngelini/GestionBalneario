@@ -91,6 +91,25 @@ public class EmpleadoService implements IEmpleadoService {
 
         return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
     }
+
+    @Override
+    public EmpleadoDTO buscarPorIDpublico(UUID IDpublico) {
+        return empleadosRepositorio.
+                findByIdPublico(IDpublico)
+                .map(empleadoMapper::convertToDTO)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
+    }
+
+    @Override
+    public List<EmpleadoDTO> buscarTodos()  {// deberia tener filtrados despues
+        return empleadosRepositorio.findAll().
+                stream().
+                map(empleadoMapper::convertToDTO).
+                toList();
+    }
+
+
+
 /*
     @Transactional
     public EmpleadoDTO actualizarSueldo(UUID IDpublico, double sueldo){
@@ -126,23 +145,7 @@ public class EmpleadoService implements IEmpleadoService {
                 .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no encontrado", idPublico.toString()));
         empleado.setSector(sector);
         return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
-    }*/  // HACER UN METODO POR DTO SIN ATRIBUTOS
-
-    @Override
-    public EmpleadoDTO buscarPorIDpublico(UUID IDpublico) {
-        return empleadosRepositorio.
-                findByIdPublico(IDpublico)
-                .map(empleadoMapper::convertToDTO)
-                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
-    }
-
-    @Override
-    public List<EmpleadoDTO> buscarTodos()  {// deberia tener filtrados despues
-        return empleadosRepositorio.findAll().
-                stream().
-                map(empleadoMapper::convertToDTO).
-                toList();
-    }
+    }  // HACER UN METODO POR DTO SIN ATRIBUTOS
 
     public List<EmpleadoDTO> buscarPorEstado(EEstadoEmpleado estado) {
         return empleadosRepositorio.findByEstado(estado)
@@ -221,4 +224,5 @@ public class EmpleadoService implements IEmpleadoService {
                 .map(empleadoMapper::convertToDTO)
                 .toList();
     }
+    */
 }
