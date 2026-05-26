@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/empleados")
-
 @AllArgsConstructor
 public class EmpleadoController {
 
