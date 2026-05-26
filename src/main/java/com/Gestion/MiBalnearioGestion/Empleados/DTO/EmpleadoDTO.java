@@ -1,10 +1,13 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
-import com.Gestion.MiBalnearioGestion.Empleados.EEstadoEmpleado;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.DireccionEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,32 +20,40 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmpleadoDTO {
+    @NotBlank
     private String nombre;
+
+    @NotNull
     private UUID IDpublico;
+
+    @NotBlank
     private String apellido;
+
+    @NotNull
     private int dni;
+
+    @NotBlank
+    @Email
     private String email;
+
+    @NotNull
     private double sueldo;
+
+    @NotBlank
+    @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
     private String cuit;
+
+    @NotNull
     private EEstadoEmpleado estado;
+
+    @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
+    @NotNull
+    private String telefono;
+
     @Valid
     @NotNull(message = "La direccion no puede estar vacia")
     private DireccionEntity direccion;
+
     private UsuarioDTO usuario;
-    //METODOS DE CREACION = CRUD
-    // METODOS DE BUSQUEDA Y FRILYRADO = ATRIBUTO
-    /* PASOS A SEGUIR=
-    CREAR CRUD DE COBTROLADOR (CREAR, BUSCAR, ACTUALIZAR Y BOORAR)
-
-    IMPLEMNETAR VAIDATION API
-
-    HACER OPEN API Y DTOS
-
-    LOGIN
-
-    IMPLEMENTAR METODOS DE BUSQUEDA Y FILTRADO EN EL CONTROLADOR
-
-
-     */
 
 }

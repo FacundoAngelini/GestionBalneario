@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Clientes;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/clientes")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ClienteController {
 
     private final IClienteService clienteService;
