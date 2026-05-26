@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioDTO {
+    public class UsuarioDTO {
     private String nombreUsuario;
     private String contrasenia;
 
