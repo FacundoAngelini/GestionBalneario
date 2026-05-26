@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ public class ClienteController {
     private final IClienteService clienteService;
 
     @GetMapping //Response entity
-    public List<ClienteDTO> listarTodos(){return clienteService.listarTodos();}
+    public ResponseEntity<List<ClienteDTO>> listarTodos(){return new ResponseEntity<>(clienteService.listarTodos(),HttpStatus.OK);}
 
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> buscarPorIdpublico(@PathVariable UUID IDpublico)
@@ -27,13 +28,13 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteDTO> crearCliente (@RequestBody ClienteDTO clienteNuevo)
+    public ResponseEntity<ClienteDTO> crearCliente (@Valid @RequestBody ClienteDTO clienteNuevo)
     {
         return new ResponseEntity<ClienteDTO>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO> actualizarCliente (@PathVariable UUID IDpublico,@RequestBody ClienteDTO clienteNuevo)
+    public ResponseEntity<ClienteDTO> actualizarCliente (@PathVariable UUID IDpublico, @Valid @RequestBody ClienteDTO clienteNuevo)
     {
         return new ResponseEntity<ClienteDTO>(clienteService.actualizarCliente(IDpublico,clienteNuevo),HttpStatus.OK);
     }

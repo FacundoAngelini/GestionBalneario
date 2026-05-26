@@ -4,14 +4,14 @@ import jakarta.persistence.EntityExistsException;
 
 import java.time.Instant;
 
-public class ExEntidadExistente extends EntityExistsException {
+public class EntidadExistenteException extends EntityExistsException {
 
     private final String entidad;
     private final String campo;
     private final Object valor;
     private final Instant timestamp;
 
-    public ExEntidadExistente(String s, String entidad) {
+    public EntidadExistenteException(String s, String entidad) {
         super(s);
         this.entidad = entidad;
         this.campo = null;
@@ -19,7 +19,7 @@ public class ExEntidadExistente extends EntityExistsException {
         this.timestamp=Instant.now();
     }
 
-    public ExEntidadExistente(String mensaje, String entidad, String campo, Object valor, Instant timestamp) {
+    public EntidadExistenteException(String mensaje, String entidad, String campo, Object valor, Instant timestamp) {
         super(mensaje);
         this.entidad = entidad;
         this.campo = campo;

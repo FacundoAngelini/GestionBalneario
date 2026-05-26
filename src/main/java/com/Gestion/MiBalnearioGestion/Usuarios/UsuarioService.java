@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Usuarios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.ExEntidadExistente;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class UsuarioService implements IUsuarioService{
     public UsuarioDTO crearUsuario (UsuarioDTO dtoUsuario){
 
         if (usuarioRepositorio.findByUsuario(dtoUsuario.getNombreUsuario()).isPresent()){
-            throw new ExEntidadExistente("Ya existe un usuario con ese DNI", "UsuarioEntity");
+            throw new EntidadExistenteException("Ya existe un usuario con ese DNI", "UsuarioEntity");
         }
 
         UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoUsuario, UsuarioEntity.class);
@@ -62,7 +62,7 @@ public class UsuarioService implements IUsuarioService{
                 .orElseThrow(()-> new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
 
         if(usuarioRepositorio.findByUsuario(dtoUsuario.getNombreUsuario()).isPresent()){
-            throw new ExEntidadExistente("Ya existe un usuario con ese nombre", "UsuarioEntity");
+            throw new EntidadExistenteException("Ya existe un usuario con ese nombre", "UsuarioEntity");
         }
 
         return usuarioMapper.convertToDTO(usuarioRepositorio.save(usuario));

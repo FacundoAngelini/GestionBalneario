@@ -38,7 +38,6 @@ public class ClienteEntity {
     private String apellido;
 
     @Column(name="email", unique = true, nullable = false)
-    @Email
     private String email;
 
     @Column(name="telefono", unique = true, nullable = false)

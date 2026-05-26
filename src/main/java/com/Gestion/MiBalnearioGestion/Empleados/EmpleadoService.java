@@ -1,10 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Empleados;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.ExEntidadExistente;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
@@ -29,15 +27,15 @@ public class EmpleadoService implements IEmpleadoService {
     public EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado){ // no deberia devolver una entity para el controller
 
         if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent()){
-            throw new ExEntidadExistente("Ya existe un empleado con ese DNI", "EmpleadoEntity");
+            throw new EntidadExistenteException("Ya existe un empleado con ese DNI", "EmpleadoEntity");
         }
 
         if (empleadosRepositorio.findByEmail(dtoEmpleado.getEmail()).isPresent()) {
-            throw new ExEntidadExistente("Ya existe un empleado con ese email", "EmpleadoEntity");
+            throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
         }
 
         if(empleadosRepositorio.findByCuit(dtoEmpleado.getCuit()).isPresent()){
-            throw new ExEntidadExistente("Ya existe un empleado con ese cuit", "EmpleadoEntity");
+            throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
         }
 
         UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
@@ -73,19 +71,19 @@ public class EmpleadoService implements IEmpleadoService {
        if(empleadosRepositorio.findByDni(empleadoDto.getDni())
                .filter(e->!e.getPublicId().equals(IDpublico))
                .isPresent()){
-           throw new ExEntidadExistente("Ya existe un empleado con ese dni", "EmpleadoEntity");
+           throw new EntidadExistenteException("Ya existe un empleado con ese dni", "EmpleadoEntity");
        }
 
        if(empleadosRepositorio.findByEmail(empleadoDto.getEmail())
                .filter(e-> !e.getPublicId().equals(IDpublico))
                .isPresent()) {
-           throw new ExEntidadExistente("Ya existe un empleado con ese email", "EmpleadoEntity");
+           throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
        }
 
        if(empleadosRepositorio.findByCuit(empleado.getCuit())
                .filter(e->!e.getPublicId().equals(IDpublico))
                .isPresent()){
-           throw new ExEntidadExistente("Ya existe un empleado con ese cuit", "EmpleadoEntity");
+           throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
        }
 
 

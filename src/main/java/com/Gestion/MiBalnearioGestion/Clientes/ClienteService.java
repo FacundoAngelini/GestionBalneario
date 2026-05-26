@@ -52,20 +52,15 @@ public class ClienteService implements IClienteService {
         clienteRepository.delete(buscado);
     }
 
-    @Transactional //CHECKEAR ESTA MAL
+    @Transactional
     public ClienteDTO actualizarCliente(UUID IDpublico, ClienteDTO clienteUpdateDTO) {
         ClienteEntity cliente = clienteRepository
                 .findByIdPublico(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
 
+        clienteMapper.updateEntityFromDTO(clienteUpdateDTO, cliente);
 
-        // Lo compare con el del profe él hace esto porque EMAIL es un Objeto supongo -Fran
-
-        // cliente.setEmail(clienteUpdateDTO.getEmail());
-
-        ClienteEntity actualizado = clienteRepository.save(cliente);
-
-        return clienteMapper.convertToDTO(actualizado);
+        return clienteMapper.convertToDTO(clienteRepository.save(cliente));
     }
 
     public ClienteDTO buscarPorIDpublico(UUID IDpublico) {
