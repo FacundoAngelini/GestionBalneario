@@ -52,7 +52,7 @@ public class ClienteService implements IClienteService {
         clienteRepository.delete(buscado);
     }
 
-    @Transactional
+    @Transactional //CHECKEAR ESTA MAL
     public ClienteDTO actualizarCliente(UUID IDpublico, ClienteDTO clienteUpdateDTO) {
         ClienteEntity cliente = clienteRepository
                 .findByIdPublico(IDpublico)
@@ -81,5 +81,7 @@ public class ClienteService implements IClienteService {
                 map(clienteMapper::convertToDTO).
                 toList();
     }
+
+
 
 }

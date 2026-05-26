@@ -17,7 +17,7 @@ public class ClienteController {
 
     private final IClienteService clienteService;
 
-    @GetMapping
+    @GetMapping //Response entity
     public List<ClienteDTO> listarTodos(){return clienteService.listarTodos();}
 
     @GetMapping("/{id}")
@@ -26,6 +26,7 @@ public class ClienteController {
         return new ResponseEntity<ClienteDTO>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
     }
 
+    @PostMapping
     public ResponseEntity<ClienteDTO> crearCliente (@RequestBody ClienteDTO clienteNuevo)
     {
         return new ResponseEntity<ClienteDTO>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
@@ -43,7 +44,6 @@ public class ClienteController {
         clienteService.borrarCliente(IDpublico);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
-
 
 
 }
