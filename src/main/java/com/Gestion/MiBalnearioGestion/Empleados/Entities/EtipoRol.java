@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Empleados;
+package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
 public enum EtipoRol {
     CARPERO,
