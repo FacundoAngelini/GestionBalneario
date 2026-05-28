@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface EmpleadosRepository extends JpaRepository<EmpleadoEntity,Long>, JpaSpecificationExecutor<EmpleadoEntity> {
 
-    Optional<EmpleadoEntity> findByIdPublico(UUID IdPublico);
+    Optional<EmpleadoEntity> findByPublicId(UUID IdPublico);
     Optional<EmpleadoEntity> findByDni(int dni);
     Optional<EmpleadoEntity> findByEmail(String email);
     Optional<EmpleadoEntity> findByCuit(String cuit);

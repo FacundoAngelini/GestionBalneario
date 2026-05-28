@@ -47,7 +47,7 @@ public class ClienteService implements IClienteService {
     public void borrarCliente(UUID IDpublico)
     {
         ClienteEntity buscado = clienteRepository.
-                findByIdPublico(IDpublico)
+                findByPublicId(IDpublico)
                 .orElseThrow(()-> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
         clienteRepository.delete(buscado);
     }
@@ -55,7 +55,7 @@ public class ClienteService implements IClienteService {
     @Transactional
     public ClienteDTO actualizarCliente(UUID IDpublico, ClienteDTO clienteUpdateDTO) {
         ClienteEntity cliente = clienteRepository
-                .findByIdPublico(IDpublico)
+                .findByPublicId(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
 
         clienteMapper.updateEntityFromDTO(clienteUpdateDTO, cliente);
@@ -65,7 +65,7 @@ public class ClienteService implements IClienteService {
 
     public ClienteDTO buscarPorIDpublico(UUID IDpublico) {
         return clienteRepository.
-                findByIdPublico(IDpublico)
+                findByPublicId(IDpublico)
                 .map(clienteMapper::convertToDTO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró :" , IDpublico.toString()));
     }

@@ -10,8 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface iPedidoRepository extends JpaRepository<PedidoEntity, Long> {
-    boolean existePorIdPublico(UUID idPublico);
-    void borrarPorIDPublico(UUID idPublico);
 
-    Optional<PedidoEntity> buscarPorIdPublica (UUID idPublico);
 }

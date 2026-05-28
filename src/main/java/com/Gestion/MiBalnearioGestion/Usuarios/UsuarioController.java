@@ -22,12 +22,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.buscarTodosUsuarios());
     }
 
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     ResponseEntity<UsuarioDTO> buscarPorIdPublica (@PathVariable UUID id){
         return ResponseEntity.ok(usuarioService.buscarPorIdPublica(id));
     }
 
-    @GetMapping("{/nombreUsuario}")
+    @GetMapping("/{nombreUsuario}")
     ResponseEntity<UsuarioDTO> buscarPorNombreUsuario (@PathVariable String nombreUsuario){
         return ResponseEntity.ok(usuarioService.buscarPorNombreUsuario(nombreUsuario));
     }
@@ -37,12 +37,12 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarioService.crearUsuario(dtoUsuario), HttpStatus.CREATED);
     }
 
-    @PutMapping("{/usuarioID}")
+    @PutMapping("/{usuarioID}")
     ResponseEntity<UsuarioDTO> actualizarUsuario (@RequestBody UsuarioDTO dtoUsuario, @PathVariable UUID idUsuario){
         return ResponseEntity.ok(usuarioService.actualizarUsuario(idUsuario,dtoUsuario));
     }
 
-    @DeleteMapping("{/usuarioID}")
+    @DeleteMapping("/{usuarioID}")
     ResponseEntity<Void> borrarUsuario (@PathVariable UUID idUsuario){
         usuarioService.borrarUsuario(idUsuario);
         return ResponseEntity.noContent().build();

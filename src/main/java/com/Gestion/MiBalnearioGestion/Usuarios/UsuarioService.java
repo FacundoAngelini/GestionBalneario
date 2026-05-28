@@ -20,7 +20,7 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public UsuarioDTO crearUsuario (UsuarioDTO dtoUsuario){
 
-        if (usuarioRepositorio.findByUsuario(dtoUsuario.getNombreUsuario()).isPresent()){
+        if (usuarioRepositorio.findByUsername(dtoUsuario.getNombreUsuario()).isPresent()){
             throw new EntidadExistenteException("Ya existe un usuario con ese DNI", "UsuarioEntity");
         }
 
@@ -41,7 +41,7 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public UsuarioDTO buscarPorIdPublica(UUID idPublica){
         return usuarioRepositorio.
-                findByIdPublica(idPublica)
+                findByPublicId(idPublica)
                 .map(usuarioMapper::convertToDTO)
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro un usuario con esa id", "UsuarioEntity"));
     }
@@ -49,7 +49,7 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public UsuarioDTO buscarPorNombreUsuario(String nombreUsuario){
         return usuarioRepositorio.
-                findByNombreUsuario(nombreUsuario)
+                findByUsername(nombreUsuario)
                 .map(usuarioMapper::convertToDTO)
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
     }
@@ -58,10 +58,10 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public UsuarioDTO actualizarUsuario (UUID idPublica, UsuarioDTO dtoUsuario){
         UsuarioEntity usuario = usuarioRepositorio
-                .findByIdPublica(idPublica)
+                .findByPublicId(idPublica)
                 .orElseThrow(()-> new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
 
-        if(usuarioRepositorio.findByUsuario(dtoUsuario.getNombreUsuario()).isPresent()){
+        if(usuarioRepositorio.findByUsername(dtoUsuario.getNombreUsuario()).isPresent()){
             throw new EntidadExistenteException("Ya existe un usuario con ese nombre", "UsuarioEntity");
         }
 
@@ -72,7 +72,7 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public void borrarUsuario (UUID idPublica){
         UsuarioEntity usuario = usuarioRepositorio
-                .findByIdPublica(idPublica)
+                .findByPublicId(idPublica)
                 .orElseThrow(()-> new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
 
         usuarioRepositorio.delete(usuario); // tendria que tener un estado y que se camie a inactivo

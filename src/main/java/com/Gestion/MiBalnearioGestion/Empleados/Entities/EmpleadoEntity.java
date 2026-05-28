@@ -40,6 +40,9 @@ public class EmpleadoEntity {
     @Column(name="apellido", nullable = false)
     private String apellido;
 
+    @Column(name="email", unique = true, nullable = false)
+    private String email;
+
     @Embedded
     @Column(name="direccion", nullable = false)
     private DireccionEntity direccion;
