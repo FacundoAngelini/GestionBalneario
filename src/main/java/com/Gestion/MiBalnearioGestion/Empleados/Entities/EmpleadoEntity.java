@@ -9,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name="empleados")
@@ -24,7 +25,7 @@ public class EmpleadoEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Column(name="dni", unique = true, nullable = false)
     private int dni;
@@ -32,11 +33,15 @@ public class EmpleadoEntity {
     @Column(name="nombre", nullable = false)
     private String nombre;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="estado_empleado", nullable = false)
-    private boolean estadoEmpleado;
+    private EEstadoEmpleado estadoEmpleado;
 
     @Column(name="apellido", nullable = false)
     private String apellido;
+
+    @Column(name="email", unique = true, nullable = false)
+    private String email;
 
     @Embedded
     @Column(name="direccion", nullable = false)

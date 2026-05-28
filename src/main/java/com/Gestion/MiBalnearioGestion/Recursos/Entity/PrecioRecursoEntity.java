@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name="precio_recursos")
@@ -20,7 +21,7 @@ public class PrecioRecursoEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
 
     @Column(name="precio", nullable = false)

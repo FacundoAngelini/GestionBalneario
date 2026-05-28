@@ -11,6 +11,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name="reservas")
@@ -26,7 +27,7 @@ public class ReservaEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Column(name="fecha_inicio", nullable = false)
     private LocalDate fechaInicio;

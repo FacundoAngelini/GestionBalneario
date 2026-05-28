@@ -1,16 +1,17 @@
 package com.Gestion.MiBalnearioGestion.Common.Exepciones;
 
-import java.time.Instant;
-import java.util.NoSuchElementException;
+import jakarta.persistence.EntityExistsException;
 
-public class EntidadNoEncontradaException extends NoSuchElementException {
+import java.time.Instant;
+
+public class EntidadExistenteException extends EntityExistsException {
 
     private final String entidad;
     private final String campo;
     private final Object valor;
     private final Instant timestamp;
 
-    public EntidadNoEncontradaException(String s, String entidad) {
+    public EntidadExistenteException(String s, String entidad) {
         super(s);
         this.entidad = entidad;
         this.campo = null;
@@ -18,7 +19,7 @@ public class EntidadNoEncontradaException extends NoSuchElementException {
         this.timestamp=Instant.now();
     }
 
-    public EntidadNoEncontradaException(String mensaje, String entidad, String campo, Object valor) {
+    public EntidadExistenteException(String mensaje, String entidad, String campo, Object valor, Instant timestamp) {
         super(mensaje);
         this.entidad = entidad;
         this.campo = campo;

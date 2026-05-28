@@ -3,13 +3,15 @@ package com.Gestion.MiBalnearioGestion.Empleados.Mapper;
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.DireccionDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.DireccionEntity;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class DireccionMapper implements IMapper<DireccionEntity, DireccionDTO> {
-    @Autowired
+
     private ModelMapper modelMapper;
 
     public DireccionDTO convertToDTO(DireccionEntity direccionMapeada) {

@@ -1,11 +1,11 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
-import com.Gestion.MiBalnearioGestion.Empleados.EtipoRol;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name="rol")
@@ -21,7 +21,7 @@ public class RolEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Enumerated(EnumType.STRING)
     @Column(name="tipo_rol", nullable = false)

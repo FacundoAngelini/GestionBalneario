@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.UUID;
+
 @Entity
 @Table(name="entregas")
 @Getter
@@ -20,7 +22,7 @@ public class EntregaEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Column(name="estado_entrega", nullable = false)
     private boolean estadoEntrega;

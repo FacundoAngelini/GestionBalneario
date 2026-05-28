@@ -11,8 +11,4 @@ import java.util.UUID;
 @Repository
 public interface iPagoRepository extends JpaRepository<PagoEntity, Long> {
 
-    boolean existePorIdPublico(UUID idPublico);
-    void borrarPorIDPublico(UUID idPublico);
-
-    Optional<PagoEntity> buscarPorIdPublica (UUID idPublico);
 }

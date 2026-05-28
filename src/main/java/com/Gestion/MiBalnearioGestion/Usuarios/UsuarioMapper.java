@@ -10,11 +10,14 @@ public class UsuarioMapper implements IMapper<UsuarioEntity, UsuarioDTO> {
     @Autowired
     private ModelMapper modelMApper;
 
-    public UsuarioDTO converToDto(UsuarioEntity usuarioMapeado) {
+    public UsuarioDTO convertToDTO(UsuarioEntity usuarioMapeado) {
         return modelMApper.map(usuarioMapeado, UsuarioDTO.class);
     }
 
-    public UsuarioEntity converToEntity(UsuarioDTO usuario_A_DTO, Class<UsuarioEntity> usuarioEntityClass)
+    public UsuarioEntity convertToEntity(UsuarioDTO usuario_A_DTO, Class<UsuarioEntity> usuarioEntityClass)
     {return modelMApper.map(usuario_A_DTO, UsuarioEntity.class);
     }
+
+
+
 }

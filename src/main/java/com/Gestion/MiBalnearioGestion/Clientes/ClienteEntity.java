@@ -10,6 +10,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name="clientes")
@@ -25,7 +26,7 @@ public class ClienteEntity {
 
     @Column(name="public_id", unique=true, nullable=false, updatable = false)
     @UuidGenerator
-    private String publicId;
+    private UUID publicId;
 
     @Column(name="dni",unique = true,nullable = false)
     private int dni;
@@ -37,7 +38,6 @@ public class ClienteEntity {
     private String apellido;
 
     @Column(name="email", unique = true, nullable = false)
-    @Email
     private String email;
 
     @Column(name="telefono", unique = true, nullable = false)

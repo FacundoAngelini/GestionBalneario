@@ -8,8 +8,8 @@ import java.util.UUID;
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity,Long> {
 
-    boolean existePorIdPublico(UUID idPublico);
-    void borrarPorIDPublico(UUID idPublico);
 
-    Optional<UsuarioEntity>buscarPorIdPublica (UUID idPublico);
+    Optional<UsuarioEntity> findByUsername(String nombre_de_usuario);
+    //Optional<UsuarioEntity> findByNombreUsuario(String nombre_de_usuario);
+    Optional<UsuarioEntity>findByPublicId (UUID idPublico);
 }
