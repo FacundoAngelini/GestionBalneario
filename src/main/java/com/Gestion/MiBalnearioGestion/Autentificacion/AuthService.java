@@ -6,6 +6,7 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteExceptio
 import com.Gestion.MiBalnearioGestion.Empleados.*;
 import com.Gestion.MiBalnearioGestion.Clientes.mappers.ClienteMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
+import com.Gestion.MiBalnearioGestion.Empleados.Servicio.EmpleadosRepository;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
