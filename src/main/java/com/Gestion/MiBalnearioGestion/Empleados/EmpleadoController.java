@@ -50,7 +50,7 @@ public class EmpleadoController {
         return ResponseEntity.ok(empleadoService.buscarTodos(dniIgual, dniContiene, nombreIgual, nombreContiene, apellidoIgual, apellidoContiene, telefonoIgual, telefonoContiene, cuitIgual, cuitContiene, sueldoIgual, sueldoMenor, sueldoMayor, sectorIgual, sectorContiene, rolIgual, rolContiene, calleIgual, calleContiene, numeroIgual, numeroContiene, ciudadIgual, ciudadContiene, provinciaIgual, provinciaContiene, estadoIgual, estadoActivo, estadoInactivo));
     }
 
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     ResponseEntity<EmpleadoDTO>buscarPorId(UUID id){
         return ResponseEntity.ok(empleadoService.buscarPorIDpublico(id));
     }
@@ -60,12 +60,12 @@ public class EmpleadoController {
         return new ResponseEntity<>(empleadoService.crearEmpleado(EmpleadoNuevo),HttpStatus.CREATED);
     }
 
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     ResponseEntity<EmpleadoDTO> actualizarEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo, @PathVariable UUID id){
         return ResponseEntity.ok(empleadoService.actualizarEmpleado(id, EmpleadoNuevo));
     }
 
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     ResponseEntity<Void> eliminarEmpleado(@PathVariable UUID id){
         empleadoService.borrarEmpleado(id);
         return ResponseEntity.noContent().build();

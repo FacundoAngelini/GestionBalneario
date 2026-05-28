@@ -56,7 +56,7 @@ public class EmpleadoService implements IEmpleadoService {
     public void borrarEmpleado(UUID IDpublico)
     {
         EmpleadoEntity buscado = empleadosRepositorio.
-                findByIdPublico(IDpublico)
+                findByPublicId(IDpublico)
                 .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
         buscado.setEstadoEmpleado(EEstadoEmpleado.INACTIVO);
         empleadosRepositorio.save(buscado);
@@ -66,7 +66,7 @@ public class EmpleadoService implements IEmpleadoService {
     @Override
     public EmpleadoDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto) {
         EmpleadoEntity empleado = empleadosRepositorio
-                .findByIdPublico(IDpublico)
+                .findByPublicId(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
 
         empleadoMapper.updateEntityFromDTO(empleadoDto, empleado);
@@ -78,7 +78,7 @@ public class EmpleadoService implements IEmpleadoService {
     @Override
     public EmpleadoDTO buscarPorIDpublico(UUID IDpublico) {
         return empleadosRepositorio.
-                findByIdPublico(IDpublico)
+                findByPublicId(IDpublico)
                 .map(empleadoMapper::convertToDTO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
     }

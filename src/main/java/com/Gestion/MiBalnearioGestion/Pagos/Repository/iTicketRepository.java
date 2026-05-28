@@ -11,8 +11,4 @@ import java.util.UUID;
 @Repository
 public interface iTicketRepository extends JpaRepository<TicketEntity, Long> {
 
-    boolean existePorIdPublico(UUID idPublico);
-    void borrarPorIDPublico(UUID idPublico);
-
-    Optional<TicketEntity> buscarPorIdPublica (UUID idPublico);
 }

@@ -10,10 +10,5 @@ import java.util.UUID;
 @Repository
 public interface RecursoRepository extends JpaRepository<RecursoEntity, Long> {
 
-    boolean existePorIdPublico(UUID idPublico);
-    void borrarPorIDPublico(UUID idPublico);
-
-    Optional<RecursoEntity> buscarPorIdPublica (UUID idPublico);
-
 }
 
