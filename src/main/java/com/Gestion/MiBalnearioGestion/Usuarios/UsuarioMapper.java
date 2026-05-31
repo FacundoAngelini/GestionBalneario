@@ -1,14 +1,16 @@
 package com.Gestion.MiBalnearioGestion.Usuarios;
 
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class UsuarioMapper implements IMapper<UsuarioEntity, UsuarioDTO> {
-    @Autowired
-    private ModelMapper modelMApper;
+
+    private final ModelMapper modelMApper;
 
     public UsuarioDTO convertToDTO(UsuarioEntity usuarioMapeado) {
         return modelMApper.map(usuarioMapeado, UsuarioDTO.class);

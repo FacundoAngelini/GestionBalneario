@@ -1,9 +1,11 @@
 package com.Gestion.MiBalnearioGestion.Usuarios;
 
+import com.Gestion.MiBalnearioGestion.Auth.NewAccountRequest;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,20 +17,6 @@ public class UsuarioService implements IUsuarioService{
 
     private final UsuarioRepository usuarioRepositorio;
     private final UsuarioMapper usuarioMapper;
-
-    @Transactional
-    @Override
-    public UsuarioDTO crearUsuario (UsuarioDTO dtoUsuario){
-
-        if (usuarioRepositorio.findByUsername(dtoUsuario.getNombreUsuario()).isPresent()){
-            throw new EntidadExistenteException("Ya existe un usuario con ese DNI", "UsuarioEntity");
-        }
-
-        UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoUsuario, UsuarioEntity.class);
-        UsuarioEntity usuarioGuardado = usuarioRepositorio.save(usuario);
-
-        return usuarioMapper.convertToDTO(usuarioGuardado);
-    }
 
     @Override
     public List<UsuarioDTO> buscarTodosUsuarios(){
@@ -46,13 +34,6 @@ public class UsuarioService implements IUsuarioService{
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro un usuario con esa id", "UsuarioEntity"));
     }
 
-    @Override
-    public UsuarioDTO buscarPorNombreUsuario(String nombreUsuario){
-        return usuarioRepositorio.
-                findByUsername(nombreUsuario)
-                .map(usuarioMapper::convertToDTO)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
-    }
 
     @Transactional
     @Override
@@ -61,7 +42,7 @@ public class UsuarioService implements IUsuarioService{
                 .findByPublicId(idPublica)
                 .orElseThrow(()-> new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
 
-        if(usuarioRepositorio.findByUsername(dtoUsuario.getNombreUsuario()).isPresent()){
+        if(usuarioRepositorio.findByNombreUsuario(dtoUsuario.getNombreUsuario()).isPresent()){
             throw new EntidadExistenteException("Ya existe un usuario con ese nombre", "UsuarioEntity");
         }
 

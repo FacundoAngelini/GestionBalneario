@@ -1,6 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
-import com.Gestion.MiBalnearioGestion.Autentificacion.Registrable;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClienteDTO implements Registrable {
+public class ClienteDTO {
     @NotBlank
     private String nombre;
     @NotBlank
@@ -33,19 +32,4 @@ public class ClienteDTO implements Registrable {
     @NotBlank
     private UsuarioDTO usuario;
 
-
-    @Override
-    public UsuarioDTO getUser() {
-        return this.usuario;
-    }
-
-    @Override
-    public UUID getPublicId() {
-        return this.publicId;
-    }
-
-    @Override
-    public String getEmail() {
-        return this.email;
-    }
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity,Long> {
 
 
-    Optional<UsuarioEntity> findByUsername(String nombre_de_usuario);
+    Optional<UsuarioEntity> findByNombreUsuario(String nombre_de_usuario);
     //Optional<UsuarioEntity> findByNombreUsuario(String nombre_de_usuario);
     Optional<UsuarioEntity>findByPublicId (UUID idPublico);
 }
