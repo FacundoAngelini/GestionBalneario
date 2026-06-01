@@ -1,13 +1,12 @@
-package com.Gestion.MiBalnearioGestion.Auth;
+package com.Gestion.MiBalnearioGestion.Auth.Autentificacion;
 
+import com.Gestion.MiBalnearioGestion.Auth.*;
 import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,16 +21,18 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody AuthRequest authRequest){
-        UserDetails user = authService.authenticate(authRequest);
-        // jwtService asume que recibe un UserDetails (que CredencialEntity ya implementa)
-        String token =  jwtService.generateToken(user);
-        return ResponseEntity.ok(new AuthResponse(token));
+    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
+        return ResponseEntity.ok(authService.authenticate(authRequest));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+        AuthResponse response = authService.refreshAccessToken(request.refreshToken());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<UsuarioDTO> registerUser(@RequestBody NewAccountRequest newAccountRequest){
-        // LLAMAMOS AL AUTH SERVICE
         return new ResponseEntity<>(authService.register(newAccountRequest), HttpStatus.CREATED);
     }
 }

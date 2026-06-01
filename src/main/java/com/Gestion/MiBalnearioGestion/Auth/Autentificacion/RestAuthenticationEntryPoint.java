@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Auth;
+package com.Gestion.MiBalnearioGestion.Auth.Autentificacion;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

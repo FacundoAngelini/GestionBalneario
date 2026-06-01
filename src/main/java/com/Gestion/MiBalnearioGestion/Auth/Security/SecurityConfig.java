@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Auth.Security;
 
 import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtAuthenticationFilter;
-import com.Gestion.MiBalnearioGestion.Auth.RestAuthenticationEntryPoint;
+import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.RestAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +20,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @RequiredArgsConstructor
+//@EnableMethodSecurity
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;

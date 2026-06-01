@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
+    private final long refreshTokenExpiration = 604800000;
     @Value("${jwt.secret}")
     private String jwtSecretKey;
 
@@ -30,6 +31,7 @@ public class JwtService {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -95,5 +97,25 @@ public class JwtService {
     private boolean isTokenExpired(String token) {
         Date expiration = extractClaim(token, Claims::getExpiration);
         return expiration.before(new Date());
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+        return buildToken(claims, userDetails, refreshTokenExpiration);
+    }
+
+    public boolean validateRefreshToken(String refreshToken, UserDetails userDetails) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getSignInKey())
+                    .build()
+                    .parseSignedClaims(refreshToken);
+
+            final String username = extractUsername(refreshToken);
+            return (username.equals(userDetails.getUsername())) && !isTokenExpired(refreshToken);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

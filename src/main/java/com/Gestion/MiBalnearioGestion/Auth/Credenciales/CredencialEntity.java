@@ -30,6 +30,9 @@ public class CredencialEntity implements UserDetails {
     @Column(nullable = false, name="contrasenia")
     private String contrasenia;
 
+    @Column(name = "refresh_token", length = 512, unique = true, nullable = false)
+    private String refreshToken;
+
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean enabled;
 
