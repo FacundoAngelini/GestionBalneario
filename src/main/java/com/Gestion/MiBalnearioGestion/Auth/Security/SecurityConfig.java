@@ -2,12 +2,14 @@ package com.Gestion.MiBalnearioGestion.Auth.Security;
 
 import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtAuthenticationFilter;
 import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.RestAuthenticationEntryPoint;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
@@ -20,7 +22,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @RequiredArgsConstructor
-//@EnableMethodSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -44,6 +46,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers
                         ->headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // Código 403
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Acceso denegado. No tenés los permisos necesarios para este recurso.\", \"status\": 403}");
+                            response.getWriter().flush();
+                        })
                 )
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(STATELESS))

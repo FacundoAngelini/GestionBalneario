@@ -51,8 +51,26 @@ public class CredencialEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        roles.forEach(rol -> authorities.add(
-                new SimpleGrantedAuthority(rol.getRole().name())));
+
+        if (roles != null) {
+            roles.forEach(rol -> {
+                // Aseguramos que el rol y su enum no sean null
+                if (rol != null && rol.getRole() != null) {
+                    authorities.add(new SimpleGrantedAuthority(rol.getRole().name()));
+
+                    // Validamos que la lista de permisos no sea null antes de recorrerla
+                    if (rol.getPermits() != null) {
+                        rol.getPermits().forEach(permisoEntity -> {
+                            // Validamos que la entidad y su enum interno no sean null
+                            if (permisoEntity != null && permisoEntity.getNombrePermiso() != null) {
+                                authorities.add(new SimpleGrantedAuthority(permisoEntity.getNombrePermiso().name()));
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
         return authorities;
     }
 

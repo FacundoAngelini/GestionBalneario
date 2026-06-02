@@ -1,7 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Auth.JWT;
 
 import io.jsonwebtoken.JwtException;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,8 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer "))
-        {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -41,13 +39,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String username = jwtService.extractUsername(jwt);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            if (username != null && authentication == null){
+            if (username != null && authentication == null) {
+                // 1. Extraemos las authorities directamente guardadas en los Claims del JWT
                 List<GrantedAuthority> authorities = jwtService.extractAuthorities(jwt);
 
+                // 2. Creamos un Principal mínimo de Spring Security que contiene las authorities reales
+                // Usamos el username como principal pero le inyectamos la lista de permisos limpia
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         username,
                         null,
-                        authorities);
+                        authorities // <-- Si esto contiene 'RESERVAS_VER', Spring te va a dejar pasar directo
+                );
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

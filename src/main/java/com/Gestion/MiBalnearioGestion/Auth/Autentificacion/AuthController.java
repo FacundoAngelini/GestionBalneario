@@ -7,10 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -34,5 +32,19 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UsuarioDTO> registerUser(@RequestBody NewAccountRequest newAccountRequest){
         return new ResponseEntity<>(authService.register(newAccountRequest), HttpStatus.CREATED);
+    }
+
+    // Este endpoint requiere que el usuario tenga el permiso RESERVAS_VER
+    @GetMapping("/test/ver-reserva")
+    @PreAuthorize("hasAuthority('RESERVAS_VER')")
+    public ResponseEntity<String> testVer() {
+        return ResponseEntity.ok("✅ ¡Acceso concedido! Tenés permiso para VER las reservas.");
+    }
+
+    // Este endpoint requiere que el usuario tenga el permiso RESERVAS_ELIMINAR
+    @DeleteMapping("/test/borrar-reserva")
+    @PreAuthorize("hasAuthority('RESERVAS_ELIMINAR')")
+    public ResponseEntity<String> testBorrar() {
+        return ResponseEntity.ok("🚨 ¡Acceso concedido! Tenés privilegios de ADMIN para BORRAR reservas.");
     }
 }
