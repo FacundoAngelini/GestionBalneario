@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final JwtService jwtService;
-
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
@@ -34,17 +32,4 @@ public class AuthController {
         return new ResponseEntity<>(authService.register(newAccountRequest), HttpStatus.CREATED);
     }
 
-    // Este endpoint requiere que el usuario tenga el permiso RESERVAS_VER
-    @GetMapping("/test/ver-reserva")
-    @PreAuthorize("hasAuthority('RESERVAS_VER')")
-    public ResponseEntity<String> testVer() {
-        return ResponseEntity.ok("✅ ¡Acceso concedido! Tenés permiso para VER las reservas.");
-    }
-
-    // Este endpoint requiere que el usuario tenga el permiso RESERVAS_ELIMINAR
-    @DeleteMapping("/test/borrar-reserva")
-    @PreAuthorize("hasAuthority('RESERVAS_ELIMINAR')")
-    public ResponseEntity<String> testBorrar() {
-        return ResponseEntity.ok("🚨 ¡Acceso concedido! Tenés privilegios de ADMIN para BORRAR reservas.");
-    }
 }

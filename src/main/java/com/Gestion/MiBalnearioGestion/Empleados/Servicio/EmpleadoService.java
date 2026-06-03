@@ -1,20 +1,34 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Servicio;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Repositorio.CredencialRepositorio;
+import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
+import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
+import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
+import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
-import com.Gestion.MiBalnearioGestion.Empleados.Servicio.EmpleadosRepository;
+import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepository;
+import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
+import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -24,33 +38,84 @@ public class EmpleadoService implements IEmpleadoService {
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoMapper empleadoMapper;
     private final UsuarioMapper usuarioMapper;
+    private final CredencialRepositorio credentialsRepository;
+    private final RolesRepositorio rolesRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final RolRepositorio rolRepository;
+    private final SectorRepositorio sectorRepository;
+
 
     @Transactional
     @Override
-    public EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado){ // no deberia devolver una entity para el controller
-
+    public EmpleadoDTO crearEmpleado(EmpleadoDTO dtoEmpleado) {
         if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent()){
             throw new EntidadExistenteException("Ya existe un empleado con ese DNI", "EmpleadoEntity");
         }
-
         if (empleadosRepositorio.findByEmail(dtoEmpleado.getEmail()).isPresent()) {
             throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
         }
-
         if(empleadosRepositorio.findByCuit(dtoEmpleado.getCuit()).isPresent()){
             throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
         }
 
+        boolean esGerenteLogueado = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .map(org.springframework.security.core.GrantedAuthority::getAuthority)
+                .anyMatch(auth -> auth.toUpperCase().contains("GERENTE"));
+
+        String rolSolicitado = dtoEmpleado.getRolSolicitado().toUpperCase();
+
+        if (esGerenteLogueado) {
+            if (rolSolicitado.contains("GERENTE") || rolSolicitado.contains("ADMIN")) {
+                throw new org.springframework.security.access.AccessDeniedException("Un Gerente solo puede crear empleados de rango menor");
+            }
+        }
+
         UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
+        usuario.setContrasenia(passwordEncoder.encode(usuario.getContrasenia()));
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
+
+        Roles enumRol = Roles.valueOf(rolSolicitado);
+        RolesEntity rolDb = rolesRepository.findByRole(enumRol)
+                .orElseThrow(() -> new RuntimeException("El rol solicitado no existe en la base de datos."));
+
+        Set<RolesEntity> rolesSet = new HashSet<>();
+        rolesSet.add(rolDb);
+
+        CredencialEntity nuevaCredencial = CredencialEntity.builder()
+                .nombreUsuario(usuarioGuardado.getNombreUsuario())
+                .contrasenia(usuarioGuardado.getContrasenia())
+                .enabled(true)
+                .usuario(usuarioGuardado)
+                .roles(rolesSet)
+                .build();
+
+        nuevaCredencial.setRefreshToken(jwtService.generateRefreshToken(nuevaCredencial));
+        credentialsRepository.save(nuevaCredencial);
 
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado, EmpleadoEntity.class);
         empleado.setUsuario(usuarioGuardado);
-        empleado.setEstadoEmpleado(EEstadoEmpleado.ACTIVO);
-        EmpleadoEntity guardado= empleadosRepositorio.save(empleado);
+        empleado.setEstadoEmpleado(dtoEmpleado.getEstado());
+
+        if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getId() != null) {
+            SectorEntity sectorDb = sectorRepository.findById(dtoEmpleado.getSector().getId())
+                    .orElseThrow(() -> new RuntimeException("El Sector con ID " + dtoEmpleado.getSector().getId() + " no existe."));
+            empleado.setSector(sectorDb);
+        }
+
+        if (dtoEmpleado.getRol() != null && dtoEmpleado.getRol().getId() != null) {
+            RolEntity rolDbNegocio = rolRepository.findById(dtoEmpleado.getRol().getId())
+                    .orElseThrow(() -> new RuntimeException("El Rol de negocio con ID " + dtoEmpleado.getRol().getId() + " no existe."));
+            empleado.setRol(rolDbNegocio);
+        }
+
+        EmpleadoEntity guardado = empleadosRepositorio.save(empleado);
+
         return empleadoMapper.convertToDTO(guardado);
     }
-
     @Transactional
     @Override
     public void borrarEmpleado(UUID IDpublico)

@@ -40,16 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (username != null && authentication == null) {
-                // 1. Extraemos las authorities directamente guardadas en los Claims del JWT
                 List<GrantedAuthority> authorities = jwtService.extractAuthorities(jwt);
 
-                // 2. Creamos un Principal mínimo de Spring Security que contiene las authorities reales
-                // Usamos el username como principal pero le inyectamos la lista de permisos limpia
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        username,
-                        null,
-                        authorities // <-- Si esto contiene 'RESERVAS_VER', Spring te va a dejar pasar directo
-                );
+                        username, null, authorities);
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);

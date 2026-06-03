@@ -35,12 +35,11 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        // Extraemos TODAS las authorities (Roles y Permisos) como strings planos
         List<String> authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        claims.put("authorities", authorities); // Guardamos bajo la clave "authorities"
+        claims.put("authorities", authorities);
 
         return buildToken(claims, userDetails, jwtExpiration);
     }
@@ -48,7 +47,6 @@ public class JwtService {
     public List<GrantedAuthority> extractAuthorities(String token) {
         Claims claims = extractAllClaims(token);
 
-        // Recuperamos la lista usando la nueva clave estandarizada
         List<?> rawAuthorities = claims.get("authorities", List.class);
 
         if (rawAuthorities == null) {
@@ -61,7 +59,6 @@ public class JwtService {
                 .collect(Collectors.toList());
     }
 
-    // CORREGIDO: Ahora usa la interfaz funcional correcta de Java
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
