@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EmpleadoMapper implements IMapper<EmpleadoEntity, EmpleadoDTO> {
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public EmpleadoDTO convertToDTO(EmpleadoEntity empleadoMapeado) {
