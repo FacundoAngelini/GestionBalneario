@@ -55,7 +55,7 @@ public class EmpleadoDTO {
     @NotNull(message = "La direccion no puede estar vacia")
     private DireccionEntity direccion;
 
-    private UsuarioDTO usuario;
+    private UsuarioDTO usuario;// no entity y posible cambio
     private RolEntity rol;
     private SectorEntity sector;
 
