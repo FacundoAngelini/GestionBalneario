@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface EmpleadosRepository extends JpaRepository<EmpleadoEntity,Long>, JpaSpecificationExecutor<EmpleadoEntity> {
+public interface EmpleadosRepositorio extends JpaRepository<EmpleadoEntity,Long>, JpaSpecificationExecutor<EmpleadoEntity> {
 
     Optional<EmpleadoEntity> findByPublicId(UUID IdPublico);
     Optional<EmpleadoEntity> findByDni(int dni);

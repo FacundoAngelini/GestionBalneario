@@ -13,7 +13,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepository;
+import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
@@ -34,7 +34,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class EmpleadoService implements IEmpleadoService {
-    private final EmpleadosRepository empleadosRepositorio;
+    private final EmpleadosRepositorio empleadosRepositorio;
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoMapper empleadoMapper;
     private final UsuarioMapper usuarioMapper;
