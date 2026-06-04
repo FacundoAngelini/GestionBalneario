@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface CanchaRepositorio extends JpaRepository<CanchaEntity, Long>, JpaSpecificationExecutor<CanchaEntity> {
     Optional<CanchaEntity> findByPublicId(UUID Id);
+
 }

@@ -21,6 +21,5 @@ public interface RecursoRepositorio extends JpaRepository<RecursoEntity, Long>, 
     @Modifying
     @Query("UPDATE RecursoEntity r SET r.esReservable = false")
     void desactivarTodoElInventario();
-
 }
 
