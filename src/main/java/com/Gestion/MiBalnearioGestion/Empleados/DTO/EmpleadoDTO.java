@@ -1,7 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.DireccionEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -46,6 +45,8 @@ public class EmpleadoDTO {
     @NotNull
     private EEstadoEmpleado estado;
 
+    private String rolSolicitado;
+
     @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
     @NotNull
     private String telefono;
@@ -55,5 +56,7 @@ public class EmpleadoDTO {
     private DireccionEntity direccion;
 
     private UsuarioDTO usuario;
+    private RolEntity rol;
+    private SectorEntity sector;
 
 }

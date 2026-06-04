@@ -17,5 +17,9 @@ public class PermisosEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    Permisos permiso;
+    Permisos nombrePermiso;
+
+    public PermisosEntity(Permisos nombrePermiso) {
+        this.nombrePermiso = nombrePermiso;
+    }
 }

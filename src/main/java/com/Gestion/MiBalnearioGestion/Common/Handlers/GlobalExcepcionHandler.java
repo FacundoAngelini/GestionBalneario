@@ -8,6 +8,11 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -66,5 +71,30 @@ public class GlobalExcepcionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(403, "No tiene los permisos suficientes" + ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(403).body(error);
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class, DisabledException.class,
+            LockedException.class})
+    public ResponseEntity<ErrorResponse> handleBadCredentials(Exception ex, HttpServletRequest request
+    ) {
+        String mensajeError = "Usuario o contraseña incorrecta";
+
+        if (ex instanceof org.springframework.security.authentication.DisabledException) {
+            mensajeError = "Esta cuenta ha sido deshabilitada. Contacte al administrador.";
+        }
+        else if (ex instanceof org.springframework.security.authentication.LockedException) {
+            mensajeError = "Esta cuenta se encuentra bloqueada.";
+        }
+
+        ErrorResponse error = new ErrorResponse(401, mensajeError);
+        error.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(401).body(error);
+    }
 
 }
