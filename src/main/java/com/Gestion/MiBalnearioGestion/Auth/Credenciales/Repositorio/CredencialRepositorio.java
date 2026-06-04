@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface CredencialRepositorio extends JpaRepository<CredencialEntity, Long> {
     Optional<CredencialEntity> findByNombreUsuario(String nombreUsuario);
+    boolean existsByNombreUsuario(String nombreUsuario);
 }

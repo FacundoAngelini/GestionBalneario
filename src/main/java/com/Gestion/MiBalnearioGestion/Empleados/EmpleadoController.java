@@ -6,6 +6,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.Servicio.IEmpleadoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class EmpleadoController {
     private final IEmpleadoService empleadoService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     ResponseEntity<List<EmpleadoDTO>> listarTodos(@RequestParam (required = false) Integer dniIgual,
                                                   @RequestParam (required = false)  Integer dniContiene,
                                                   @RequestParam (required = false)  String nombreIgual,
@@ -51,21 +53,25 @@ public class EmpleadoController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<EmpleadoDTO>buscarPorId(UUID id){
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    ResponseEntity<EmpleadoDTO>buscarPorId(@PathVariable UUID id){
         return ResponseEntity.ok(empleadoService.buscarPorIDpublico(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     ResponseEntity<EmpleadoDTO> crearEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo){
         return new ResponseEntity<>(empleadoService.crearEmpleado(EmpleadoNuevo),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     ResponseEntity<EmpleadoDTO> actualizarEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo, @PathVariable UUID id){
         return ResponseEntity.ok(empleadoService.actualizarEmpleado(id, EmpleadoNuevo));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Void> eliminarEmpleado(@PathVariable UUID id){
         empleadoService.borrarEmpleado(id);
         return ResponseEntity.noContent().build();
