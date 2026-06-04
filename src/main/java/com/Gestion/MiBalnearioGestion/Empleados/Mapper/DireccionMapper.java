@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DireccionMapper implements IMapper<DireccionEntity, DireccionDTO> {
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public DireccionDTO convertToDTO(DireccionEntity direccionMapeada) {
         return modelMapper.map(direccionMapeada, DireccionDTO.class);

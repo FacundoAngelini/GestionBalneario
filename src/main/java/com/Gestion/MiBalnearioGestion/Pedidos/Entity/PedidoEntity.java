@@ -46,7 +46,6 @@ public class PedidoEntity {
             joinColumns = @JoinColumn(name="pedido_id"),
             inverseJoinColumns = @JoinColumn(name="empleado_id")
     )
-
     private List<EmpleadoEntity> empleados = new ArrayList<>();
 
 }

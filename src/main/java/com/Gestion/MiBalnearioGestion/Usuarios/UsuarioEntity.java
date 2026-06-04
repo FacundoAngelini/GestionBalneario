@@ -27,11 +27,11 @@ public class UsuarioEntity {
     @UuidGenerator
     private UUID publicId;
 
-    @Column(name="username", unique = true, nullable = false, updatable = false)
-    private String username;
+    @Column(name="nombreUsuario", unique = true, nullable = false, updatable = false)
+    private String nombreUsuario;
 
-    @Column(name="password", nullable = false)
-    private String password;
+    @Column(name="contrasenia", nullable = false)
+    private String contrasenia;
 
     @OneToOne(mappedBy = "usuario")
     private EmpleadoEntity empleado;

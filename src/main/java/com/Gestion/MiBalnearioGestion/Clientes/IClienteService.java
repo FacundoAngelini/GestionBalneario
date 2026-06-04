@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public interface IClienteService {
 
-    //FALTA AGREGAR FUNCIONES DE CLIENTE SERVICE
     ClienteDTO crearCliente(ClienteDTO dto);
 
     public void borrarCliente(UUID IDpublico);

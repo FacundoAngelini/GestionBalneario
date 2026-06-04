@@ -4,8 +4,10 @@ import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/clientes")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ClienteController {
 
     private final IClienteService clienteService;
@@ -27,6 +29,7 @@ public class ClienteController {
         return new ResponseEntity<ClienteDTO>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @PostMapping
     public ResponseEntity<ClienteDTO> crearCliente (@Valid @RequestBody ClienteDTO clienteNuevo)
     {
