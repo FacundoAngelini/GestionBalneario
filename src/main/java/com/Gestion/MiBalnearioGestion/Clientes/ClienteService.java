@@ -23,7 +23,6 @@ public class ClienteService implements IClienteService {
     private final UsuarioMapper usuarioMapper;
 
 
-    //FALTA AGREGAR FUNCIONES EN LA INTERFAZ ESPECIFICA DE CLIENTE SERVICE POR SI MIGRAMOS
     @Transactional
     public ClienteDTO crearCliente(ClienteDTO dto) {
 
