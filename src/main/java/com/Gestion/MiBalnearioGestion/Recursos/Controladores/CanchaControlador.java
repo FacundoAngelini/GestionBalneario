@@ -29,7 +29,7 @@ public class CanchaControlador {
         return ResponseEntity.ok(canchaServicio.actualizarCancha(id, cancha));
     }
 
-    @GetMapping("/{publicId}")
+    @GetMapping("/{id}")
     public ResponseEntity<CanchaDTO> obtenerCanchaId(@PathVariable UUID id) {
         return ResponseEntity.ok(canchaServicio.buscarPorId(id));
     }
