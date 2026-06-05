@@ -19,3 +19,6 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+
+mp:
+  secret: ${MP_ACCESSTOKEN}
