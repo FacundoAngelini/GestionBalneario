@@ -22,12 +22,12 @@ public class CocheraControlador {
         return new ResponseEntity<>(cocheraServicio.crearCochera(dto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{publicId}")
+    @PutMapping("/{id}")
     public ResponseEntity<CocheraDTO> actualizarCochera(@PathVariable UUID id, @Valid @RequestBody CocheraDTO dto) {
         return ResponseEntity.ok(cocheraServicio.actualizarCochera(id, dto));
     }
 
-    @GetMapping("/{publicId}")
+    @GetMapping("/{id}")
     public ResponseEntity<CocheraDTO> buscarCochera(@PathVariable UUID id) {
         return ResponseEntity.ok(cocheraServicio.buscarCochera(id));
     }

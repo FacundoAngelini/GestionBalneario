@@ -22,12 +22,12 @@ public class MesaControlador {
         return new ResponseEntity<>(mesaServcio.crearMesa(mesaDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{publicId}")
+    @PutMapping("/{id}")
     public ResponseEntity<MesaDTO> actualizarMesa (@Valid @RequestBody MesaDTO mesaDTO, @PathVariable UUID id){
         return ResponseEntity.ok(mesaServcio.actualizarMesa(mesaDTO, id));
     }
 
-    @GetMapping("/{publicId}")
+    @GetMapping("/{id}")
     public ResponseEntity<MesaDTO> obtenerMesaId(@PathVariable UUID id){
         return ResponseEntity.ok(mesaServcio.obtenerMesaId(id));
     }
