@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Common.Email;
 
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

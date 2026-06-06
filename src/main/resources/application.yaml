@@ -33,4 +33,4 @@ mail:
         smtp:
           auth: true
           starttls:
-            enabled: true
+            enable: true
