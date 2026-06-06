@@ -3,8 +3,10 @@ package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.MesaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CarpaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CocheraEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.MesaEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -12,28 +14,26 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CocheraMapper implements IMapper <CocheraEntity, CocheraDTO> {
+public class MesaMapper implements IMapper<MesaEntity, MesaDTO> {
     private final ModelMapper modelMapper;
-
     @PostConstruct
     public void configureMapper() {
         modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(CocheraDTO.class, CocheraEntity.class)
-                .addMappings(mapper -> mapper.skip(CocheraEntity::setPublicId));
+        modelMapper.typeMap(MesaDTO.class, MesaEntity.class)
+                .addMappings(mapper -> mapper.skip(MesaEntity::setPublicId));
     }
 
     @Override
-    public CocheraEntity convertToEntity(CocheraDTO dto, Class<CocheraEntity> clazz) {
-        return modelMapper.map(dto, CocheraEntity.class);
+    public MesaEntity convertToEntity (MesaDTO dto, Class<MesaEntity> entityClass){
+        return modelMapper.map(dto, MesaEntity.class);
     }
 
     @Override
-    public CocheraDTO convertToDTO(CocheraEntity entity) {
-        return modelMapper.map(entity, CocheraDTO.class);
+    public MesaDTO convertToDTO (MesaEntity entity){
+        return modelMapper.map(entity, MesaDTO.class);
     }
 
-    public void updateToEntityFromDTO(CocheraDTO dto, CocheraEntity entity) {
+    public void updateToEntity(MesaDTO dto, MesaEntity entity){
         modelMapper.map(dto, entity);
     }
-
 }

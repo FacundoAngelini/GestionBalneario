@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/carpas")
+@RequestMapping("/recursos/carpas")
 @RestController
 @RequiredArgsConstructor
 public class CarpaControlador {
@@ -23,12 +23,12 @@ public class CarpaControlador {
         return new ResponseEntity<>(carpaServicio.crearCarpa(carpaDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{publicId}")
+    @PutMapping("/{id}")
     public ResponseEntity<CarpaDTO> actualizarCarpa(@PathVariable UUID id, @Valid @RequestBody CarpaDTO carpaDTO){
         return ResponseEntity.ok(carpaServicio.actualizarCarpa(carpaDTO, id));
     }
 
-    @GetMapping("/{publicId}")
+    @GetMapping("/{id}")
     public ResponseEntity<CarpaDTO> obtenerCarpaId(@PathVariable UUID id){
         return ResponseEntity.ok(carpaServicio.buscarPorId(id));
     }
