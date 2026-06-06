@@ -25,6 +25,7 @@ public class EmailController {
         mailMessage.setSubject("Bienvenido al balnearioapiutn");
         mailMessage.setText("Bienvenido al balnearioapiutn");
 
+        mailSender.send(mailMessage);
         return ResponseEntity.ok("Email enviado!");
     }
 
