@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mail.MailException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -76,6 +77,13 @@ public class GlobalExcepcionHandler {
         ErrorResponse error = new ErrorResponse(403, "No tiene los permisos suficientes" + ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(403).body(error);
+    }
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ErrorResponse> handleMailException(MailException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(500, "Error al enviar el mail" + ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(500).body(error);
     }
 
     @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class, DisabledException.class,

@@ -5,6 +5,7 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaExcep
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
+import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
 import com.Gestion.MiBalnearioGestion.Pagos.Mappers.PagoMapper;
 import com.Gestion.MiBalnearioGestion.Pagos.Mappers.TicketMapper;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
@@ -38,15 +39,19 @@ public class PagoService {
 
     //En el create de Pago se usa el create de Ticket logicamente no hay Controller de ticket
     // se accede desde pagos en mi opinion
-    public PagoDTO crear (PagoDTO dto){
+    public PagoDTO crear (PagoDTO dto) {
 
-        if(pagoRepository.existsByPublicId(dto.getPublicId()))
-        {
-            throw new EntidadExistenteException("Ya existe un pago con id: ",dto.getPublicId().toString());
+        if (pagoRepository.existsByPublicId(dto.getPublicId())) {
+            throw new EntidadExistenteException("Ya existe un pago con id: ", dto.getPublicId().toString());
         }
-        TicketEntity ticket = ticketMapper.convertToEntity(ticketService.crear(dto.getTicketDTO()),TicketEntity.class);
+        PagoEntity pago = pagoMapper.convertToEntity(dto, PagoEntity.class);
+        if (pago.getEestadoPago() != EestadoPago.PAGADO)
+        {
+            // Throw de Excepcion o re solicitar pago
+        }
 
-        PagoEntity pago = pagoMapper.convertToEntity(dto,PagoEntity.class);
+        //El ticket se crea a partir de que se confirme el pago
+        TicketEntity ticket = ticketMapper.convertToEntity(ticketService.generarTicket(dto.getTicketDTO()),TicketEntity.class);
         pago.setTicket(ticket);
 
         ticket.setPagoEntity(pago);
@@ -59,6 +64,13 @@ public class PagoService {
     public void borrar (UUID publicId){
         pagoRepository.delete(pagoRepository.findByPublicId(publicId)
                 .orElseThrow(()-> new EntidadNoEncontradaException("No existe un Pago con id: ", publicId.toString())));
+    }
+
+    @Transactional
+    public PagoDTO confirmarEstadoPago (UUID publicId){
+
+
+        return null;
     }
 
 

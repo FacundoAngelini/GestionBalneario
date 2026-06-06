@@ -15,5 +15,8 @@ public class MercadoPagoService {
 
 
     //Problemas con MercadoPagoConfig(clase de la dependencia) no muestra metodos.
+    //MercadoPagoConfig.setAccessToken(accessToken);
+
+
 
 }

@@ -22,3 +22,15 @@ jwt:
 
 mp:
   secret: ${MP_ACCESSTOKEN}
+
+mail:
+    host: smtp.gmail.com
+    port: 587
+    username: balnearioapiutn@gmail.com
+    password: ${GMAIL_APP}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true

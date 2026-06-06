@@ -5,6 +5,7 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaExcep
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.TicketDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Mappers.TicketMapper;
+import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iTicketRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +21,18 @@ public class TicketService {
 
     private final iTicketRepository ticketRepository;
 
-    public TicketDTO buscarPorPublicId(UUID publicId)
+    private final iPagoRepository pagoRepository;
+
+    public TicketDTO ticketDeUnPago(UUID publicId_pago)
     {
-        TicketEntity ticket = ticketRepository.findByPublicId(publicId)
-                .orElseThrow(()->new EntidadNoEncontradaException("No existe un ticket con id: ",publicId.toString()));
+        TicketEntity ticket = pagoRepository.findByPublicId(publicId_pago)
+                .orElseThrow(()->new EntidadNoEncontradaException("No existe un pago con id: ",publicId_pago.toString()))
+                .getTicket();
         return ticketMapper.convertToDTO(ticket);
     }
 
     @Transactional
-    public TicketDTO crear (TicketDTO dto)
+    public TicketDTO generarTicket (TicketDTO dto)
     {
         if(ticketRepository.existsByPublicId(dto.getPublicId()))
         {
@@ -48,5 +52,11 @@ public class TicketService {
         return ticketMapper.convertToDTO(ticketRepository.save(ticket));
     } */
 
+    //QUIZA TENEMOS QUE HACERLO CASCADE DELETE CON EL PAGO
 
+    @Transactional
+    public TicketDTO enviarTicketXMail (TicketDTO dto)
+    {
+        return null;
+    }
 }
