@@ -29,7 +29,7 @@ public class EMailConfig {
         Properties props = mailSender.getJavaMailProperties();
 
         props.put("mail.smtp.auth", true);
-        props.put("mail.smtp.starttls.enable", true);
+        props.put("mail.smtp.starttls.enabled", true);
 
         return mailSender;
     }

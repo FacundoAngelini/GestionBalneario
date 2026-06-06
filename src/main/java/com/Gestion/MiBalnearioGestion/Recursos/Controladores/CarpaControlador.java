@@ -28,7 +28,7 @@ public class CarpaControlador {
         return ResponseEntity.ok(carpaServicio.actualizarCarpa(carpaDTO, id));
     }
 
-    @GetMapping("{/publicId}")
+    @GetMapping("/{publicId}")
     public ResponseEntity<CarpaDTO> obtenerCarpaId(@PathVariable UUID id){
         return ResponseEntity.ok(carpaServicio.buscarPorId(id));
     }
