@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Common.Handlers;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExcepcionHandler {
 
@@ -32,7 +36,7 @@ public class GlobalExcepcionHandler {
     public ResponseEntity<ErrorResponse> handleGeneral(
                                             Exception ex,
                                             HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(500, "Error interno del servidor");
+        ErrorResponse error = new ErrorResponse(500, "Error interno del servidor" +ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.internalServerError().body(error);
     }
@@ -105,4 +109,34 @@ public class GlobalExcepcionHandler {
         return ResponseEntity.status(401).body(error);
     }
 
+    @ExceptionHandler(com.mercadopago.exceptions.MPApiException.class)
+    public ResponseEntity<ErrorResponse> handleMPApiException(com.mercadopago.exceptions.MPApiException ex, HttpServletRequest request) {
+        int status = ex.getStatusCode();
+        String detalleError = ex.getApiResponse() != null ? ex.getApiResponse().getContent() : ex.getMessage();
+        ErrorResponse error = new ErrorResponse(status, "Error en la API de Mercado Pago: " + detalleError);
+        error.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(com.mercadopago.exceptions.MPException.class)
+    public ResponseEntity<ErrorResponse> handleMPException(com.mercadopago.exceptions.MPException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(500, "Error de comunicación con el SDK de Mercado Pago: " + ex.getMessage());
+        error.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(500).body(error);
+    }
+
+    @ExceptionHandler(RecursoOcupadoException.class)
+    public ResponseEntity<ErrorResponse> handleRecursoOcupado(RecursoOcupadoException ex, HttpServletRequest  request) {
+        ErrorResponse errorResponse= new ErrorResponse(400, "Error de recurso ocupado" + ex.getMessage());
+       errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
+    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(400, ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(400).body(error);
+    }
 }

@@ -1,9 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Enum;
 
 public enum MetodoPago{
-    TAREJETA_CREDITO,
-    TARJETA_DEBITO,
+    TARJETA,
     TRANSFERENCIA,
-    EFECTIVO
+    EFECTIVO,
+    MERCADO_PAGO
 
 }

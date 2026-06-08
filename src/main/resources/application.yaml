@@ -19,9 +19,14 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 mp:
-  secret: ${MP_ACCESSTOKEN}
+  accesstoken: ${MP_ACCESS_TOKEN}
+  webhook: "https://culinary-bleep-woof.ngrok-free.dev/api/v1/public/webhooks/mercadopago"
+  backurl:
+    success: "http://localhost:5173/pago-exitoso"
+    failure: "http://localhost:5173/pago-fallido"
 
 mail:
     host: smtp.gmail.com
