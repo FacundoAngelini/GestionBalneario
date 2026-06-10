@@ -1,7 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import jakarta.transaction.Transactional;

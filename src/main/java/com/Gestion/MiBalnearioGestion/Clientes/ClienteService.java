@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.mappers.ClienteMapper;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class ClienteService implements IClienteService {
 
 
     @Transactional
-    public ClienteDTO crearCliente(ClienteDTO dto) {
+    public ClienteRequest crearCliente(ClienteRequest dto) {
 
 
         if (clienteRepository.findByDni(dto.getDni()).isPresent()) {
@@ -38,6 +39,8 @@ public class ClienteService implements IClienteService {
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
 
         ClienteEntity cliente = clienteMapper.convertToEntity(dto, ClienteEntity.class);
+        cliente.setPublicId(UUID.randomUUID());
+        cliente.setFecha_alta(LocalDate.now());
         cliente.setUsuario(usuarioGuardado);
         ClienteEntity guardado = clienteRepository.save(cliente);
         return clienteMapper.convertToDTO(guardado);
@@ -52,7 +55,7 @@ public class ClienteService implements IClienteService {
     }
 
     @Transactional
-    public ClienteDTO actualizarCliente(UUID IDpublico, ClienteDTO clienteUpdateDTO) {
+    public ClienteRequest actualizarCliente(UUID IDpublico, ClienteRequest clienteUpdateDTO) {
         ClienteEntity cliente = clienteRepository
                 .findByPublicId(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
@@ -62,14 +65,14 @@ public class ClienteService implements IClienteService {
         return clienteMapper.convertToDTO(clienteRepository.save(cliente));
     }
 
-    public ClienteDTO buscarPorIDpublico(UUID IDpublico) {
+    public ClienteRequest buscarPorIDpublico(UUID IDpublico) {
         return clienteRepository.
                 findByPublicId(IDpublico)
                 .map(clienteMapper::convertToDTO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró :" , IDpublico.toString()));
     }
 
-    public List<ClienteDTO> listarTodos() {
+    public List<ClienteRequest> listarTodos() {
         return clienteRepository.findAll().
                 stream().
                 map(clienteMapper::convertToDTO).

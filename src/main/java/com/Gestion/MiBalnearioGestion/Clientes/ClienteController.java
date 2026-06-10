@@ -1,9 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,25 +19,25 @@ public class ClienteController {
     private final IClienteService clienteService;
 
     @GetMapping //Response entity
-    public ResponseEntity<List<ClienteDTO>> listarTodos(){return new ResponseEntity<>(clienteService.listarTodos(),HttpStatus.OK);}
+    public ResponseEntity<List<ClienteRequest>> listarTodos(){return new ResponseEntity<>(clienteService.listarTodos(),HttpStatus.OK);}
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteDTO> buscarPorIdpublico(@PathVariable UUID IDpublico)
+    public ResponseEntity<ClienteRequest> buscarPorIdpublico(@PathVariable UUID IDpublico)
     {
-        return new ResponseEntity<ClienteDTO>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
+        return new ResponseEntity<ClienteRequest>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @PostMapping
-    public ResponseEntity<ClienteDTO> crearCliente (@Valid @RequestBody ClienteDTO clienteNuevo)
+    public ResponseEntity<ClienteRequest> crearCliente (@Valid @RequestBody ClienteRequest clienteNuevo)
     {
-        return new ResponseEntity<ClienteDTO>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
+        return new ResponseEntity<ClienteRequest>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO> actualizarCliente (@PathVariable UUID IDpublico, @Valid @RequestBody ClienteDTO clienteNuevo)
+    public ResponseEntity<ClienteRequest> actualizarCliente (@PathVariable UUID IDpublico, @Valid @RequestBody ClienteRequest clienteNuevo)
     {
-        return new ResponseEntity<ClienteDTO>(clienteService.actualizarCliente(IDpublico,clienteNuevo),HttpStatus.OK);
+        return new ResponseEntity<ClienteRequest>(clienteService.actualizarCliente(IDpublico,clienteNuevo),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
