@@ -17,7 +17,7 @@ public class ProductoMapper implements IMapper<ProductoEntity,ProductoDTO> {
     }
 
     @Override
-    public ProductoEntity convertToEntity(ProductoDTO productoDTO, Class<ProductoEntity> empleadoEntityClass) {
+    public ProductoEntity convertToEntity(ProductoDTO productoDTO, Class<ProductoEntity> entityClass) {
         return modelMapper.map(productoDTO, ProductoEntity.class);
     }
 

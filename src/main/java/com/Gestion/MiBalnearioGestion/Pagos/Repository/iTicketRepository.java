@@ -11,4 +11,6 @@ import java.util.UUID;
 @Repository
 public interface iTicketRepository extends JpaRepository<TicketEntity, Long> {
 
+    Optional<TicketEntity>findByPublicId(UUID publicId);
+    boolean existsByPublicId(UUID publicId);
 }

@@ -17,13 +17,9 @@ public class CocheraMapper implements IMapper <CocheraEntity, CocheraDTO> {
 
     @PostConstruct
     public void configureMapper() {
-        // 1. Evitamos que si un campo viene null en el DTO, te borre lo que ya habia en la BD
         modelMapper.getConfiguration().setSkipNullEnabled(true);
-
-        // 2. Le decimos explicitamente que cuando actualice una CanchaEntity,
-        // JAMÁS intente pisar el publicId heredado del Padre.
-        modelMapper.typeMap(CarpaDTO.class, CarpaEntity.class)
-                .addMappings(mapper -> mapper.skip(CarpaEntity::setPublicId));
+        modelMapper.typeMap(CocheraDTO.class, CocheraEntity.class)
+                .addMappings(mapper -> mapper.skip(CocheraEntity::setPublicId));
     }
 
     @Override

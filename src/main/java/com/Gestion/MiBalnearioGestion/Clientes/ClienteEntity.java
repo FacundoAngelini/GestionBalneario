@@ -1,9 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
-import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
+import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -56,4 +55,10 @@ public class ClienteEntity {
     @JoinColumn(name="usuario_id", nullable= false)
     private UsuarioEntity usuario;
 
+    @PrePersist
+    protected void onCreate() {
+        if (this.fecha_alta == null) { // cambiá fechaalta por el nombre exacto la variable
+            this.fecha_alta = LocalDate.now();
+        }
+    }
 }
