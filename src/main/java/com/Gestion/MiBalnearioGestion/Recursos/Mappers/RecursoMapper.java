@@ -1,8 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import lombok.RequiredArgsConstructor;
