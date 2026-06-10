@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.*;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.MesaDTO;

@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.*;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.PrecioRecursoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import jakarta.persistence.Column;

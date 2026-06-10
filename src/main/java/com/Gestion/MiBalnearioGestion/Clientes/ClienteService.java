@@ -2,6 +2,8 @@ package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
+import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
@@ -23,6 +25,7 @@ public class ClienteService implements IClienteService {
     private final UsuarioRepository usuarioRepository;
     private final ClienteMapper clienteMapper;
     private final UsuarioMapper usuarioMapper;
+    private final EmailService emailService;
 
 
     @Transactional
@@ -44,6 +47,7 @@ public class ClienteService implements IClienteService {
         cliente.setPublicId(UUID.randomUUID());
         cliente.setFecha_alta(LocalDate.now());
         cliente.setUsuario(usuarioGuardado);
+        emailService.BienvenidaCliente(dto);
         ClienteEntity guardado = clienteRepository.save(cliente);
         return clienteMapper.convertToResponseDTO(guardado);
     }
@@ -74,15 +78,15 @@ public class ClienteService implements IClienteService {
     }
 
     @Transactional(readOnly = true)
-    public ClienteDTO buscarPorIDpublico(UUID IDpublico) {
+    public ClienteResponse buscarPorIDpublico(UUID IDpublico) {
         return clienteRepository.
                 findByPublicId(IDpublico)
-                .map(clienteMapper::convertToDTO)
+                .map(clienteMapper::convertToResponseDTO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontro :" , IDpublico.toString()));
     }
 
     @Transactional(readOnly = true)
-    public List<ClienteDTO> listarTodos() {
+    public List<ClienteResponse> listarTodos() {
         return clienteRepository.findAll().
                 stream().
                 map(clienteMapper::convertToResponseDTO).

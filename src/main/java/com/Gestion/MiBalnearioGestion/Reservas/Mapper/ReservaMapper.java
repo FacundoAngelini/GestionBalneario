@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Reservas.Mapper;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.*;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;

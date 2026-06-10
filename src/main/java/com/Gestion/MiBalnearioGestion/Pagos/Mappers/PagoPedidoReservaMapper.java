@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Mappers;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.*;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoMesaDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoReservaDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoMesaEntity;

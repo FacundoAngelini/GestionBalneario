@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.*;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.PiletaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.SombrillaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PiletaEntity;
