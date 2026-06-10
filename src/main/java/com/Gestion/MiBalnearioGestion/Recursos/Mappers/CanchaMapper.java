@@ -1,12 +1,11 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CanchaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component

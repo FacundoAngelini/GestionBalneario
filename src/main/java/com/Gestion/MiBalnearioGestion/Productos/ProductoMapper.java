@@ -1,8 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
