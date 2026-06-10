@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Entity;
 
-import com.Gestion.MiBalnearioGestion.Recursos.Enum.Etamanio_sombrilla;
+import com.Gestion.MiBalnearioGestion.Recursos.Enum.EtamanioSombrilla;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -19,5 +19,5 @@ public class SombrillaEntity extends RecursoEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name="tamanio_carpa", nullable = false)
-    private Etamanio_sombrilla tamanio;
+    private EtamanioSombrilla tamanio;
 }

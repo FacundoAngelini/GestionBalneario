@@ -36,6 +36,6 @@ public class TicketEntity {
     private PagoEntity pagoEntity;
 
     @ManyToOne
-    @JoinColumn(name="empleado_id", nullable = false)
+    @JoinColumn(name="empleado_id")
     private EmpleadoEntity empleado;
 }

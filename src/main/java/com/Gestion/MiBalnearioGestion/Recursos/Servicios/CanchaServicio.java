@@ -33,7 +33,7 @@ public class CanchaServicio implements ICanchaServicio {
             throw new EntidadExistenteException("Ya existe una cancha con esta id", "CanchaEntity");
         }
 
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(canchaDTO.getPublicID())
+        SectorEntity sectorDb = sectorRepositorio.findByPublicId(canchaDTO.getSectorPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
         CanchaEntity canchaEntity = canchaMapper.convertToEntity(canchaDTO, CanchaEntity.class);
@@ -60,7 +60,7 @@ public class CanchaServicio implements ICanchaServicio {
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una cancha con esta id", "CanchaEntity"));
 
 
-        if(!cancha.getSector().getPublicId().equals(canchaDTO.getPublicID())){
+        if(!cancha.getSector().getPublicId().equals(canchaDTO.getSectorPublicId())){
             SectorEntity nuevoSector= sectorRepositorio.findByPublicId(canchaDTO.getSectorPublicId())
                     .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
             cancha.setSector(nuevoSector);

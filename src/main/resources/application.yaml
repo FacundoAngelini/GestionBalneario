@@ -19,3 +19,23 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+mp:
+  accesstoken: ${MP_ACCESS_TOKEN}
+  webhook: "https://culinary-bleep-woof.ngrok-free.dev/api/v1/public/webhooks/mercadopago"
+  backurl:
+    success: "http://localhost:5173/pago-exitoso"
+    failure: "http://localhost:5173/pago-fallido"
+
+mail:
+    host: smtp.gmail.com
+    port: 587
+    username: balnearioapiutn@gmail.com
+    password: ${GMAIL_APP}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

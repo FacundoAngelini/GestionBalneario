@@ -33,7 +33,10 @@ public class CarpaServicio implements ICarpaServicio {
         if(carpaRepositorio.findByPublicId(carpa.getPublicID()).isPresent()){
             throw new EntidadExistenteException("Ya existe na carpa con este id", "CarpaEntity");
         }
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(carpa.getPublicID())
+        if(carpaRepositorio.findByNumero(carpa.getNumero()).isPresent()){
+            throw new EntidadExistenteException("Ya existe na carpa con este numero", "CarpaEntity");
+        }
+        SectorEntity sectorDb = sectorRepositorio.findByPublicId(carpa.getSectorPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
         CarpaEntity carpaEntity = carpaMapper.convertToEntity(carpa, CarpaEntity.class);
@@ -50,7 +53,7 @@ public class CarpaServicio implements ICarpaServicio {
                 .findByPublicId(id)
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro la carpa con el id ingresado", "CarpaEntity"));
 
-        if(!carpaEntity.getSector().getPublicId().equals(carpa.getPublicID())){
+        if(!carpaEntity.getSector().getPublicId().equals(carpa.getSectorPublicId())){
             SectorEntity nuevoSector= sectorRepositorio.findByPublicId(carpa.getSectorPublicId())
                     .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
             carpaEntity.setSector(nuevoSector);

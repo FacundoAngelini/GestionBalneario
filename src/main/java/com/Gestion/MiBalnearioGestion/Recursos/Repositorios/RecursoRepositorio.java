@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -16,10 +17,13 @@ import java.util.UUID;
 public interface RecursoRepositorio extends JpaRepository<RecursoEntity, Long>, JpaSpecificationExecutor<RecursoEntity> {
     Optional<RecursoEntity> findByPublicId(UUID publicId);
 
-    long countByEsReservableTrue(); //cuenta la cantidad de reservables
+    long countByEsReservableTrue();
 
     @Modifying
     @Query("UPDATE RecursoEntity r SET r.esReservable = false")
     void desactivarTodoElInventario();
+
+    @Query("SELECT r FROM RecursoEntity r LEFT JOIN FETCH r.precioRecurso WHERE r.publicId = :publicId")
+    Optional<RecursoEntity> findByPublicIdWithPrecios(@Param("publicId") UUID publicId);
 }
 

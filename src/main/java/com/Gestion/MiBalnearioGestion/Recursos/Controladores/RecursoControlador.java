@@ -14,9 +14,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 public class RecursoControlador {
-    private final IRecursoServicio  recursoServicio;
+    private final IRecursoServicio recursoServicio;
 
-    @GetMapping("/{publicId}")
+    @GetMapping("/{id}")
     public ResponseEntity<RecursoDTO> BuscarRecursoPorID(@PathVariable UUID id){
         return ResponseEntity.ok(recursoServicio.buscarPorPublicId(id));
     }
@@ -28,25 +28,25 @@ public class RecursoControlador {
         return ResponseEntity.ok(recursoServicio.buscarTodos(nombreIgual, nombreContiene, reservableVerdad));
     }
 
-    @PutMapping("/{desactivarId}")
+    @PutMapping("/{id}")
     public ResponseEntity<RecursoDTO> desactivar(@PathVariable UUID id){
         recursoServicio.desactivarRecurso(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{desactivar-todos}")
+    @PutMapping("/desactivar-todos")
     public ResponseEntity<RecursoDTO> desactivarTodosRecursos(){
         recursoServicio.desactivarTodoElInventario();
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{borrar-todos}")
+    @DeleteMapping("/borrar-todos")
     public ResponseEntity<RecursoDTO> borrarTodos(){
         recursoServicio.borrarTodoElInventario();
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{borrar-id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<RecursoDTO> borrarRecurso(@PathVariable UUID id){
         recursoServicio.borrarRecurso(id);
         return ResponseEntity.noContent().build();
