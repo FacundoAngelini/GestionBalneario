@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Enum;
 
-public enum Etamanio_sombrilla {
+public enum EtamanioSombrilla {
     CHICO,
     MEDIANO,
     GRANDE

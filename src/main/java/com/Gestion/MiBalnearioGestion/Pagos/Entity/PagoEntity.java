@@ -19,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder
 public class PagoEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,6 +47,5 @@ public class PagoEntity {
 
     @OneToOne(mappedBy = "pagoEntity")
     private TicketEntity ticket;
-
 
 }

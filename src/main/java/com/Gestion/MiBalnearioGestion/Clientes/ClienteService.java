@@ -6,9 +6,10 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaExcep
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,11 +30,12 @@ public class ClienteService implements IClienteService {
 
 
         if (clienteRepository.findByDni(dto.getDni()).isPresent()) {
-            throw new RuntimeException("Ya existe un cliente con ese DNI");
+            throw new EntidadExistenteException("Ya existe un cliente con ese DNI","ClienteEntity");
         }
         if (clienteRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Ya existe un cliente con ese email"); // no deberia ser runtime
+            throw new EntidadExistenteException("Ya existe un cliente registrado con ese email", "ClienteEntity");
         }
+
 
         UsuarioEntity usuario = usuarioMapper.convertToEntity(dto.getUsuario(), UsuarioEntity.class);
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
@@ -46,33 +48,41 @@ public class ClienteService implements IClienteService {
         return clienteMapper.convertToResponseDTO(guardado);
     }
 
-    public void borrarCliente(UUID IDpublico)
-    {
-        ClienteEntity buscado = clienteRepository.
-                findByPublicId(IDpublico)
-                .orElseThrow(()-> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
+    @Transactional
+    public void borrarCliente(UUID IDpublico) {
+        ClienteEntity buscado = clienteRepository.findByPublicId(IDpublico)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
+
+        UsuarioEntity usuarioAsociado = buscado.getUsuario();
+
         clienteRepository.delete(buscado);
+
+        if (usuarioAsociado != null) {
+            usuarioRepository.delete(usuarioAsociado);
+        }
     }
 
     @Transactional
     public ClienteResponse actualizarCliente(UUID IDpublico, ClienteRequest clienteUpdateDTO) {
         ClienteEntity cliente = clienteRepository
                 .findByPublicId(IDpublico)
-                .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró : ", IDpublico.toString()));
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontro : ", IDpublico.toString()));
 
         clienteMapper.updateEntityFromDTO(clienteUpdateDTO, cliente);
 
         return clienteMapper.convertToResponseDTO(clienteRepository.save(cliente));
     }
 
-    public ClienteResponse buscarPorIDpublico(UUID IDpublico) {
+    @Transactional(readOnly = true)
+    public ClienteDTO buscarPorIDpublico(UUID IDpublico) {
         return clienteRepository.
                 findByPublicId(IDpublico)
-                .map(clienteMapper::convertToResponseDTO)
-                .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontró :" , IDpublico.toString()));
+                .map(clienteMapper::convertToDTO)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no se encontro :" , IDpublico.toString()));
     }
 
-    public List<ClienteResponse> listarTodos() {
+    @Transactional(readOnly = true)
+    public List<ClienteDTO> listarTodos() {
         return clienteRepository.findAll().
                 stream().
                 map(clienteMapper::convertToResponseDTO).

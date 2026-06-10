@@ -15,5 +15,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class CocheraEntity extends RecursoEntity {
     @Column(name="numero_cochera", unique=true, nullable = false)
-    private int numero_cochera;
+    private int numeroCochera;
 }

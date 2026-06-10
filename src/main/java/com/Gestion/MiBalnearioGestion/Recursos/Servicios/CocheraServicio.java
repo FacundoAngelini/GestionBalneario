@@ -8,26 +8,34 @@ import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CocheraEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.CocheraMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.CocheraRepositorio;
+import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.ICocheraServicio;
+import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.CocheraSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CocheraServicio {
+public class CocheraServicio implements ICocheraServicio {
     private final CocheraRepositorio cocheraRepositorio;
     private final SectorRepositorio sectorRepositorio;
     private final CocheraMapper cocheraMapper;
 
     @Transactional
+    @Override
     public CocheraDTO crearCochera(CocheraDTO dto) {
         if(cocheraRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
             throw new EntidadExistenteException("Ya existe una cochera con este id", "CocheraEntity");
         }
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(dto.getPublicID())
+        if(cocheraRepositorio.findByNumeroCochera(dto.getNumero_cochera()).isPresent()){
+            throw new EntidadExistenteException("Ya existe una cochera con este numero", "CocheraEntity");
+        }
+        SectorEntity sectorDb = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
         CocheraEntity cochera = cocheraMapper.convertToEntity(dto, CocheraEntity.class);
@@ -38,6 +46,7 @@ public class CocheraServicio {
     }
 
     @Transactional
+    @Override
     public CocheraDTO actualizarCochera(UUID id, CocheraDTO dto) {
         CocheraEntity cochera = cocheraRepositorio
                 .findByPublicId(id)
@@ -51,6 +60,36 @@ public class CocheraServicio {
         }
         cocheraMapper.updateToEntityFromDTO(dto,cochera);
         return cocheraMapper.convertToDTO(cochera);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CocheraDTO buscarCochera(UUID id) {
+        CocheraEntity cochera = cocheraRepositorio
+                .findByPublicId(id)
+                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una cochera con esta id", "CocheraEntity"));
+        return cocheraMapper.convertToDTO(cochera);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CocheraDTO> listarCocheras(Integer cocheraIgual,
+                                           Integer cocheraMenor,
+                                           Integer cocheraMayor) {
+
+        PredicateSpecification<CocheraEntity> spec=
+                PredicateSpecification.allOf(
+                        CocheraSpecification.cocherIgual(cocheraIgual),
+                        CocheraSpecification.cocherMenor(cocheraMenor),
+                        CocheraSpecification.cocheraMayor(cocheraMayor)
+                );
+
+        return cocheraRepositorio
+                .findAll(spec)
+                .stream()
+                .map(cocheraMapper::convertToDTO)
+                .toList();
+
     }
 
 

@@ -1,9 +1,10 @@
-package com.Gestion.MiBalnearioGestion.Reservas;
+package com.Gestion.MiBalnearioGestion.Reservas.Entity;
 
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -45,22 +46,29 @@ public class ReservaEntity {
     @Column(name="monto_total", nullable = false)
     private double montoTotal;
 
+    @Column(name = "disponible_desde")
+    private LocalDate disponibleDesde;
+
+    @Column(name = "disponible_hasta")
+    private LocalDate disponibleHasta;
+
     @ManyToOne
-    @JoinColumn(name="cliente_id", unique = true, nullable = false)
+    @JoinColumn(name="cliente_id", nullable = false)
     private ClienteEntity cliente;
 
     @ManyToMany
     @JoinTable(
-            name="reserva_recurso",// tabla intermeedia
+            name="reserva_recurso",
             joinColumns = @JoinColumn (name="reserva_id"),
             inverseJoinColumns = @JoinColumn(name="recurso_id")
     )
-    private List<RecursoEntity> recursos=new ArrayList<>();
+    @JsonManagedReference
+    private List<RecursoEntity> recursos = new ArrayList<>();
 
     @OneToMany(mappedBy = "reserva")
     private List<PedidoReservaEntity> pedidoReserva;
 
     @OneToOne(mappedBy = "reserva")
+    @JsonManagedReference
     private PagoReservaEntity pagosReservaaa;
-
 }

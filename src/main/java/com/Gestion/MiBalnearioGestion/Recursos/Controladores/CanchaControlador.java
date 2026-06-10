@@ -24,7 +24,7 @@ public class CanchaControlador {
         return new ResponseEntity<>(canchaServicio.crearCancha(cancha),HttpStatus.CREATED);
     }
 
-    @PutMapping("/{publicId}")
+    @PutMapping("/{id}")
     public ResponseEntity<CanchaDTO> actualizarCancha(@PathVariable UUID id, @Valid @RequestBody CanchaDTO cancha) {
         return ResponseEntity.ok(canchaServicio.actualizarCancha(id, cancha));
     }

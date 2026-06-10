@@ -60,6 +60,7 @@ public class RecursoServicio implements IRecursoServicio {
         }
         recursoRepositorio.deleteAll();
     }
+    @Transactional(readOnly = true)
     @Override
     public List<RecursoDTO> buscarTodos(String nombreIgual,
                                         String nombreContiene,
