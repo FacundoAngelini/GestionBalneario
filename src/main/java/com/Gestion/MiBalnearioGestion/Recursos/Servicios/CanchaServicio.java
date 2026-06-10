@@ -34,7 +34,7 @@ public class CanchaServicio implements ICanchaServicio {
         }
 
         SectorEntity sectorDb = sectorRepositorio.findByPublicId(canchaDTO.getPublicID())
-                .orElseThrow(() -> new EntidadExistenteException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
+                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
         CanchaEntity canchaEntity = canchaMapper.convertToEntity(canchaDTO, CanchaEntity.class);
         canchaEntity.setEsReservable(true);
