@@ -1,19 +1,20 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface IClienteService {
 
-    ClienteRequest crearCliente(ClienteRequest dto);
+    ClienteResponse crearCliente(ClienteRequest dto);
 
     public void borrarCliente(UUID IDpublico);
 
-    public ClienteRequest actualizarCliente(UUID IDpublico, ClienteRequest clienteUpdateDTO);
+    public ClienteResponse actualizarCliente(UUID IDpublico, ClienteRequest clienteUpdateDTO);
 
-    public ClienteRequest buscarPorIDpublico(UUID IDpublico);
+    public ClienteResponse buscarPorIDpublico(UUID IDpublico);
 
-    public List<ClienteRequest> listarTodos();
+    public List<ClienteResponse> listarTodos();
 }

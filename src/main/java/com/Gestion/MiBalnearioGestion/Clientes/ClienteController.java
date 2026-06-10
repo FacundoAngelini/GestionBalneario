@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,25 +20,25 @@ public class ClienteController {
     private final IClienteService clienteService;
 
     @GetMapping //Response entity
-    public ResponseEntity<List<ClienteRequest>> listarTodos(){return new ResponseEntity<>(clienteService.listarTodos(),HttpStatus.OK);}
+    public ResponseEntity<List<ClienteResponse>> listarTodos(){return new ResponseEntity<>(clienteService.listarTodos(),HttpStatus.OK);}
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteRequest> buscarPorIdpublico(@PathVariable UUID IDpublico)
+    public ResponseEntity<ClienteResponse> buscarPorIdpublico(@PathVariable UUID IDpublico)
     {
-        return new ResponseEntity<ClienteRequest>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
+        return new ResponseEntity<ClienteResponse>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @PostMapping
-    public ResponseEntity<ClienteRequest> crearCliente (@Valid @RequestBody ClienteRequest clienteNuevo)
+    public ResponseEntity<ClienteResponse> crearCliente (@Valid @RequestBody ClienteRequest clienteNuevo)
     {
-        return new ResponseEntity<ClienteRequest>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
+        return new ResponseEntity<ClienteResponse>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteRequest> actualizarCliente (@PathVariable UUID IDpublico, @Valid @RequestBody ClienteRequest clienteNuevo)
+    public ResponseEntity<ClienteResponse> actualizarCliente (@PathVariable UUID IDpublico, @Valid @RequestBody ClienteRequest clienteNuevo)
     {
-        return new ResponseEntity<ClienteRequest>(clienteService.actualizarCliente(IDpublico,clienteNuevo),HttpStatus.OK);
+        return new ResponseEntity<ClienteResponse>(clienteService.actualizarCliente(IDpublico,clienteNuevo),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

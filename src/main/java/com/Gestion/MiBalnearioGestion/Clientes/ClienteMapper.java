@@ -1,14 +1,15 @@
-package com.Gestion.MiBalnearioGestion.Clientes.mappers;
+package com.Gestion.MiBalnearioGestion.Clientes;
 
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapperDual;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
-public class ClienteMapper implements IMapper<ClienteEntity, ClienteRequest> {
+public class ClienteMapper implements IMapperDual<ClienteEntity, ClienteRequest, ClienteResponse> {
 
         private final ModelMapper modelMapper;
 
@@ -23,4 +24,9 @@ public class ClienteMapper implements IMapper<ClienteEntity, ClienteRequest> {
         public void updateEntityFromDTO(ClienteRequest dto, ClienteEntity entity) {
         modelMapper.map(dto, entity);
     }
+
+        @Override
+        public ClienteResponse convertToResponseDTO(ClienteEntity entity) {
+                return modelMapper.map(entity, ClienteResponse.class);
+        }
 }
