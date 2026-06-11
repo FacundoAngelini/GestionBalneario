@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Servicio;
 
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 
 import java.util.List;
@@ -8,10 +9,10 @@ import java.util.UUID;
 
 public interface IEmpleadoService {
 
-    EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado);
+    EmpleadoResponseDTO crearEmpleado (EmpleadoDTO dtoEmpleado);
     void borrarEmpleado(UUID IDpublico);
-    EmpleadoDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto);
-    List<EmpleadoDTO> buscarTodos(Integer dniIgual,
+    EmpleadoResponseDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto);
+    List<EmpleadoResponseDTO> buscarTodos(Integer dniIgual,
                                   Integer dniContiene,
                                   String nombreIgual,
                                   String nombreContiene,
@@ -39,5 +40,5 @@ public interface IEmpleadoService {
                                   EEstadoEmpleado estadoIgual,
                                   EEstadoEmpleado estadoActivo,
                                   EEstadoEmpleado estadoInactivo);
-    EmpleadoDTO buscarPorIDpublico(UUID IDpublico);
+    EmpleadoResponseDTO buscarPorIDpublico(UUID IDpublico);
 }

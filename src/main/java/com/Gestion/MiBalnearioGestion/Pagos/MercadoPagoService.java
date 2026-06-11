@@ -53,8 +53,9 @@ public class MercadoPagoService {
             body.put("items", items);
             body.put("back_urls", backUrls);
             body.put("external_reference", publicIdPago.toString());
-            body.put("notification_url", notificationUrl);
-            body.put("auto_return", "approved");
+           /** agregado, fijarse
+            *  body.put("notification_url", notificationUrl);
+            body.put("auto_return", "approved");*/
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
             ResponseEntity<Map> response = clienteHttp.postForEntity(url, entity, Map.class);

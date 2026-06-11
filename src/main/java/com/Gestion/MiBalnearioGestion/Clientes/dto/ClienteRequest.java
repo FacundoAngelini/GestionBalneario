@@ -1,6 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
+import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.AuthRequest;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,5 +34,9 @@ public class ClienteRequest {
     private String telefono;
     @NotNull
     private UsuarioDTO usuario;
+
+    @Valid
+    @NotNull
+    private AuthRequest credencial;
 
 }

@@ -7,6 +7,8 @@ import com.Gestion.MiBalnearioGestion.Auth.NewAccountRequest;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
@@ -21,8 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.management.relation.Role;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +38,7 @@ public class AuthService {
     private final UsuarioMapper usuarioMapper;
     private final JwtService jwtService;
     private final RolesRepositorio rolesRepositorio;
+    private final ClientesRepository clientesRepository;
 
     @Transactional
     public AuthResponse authenticate(AuthRequest input) {
@@ -56,39 +61,63 @@ public class AuthService {
     @Transactional
     public UsuarioDTO register(NewAccountRequest request) {
 
+        // 1. Validar que no exista el nombre de usuario
         if (credentialsRepository.findByNombreUsuario(request.getNombreUsuario()).isPresent()) {
             throw new EntidadExistenteException("El nombre de usuario ya existe", "CredencialEntity");
         }
 
-        UsuarioEntity nuevoUsuario = new UsuarioEntity();
-        nuevoUsuario.setNombreUsuario(request.getNombreUsuario());
-        nuevoUsuario.setContrasenia(passwordEncoder.encode(request.getContrasenia()));
-        nuevoUsuario = usuarioRepository.save(nuevoUsuario);
+        // 2. Validar que no exista un cliente con el mismo DNI o Email (Evita duplicados de perfil)
+        if (clientesRepository.findByDni(request.getDni()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe un cliente con ese DNI", "ClienteEntity");
+        }
+        if (clientesRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe un cliente con ese email", "ClienteEntity");
+        }
 
-        // busca el rol cliente en la bdd
+        // 3. Crear la Identidad Base en memoria
+        UsuarioEntity nuevoUsuario = new UsuarioEntity();
+
+        // 4. Buscar el Rol de Cliente
         RolesEntity rolCliente = rolesRepositorio.findByRole(Roles.ROLE_CLIENTE)
                 .orElseThrow(() -> new RuntimeException("Error: El rol ROLE_CLIENTE no existe en la base de datos."));
 
-        Set<RolesEntity> rolesPorDefecto = new HashSet<>();
-        rolesPorDefecto.add(rolCliente); //metemos el rol en el set
-
-        // se crea la credencial con el set que asignamos
+        // 5. Construir la Credencial
         CredencialEntity nuevaCredencial = CredencialEntity.builder()
                 .nombreUsuario(request.getNombreUsuario())
-                .contrasenia(passwordEncoder.encode(request.getContrasenia()))
+                .contrasenia(passwordEncoder.encode(request.getContrasenia())) // Encriptada para Spring Security
                 .enabled(true)
                 .usuario(nuevoUsuario)
-                .roles(rolesPorDefecto)
+                .roles(Set.of(rolCliente))
                 .build();
 
         String tokenInicial = jwtService.generateRefreshToken(nuevaCredencial);
         nuevaCredencial.setRefreshToken(tokenInicial);
 
-        credentialsRepository.save(nuevaCredencial);
+        // 6. Construir el Perfil del Cliente asignándole su propio UUID
+        ClienteEntity nuevoCliente = ClienteEntity.builder()
+                .publicId(UUID.randomUUID()) // Este es el UUID de negocio del Cliente
+                .nombre(request.getNombre())
+                .apellido(request.getApellido())
+                .dni(request.getDni())
+                .email(request.getEmail())
+                .telefono(request.getTelefono())
+                .fecha_alta(LocalDate.now())
+                .estado(true)
+                .usuario(nuevoUsuario) // Vinculado a la identidad base
+                .build();
 
+        // 7. Sincronizar la relación bidireccional en memoria (Vital para el Mapper)
+        nuevoUsuario.setCredencial(nuevaCredencial);
+        nuevoUsuario.setCliente(nuevoCliente);
+
+        // 8. Persistir de forma ordenada en la base de datos
+        usuarioRepository.save(nuevoUsuario);
+        credentialsRepository.save(nuevaCredencial);
+        clientesRepository.save(nuevoCliente);
+
+        // 9. Mapear y retornar el DTO que contiene el "clienteId"
         return usuarioMapper.convertToDTO(nuevoUsuario);
     }
-
     @Transactional
     public AuthResponse refreshAccessToken(String refreshToken) {
         String username = jwtService.extractUsername(refreshToken);

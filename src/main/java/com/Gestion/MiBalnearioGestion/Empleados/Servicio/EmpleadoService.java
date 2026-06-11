@@ -8,6 +8,7 @@ import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
@@ -22,6 +23,9 @@ import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,73 +52,68 @@ public class EmpleadoService implements IEmpleadoService {
 
     @Transactional
     @Override
-    public EmpleadoDTO crearEmpleado(EmpleadoDTO dtoEmpleado) {
-        if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent()){
-            throw new EntidadExistenteException("Ya existe un empleado con ese DNI", "EmpleadoEntity");
-        }
-        if (empleadosRepositorio.findByEmail(dtoEmpleado.getEmail()).isPresent()) {
-            throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
-        }
-        if(empleadosRepositorio.findByCuit(dtoEmpleado.getCuit()).isPresent()){
-            throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
-        }
+    public EmpleadoResponseDTO crearEmpleado(EmpleadoDTO dtoEmpleado) {
 
-        boolean esGerenteLogueado = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getAuthorities()
-                .stream()
-                .map(org.springframework.security.core.GrantedAuthority::getAuthority)
+        // validaciones de duplicados
+        if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent())
+            throw new EntidadExistenteException("Ya existe un empleado con ese DNI", "EmpleadoEntity");
+        if (empleadosRepositorio.findByEmail(dtoEmpleado.getEmail()).isPresent())
+            throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
+        if (empleadosRepositorio.findByCuit(dtoEmpleado.getCuit()).isPresent())
+            throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
+
+        // validación de username duplicado
+        if (credentialsRepository.findByNombreUsuario(dtoEmpleado.getCredencial().nombreUsuario()).isPresent())
+            throw new EntidadExistenteException("Ya existe ese nombre de usuario", "CredencialEntity");
+
+        // validación de rol
+        boolean esGerente = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
                 .anyMatch(auth -> auth.toUpperCase().contains("GERENTE"));
 
         String rolSolicitado = dtoEmpleado.getRolSolicitado().toUpperCase();
+        if (esGerente && (rolSolicitado.contains("GERENTE") || rolSolicitado.contains("ADMIN")))
+            throw new AccessDeniedException("Un Gerente solo puede crear empleados de rango menor");
 
-        if (esGerenteLogueado) {
-            if (rolSolicitado.contains("GERENTE") || rolSolicitado.contains("ADMIN")) {
-                throw new org.springframework.security.access.AccessDeniedException("Un Gerente solo puede crear empleados de rango menor");
-            }
-        }
+        // UsuarioEntity: solo publicId, sin datos de auth
+        UsuarioEntity nuevoUsuario = new UsuarioEntity();
+        nuevoUsuario = usuarioRepository.save(nuevoUsuario);
 
-        UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
-        usuario.setContrasenia(passwordEncoder.encode(usuario.getContrasenia()));
-        UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
-
+        // roles de Spring Security
         Roles enumRol = Roles.valueOf(rolSolicitado);
         RolesEntity rolDb = rolesRepository.findByRole(enumRol)
-                .orElseThrow(() -> new RuntimeException("El rol solicitado no existe en la base de datos."));
+                .orElseThrow(() -> new RuntimeException("El rol no existe en la base de datos."));
 
-        Set<RolesEntity> rolesSet = new HashSet<>();
-        rolesSet.add(rolDb);
-
+        // CredencialEntity: todo lo de auth viene de dtoEmpleado.getCredencial()
         CredencialEntity nuevaCredencial = CredencialEntity.builder()
-                .nombreUsuario(usuarioGuardado.getNombreUsuario())
-                .contrasenia(usuarioGuardado.getContrasenia())
+                .nombreUsuario(dtoEmpleado.getCredencial().nombreUsuario())
+                .contrasenia(passwordEncoder.encode(dtoEmpleado.getCredencial().contrasenia()))
                 .enabled(true)
-                .usuario(usuarioGuardado)
-                .roles(rolesSet)
+                .usuario(nuevoUsuario)
+                .roles(Set.of(rolDb))
                 .build();
-
         nuevaCredencial.setRefreshToken(jwtService.generateRefreshToken(nuevaCredencial));
         credentialsRepository.save(nuevaCredencial);
 
-        EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado, EmpleadoEntity.class);
-        empleado.setUsuario(usuarioGuardado);
+        // EmpleadoEntity
+        EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado);
+        empleado.setUsuario(nuevoUsuario);
         empleado.setEstadoEmpleado(dtoEmpleado.getEstado());
 
         if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getId() != null) {
-            SectorEntity sectorDb = sectorRepository.findById(dtoEmpleado.getSector().getId())
-                    .orElseThrow(() -> new RuntimeException("El Sector con ID " + dtoEmpleado.getSector().getId() + " no existe."));
-            empleado.setSector(sectorDb);
+            SectorEntity sector = sectorRepository.findById(dtoEmpleado.getSector().getId())
+                    .orElseThrow(() -> new RuntimeException("El sector no existe."));
+            empleado.setSector(sector);
         }
 
         if (dtoEmpleado.getRol() != null && dtoEmpleado.getRol().getId() != null) {
-            RolEntity rolDbNegocio = rolRepository.findById(dtoEmpleado.getRol().getId())
-                    .orElseThrow(() -> new RuntimeException("El Rol de negocio con ID " + dtoEmpleado.getRol().getId() + " no existe."));
-            empleado.setRol(rolDbNegocio);
+            RolEntity rolNegocio = rolRepository.findById(dtoEmpleado.getRol().getId())
+                    .orElseThrow(() -> new RuntimeException("El rol de negocio no existe."));
+            empleado.setRol(rolNegocio);
         }
 
-        EmpleadoEntity guardado = empleadosRepositorio.save(empleado);
-
-        return empleadoMapper.convertToDTO(guardado);
+        return empleadoMapper.convertToResponseDTO(empleadosRepositorio.save(empleado));
     }
     @Transactional
     @Override
@@ -129,27 +128,27 @@ public class EmpleadoService implements IEmpleadoService {
 
     @Transactional
     @Override
-    public EmpleadoDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto) {
+    public EmpleadoResponseDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto) {
         EmpleadoEntity empleado = empleadosRepositorio
                 .findByPublicId(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
 
         empleadoMapper.updateEntityFromDTO(empleadoDto, empleado);
 
-        return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
+        return empleadoMapper.convertToResponseDTO(empleadosRepositorio.save(empleado));
     }
 
 
     @Override
-    public EmpleadoDTO buscarPorIDpublico(UUID IDpublico) {
+    public EmpleadoResponseDTO buscarPorIDpublico(UUID IDpublico) {
         return empleadosRepositorio.
                 findByPublicId(IDpublico)
-                .map(empleadoMapper::convertToDTO)
+                .map(empleadoMapper::convertToResponseDTO)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
     }
 
     @Override
-    public List<EmpleadoDTO> buscarTodos(Integer dniIgual,
+    public List<EmpleadoResponseDTO> buscarTodos(Integer dniIgual,
                                          Integer dniContiene,
                                          String nombreIgual,
                                          String nombreContiene,
@@ -213,7 +212,7 @@ public class EmpleadoService implements IEmpleadoService {
 
         return empleadosRepositorio.findAll(spec)
                 .stream()
-                .map(empleadoMapper::convertToDTO)
+                .map(empleadoMapper::convertToResponseDTO)
                 .toList();
     }
 

@@ -11,6 +11,7 @@ import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
@@ -101,8 +102,6 @@ public class DataLoader implements CommandLineRunner {
         // 4. ADMINISTRADOR SUPREMO
         if (!credentialsRepository.existsByNombreUsuario("admin_supremo")) {
             UsuarioEntity usuarioAdmin = new UsuarioEntity();
-            usuarioAdmin.setNombreUsuario("admin_supremo");
-            usuarioAdmin.setContrasenia(passwordEncoder.encode("admin123"));
             usuarioAdmin = usuarioRepository.save(usuarioAdmin);
 
             RolesEntity rolAdminDb = rolesRepository.findByRole(Roles.ROLE_ADMIN)
@@ -120,7 +119,7 @@ public class DataLoader implements CommandLineRunner {
 
             CredencialEntity credencialAdmin = CredencialEntity.builder()
                     .nombreUsuario("admin_supremo")
-                    .contrasenia(usuarioAdmin.getContrasenia())
+                    .contrasenia(passwordEncoder.encode("admin123")) // <-- ¡ACÁ! Encriptala igual que en el servicio
                     .enabled(true)
                     .usuario(usuarioAdmin)
                     .roles(roles)
@@ -130,7 +129,6 @@ public class DataLoader implements CommandLineRunner {
             credentialsRepository.save(credencialAdmin);
             System.out.println("Administrador supremo creado con éxito: admin_supremo");
         }
-
         // 5. CONFIGURACIÓN GLOBAL DE TEMPORADA (ADMIN)
         if (configTemporadaRepository.count() == 0) {
             configTemporadaRepository.save(ConfiguracionTemporadaEntity.builder()
@@ -144,9 +142,31 @@ public class DataLoader implements CommandLineRunner {
         UUID clienteIdPrueba = UUID.fromString("11111111-1111-1111-1111-111111111111");
         if (!clienteRepository.findByPublicId(clienteIdPrueba).isPresent()) {
             UsuarioEntity usuarioCliente = new UsuarioEntity();
-            usuarioCliente.setNombreUsuario("juan_cliente_prueba");
-            usuarioCliente.setContrasenia(passwordEncoder.encode("cliente123"));
             usuarioCliente = usuarioRepository.save(usuarioCliente);
+
+            RolesEntity rolCliente = rolesRepository.findByRole(Roles.ROLE_CLIENTE)
+                    .orElseThrow(() -> new RuntimeException("Error: El rol Cliente no existe"));
+
+            Set<RolesEntity> roles = new HashSet<>();
+            roles.add(rolCliente);
+
+            CredencialEntity credencialPrevia = CredencialEntity.builder()
+                    .nombreUsuario("juan_cliente")
+                    .roles(roles)
+                    .build();
+
+            String tokenInicial = jwtService.generateRefreshToken(credencialPrevia);
+
+            CredencialEntity credencialCliente = CredencialEntity.builder()
+                    .nombreUsuario("juan_cliente")
+                    .contrasenia(passwordEncoder.encode("juan123")) // <-- ¡ACÁ TAMBIÉN! Encriptada para la prueba
+                    .enabled(true)
+                    .usuario(usuarioCliente)
+                    .roles(roles)
+                    .refreshToken(tokenInicial)
+                    .build();
+
+            credentialsRepository.save(credencialCliente);
 
             ClienteEntity clientePrueba = ClienteEntity.builder()
                     .publicId(clienteIdPrueba)
@@ -160,8 +180,7 @@ public class DataLoader implements CommandLineRunner {
                     .usuario(usuarioCliente)
                     .build();
 
-            ClienteEntity clienteGuardado= clienteRepository.save(clientePrueba);
-            System.out.println("UUID REAL DEL CLIENTE: " + clienteGuardado.getPublicId());
+            clienteRepository.save(clientePrueba);
             System.out.println("Cliente de prueba indexado correctamente.");
         }
 

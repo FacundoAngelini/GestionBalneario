@@ -28,8 +28,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UsuarioDTO> registerUser(@RequestBody NewAccountRequest newAccountRequest){
-        return new ResponseEntity<>(authService.register(newAccountRequest), HttpStatus.CREATED);
+    public ResponseEntity<UsuarioDTO> registerUser(@RequestBody NewAccountRequest newAccountRequest) {
+        // El servicio devuelve UsuarioDTO, por ende el ResponseEntity maneja UsuarioDTO
+        UsuarioDTO usuarioCreado = authService.register(newAccountRequest);
+        return new ResponseEntity<>(usuarioCreado, HttpStatus.CREATED);
     }
-
 }

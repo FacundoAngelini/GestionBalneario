@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
+import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.AuthRequest;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import jakarta.validation.Valid;
@@ -58,5 +59,9 @@ public class EmpleadoDTO {
     private UsuarioDTO usuario;// no entity y posible cambio
     private RolEntity rol;
     private SectorEntity sector;
+
+    @Valid
+    @NotNull
+    private AuthRequest credencial;  //para mandar al usuario ya con la contraseña y nombreUsuario 
 
 }
