@@ -30,7 +30,7 @@ public class ReservaController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElMismoCliente(authentication, #id)\"")
     public ResponseEntity<ReservaDTO> obtenerReservaEspecifica(@PathVariable UUID id) {
         return ResponseEntity.ok(reservaServicio.buscarPorPublicId(id));
     }

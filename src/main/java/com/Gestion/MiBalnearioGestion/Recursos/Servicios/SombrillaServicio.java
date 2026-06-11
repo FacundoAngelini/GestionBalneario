@@ -4,7 +4,8 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteExceptio
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.SombrillaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.SombrillaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.SombrillaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.SombrillaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.EtamanioSombrilla;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.SombrillaMapper;
@@ -13,86 +14,88 @@ import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.ISombrillaSe
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.SombrillaSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class SombrillaServicio implements ISombrillaServicio {
+
     private final SombrillaRepositorio sombrillaRepositorio;
     private final SombrillaMapper sombrillaMapper;
     private final SectorRepositorio sectorRepositorio;
 
-    @Transactional
     @Override
-    public SombrillaDTO crearSombrilla(SombrillaDTO dto){
-        if(sombrillaRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una sombrilla con esta id", "SombrillaEntity");
-        }
-        if(sombrillaRepositorio.findByNumero(dto.getNumero()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una sombrilla con esta numero", "SombrillaEntity");
+    @Transactional
+    public SombrillaResponseDTO crearSombrilla(SombrillaRequestDTO dto) {
+        if (sombrillaRepositorio.findByNumero(dto.getNumero()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe una sombrilla con ese número", "SombrillaEntity");
         }
 
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
-                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
+        SectorEntity sector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
 
-        SombrillaEntity sombrilla = sombrillaMapper.convertToEntity(dto, SombrillaEntity.class);
-        sombrilla.setSector(sectorDb);
+        SombrillaEntity sombrilla = sombrillaMapper.toEntity(dto);
         sombrilla.setEsReservable(true);
-        SombrillaEntity guardado = sombrillaRepositorio.save(sombrilla);
-        return sombrillaMapper.convertToDTO(guardado);
+        sombrilla.setSector(sector);
+
+        return sombrillaMapper.toResponseDTO(sombrillaRepositorio.save(sombrilla));
     }
 
-    @Transactional
     @Override
-    public SombrillaDTO actualizarSombrilla (SombrillaDTO dto, UUID id){
-        SombrillaEntity sombrilla = sombrillaRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una sombrilla con esa id", "SombrillaEntity"));
+    @Transactional
+    public SombrillaResponseDTO actualizarSombrilla(UUID id, SombrillaRequestDTO dto) {
+        SombrillaEntity sombrilla = sombrillaRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Sombrilla no encontrada", "SombrillaEntity"));
 
-        if(!sombrilla.getSector().getPublicId().equals(dto.getSectorPublicId())){
-            SectorEntity nuevoSector= sectorRepositorio.findByPublicId(dto.getSectorPublicId())
-                    .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
+        if (!sombrilla.getSector().getPublicId().equals(dto.getSectorPublicId())) {
+            SectorEntity nuevoSector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                    .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
             sombrilla.setSector(nuevoSector);
         }
 
-        sombrillaMapper.updateEntityFromDTO(dto,sombrilla);
-        return sombrillaMapper.convertToDTO(sombrilla);
+        if (sombrilla.getNumero() != dto.getNumero() &&
+                sombrillaRepositorio.findByNumero(dto.getNumero()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe una sombrilla con ese número", "SombrillaEntity");
+        }
+
+        sombrillaMapper.actualizarDesdeRequest(dto, sombrilla);
+        return sombrillaMapper.toResponseDTO(sombrillaRepositorio.save(sombrilla));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public SombrillaDTO buscarPorId(UUID id){
-        SombrillaEntity sombrilla = sombrillaRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
-        return  sombrillaMapper.convertToDTO(sombrilla);
+    @Transactional(readOnly = true)
+    public SombrillaResponseDTO buscarPorId(UUID id) {
+        return sombrillaRepositorio.findByPublicId(id)
+                .map(sombrillaMapper::toResponseDTO)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Sombrilla no encontrada", "SombrillaEntity"));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<SombrillaDTO> buscarTodas(Integer numero,
-                                          Integer numeroMenor,
-                                          Integer numeroMayor,
-                                          EtamanioSombrilla tamanio){
-        PredicateSpecification<SombrillaEntity> spec =
-                PredicateSpecification.allOf(
-                        SombrillaSpecification.numeroIgual(numero),
-                        SombrillaSpecification.numeroMenor(numeroMenor),
-                        SombrillaSpecification.numeroMayor(numeroMayor),
-                        SombrillaSpecification.tamanioIgual(tamanio)
-                );
+    @Transactional(readOnly = true)
+    public List<SombrillaResponseDTO> buscarTodos(Integer numero, Integer numeroMayor, Integer numeroMenor,
+                                                  EtamanioSombrilla etamano) {
+        PredicateSpecification<SombrillaEntity> spec = PredicateSpecification.allOf(
+                SombrillaSpecification.numeroIgual(numero),
+                SombrillaSpecification.numeroMayor(numeroMayor),
+                SombrillaSpecification.numeroMenor(numeroMenor),
+                SombrillaSpecification.tamanioIgual(etamano)
+        );
 
-        return sombrillaRepositorio
-                .findAll(spec)
+        return sombrillaRepositorio.findAll(spec)
                 .stream()
-                .map(sombrillaMapper::convertToDTO)
+                .map(sombrillaMapper::toResponseDTO)
                 .toList();
-
     }
 
+    @Override
+    @Transactional
+    public void desactivarSombrilla(UUID id) {
+        SombrillaEntity sombrilla = sombrillaRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Sombrilla no encontrada", "SombrillaEntity"));
+        sombrilla.setEsReservable(false);
+        sombrillaRepositorio.save(sombrilla);
+    }
 }

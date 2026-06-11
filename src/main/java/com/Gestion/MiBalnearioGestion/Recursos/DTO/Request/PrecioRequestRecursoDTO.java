@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Recursos.DTO;
+package com.Gestion.MiBalnearioGestion.Recursos.DTO.Request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -12,21 +12,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PrecioRecursoDTO {
-
-    @NotNull
-    private UUID publicId;
-
+public class PrecioRequestRecursoDTO {
     @NotNull
     @Min(0)
     private double precio;
-
     @NotNull
     private LocalDate fechaVigencia;
-
     @NotNull
     private LocalDate fechaCaducada;
-
     @NotNull
     private UUID recursoPublicId;
 }

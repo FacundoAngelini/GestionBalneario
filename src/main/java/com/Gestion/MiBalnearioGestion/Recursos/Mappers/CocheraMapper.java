@@ -1,39 +1,64 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.CarpaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.CocheraRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.CocheraResponseDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PrecioRecursoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CocheraEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-public class CocheraMapper implements IMapper <CocheraEntity, CocheraDTO> {
-    private final ModelMapper modelMapper;
+public class CocheraMapper {
 
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(CocheraDTO.class, CocheraEntity.class)
-                .addMappings(mapper -> mapper.skip(CocheraEntity::setPublicId));
+    public CocheraResponseDTO toResponseDTO(CocheraEntity entity) {
+        if (entity == null) return null;
+
+        CocheraResponseDTO dto = new CocheraResponseDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        dto.setNumeroCochera(entity.getNumeroCochera());
+
+        if (entity.getSector() != null) {
+            dto.setSectorPublicId(entity.getSector().getPublicId());
+            dto.setSectorNombre(entity.getSector().getNombre());
+        }
+
+        if (entity.getPrecioRecurso() != null) {
+            dto.setPrecios(entity.getPrecioRecurso().stream()
+                    .map(this::mapPrecio)
+                    .toList());
+        }
+
+        return dto;
     }
 
-    @Override
-    public CocheraEntity convertToEntity(CocheraDTO dto, Class<CocheraEntity> clazz) {
-        return modelMapper.map(dto, CocheraEntity.class);
+    public CocheraEntity toEntity(CocheraRequestDTO dto) {
+        if (dto == null) return null;
+
+        CocheraEntity entity = new CocheraEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setNumeroCochera(dto.getNumero_cochera());
+        return entity;
     }
 
-    @Override
-    public CocheraDTO convertToDTO(CocheraEntity entity) {
-        return modelMapper.map(entity, CocheraDTO.class);
+    public void actualizarDesdeRequest(CocheraRequestDTO dto, CocheraEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        entity.setNumeroCochera(dto.getNumero_cochera());
     }
 
-    public void updateToEntityFromDTO(CocheraDTO dto, CocheraEntity entity) {
-        modelMapper.map(dto, entity);
+    private PrecioRecursoResponseDTO mapPrecio(PrecioRecursoEntity p) {
+        PrecioRecursoResponseDTO dto = new PrecioRecursoResponseDTO();
+        dto.setPublicId(p.getPublicId());
+        dto.setPrecio(p.getPrecio());
+        dto.setFechaVigencia(p.getFechaVigencia());
+        dto.setFechaCaducada(p.getFechaCaducada());
+        if (p.getRecurso() != null) dto.setRecursoPublicId(p.getRecurso().getPublicId());
+        return dto;
     }
-
 }
+

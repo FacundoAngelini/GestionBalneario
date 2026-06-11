@@ -12,28 +12,27 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
-public class ReservaMapper implements IMapper<ReservaEntity, ReservaDTO> {
-    private final ModelMapper modelMapper;
+public class ReservaMapper {
 
-    @Override
-    public ReservaEntity convertToEntity (ReservaDTO dto, Class<ReservaEntity> entityClass) {
-        return modelMapper.map(dto, ReservaEntity.class);
-    }
-
-    @Override
     public ReservaDTO convertToDTO(ReservaEntity entity) {
-        ReservaDTO dto = modelMapper.map(entity, ReservaDTO.class);
-        if (entity.getRecursos() != null) {
-            List<UUID> ids = entity.getRecursos().stream()
-                    .map(RecursoEntity::getPublicId)
-                    .toList();
-            dto.setRecursosPublicIds(ids);
-        }
-        return dto;
-    }
+        if (entity == null) return null;
 
-    public void updateEntityFromDTO (ReservaDTO dto, ReservaEntity entity) {
-        modelMapper.map(dto, entity);
+        ReservaDTO dto = new ReservaDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setFechaInicio(entity.getFechaInicio());
+        dto.setFechaFin(entity.getFechaFin());
+        dto.setEstadoReserva(entity.getEstadoReserva());
+
+        if (entity.getCliente() != null) {
+            dto.setClientePublicId(entity.getCliente().getPublicId());
+        }
+
+        if (entity.getRecursos() != null) {
+            dto.setRecursosPublicIds(entity.getRecursos().stream()
+                    .map(RecursoEntity::getPublicId)
+                    .toList());
+        }
+
+        return dto;
     }
 }

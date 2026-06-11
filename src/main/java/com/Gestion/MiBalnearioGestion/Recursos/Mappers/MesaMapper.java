@@ -1,39 +1,66 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.MesaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.CarpaEntity;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.CocheraEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.MesaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.MesaResponseDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PrecioRecursoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.MesaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-public class MesaMapper implements IMapper<MesaEntity, MesaDTO> {
-    private final ModelMapper modelMapper;
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(MesaDTO.class, MesaEntity.class)
-                .addMappings(mapper -> mapper.skip(MesaEntity::setPublicId));
+public class MesaMapper {
+
+    public MesaResponseDTO toResponseDTO(MesaEntity entity) {
+        if (entity == null) return null;
+
+        MesaResponseDTO dto = new MesaResponseDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        dto.setNumero(entity.getNumero());
+        dto.setCapacidad(entity.getCapacidad());
+
+        if (entity.getSector() != null) {
+            dto.setSectorPublicId(entity.getSector().getPublicId());
+            dto.setSectorNombre(entity.getSector().getNombre());
+        }
+
+        if (entity.getPrecioRecurso() != null) {
+            dto.setPrecios(entity.getPrecioRecurso().stream()
+                    .map(this::mapPrecio)
+                    .toList());
+        }
+
+        return dto;
     }
 
-    @Override
-    public MesaEntity convertToEntity (MesaDTO dto, Class<MesaEntity> entityClass){
-        return modelMapper.map(dto, MesaEntity.class);
+    public MesaEntity toEntity(MesaRequestDTO dto) {
+        if (dto == null) return null;
+
+        MesaEntity entity = new MesaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setNumero(dto.getNumero());
+        entity.setCapacidad(dto.getCapacidad());
+        return entity;
     }
 
-    @Override
-    public MesaDTO convertToDTO (MesaEntity entity){
-        return modelMapper.map(entity, MesaDTO.class);
+    public void actualizarDesdeRequest(MesaRequestDTO dto, MesaEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        entity.setNumero(dto.getNumero());
+        entity.setCapacidad(dto.getCapacidad());
     }
 
-    public void updateToEntity(MesaDTO dto, MesaEntity entity){
-        modelMapper.map(dto, entity);
+    private PrecioRecursoResponseDTO mapPrecio(PrecioRecursoEntity p) {
+        PrecioRecursoResponseDTO dto = new PrecioRecursoResponseDTO();
+        dto.setPublicId(p.getPublicId());
+        dto.setPrecio(p.getPrecio());
+        dto.setFechaVigencia(p.getFechaVigencia());
+        dto.setFechaCaducada(p.getFechaCaducada());
+        if (p.getRecurso() != null) dto.setRecursoPublicId(p.getRecurso().getPublicId());
+        return dto;
     }
 }

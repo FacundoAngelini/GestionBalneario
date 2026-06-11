@@ -1,15 +1,15 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -21,7 +21,7 @@ public class ClienteDTO {
     private String nombre;
     @NotBlank
     private String apellido;
-    @NotNull
+
     private UUID publicId;
     @NotNull
     private int dni;
@@ -31,6 +31,8 @@ public class ClienteDTO {
     @NotBlank
     private String telefono;
     @NotNull
-    private UsuarioDTO usuario;
+    private LocalDate fecha_alta;
+   /* @NotNull
+    private UsuarioDTO usuario; no puede estar sino seria dependen cia cirucla,r el usuario debe tener un empleado o cliente, no puede ser lo contrario */
 
 }

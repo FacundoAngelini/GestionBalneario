@@ -7,11 +7,13 @@ import com.Gestion.MiBalnearioGestion.Auth.NewAccountRequest;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
+import com.Gestion.MiBalnearioGestion.Usuarios.Mapper.UsuarioMapper;
+import com.Gestion.MiBalnearioGestion.Usuarios.Repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +22,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.management.relation.Role;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +35,7 @@ public class AuthService {
     private final UsuarioMapper usuarioMapper;
     private final JwtService jwtService;
     private final RolesRepositorio rolesRepositorio;
+    private final ClientesRepository clientesRepository;
 
     @Transactional
     public AuthResponse authenticate(AuthRequest input) {
@@ -54,39 +56,48 @@ public class AuthService {
     }
 
     @Transactional
-    public UsuarioDTO register(NewAccountRequest request) {
+    public RegisterResponse register(NewAccountRequest request) {
 
         if (credentialsRepository.findByNombreUsuario(request.getNombreUsuario()).isPresent()) {
             throw new EntidadExistenteException("El nombre de usuario ya existe", "CredencialEntity");
         }
-        //crea y guarda al usuario
+
+        // 1. Usuario base — solo publicId y activo, sin username ni password
         UsuarioEntity nuevoUsuario = new UsuarioEntity();
-        nuevoUsuario.setNombreUsuario(request.getNombreUsuario());
-        nuevoUsuario.setContrasenia(passwordEncoder.encode(request.getContrasenia()));
         nuevoUsuario = usuarioRepository.save(nuevoUsuario);
 
-        // busca el rol cliente en la bdd
+        // 2. Rol cliente
         RolesEntity rolCliente = rolesRepositorio.findByRole(Roles.ROLE_CLIENTE)
-                .orElseThrow(() -> new RuntimeException("Error: El rol ROLE_CLIENTE no existe en la base de datos."));
+                .orElseThrow(() -> new RuntimeException("El rol ROLE_CLIENTE no existe en la base de datos"));
 
-        Set<RolesEntity> rolesPorDefecto = new HashSet<>();
-        rolesPorDefecto.add(rolCliente); //metemos el rol en el set
-
-        // se crea la credencial con el set que asignamos
+        // 3. Credencial vinculada — contraseña encriptada UNA sola vez
         CredencialEntity nuevaCredencial = CredencialEntity.builder()
                 .nombreUsuario(request.getNombreUsuario())
                 .contrasenia(passwordEncoder.encode(request.getContrasenia()))
                 .enabled(true)
                 .usuario(nuevoUsuario)
-                .roles(rolesPorDefecto)
+                .roles(new HashSet<>(Set.of(rolCliente)))
                 .build();
 
         String tokenInicial = jwtService.generateRefreshToken(nuevaCredencial);
         nuevaCredencial.setRefreshToken(tokenInicial);
-
         credentialsRepository.save(nuevaCredencial);
 
-        return usuarioMapper.convertToDTO(nuevoUsuario);
+        // 4. ClienteEntity vacío vinculado al usuario
+        // El cliente completa sus datos (nombre, dni, etc.) después desde /perfil
+        ClienteEntity nuevoCliente = ClienteEntity.builder()
+                .usuario(nuevoUsuario)
+                .estado(true)
+                .build();
+        clientesRepository.save(nuevoCliente);
+
+        String accessToken = jwtService.generateToken(nuevaCredencial);
+
+        return RegisterResponse.builder()
+                .usuario(usuarioMapper.convertToDTO(nuevoUsuario))
+                .token(accessToken)
+                .refreshToken(tokenInicial)
+                .build();
     }
 
     @Transactional
@@ -111,5 +122,17 @@ public class AuthService {
         credentialsRepository.save(credencial);
 
         return new AuthResponse(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+        String username = jwtService.extractUsername(refreshToken);
+
+        CredencialEntity credencial = credentialsRepository.findByNombreUsuario(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        // invalidamos el refresh token — el access token expirará solo
+        credencial.setRefreshToken(null);
+        credentialsRepository.save(credencial);
     }
 }

@@ -7,18 +7,18 @@ import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.ActualizarEmpleadoDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.CrearEmpleadoRequestDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
+import com.Gestion.MiBalnearioGestion.Usuarios.Mapper.UsuarioMapper;
+import com.Gestion.MiBalnearioGestion.Usuarios.Repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
@@ -48,7 +48,10 @@ public class EmpleadoService implements IEmpleadoService {
 
     @Transactional
     @Override
-    public EmpleadoDTO crearEmpleado(EmpleadoDTO dtoEmpleado) {
+    public EmpleadoDTO crearEmpleado(CrearEmpleadoRequestDTO request) {
+        EmpleadoDTO dtoEmpleado = request.getEmpleado();
+
+        // Validaciones de negocio
         if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent()){
             throw new EntidadExistenteException("Ya existe un empleado con ese DNI", "EmpleadoEntity");
         }
@@ -59,25 +62,24 @@ public class EmpleadoService implements IEmpleadoService {
             throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
         }
 
+        // Validación de jerarquías
         boolean esGerenteLogueado = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getAuthorities()
-                .stream()
+                .getAuthentication().getAuthorities().stream()
                 .map(org.springframework.security.core.GrantedAuthority::getAuthority)
                 .anyMatch(auth -> auth.toUpperCase().contains("GERENTE"));
 
-        String rolSolicitado = dtoEmpleado.getRolSolicitado().toUpperCase();
+        String rolSolicitado = request.getRolSolicitado().toUpperCase();
 
-        if (esGerenteLogueado) {
-            if (rolSolicitado.contains("GERENTE") || rolSolicitado.contains("ADMIN")) {
-                throw new org.springframework.security.access.AccessDeniedException("Un Gerente solo puede crear empleados de rango menor");
-            }
+        if (esGerenteLogueado && (rolSolicitado.contains("GERENTE") || rolSolicitado.contains("ADMIN"))) {
+            throw new org.springframework.security.access.AccessDeniedException("Un Gerente solo puede crear roles de rango menor");
         }
 
-        UsuarioEntity usuario = usuarioMapper.convertToEntity(dtoEmpleado.getUsuario(), UsuarioEntity.class);
-        usuario.setContrasenia(passwordEncoder.encode(usuario.getContrasenia()));
+        // 1. Creamos el Usuario base (vacío, solo lo inicializamos activo)
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setActivo(true);
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuario);
 
+        // Buscamos el rol de seguridad en la BDD
         Roles enumRol = Roles.valueOf(rolSolicitado);
         RolesEntity rolDb = rolesRepository.findByRole(enumRol)
                 .orElseThrow(() -> new RuntimeException("El rol solicitado no existe en la base de datos."));
@@ -85,9 +87,10 @@ public class EmpleadoService implements IEmpleadoService {
         Set<RolesEntity> rolesSet = new HashSet<>();
         rolesSet.add(rolDb);
 
+        // 2. Creamos la Credencial vinculada con los strings del Request
         CredencialEntity nuevaCredencial = CredencialEntity.builder()
-                .nombreUsuario(usuarioGuardado.getNombreUsuario())
-                .contrasenia(usuarioGuardado.getContrasenia())
+                .nombreUsuario(request.getNombreUsuario())
+                .contrasenia(passwordEncoder.encode(request.getContrasenia()))
                 .enabled(true)
                 .usuario(usuarioGuardado)
                 .roles(rolesSet)
@@ -96,26 +99,27 @@ public class EmpleadoService implements IEmpleadoService {
         nuevaCredencial.setRefreshToken(jwtService.generateRefreshToken(nuevaCredencial));
         credentialsRepository.save(nuevaCredencial);
 
+        // 3. Mapeamos y guardamos el Empleado
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado, EmpleadoEntity.class);
         empleado.setUsuario(usuarioGuardado);
         empleado.setEstadoEmpleado(dtoEmpleado.getEstado());
-
-        if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getId() != null) {
-            SectorEntity sectorDb = sectorRepository.findById(dtoEmpleado.getSector().getId())
-                    .orElseThrow(() -> new RuntimeException("El Sector con ID " + dtoEmpleado.getSector().getId() + " no existe."));
+// SECTOR: Usamos getPublicId() y llamamos a findByPublicId()
+        if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getPublicId() != null) {
+            SectorEntity sectorDb = sectorRepository.findByPublicId(dtoEmpleado.getSector().getPublicId())
+                    .orElseThrow(() -> new RuntimeException("El Sector no existe."));
             empleado.setSector(sectorDb);
         }
 
-        if (dtoEmpleado.getRol() != null && dtoEmpleado.getRol().getId() != null) {
-            RolEntity rolDbNegocio = rolRepository.findById(dtoEmpleado.getRol().getId())
-                    .orElseThrow(() -> new RuntimeException("El Rol de negocio con ID " + dtoEmpleado.getRol().getId() + " no existe."));
+// ROL: Usamos getPublicId() y llamamos a findByPublicId()
+        if (dtoEmpleado.getRol() != null && dtoEmpleado.getRol().getPublicId() != null) {
+            RolEntity rolDbNegocio = rolRepository.findByPublicId(dtoEmpleado.getRol().getPublicId())
+                    .orElseThrow(() -> new RuntimeException("El Rol no existe."));
             empleado.setRol(rolDbNegocio);
         }
 
-        EmpleadoEntity guardado = empleadosRepositorio.save(empleado);
-
-        return empleadoMapper.convertToDTO(guardado);
+        return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
     }
+
     @Transactional
     @Override
     public void borrarEmpleado(UUID IDpublico)
@@ -124,18 +128,42 @@ public class EmpleadoService implements IEmpleadoService {
                 findByPublicId(IDpublico)
                 .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
         buscado.setEstadoEmpleado(EEstadoEmpleado.INACTIVO);
+        if (buscado.getUsuario() != null) {
+            buscado.getUsuario().setActivo(false);
+            if (buscado.getUsuario().getCredencial() != null) {
+                buscado.getUsuario().getCredencial().setEnabled(false);
+            }
+        }
         empleadosRepositorio.save(buscado);
     }
 
     @Transactional
     @Override
-    public EmpleadoDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto) {
+    public EmpleadoDTO actualizarEmpleado(UUID IDpublico, ActualizarEmpleadoDTO request) {
         EmpleadoEntity empleado = empleadosRepositorio
                 .findByPublicId(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
 
-        empleadoMapper.updateEntityFromDTO(empleadoDto, empleado);
+        if (!empleado.getEmail().equals(request.getEmail()) && empleadosRepositorio.findByEmail(request.getEmail()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
+        }
+        if (!empleado.getEmail().equals(request.getEmail()) && empleadosRepositorio.findByEmail(request.getEmail()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
+        }
 
+        // 1. DELEGAMOS AL MAPPER la actualización de textos, números y la dirección
+        empleadoMapper.actualizarEntidadDesdeRequest(request, empleado);
+
+        // 2. EL SERVICIO se encarga puramente de buscar en BDD las relaciones complejas
+        SectorEntity sectorDb = sectorRepository.findById(request.getIdSector())
+                .orElseThrow(() -> new EntidadNoEncontradaException("El Sector no existe", "SectorEntity"));
+        empleado.setSector(sectorDb);
+
+        RolEntity rolDbNegocio = rolRepository.findById(request.getIdRol())
+                .orElseThrow(() -> new EntidadNoEncontradaException("El Rol no existe", "RolEntity"));
+        empleado.setRol(rolDbNegocio);
+
+        // Guardamos y devolvemos el DTO
         return empleadoMapper.convertToDTO(empleadosRepositorio.save(empleado));
     }
 
@@ -145,7 +173,7 @@ public class EmpleadoService implements IEmpleadoService {
         return empleadosRepositorio.
                 findByPublicId(IDpublico)
                 .map(empleadoMapper::convertToDTO)
-                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
+                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontro :" , IDpublico.toString()));
     }
 
     @Override

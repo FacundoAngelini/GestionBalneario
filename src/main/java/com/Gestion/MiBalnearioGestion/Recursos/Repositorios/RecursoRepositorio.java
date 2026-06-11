@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public interface RecursoRepositorio extends JpaRepository<RecursoEntity, Long>, 
     Optional<RecursoEntity> findByPublicId(UUID publicId);
 
     long countByEsReservableTrue();
-
+    List<RecursoEntity> findBySectorPublicId(UUID sectorPublicId);
     @Modifying
     @Query("UPDATE RecursoEntity r SET r.esReservable = false")
     void desactivarTodoElInventario();

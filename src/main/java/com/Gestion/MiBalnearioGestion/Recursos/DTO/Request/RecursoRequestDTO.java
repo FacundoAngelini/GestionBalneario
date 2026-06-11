@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Recursos.DTO;
+package com.Gestion.MiBalnearioGestion.Recursos.DTO.Request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,19 +15,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class RecursoDTO {
-
-    private UUID publicID;
+public class RecursoRequestDTO {
 
     @NotBlank
     private String nombre;
-
-    @NotNull
-    private boolean esReservable;
-
     @NotNull
     private UUID sectorPublicId;
-
 
 
 }

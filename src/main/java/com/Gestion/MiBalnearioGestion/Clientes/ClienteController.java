@@ -1,6 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Clientes;
 
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ActualizarClienteDTO;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteDTO;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponseDTO;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.CompletarPerfilClienteDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,42 +15,54 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/v1/clientes")
 @RequiredArgsConstructor
 public class ClienteController {
 
     private final IClienteService clienteService;
 
-    @GetMapping //Response entity
-    public ResponseEntity<List<ClienteDTO>> listarTodos(){return new ResponseEntity<>(clienteService.listarTodos(),HttpStatus.OK);}
+    // Admin, gerente y administración ven la lista completa
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    public ResponseEntity<List<ClienteResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(clienteService.listarTodos());
+    }
 
+    // Admin/gerente o el propio cliente
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteDTO> buscarPorIdpublico(@PathVariable UUID IDpublico)
-    {
-        return new ResponseEntity<ClienteDTO>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or " +
+            "@securityService.esElMismoUsuario(authentication, #id)")
+    public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable UUID id) {
+        return ResponseEntity.ok(clienteService.buscarPorPublicId(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    @PostMapping
-    public ResponseEntity<ClienteDTO> crearCliente (@Valid @RequestBody ClienteDTO clienteNuevo)
-    {
-        return new ResponseEntity<ClienteDTO>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
+    // Completar perfil por primera vez tras el registro
+    @PutMapping("/{id}/perfil")
+    @PreAuthorize("hasRole('ADMIN') or " +
+            "@securityService.esElMismoUsuario(authentication, #id)")
+    public ResponseEntity<ClienteResponseDTO> completarPerfil(
+            @PathVariable UUID id,
+            @Valid @RequestBody CompletarPerfilClienteDTO dto) {
+        return ResponseEntity.ok(clienteService.completarPerfil(id, dto));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO> actualizarCliente (@PathVariable UUID IDpublico, @Valid @RequestBody ClienteDTO clienteNuevo)
-    {
-        return new ResponseEntity<ClienteDTO>(clienteService.actualizarCliente(IDpublico,clienteNuevo),HttpStatus.OK);
+    // Actualizar datos parcialmente
+    @PatchMapping("/{id}/perfil")
+    @PreAuthorize("hasRole('ADMIN') or " +
+            "@securityService.esElMismoUsuario(authentication, #id)")
+    public ResponseEntity<ClienteResponseDTO> actualizarCliente(
+            @PathVariable UUID id,
+            @RequestBody ActualizarClienteDTO dto) {
+        return ResponseEntity.ok(clienteService.actualizarCliente(id, dto));
     }
 
+    // Baja lógica
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser (@PathVariable UUID IDpublico)
-    {
-        clienteService.borrarCliente(IDpublico);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+    @PreAuthorize("hasRole('ADMIN') or " +
+            "@securityService.esElMismoUsuario(authentication, #id)")
+    public ResponseEntity<Void> darDeBaja(@PathVariable UUID id) {
+        clienteService.darDeBajaCliente(id);
+        return ResponseEntity.noContent().build();
     }
-
-
 }

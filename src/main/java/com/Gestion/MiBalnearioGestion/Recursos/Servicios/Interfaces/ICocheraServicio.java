@@ -1,16 +1,16 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces;
 
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.MesaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.CocheraRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.CocheraResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
 
+
 public interface ICocheraServicio {
-    List<CocheraDTO> listarCocheras(Integer cocheraIgual,
-                                    Integer cocheraMenor,
-                                    Integer cocheraMayor);
-    CocheraDTO buscarCochera(UUID id);
-    CocheraDTO actualizarCochera(UUID id, CocheraDTO dto);
-    CocheraDTO crearCochera(CocheraDTO dto);
+    CocheraResponseDTO crearCochera(CocheraRequestDTO dto);
+    CocheraResponseDTO actualizarCochera(UUID id, CocheraRequestDTO dto);
+    CocheraResponseDTO buscarPorId(UUID id);
+    List<CocheraResponseDTO> buscarTodos(Integer numeroCochera, Integer numeroMayor, Integer numeroMenor);
+    void desactivarCochera(UUID id);
 }

@@ -1,13 +1,11 @@
 package com.Gestion.MiBalnearioGestion.Auth.Autentificacion;
 
 import com.Gestion.MiBalnearioGestion.Auth.*;
-import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,8 +26,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UsuarioDTO> registerUser(@RequestBody NewAccountRequest newAccountRequest){
-        return new ResponseEntity<>(authService.register(newAccountRequest), HttpStatus.CREATED);
+    public ResponseEntity<RegisterResponse> registerUser(
+            @Valid @RequestBody NewAccountRequest request) {
+        return new ResponseEntity<>(authService.register(request), HttpStatus.CREATED);
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody RefreshTokenRequest request) {
+        authService.logout(request.refreshToken());
+        return ResponseEntity.noContent().build();
     }
 
 }

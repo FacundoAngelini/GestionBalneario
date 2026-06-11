@@ -4,7 +4,8 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteExceptio
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.CocheraRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.CocheraResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CocheraEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.CocheraMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.CocheraRepositorio;
@@ -14,83 +15,86 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
 
+
 @Service
 @RequiredArgsConstructor
 public class CocheraServicio implements ICocheraServicio {
+
     private final CocheraRepositorio cocheraRepositorio;
-    private final SectorRepositorio sectorRepositorio;
     private final CocheraMapper cocheraMapper;
+    private final SectorRepositorio sectorRepositorio;
 
-    @Transactional
     @Override
-    public CocheraDTO crearCochera(CocheraDTO dto) {
-        if(cocheraRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una cochera con este id", "CocheraEntity");
+    @Transactional
+    public CocheraResponseDTO crearCochera(CocheraRequestDTO dto) {
+        if (cocheraRepositorio.findByNumeroCochera(dto.getNumero_cochera()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe una cochera con ese número", "CocheraEntity");
         }
-        if(cocheraRepositorio.findByNumeroCochera(dto.getNumero_cochera()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una cochera con este numero", "CocheraEntity");
-        }
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
-                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
-        CocheraEntity cochera = cocheraMapper.convertToEntity(dto, CocheraEntity.class);
-        cochera.setSector(sectorDb);
+        SectorEntity sector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
+
+        CocheraEntity cochera = cocheraMapper.toEntity(dto);
         cochera.setEsReservable(true);
-        CocheraEntity guardado =  cocheraRepositorio.save(cochera);
-        return cocheraMapper.convertToDTO(guardado);
+        cochera.setSector(sector);
+
+        return cocheraMapper.toResponseDTO(cocheraRepositorio.save(cochera));
     }
 
+    @Override
     @Transactional
-    @Override
-    public CocheraDTO actualizarCochera(UUID id, CocheraDTO dto) {
-        CocheraEntity cochera = cocheraRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro ninguna cochera con ese id", "CocheraEntity"));
+    public CocheraResponseDTO actualizarCochera(UUID id, CocheraRequestDTO dto) {
+        CocheraEntity cochera = cocheraRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cochera no encontrada", "CocheraEntity"));
 
-        if(!cochera.getSector().getPublicId().equals(dto.getPublicID())){
-            SectorEntity nuevoSector= sectorRepositorio.findByPublicId(dto.getSectorPublicId())
-                    .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
+        if (!cochera.getSector().getPublicId().equals(dto.getSectorPublicId())) {
+            SectorEntity nuevoSector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                    .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
             cochera.setSector(nuevoSector);
-
         }
-        cocheraMapper.updateToEntityFromDTO(dto,cochera);
-        return cocheraMapper.convertToDTO(cochera);
+
+        if (cochera.getNumeroCochera() != dto.getNumero_cochera() &&
+                cocheraRepositorio.findByNumeroCochera(dto.getNumero_cochera()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe una cochera con ese número", "CocheraEntity");
+        }
+
+        cocheraMapper.actualizarDesdeRequest(dto, cochera);
+        return cocheraMapper.toResponseDTO(cocheraRepositorio.save(cochera));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public CocheraDTO buscarCochera(UUID id) {
-        CocheraEntity cochera = cocheraRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una cochera con esta id", "CocheraEntity"));
-        return cocheraMapper.convertToDTO(cochera);
+    @Transactional(readOnly = true)
+    public CocheraResponseDTO buscarPorId(UUID id) {
+        return cocheraRepositorio.findByPublicId(id)
+                .map(cocheraMapper::toResponseDTO)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cochera no encontrada", "CocheraEntity"));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<CocheraDTO> listarCocheras(Integer cocheraIgual,
-                                           Integer cocheraMenor,
-                                           Integer cocheraMayor) {
+    @Transactional(readOnly = true)
+    public List<CocheraResponseDTO> buscarTodos(Integer numeroCochera, Integer numeroMayor, Integer numeroMenor) {
+        PredicateSpecification<CocheraEntity> spec = PredicateSpecification.allOf(
+                CocheraSpecification.cocherIgual(numeroCochera),
+                CocheraSpecification.cocheraMayor(numeroMayor),
+                CocheraSpecification.cocherMenor(numeroMenor)
+        );
 
-        PredicateSpecification<CocheraEntity> spec=
-                PredicateSpecification.allOf(
-                        CocheraSpecification.cocherIgual(cocheraIgual),
-                        CocheraSpecification.cocherMenor(cocheraMenor),
-                        CocheraSpecification.cocheraMayor(cocheraMayor)
-                );
-
-        return cocheraRepositorio
-                .findAll(spec)
+        return cocheraRepositorio.findAll(spec)
                 .stream()
-                .map(cocheraMapper::convertToDTO)
+                .map(cocheraMapper::toResponseDTO)
                 .toList();
-
     }
 
-
+    @Override
+    @Transactional
+    public void desactivarCochera(UUID id) {
+        CocheraEntity cochera = cocheraRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cochera no encontrada", "CocheraEntity"));
+        cochera.setEsReservable(false);
+        cocheraRepositorio.save(cochera);
+    }
 }

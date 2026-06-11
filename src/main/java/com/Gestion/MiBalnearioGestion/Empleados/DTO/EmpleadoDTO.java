@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,7 +22,6 @@ public class EmpleadoDTO {
     @NotBlank
     private String nombre;
 
-    @NotNull
     private UUID IDpublico;
 
     @NotBlank
@@ -53,10 +52,16 @@ public class EmpleadoDTO {
 
     @Valid
     @NotNull(message = "La direccion no puede estar vacia")
-    private DireccionEntity direccion;
+    private DireccionDTO direccion;
 
-    private UsuarioDTO usuario;// no entity y posible cambio
-    private RolEntity rol;
-    private SectorEntity sector;
+    @Valid
+    @NotNull(message = "El sector no puede estar vacio")
+    private SectorDTO sector;
+    @Valid
+    @NotNull(message = "El Rol no puede estar vacio")
+    private RolDTO rol;
+
+    private UUID usuarioPublicId;   // El UUID de su cuenta de usuario
+    private String nombreUsuario;
 
 }

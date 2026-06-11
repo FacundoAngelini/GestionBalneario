@@ -4,6 +4,7 @@ package com.Gestion.MiBalnearioGestion.Common.Handlers;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
+import com.Gestion.MiBalnearioGestion.Usuarios.Exception.ExContraseniaIncorrecta;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -138,5 +139,11 @@ public class GlobalExcepcionHandler {
         ErrorResponse error = new ErrorResponse(400, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(400).body(error);
+    }
+    @ExceptionHandler(ExContraseniaIncorrecta.class)
+    public ResponseEntity<ErrorResponse> handleExContraseniaIncorrecta(Exception ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(404, "Contrasenia incorrecta" + ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(404).body(errorResponse);
     }
 }

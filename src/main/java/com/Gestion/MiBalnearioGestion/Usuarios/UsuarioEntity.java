@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Usuarios;
 
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import jakarta.persistence.*;
@@ -27,15 +28,15 @@ public class UsuarioEntity {
     @UuidGenerator
     private UUID publicId;
 
-    @Column(name="nombreUsuario", unique = true, nullable = false, updatable = false)
-    private String nombreUsuario;
-
-    @Column(name="contrasenia", nullable = false)
-    private String contrasenia;
-
     @OneToOne(mappedBy = "usuario")
     private EmpleadoEntity empleado;
 
+    @Column(name="activo", nullable = false)
+    private boolean activo = true;
+
     @OneToOne(mappedBy = "usuario")
     private ClienteEntity cliente;
+
+    @OneToOne(mappedBy = "usuario")
+    private CredencialEntity credencial;
 }

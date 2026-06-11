@@ -1,21 +1,19 @@
-package com.Gestion.MiBalnearioGestion.Recursos.DTO;
+package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
-public class PiletaDTO extends RecursoDTO{
+public class RolDTO {
+    private UUID publicId;
     @NotNull
-    private boolean esClimatizada;
-
-    @NotNull
-    private int tamanio;
+    private EtipoRol rol;
 }

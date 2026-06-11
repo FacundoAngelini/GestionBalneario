@@ -1,43 +1,70 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CanchaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.CarpaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.CarpaResponseDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PrecioRecursoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CarpaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-public class CarpaMapper implements IMapper<CarpaEntity, CarpaDTO> {
+public class CarpaMapper {
 
-    private final ModelMapper modelMapper;
+    public CarpaResponseDTO toResponseDTO(CarpaEntity entity) {
+        if (entity == null) return null;
 
-    @PostConstruct
-    public void configureMapper() {
-        // 1. Evitamos que si un campo viene null en el DTO, te borre lo que ya habia en la BD
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        CarpaResponseDTO dto = new CarpaResponseDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        dto.setNumero(entity.getNumero());
+        dto.setPasillo(entity.getPasillo());
+        dto.setCapacidad(entity.getCapacidad());
 
-        // 2. Le decimos explicitamente que cuando actualice una CanchaEntity,
-        // JAMÁS intente pisar el publicId heredado del Padre.
-        modelMapper.typeMap(CarpaDTO.class, CarpaEntity.class)
-                .addMappings(mapper -> mapper.skip(CarpaEntity::setPublicId));
+        if (entity.getSector() != null) {
+            dto.setSectorPublicId(entity.getSector().getPublicId());
+            dto.setSectorNombre(entity.getSector().getNombre());
+        }
+
+        if (entity.getPrecioRecurso() != null) {
+            dto.setPrecios(entity.getPrecioRecurso().stream()
+                    .map(this::mapPrecio)
+                    .toList());
+        }
+
+        return dto;
     }
 
-    @Override
-    public CarpaEntity convertToEntity(CarpaDTO carpaDTO, Class<CarpaEntity> carpaEntityClass){
-        return modelMapper.map(carpaDTO, CarpaEntity.class);
+    public CarpaEntity toEntity(CarpaRequestDTO dto) {
+        if (dto == null) return null;
+
+        CarpaEntity entity = new CarpaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setNumero(dto.getNumero());
+        entity.setPasillo(dto.getPasillo());
+        entity.setCapacidad(dto.getCapacidad());
+        // sector y publicId se setean en el servicio
+        return entity;
     }
 
-    @Override
-    public CarpaDTO convertToDTO(CarpaEntity carpaEntity){
-        return modelMapper.map(carpaEntity, CarpaDTO.class);
+    public void actualizarDesdeRequest(CarpaRequestDTO dto, CarpaEntity entity) {
+        if (dto.getNombre() != null)   entity.setNombre(dto.getNombre());
+        entity.setNumero(dto.getNumero());
+        entity.setPasillo(dto.getPasillo());
+        entity.setCapacidad(dto.getCapacidad());
     }
 
-    public void  updateToEntityFromDTO(CarpaDTO carpaDTO, CarpaEntity entity){
-        modelMapper.map(carpaDTO, CarpaDTO.class);
+    private PrecioRecursoResponseDTO mapPrecio(PrecioRecursoEntity p) {
+        PrecioRecursoResponseDTO dto = new PrecioRecursoResponseDTO();
+        dto.setPublicId(p.getPublicId());
+        dto.setPrecio(p.getPrecio());
+        dto.setFechaVigencia(p.getFechaVigencia());
+        dto.setFechaCaducada(p.getFechaCaducada());
+        if (p.getRecurso() != null) dto.setRecursoPublicId(p.getRecurso().getPublicId());
+        return dto;
     }
 }

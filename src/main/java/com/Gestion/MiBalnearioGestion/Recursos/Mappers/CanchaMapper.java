@@ -1,41 +1,70 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CanchaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.CanchaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.CanchaResponseDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PrecioRecursoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+
 @Component
-@RequiredArgsConstructor
-public class CanchaMapper implements IMapper<CanchaEntity, CanchaDTO> {
-    private final ModelMapper modelMapper;
+public class CanchaMapper {
 
-    @PostConstruct
-    public void configureMapper() {
-        // 1. Evitamos que si un campo viene null en el DTO, te borre lo que ya habia en la BD
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
+    public CanchaResponseDTO toResponseDTO(CanchaEntity entity) {
+        if (entity == null) return null;
 
-        // 2. Le decimos explicitamente que cuando actualice una CanchaEntity,
-        // JAMÁS intente pisar el publicId heredado del Padre.
-        modelMapper.typeMap(CanchaDTO.class, CanchaEntity.class)
-                .addMappings(mapper -> mapper.skip(CanchaEntity::setPublicId));
+        CanchaResponseDTO dto = new CanchaResponseDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        dto.setTipoCancha(entity.getTipoCancha());
+        dto.setCapacidad(entity.getCapacidad());
+        dto.setIluminacion(entity.isIluminacion());
+
+        if (entity.getSector() != null) {
+            dto.setSectorPublicId(entity.getSector().getPublicId());
+            dto.setSectorNombre(entity.getSector().getNombre());
+        }
+
+        if (entity.getPrecioRecurso() != null) {
+            dto.setPrecios(entity.getPrecioRecurso().stream()
+                    .map(this::mapPrecio)
+                    .toList());
+        }
+
+        return dto;
     }
 
-    @Override
-    public CanchaEntity convertToEntity (CanchaDTO dto, Class<CanchaEntity> canchaEntityClass){
-        return modelMapper.map(dto, CanchaEntity.class);
+    public CanchaEntity toEntity(CanchaRequestDTO dto) {
+        if (dto == null) return null;
+
+        CanchaEntity entity = new CanchaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setTipoCancha(dto.getTipoCancha());
+        entity.setCapacidad(dto.getCapacidad());
+        entity.setIluminacion(dto.isIluminacion());
+        return entity;
     }
 
-    @Override
-    public CanchaDTO convertToDTO  (CanchaEntity entity){
-        return modelMapper.map(entity, CanchaDTO.class);
+    public void actualizarDesdeRequest(CanchaRequestDTO dto, CanchaEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        entity.setTipoCancha(dto.getTipoCancha());
+        entity.setCapacidad(dto.getCapacidad());
+        entity.setIluminacion(dto.isIluminacion());
     }
 
-    public void updateToEntity (CanchaDTO dto, CanchaEntity canchaEntity){
-        modelMapper.map(dto, canchaEntity);
+    private PrecioRecursoResponseDTO mapPrecio(PrecioRecursoEntity p) {
+        PrecioRecursoResponseDTO dto = new PrecioRecursoResponseDTO();
+        dto.setPublicId(p.getPublicId());
+        dto.setPrecio(p.getPrecio());
+        dto.setFechaVigencia(p.getFechaVigencia());
+        dto.setFechaCaducada(p.getFechaCaducada());
+        if (p.getRecurso() != null) dto.setRecursoPublicId(p.getRecurso().getPublicId());
+        return dto;
     }
 }

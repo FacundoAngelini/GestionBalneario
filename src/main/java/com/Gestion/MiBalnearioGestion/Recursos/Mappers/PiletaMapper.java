@@ -1,41 +1,65 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.PiletaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.CocheraEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.PiletaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PiletaResponseDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PrecioRecursoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PiletaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
-
 @Component
-@RequiredArgsConstructor
-public class PiletaMapper implements IMapper<PiletaEntity, PiletaDTO> {
-    private final ModelMapper modelMapper;
+public class PiletaMapper {
 
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(PiletaDTO.class, PiletaEntity.class)
-                .addMappings(mapper -> mapper.skip(PiletaEntity::setPublicId));
+    public PiletaResponseDTO toResponseDTO(PiletaEntity entity) {
+        if (entity == null) return null;
+
+        PiletaResponseDTO dto = new PiletaResponseDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        dto.setEsClimatizada(entity.isEsClimatizada());
+        dto.setTamanio(entity.getTamanio());
+
+        if (entity.getSector() != null) {
+            dto.setSectorPublicId(entity.getSector().getPublicId());
+            dto.setSectorNombre(entity.getSector().getNombre());
+        }
+
+        if (entity.getPrecioRecurso() != null) {
+            dto.setPrecios(entity.getPrecioRecurso().stream()
+                    .map(this::mapPrecio)
+                    .toList());
+        }
+
+        return dto;
     }
 
-    @Override
-    public PiletaEntity convertToEntity(PiletaDTO dto, Class<PiletaEntity> piletaEntityClass){
-        return modelMapper.map(dto, PiletaEntity.class);
+    public PiletaEntity toEntity(PiletaRequestDTO dto) {
+        if (dto == null) return null;
+
+        PiletaEntity entity = new PiletaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setEsClimatizada(dto.isEsClimatizada());
+        entity.setTamanio(dto.getTamanio());
+        return entity;
     }
 
-    @Override
-    public PiletaDTO convertToDTO(PiletaEntity entity){
-        return modelMapper.map(entity, PiletaDTO.class);
+    public void actualizarDesdeRequest(PiletaRequestDTO dto, PiletaEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        entity.setEsClimatizada(dto.isEsClimatizada());
+        entity.setTamanio(dto.getTamanio());
     }
 
-    public void updateEntityFromDTO(PiletaDTO dto, PiletaEntity entity){
-        modelMapper.map(dto, entity);
+    private PrecioRecursoResponseDTO mapPrecio(PrecioRecursoEntity p) {
+        PrecioRecursoResponseDTO dto = new PrecioRecursoResponseDTO();
+        dto.setPublicId(p.getPublicId());
+        dto.setPrecio(p.getPrecio());
+        dto.setFechaVigencia(p.getFechaVigencia());
+        dto.setFechaCaducada(p.getFechaCaducada());
+        if (p.getRecurso() != null) dto.setRecursoPublicId(p.getRecurso().getPublicId());
+        return dto;
     }
-
-
 }

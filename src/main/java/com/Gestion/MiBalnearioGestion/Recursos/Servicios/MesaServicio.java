@@ -4,7 +4,8 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteExceptio
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.MesaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.MesaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.MesaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.MesaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.MesaMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.MesaRepositorio;
@@ -21,77 +22,82 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class MesaServicio implements IMesaServcio {
+
     private final MesaRepositorio mesaRepositorio;
     private final MesaMapper mesaMapper;
     private final SectorRepositorio sectorRepositorio;
 
-    @Transactional
     @Override
-    public MesaDTO crearMesa(MesaDTO dto){
-        if(mesaRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una mesa con esta id", "MesaEntity");
+    @Transactional
+    public MesaResponseDTO crearMesa(MesaRequestDTO dto) {
+        if (mesaRepositorio.findByNumero(dto.getNumero()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe una mesa con ese número", "MesaEntity");
         }
-        if(mesaRepositorio.findByNumero(dto.getNumero()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una mesa con esta numero", "MesaEntity");
-        }
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
-                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
-        MesaEntity mesa =  mesaMapper.convertToEntity(dto, MesaEntity.class);
-        mesa.setSector(sectorDb);
+        SectorEntity sector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
+
+        MesaEntity mesa = mesaMapper.toEntity(dto);
         mesa.setEsReservable(true);
-        MesaEntity guardado = mesaRepositorio.save(mesa);
-        return mesaMapper.convertToDTO(guardado);
+        mesa.setSector(sector);
+
+        return mesaMapper.toResponseDTO(mesaRepositorio.save(mesa));
     }
 
+    @Override
     @Transactional
-    @Override
-    public MesaDTO actualizarMesa(MesaDTO dto, UUID id){
-        MesaEntity mesa = mesaRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una mesa con esa id", "MesaEntity"));
-        if(!mesa.getSector().getPublicId().equals(dto.getSectorPublicId())){
-            SectorEntity nuevoSector= sectorRepositorio.findByPublicId(dto.getSectorPublicId())
-                    .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
+    public MesaResponseDTO actualizarMesa(UUID id, MesaRequestDTO dto) {
+        MesaEntity mesa = mesaRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada", "MesaEntity"));
+
+        if (!mesa.getSector().getPublicId().equals(dto.getSectorPublicId())) {
+            SectorEntity nuevoSector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                    .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
             mesa.setSector(nuevoSector);
-
         }
-        mesaMapper.updateToEntity(dto, mesa);
-        return mesaMapper.convertToDTO(mesa);
+
+        if (mesa.getNumero() != dto.getNumero() &&
+                mesaRepositorio.findByNumero(dto.getNumero()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe una mesa con ese número", "MesaEntity");
+        }
+
+        mesaMapper.actualizarDesdeRequest(dto, mesa);
+        return mesaMapper.toResponseDTO(mesaRepositorio.save(mesa));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public MesaDTO obtenerMesaId(UUID id){
-        MesaEntity mesa = mesaRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro  una mesa con esa id", "MesaEntity"));
-        return mesaMapper.convertToDTO(mesa);
+    @Transactional(readOnly = true)
+    public MesaResponseDTO buscarPorId(UUID id) {
+        return mesaRepositorio.findByPublicId(id)
+                .map(mesaMapper::toResponseDTO)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada", "MesaEntity"));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<MesaDTO> obtenerMesas(Integer numeroIgual,
-                                      Integer numeroMenor,
-                                      Integer numeroMayor,
-                                      Integer capacidadIgual,
-                                      Integer capacidadMenor,
-                                      Integer capacidadMayor){
+    @Transactional(readOnly = true)
+    public List<MesaResponseDTO> buscarTodos(Integer numero, Integer numeroMayor, Integer numeroMenor,
+                                             Integer capacidadIgual, Integer capacidadMayor, Integer capacidadMenor) {
+        PredicateSpecification<MesaEntity> spec = PredicateSpecification.allOf(
+                MesaSpecification.numeroIgual(numero),
+                MesaSpecification.numeroMayor(numeroMayor),
+                MesaSpecification.numeroMenor(numeroMenor),
+                MesaSpecification.capacidadIgual(capacidadIgual),
+                MesaSpecification.capacidadMayor(capacidadMayor),
+                MesaSpecification.capacidadMenor(capacidadMenor)
+        );
 
-        PredicateSpecification<MesaEntity> spec=
-                PredicateSpecification.allOf(
-                        MesaSpecification.numeroIgual(numeroIgual),
-                        MesaSpecification.numeroMenor(numeroMenor),
-                        MesaSpecification.numeroMayor(numeroMayor),
-                        MesaSpecification.capacidadIgual(capacidadIgual),
-                        MesaSpecification.capacidadMenor(capacidadMenor),
-                        MesaSpecification.capacidadMayor(capacidadMayor)
-                );
         return mesaRepositorio.findAll(spec)
                 .stream()
-                .map(mesaMapper::convertToDTO)
+                .map(mesaMapper::toResponseDTO)
                 .toList();
-
     }
 
+    @Override
+    @Transactional
+    public void desactivarMesa(UUID id) {
+        MesaEntity mesa = mesaRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Mesa no encontrada", "MesaEntity"));
+        mesa.setEsReservable(false);
+        mesaRepositorio.save(mesa);
+    }
 }

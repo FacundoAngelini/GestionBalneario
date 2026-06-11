@@ -167,11 +167,16 @@ import java.util.UUID;
 
 
     private void validarLimitesTemporada(LocalDate inicio, LocalDate fin) {
-        if (inicio.getMonthValue() > 4 && inicio.getMonthValue() < 12) {
+        // Fuera de temporada: Mayo (5) a Noviembre (11)
+        if (inicio.getMonthValue() >= 5 && inicio.getMonthValue() <= 11) {
             throw new IllegalArgumentException("Fuera de temporada. El balneario opera del 1 de Diciembre al 15 de Abril.");
         }
+        // Abril después del 15
+        if (inicio.getMonthValue() == 4 && inicio.getDayOfMonth() > 15) {
+            throw new IllegalArgumentException("La temporada finaliza el 15 de Abril.");
+        }
         if (fin.getMonthValue() == 4 && fin.getDayOfMonth() > 15) {
-            throw new IllegalArgumentException("La temporada finaliza estrictamente el 15 de Abril.");
+            throw new IllegalArgumentException("La temporada finaliza el 15 de Abril.");
         }
     }
 

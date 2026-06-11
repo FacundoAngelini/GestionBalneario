@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Recursos.DTO;
+package com.Gestion.MiBalnearioGestion.Recursos.DTO.Response;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -13,8 +13,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class CocheraDTO extends RecursoDTO{
-    @NotNull
-    @Min(1)
-    private int numero_cochera;
+public class MesaResponseDTO extends RecursoResponseDTO{
+    private int numero;
+    private int capacidad;
 }

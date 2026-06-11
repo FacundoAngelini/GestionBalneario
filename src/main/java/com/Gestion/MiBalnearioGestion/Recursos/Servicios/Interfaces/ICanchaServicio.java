@@ -1,19 +1,21 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces;
 
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CanchaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.CanchaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.CanchaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.ETipoCancha;
 
 import java.util.List;
 import java.util.UUID;
 
+
 public interface ICanchaServicio {
-    CanchaDTO crearCancha(CanchaDTO canchaDTO);
-    CanchaDTO buscarPorId(UUID id);
-    CanchaDTO actualizarCancha(UUID id, CanchaDTO canchaDTO);
-    List<CanchaDTO> buscarTodas(ETipoCancha cancha,
-                                Integer capacidadIgual,
-                                Integer capacidadMenor,
-                                Integer capacidadMayor,
-                                boolean iluminacion,
-                                boolean noIluminacion);
+    CanchaResponseDTO crearCancha(CanchaRequestDTO dto);
+    CanchaResponseDTO actualizarCancha(UUID id, CanchaRequestDTO dto);
+    CanchaResponseDTO buscarPorId(UUID id);
+    List<CanchaResponseDTO> buscarTodos(ETipoCancha tipoCancha, Integer capacidadIgual,
+                                        Integer capacidadMayor, Integer capacidadMenor,
+                                        Boolean iluminacion);
+    void desactivarCancha(UUID id);
 }
+
+

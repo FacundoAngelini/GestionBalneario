@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface SectorRepositorio extends JpaRepository<SectorEntity, Long> {
     Optional<SectorEntity> findByPublicId(UUID idPublica);
     Optional<SectorEntity> findByNombre(String nombre);
+    Boolean existsByPublicId(UUID id);
 }

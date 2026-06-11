@@ -23,23 +23,23 @@ public class ClienteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @Column(name="public_id", unique=true, nullable=true, updatable = false)
     @UuidGenerator
     private UUID publicId;
 
-    @Column(name="dni",unique = true,nullable = false)
-    private int dni;
+    @Column(name="dni",unique = true,nullable = true)
+    private Integer dni;
 
-    @Column(name="nombre", nullable = false)
+    @Column(name="nombre", nullable = true)
     private String nombre;
 
-    @Column(name="apellido", nullable = false)
+    @Column(name="apellido", nullable = true)
     private String apellido;
 
-    @Column(name="email", unique = true, nullable = false)
+    @Column(name="email", unique = true, nullable = true)
     private String email;
 
-    @Column(name="telefono", unique = true, nullable = false)
+    @Column(name="telefono", unique = true, nullable = true)
     private String telefono;
 
     @Column(name="fecha_alta", nullable = false)

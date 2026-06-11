@@ -4,7 +4,8 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteExceptio
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.CanchaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.CanchaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.CanchaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.ETipoCancha;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.CanchaMapper;
@@ -22,78 +23,73 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CanchaServicio implements ICanchaServicio {
+
     private final CanchaRepositorio canchaRepositorio;
     private final CanchaMapper canchaMapper;
     private final SectorRepositorio sectorRepositorio;
 
-    @Transactional
     @Override
-    public CanchaDTO crearCancha(CanchaDTO canchaDTO){
-        if(canchaRepositorio.findByPublicId(canchaDTO.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una cancha con esta id", "CanchaEntity");
-        }
+    @Transactional
+    public CanchaResponseDTO crearCancha(CanchaRequestDTO dto) {
+        SectorEntity sector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
 
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(canchaDTO.getSectorPublicId())
-                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
+        CanchaEntity cancha = canchaMapper.toEntity(dto);
+        cancha.setEsReservable(true);
+        cancha.setSector(sector);
 
-        CanchaEntity canchaEntity = canchaMapper.convertToEntity(canchaDTO, CanchaEntity.class);
-        canchaEntity.setEsReservable(true);
-        canchaEntity.setSector(sectorDb);
-        CanchaEntity guardado = canchaRepositorio.save(canchaEntity);
-        return canchaMapper.convertToDTO(guardado);
+        return canchaMapper.toResponseDTO(canchaRepositorio.save(cancha));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public CanchaDTO buscarPorId(UUID id){
-        CanchaEntity cancha = canchaRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una cancha con esta id", "CanchaEntity"));
-        return canchaMapper.convertToDTO(cancha);
-    }
-
     @Transactional
-    @Override
-    public CanchaDTO actualizarCancha(UUID id, CanchaDTO canchaDTO){
-        CanchaEntity cancha = canchaRepositorio
-                .findByPublicId(id)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una cancha con esta id", "CanchaEntity"));
+    public CanchaResponseDTO actualizarCancha(UUID id, CanchaRequestDTO dto) {
+        CanchaEntity cancha = canchaRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cancha no encontrada", "CanchaEntity"));
 
-
-        if(!cancha.getSector().getPublicId().equals(canchaDTO.getSectorPublicId())){
-            SectorEntity nuevoSector= sectorRepositorio.findByPublicId(canchaDTO.getSectorPublicId())
-                    .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
+        if (!cancha.getSector().getPublicId().equals(dto.getSectorPublicId())) {
+            SectorEntity nuevoSector = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
+                    .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado", "SectorEntity"));
             cancha.setSector(nuevoSector);
         }
 
-        canchaMapper.updateToEntity(canchaDTO,cancha);
-        return canchaMapper.convertToDTO(cancha);
+        canchaMapper.actualizarDesdeRequest(dto, cancha);
+        return canchaMapper.toResponseDTO(canchaRepositorio.save(cancha));
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<CanchaDTO> buscarTodas(ETipoCancha cancha,
-                                       Integer capacidadIgual,
-                                       Integer capacidadMenor,
-                                       Integer capacidadMayor,
-                                       boolean iluminacion,
-                                       boolean noIluminacion){
+    @Transactional(readOnly = true)
+    public CanchaResponseDTO buscarPorId(UUID id) {
+        return canchaRepositorio.findByPublicId(id)
+                .map(canchaMapper::toResponseDTO)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cancha no encontrada", "CanchaEntity"));
+    }
 
-        PredicateSpecification<CanchaEntity> spec=
-                PredicateSpecification.allOf(
-                        CanchaSpecification.tipoDeCancha(cancha),
-                        CanchaSpecification.capacidadIgual(capacidadIgual),
-                        CanchaSpecification.capacidadMenor(capacidadMenor),
-                        CanchaSpecification.capacidadMayor(capacidadMayor),
-                        CanchaSpecification.iluminacion(iluminacion),
-                        CanchaSpecification.Noiluminacion(noIluminacion)
-                );
+    @Override
+    @Transactional(readOnly = true)
+public List<CanchaResponseDTO> buscarTodos(ETipoCancha tipoCancha, Integer capacidadIgual,
+                                               Integer capacidadMayor, Integer capacidadMenor,
+                                               Boolean iluminacion) {
+        PredicateSpecification<CanchaEntity> spec = PredicateSpecification.allOf(
+                CanchaSpecification.tipoDeCancha(tipoCancha),
+                CanchaSpecification.capacidadIgual(capacidadIgual),
+                CanchaSpecification.capacidadMayor(capacidadMayor),
+                CanchaSpecification.capacidadMenor(capacidadMenor),
+                CanchaSpecification.iluminacion(iluminacion)
+        );
 
         return canchaRepositorio.findAll(spec)
                 .stream()
-                .map(canchaMapper::convertToDTO)
+                .map(canchaMapper::toResponseDTO)
                 .toList();
-
     }
 
+    @Override
+    @Transactional
+    public void desactivarCancha(UUID id) {
+        CanchaEntity cancha = canchaRepositorio.findByPublicId(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Cancha no encontrada", "CanchaEntity"));
+        cancha.setEsReservable(false);
+        canchaRepositorio.save(cancha);
+    }
 }

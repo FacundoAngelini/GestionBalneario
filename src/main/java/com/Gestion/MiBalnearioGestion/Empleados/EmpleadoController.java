@@ -1,8 +1,11 @@
 package com.Gestion.MiBalnearioGestion.Empleados;
 
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.ActualizarEmpleadoDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.CrearEmpleadoRequestDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Servicio.IEmpleadoService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,14 +63,14 @@ public class EmpleadoController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    ResponseEntity<EmpleadoDTO> crearEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo){
-        return new ResponseEntity<>(empleadoService.crearEmpleado(EmpleadoNuevo),HttpStatus.CREATED);
+    ResponseEntity<EmpleadoDTO> crearEmpleado(@Valid @RequestBody CrearEmpleadoRequestDTO request){
+        return new ResponseEntity<>(empleadoService.crearEmpleado(request),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    ResponseEntity<EmpleadoDTO> actualizarEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo, @PathVariable UUID id){
-        return ResponseEntity.ok(empleadoService.actualizarEmpleado(id, EmpleadoNuevo));
+    ResponseEntity<EmpleadoDTO> actualizarEmpleado(@Valid @RequestBody ActualizarEmpleadoDTO request, @PathVariable UUID id){
+        return ResponseEntity.ok(empleadoService.actualizarEmpleado(id, request));
     }
 
     @DeleteMapping("/{id}")

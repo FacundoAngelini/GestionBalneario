@@ -1,7 +1,5 @@
-package com.Gestion.MiBalnearioGestion.Recursos.DTO;
+package com.Gestion.MiBalnearioGestion.Recursos.DTO.Request;
 
-import com.Gestion.MiBalnearioGestion.Recursos.Enum.EtamanioSombrilla;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,11 +12,10 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class SombrillaDTO extends RecursoDTO{
+public class PiletaRequestDTO extends RecursoRequestDTO {
     @NotNull
-    @Min(1)
-    private int numero;
+    private boolean esClimatizada;
 
     @NotNull
-    private EtamanioSombrilla etamanio;
+    private int tamanio;
 }

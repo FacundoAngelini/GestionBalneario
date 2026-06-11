@@ -1,43 +1,54 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Controladores;
 
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.PiletaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.PiletaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PiletaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.IPiletaServicio;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/recursos-pileta")
+@RequestMapping("/api/v1/recursos/piletas")
 @RequiredArgsConstructor
 public class PiletaControlador {
-    private final IPiletaServicio  piletaServicio;
 
-    @PostMapping
-    public ResponseEntity<PiletaDTO> crearPileta(@Valid @RequestBody PiletaDTO piletaDTO){
-        return new ResponseEntity<>(piletaServicio.crearPileta(piletaDTO), HttpStatus.CREATED);
-    }
+    private final IPiletaServicio piletaServicio;
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PiletaDTO> actualizarPileta(@Valid @RequestBody PiletaDTO piletaDTO, @PathVariable UUID Id){
-        return ResponseEntity.ok(piletaServicio.actualizarPileta(piletaDTO, Id));
+    @GetMapping
+    public ResponseEntity<List<PiletaResponseDTO>> listarTodos(
+            @RequestParam(required = false) Boolean esClimatizada,
+            @RequestParam(required = false) Integer tamanio) {
+        return ResponseEntity.ok(piletaServicio.buscarTodos(esClimatizada, tamanio));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PiletaDTO> obtenerPileta(@PathVariable UUID Id){
-        return ResponseEntity.ok(piletaServicio.obtenerPileta(Id));
+    public ResponseEntity<PiletaResponseDTO> buscarPorId(@PathVariable UUID id) {
+        return ResponseEntity.ok(piletaServicio.buscarPorId(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<PiletaDTO>> obtenerPiletas(@RequestParam (required = false) boolean climatizada,
-                                                          @RequestParam (required = false)boolean noClimatizada,
-                                                          @RequestParam (required = false)Integer tamanioIgual,
-                                                          @RequestParam (required = false)Integer TamanioMayor,
-                                                          @RequestParam (required = false)Integer TamanioMenor){
-        return ResponseEntity.ok(piletaServicio.obtenerPiletas(climatizada, noClimatizada, tamanioIgual, TamanioMayor, TamanioMenor));
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<PiletaResponseDTO> crearPileta(@Valid @RequestBody PiletaRequestDTO dto) {
+        return new ResponseEntity<>(piletaServicio.crearPileta(dto), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<PiletaResponseDTO> actualizarPileta(
+            @PathVariable UUID id, @Valid @RequestBody PiletaRequestDTO dto) {
+        return ResponseEntity.ok(piletaServicio.actualizarPileta(id, dto));
+    }
+
+    @PatchMapping("/{id}/desactivar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<Void> desactivar(@PathVariable UUID id) {
+        piletaServicio.desactivarPileta(id);
+        return ResponseEntity.noContent().build();
     }
 }

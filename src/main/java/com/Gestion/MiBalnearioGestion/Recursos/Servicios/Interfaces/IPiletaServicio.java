@@ -1,17 +1,15 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces;
 
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.PiletaDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.PiletaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PiletaResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface IPiletaServicio {
-    PiletaDTO crearPileta(PiletaDTO dto);
-    PiletaDTO actualizarPileta(PiletaDTO dto, UUID id);
-    PiletaDTO obtenerPileta(UUID id);
-    List<PiletaDTO> obtenerPiletas(boolean climatizada,
-                                   boolean noClimatizada,
-                                   Integer tamanioIgual,
-                                   Integer TamanioMayor,
-                                   Integer TamanioMenor);
+    PiletaResponseDTO crearPileta(PiletaRequestDTO dto);
+    PiletaResponseDTO actualizarPileta(UUID id, PiletaRequestDTO dto);
+    PiletaResponseDTO buscarPorId(UUID id);
+    List<PiletaResponseDTO> buscarTodos(Boolean esClimatizada, Integer tamanio);
+    void desactivarPileta(UUID id);
 }

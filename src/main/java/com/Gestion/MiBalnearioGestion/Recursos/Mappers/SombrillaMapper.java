@@ -1,39 +1,66 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.PiletaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.DTO.SombrillaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.PiletaEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Request.SombrillaRequestDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.PrecioRecursoResponseDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.Response.SombrillaResponseDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.SombrillaEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.ModelMap;
 
 @Component
-@RequiredArgsConstructor
-public class SombrillaMapper implements IMapper<SombrillaEntity, SombrillaDTO> {
-    private final ModelMapper modelMapper;
+public class SombrillaMapper {
 
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(SombrillaDTO.class, SombrillaEntity.class)
-                .addMappings(mapper -> mapper.skip(SombrillaEntity::setPublicId));
+    public SombrillaResponseDTO toResponseDTO(SombrillaEntity entity) {
+        if (entity == null) return null;
+
+        SombrillaResponseDTO dto = new SombrillaResponseDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        dto.setNumero(entity.getNumero());
+        dto.setEtamanio(entity.getTamanio());
+
+        if (entity.getSector() != null) {
+            dto.setSectorPublicId(entity.getSector().getPublicId());
+            dto.setSectorNombre(entity.getSector().getNombre());
+        }
+
+        if (entity.getPrecioRecurso() != null) {
+            dto.setPrecios(entity.getPrecioRecurso().stream()
+                    .map(this::mapPrecio)
+                    .toList());
+        }
+
+        return dto;
     }
 
-    @Override
-    public SombrillaEntity convertToEntity(SombrillaDTO dto, Class<SombrillaEntity> sombrillaEntityClass){
-        return modelMapper.map(dto, SombrillaEntity.class);
+    public SombrillaEntity toEntity(SombrillaRequestDTO dto) {
+        if (dto == null) return null;
+
+        SombrillaEntity entity = new SombrillaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setNumero(dto.getNumero());
+        entity.setTamanio(dto.getEtamanio());
+        return entity;
     }
 
-    @Override
-    public SombrillaDTO convertToDTO(SombrillaEntity entity){
-        return modelMapper.map(entity, SombrillaDTO.class);
+    public void actualizarDesdeRequest(SombrillaRequestDTO dto, SombrillaEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        entity.setNumero(dto.getNumero());
+        entity.setTamanio(dto.getEtamanio());
     }
 
-    public void updateEntityFromDTO(SombrillaDTO dto, SombrillaEntity entity){
-        modelMapper.map(dto, entity);
+    private PrecioRecursoResponseDTO mapPrecio(PrecioRecursoEntity p) {
+        PrecioRecursoResponseDTO dto = new PrecioRecursoResponseDTO();
+        dto.setPublicId(p.getPublicId());
+        dto.setPrecio(p.getPrecio());
+        dto.setFechaVigencia(p.getFechaVigencia());
+        dto.setFechaCaducada(p.getFechaCaducada());
+        if (p.getRecurso() != null) dto.setRecursoPublicId(p.getRecurso().getPublicId());
+        return dto;
     }
 }

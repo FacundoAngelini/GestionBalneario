@@ -1,5 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Servicio;
 
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.ActualizarEmpleadoDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.CrearEmpleadoRequestDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 
@@ -8,9 +10,9 @@ import java.util.UUID;
 
 public interface IEmpleadoService {
 
-    EmpleadoDTO crearEmpleado (EmpleadoDTO dtoEmpleado);
+    EmpleadoDTO crearEmpleado(CrearEmpleadoRequestDTO request);
     void borrarEmpleado(UUID IDpublico);
-    EmpleadoDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto);
+    EmpleadoDTO actualizarEmpleado(UUID IDpublico, ActualizarEmpleadoDTO request);
     List<EmpleadoDTO> buscarTodos(Integer dniIgual,
                                   Integer dniContiene,
                                   String nombreIgual,
