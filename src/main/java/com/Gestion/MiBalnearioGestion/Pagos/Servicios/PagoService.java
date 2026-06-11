@@ -53,7 +53,10 @@ public class PagoService {
                 return;
             }
 
+            System.out.println(payment.getStatus());
+
             if ("approved".equals(payment.getStatus())) {
+                System.out.println("ENTRO IF DE PAGO APPROVED");
                 pagoGeneric.setEestadoPago(EestadoPago.PAGADO);
                 pagoRepository.save(pagoGeneric);
 
