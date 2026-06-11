@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/pagos/**").permitAll()
                         .requestMatchers("/api/v1/reservas-pagos/**").permitAll()
                         .requestMatchers("/api/v1/public/**").permitAll()
+                        .requestMatchers("/api/v1/public/webhooks/**").permitAll()
                         .anyRequest().authenticated())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
