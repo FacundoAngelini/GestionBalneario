@@ -59,7 +59,7 @@ public class AuthService {
         if (credentialsRepository.findByNombreUsuario(request.getNombreUsuario()).isPresent()) {
             throw new EntidadExistenteException("El nombre de usuario ya existe", "CredencialEntity");
         }
-        //crea y guarda al usuario
+
         UsuarioEntity nuevoUsuario = new UsuarioEntity();
         nuevoUsuario.setNombreUsuario(request.getNombreUsuario());
         nuevoUsuario.setContrasenia(passwordEncoder.encode(request.getContrasenia()));
