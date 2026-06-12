@@ -15,15 +15,39 @@ public class WebhookController {
 
     @PostMapping("/mercadopago")
     public ResponseEntity<Void> recibirNotificacionMP(
-            @RequestParam(value = "action", required = false) String action,
             @RequestParam(value = "type", required = false) String type,
-            @RequestBody Map<String, Object> data) {
+            @RequestParam(value = "topic", required = false) String topic,
+            @RequestParam(value = "id", required = false) String idQueryParam,
+            @RequestBody(required = false) Map<String, Object> data) {
 
-        if ("payment.created".equals(action) || "payment".equals(type)) {
-            Map<String, Object> dataObj = (Map<String, Object>) data.get("data");
-            if (dataObj != null && dataObj.get("id") != null) {
-                String paymentIdMP = dataObj.get("id").toString();
-                pagoService.procesarNotificacionPago(paymentIdMP);
+        System.out.println("Webhook MP recibido -> type=" + type
+                + " topic=" + topic
+                + " idQueryParam=" + idQueryParam
+                + " body=" + data);
+
+        String paymentId = null;
+
+        boolean esPagoPorBody = data != null
+                && ("payment".equals(data.get("type"))
+                || (data.get("action") != null && data.get("action").toString().startsWith("payment")));
+
+        boolean esPagoPorQuery = "payment".equals(type) || "payment".equals(topic);
+
+        if (esPagoPorBody) {
+            Object dataObj = data.get("data");
+            if (dataObj instanceof Map<?, ?> dataMap && dataMap.get("id") != null) {
+                paymentId = dataMap.get("id").toString();
+            }
+        } else if (esPagoPorQuery && idQueryParam != null) {
+            paymentId = idQueryParam;
+        }
+
+        if (paymentId != null) {
+            try {
+                pagoService.procesarNotificacionPago(paymentId);
+            } catch (Exception e) {
+                System.err.println("Error procesando notificación de pago " + paymentId + ": " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
