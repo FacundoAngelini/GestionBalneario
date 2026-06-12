@@ -3,7 +3,6 @@ package com.Gestion.MiBalnearioGestion.Empleados.Servicio;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import org.springframework.data.jpa.domain.PredicateSpecification;
-
 public class EmpleadoSpecification {
 
     public static PredicateSpecification<EmpleadoEntity> dniIgual(Integer dniIgual){
@@ -163,26 +162,8 @@ public class EmpleadoSpecification {
     public static PredicateSpecification<EmpleadoEntity> estadoIgual(EEstadoEmpleado estadoEmpleado){
         return (root,cb)-> estadoEmpleado == null
                 ? cb.conjunction()
-                :cb.equal(root.get("estado"), estadoEmpleado);
+                :cb.equal(root.get("estadoEmpleado"), estadoEmpleado);
     }
-
-    public static PredicateSpecification<EmpleadoEntity> estadoActivo(EEstadoEmpleado estadoContiene){
-        return (root,cb)->cb.equal(root.get("ACTIVO"),estadoContiene);
-    }
-
-    public static PredicateSpecification<EmpleadoEntity> estadoInactivo(EEstadoEmpleado estadoContiene){
-        return (root,cb)->cb.equal(root.get("INACTIVO"),estadoContiene);
-    }
-
-
-
-
-
-
-
-
-
-
-
 
 }
+

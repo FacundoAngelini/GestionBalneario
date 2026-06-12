@@ -23,7 +23,6 @@ public class EmpleadoDTO {
     @NotBlank
     private String nombre;
 
-    @NotNull
     private UUID IDpublico;
 
     @NotBlank
@@ -49,7 +48,7 @@ public class EmpleadoDTO {
     private String rolSolicitado;
 
     @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
-    @NotNull
+    @NotBlank
     private String telefono;
 
     @Valid

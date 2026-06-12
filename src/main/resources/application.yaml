@@ -32,13 +32,17 @@ mp:
     failure: "${MP_REDIRECT_URL}/pago-fallido"
 
 mail:
-    host: smtp.gmail.com
-    port: 587
-    username: balnearioapiutn@gmail.com
-    password: ${GMAIL_APP}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+  host: smtp.gmail.com
+  port: 587
+  username: balnearioapiutn@gmail.com
+  password: ${GMAIL_APP}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG

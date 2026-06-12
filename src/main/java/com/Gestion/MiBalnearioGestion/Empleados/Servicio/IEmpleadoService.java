@@ -12,33 +12,19 @@ public interface IEmpleadoService {
     EmpleadoResponseDTO crearEmpleado (EmpleadoDTO dtoEmpleado);
     void borrarEmpleado(UUID IDpublico);
     EmpleadoResponseDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto);
-    List<EmpleadoResponseDTO> buscarTodos(Integer dniIgual,
-                                  Integer dniContiene,
-                                  String nombreIgual,
-                                  String nombreContiene,
-                                  String apellidoIgual,
-                                  String apellidoContiene,
-                                  String telefonoIgual,
-                                  String telefonoContiene,
-                                  String cuitIgual,
-                                  String cuitContiene,
-                                  Double sueldoIgual,
-                                  Double sueldoMenor,
-                                  Double sueldoMayor,
-                                  String sectorIgual,
-                                  String sectorContiene,
-                                  String rolIgual,
-                                  String rolContiene,
-                                  String calleIgual,
-                                  String calleContiene,
-                                  Integer numeroIgual,
-                                  Integer numeroContiene,
-                                  String ciudadIgual,
-                                  String ciudadContiene,
-                                  String privinciaIgual,
-                                  String provinciaContiene,
-                                  EEstadoEmpleado estadoIgual,
-                                  EEstadoEmpleado estadoActivo,
-                                  EEstadoEmpleado estadoInactivo);
+    List<EmpleadoResponseDTO> buscarTodos(
+            Integer dniIgual, Integer dniContiene,
+            String nombreIgual, String nombreContiene,
+            String apellidoIgual, String apellidoContiene,
+            String telefonoIgual, String telefonoContiene,
+            String cuitIgual, String cuitContiene,
+            Double sueldoIgual, Double sueldoMenor, Double sueldoMayor,
+            String sectorIgual, String sectorContiene,
+            String rolIgual, String rolContiene,
+            String calleIgual, String calleContiene,
+            Integer numeroIgual, Integer numeroContiene,
+            String ciudadIgual, String ciudadContiene,
+            String provinciaIgual, String provinciaContiene,
+            EEstadoEmpleado estadoIgual);
     EmpleadoResponseDTO buscarPorIDpublico(UUID IDpublico);
 }

@@ -19,12 +19,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class RolDTO {
-    @NotNull
     private UUID publicId;
-
     @NotNull
     private EtipoRol tipoRol;
-
-    private List<EmpleadoEntity> empleados;
 
 }

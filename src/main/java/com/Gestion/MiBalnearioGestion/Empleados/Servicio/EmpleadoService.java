@@ -9,10 +9,7 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaExcep
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
@@ -20,6 +17,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
+import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
@@ -34,14 +32,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class EmpleadoService implements IEmpleadoService {
     private final EmpleadosRepositorio empleadosRepositorio;
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoMapper empleadoMapper;
-    private final UsuarioMapper usuarioMapper;
+    private final UsuarioService usuarioService;
     private final CredencialRepositorio credentialsRepository;
     private final RolesRepositorio rolesRepository;
     private final PasswordEncoder passwordEncoder;
@@ -54,7 +51,7 @@ public class EmpleadoService implements IEmpleadoService {
     @Override
     public EmpleadoResponseDTO crearEmpleado(EmpleadoDTO dtoEmpleado) {
 
-        // validaciones de duplicados
+
         if (empleadosRepositorio.findByDni(dtoEmpleado.getDni()).isPresent())
             throw new EntidadExistenteException("Ya existe un empleado con ese DNI", "EmpleadoEntity");
         if (empleadosRepositorio.findByEmail(dtoEmpleado.getEmail()).isPresent())
@@ -62,11 +59,10 @@ public class EmpleadoService implements IEmpleadoService {
         if (empleadosRepositorio.findByCuit(dtoEmpleado.getCuit()).isPresent())
             throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
 
-        // validación de username duplicado
         if (credentialsRepository.findByNombreUsuario(dtoEmpleado.getCredencial().nombreUsuario()).isPresent())
             throw new EntidadExistenteException("Ya existe ese nombre de usuario", "CredencialEntity");
 
-        // validación de rol
+
         boolean esGerente = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -76,16 +72,14 @@ public class EmpleadoService implements IEmpleadoService {
         if (esGerente && (rolSolicitado.contains("GERENTE") || rolSolicitado.contains("ADMIN")))
             throw new AccessDeniedException("Un Gerente solo puede crear empleados de rango menor");
 
-        // UsuarioEntity: solo publicId, sin datos de auth
         UsuarioEntity nuevoUsuario = new UsuarioEntity();
         nuevoUsuario = usuarioRepository.save(nuevoUsuario);
 
-        // roles de Spring Security
+
         Roles enumRol = Roles.valueOf(rolSolicitado);
         RolesEntity rolDb = rolesRepository.findByRole(enumRol)
-                .orElseThrow(() -> new RuntimeException("El rol no existe en la base de datos."));
+                .orElseThrow(() -> new EntidadNoEncontradaException("El rol no existe en la base de datos", "RolEntity"));
 
-        // CredencialEntity: todo lo de auth viene de dtoEmpleado.getCredencial()
         CredencialEntity nuevaCredencial = CredencialEntity.builder()
                 .nombreUsuario(dtoEmpleado.getCredencial().nombreUsuario())
                 .contrasenia(passwordEncoder.encode(dtoEmpleado.getCredencial().contrasenia()))
@@ -96,21 +90,42 @@ public class EmpleadoService implements IEmpleadoService {
         nuevaCredencial.setRefreshToken(jwtService.generateRefreshToken(nuevaCredencial));
         credentialsRepository.save(nuevaCredencial);
 
-        // EmpleadoEntity
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado);
         empleado.setUsuario(nuevoUsuario);
         empleado.setEstadoEmpleado(dtoEmpleado.getEstado());
 
-        if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getPublicId() != null) {
-            SectorEntity sector = sectorRepository.findByPublicId(dtoEmpleado.getSector().getPublicId())
-                    .orElseThrow(() -> new RuntimeException("El sector no existe."));
+        if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getNombre() != null) {
+            SectorEntity sector = sectorRepository.findByNombreIgnoreCase(dtoEmpleado.getSector().getNombre())
+                    .orElseThrow(() -> new EntidadNoEncontradaException("El sector '" + dtoEmpleado.getSector().getNombre() + "' no existe", "SectorEntity"));
             empleado.setSector(sector);
+        } else {
+            SectorEntity sectorDefecto = sectorRepository.findByNombreIgnoreCase("Administración")
+                    .orElseThrow(() -> new EntidadNoEncontradaException("Sector por defecto 'Administración' no inicializado.", "SectorEntity"));
+            empleado.setSector(sectorDefecto);
         }
 
-        if (dtoEmpleado.getRol() != null && dtoEmpleado.getRol().getPublicId() != null) {
-            RolEntity rolNegocio = rolRepository.findByPublicId(dtoEmpleado.getRol().getPublicId())
-                    .orElseThrow(() -> new RuntimeException("El rol de negocio no existe."));
+        try {
+            // 1. Limpiamos el String: "ROLE_MOZO" -> "MOZO", "MOZO" -> "MOZO"
+            String nombreRolPuro = rolSolicitado.replace("ROLE_", "").trim().toUpperCase();
+
+            // 2. Traducción de equivalencias (Mapeo manual para excepciones)
+            if (nombreRolPuro.equals("EMPLEADO") || nombreRolPuro.equals("ADMINISTRACION")) {
+                nombreRolPuro = "ADMINISTRATIVO"; // Lo volcamos al enum que sí tenés
+            }
+
+            // 3. Convertimos al Enum de negocio de forma segura
+            EtipoRol tipoRolNegocio = EtipoRol.valueOf(nombreRolPuro);
+
+            // 4. Buscamos en el repositorio de negocio
+            RolEntity rolNegocio = rolRepository.findByTipoRol(tipoRolNegocio)
+                    .orElseThrow(() -> new EntidadNoEncontradaException(
+                            "El rol de negocio para " + tipoRolNegocio + " no existe en la base de datos", "RolEntity"));
+
             empleado.setRol(rolNegocio);
+
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El rol solicitado '" + rolSolicitado +
+                    "' no se pudo asociar a ningún rol de negocio válido (Opciones: CARPERO, COCINERO, MOZO, CAJERO, GERENTE, GUARDAVIDAS, REPARTIDOR, ADMINISTRATIVO).");
         }
 
         return empleadoMapper.convertToResponseDTO(empleadosRepositorio.save(empleado));
@@ -119,11 +134,15 @@ public class EmpleadoService implements IEmpleadoService {
     @Override
     public void borrarEmpleado(UUID IDpublico)
     {
-        EmpleadoEntity buscado = empleadosRepositorio.
-                findByPublicId(IDpublico)
-                .orElseThrow(()-> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
+        EmpleadoEntity buscado = empleadosRepositorio
+                .findByPublicId(IDpublico)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Empleado no se encontro: ", IDpublico.toString()));
         buscado.setEstadoEmpleado(EEstadoEmpleado.INACTIVO);
         empleadosRepositorio.save(buscado);
+        if (buscado.getUsuario() != null) {
+            usuarioService.desactivarCuenta(buscado.getUsuario());
+        }
     }
 
     @Transactional
@@ -132,8 +151,19 @@ public class EmpleadoService implements IEmpleadoService {
         EmpleadoEntity empleado = empleadosRepositorio
                 .findByPublicId(IDpublico)
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
+        boolean esAdminOGerente = SecurityContextHolder.getContext()
+                .getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.contains("ADMIN") || a.contains("GERENTE"));
 
         empleadoMapper.updateEntityFromDTO(empleadoDto, empleado);
+
+        // en caso de que no sea un admin o gerente, el sueldo queda igual, lo mas limpio es hacer otro dto
+        if (!esAdminOGerente) {
+            empleado.setSueldo(empleadosRepositorio
+                    .findByPublicId(IDpublico)
+                    .get().getSueldo());
+        }
 
         return empleadoMapper.convertToResponseDTO(empleadosRepositorio.save(empleado));
     }
@@ -144,38 +174,24 @@ public class EmpleadoService implements IEmpleadoService {
         return empleadosRepositorio.
                 findByPublicId(IDpublico)
                 .map(empleadoMapper::convertToResponseDTO)
-                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró :" , IDpublico.toString()));
+                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontro :" , IDpublico.toString()));
     }
 
     @Override
-    public List<EmpleadoResponseDTO> buscarTodos(Integer dniIgual,
-                                         Integer dniContiene,
-                                         String nombreIgual,
-                                         String nombreContiene,
-                                         String apellidoIgual,
-                                         String apellidoContiene,
-                                         String telefonoIgual,
-                                         String telefonoContiene,
-                                         String cuitIgual,
-                                         String cuitContiene,
-                                         Double sueldoIgual,
-                                         Double sueldoMenor,
-                                         Double sueldoMayor,
-                                         String sectorIgual,
-                                         String sectorContiene,
-                                         String rolIgual,
-                                         String rolContiene,
-                                         String calleIgual,
-                                         String calleContiene,
-                                         Integer numeroIgual,
-                                         Integer numeroContiene,
-                                         String ciudadIgual,
-                                         String ciudadContiene,
-                                         String provinciaIgual,
-                                         String provinciaContiene,
-                                         EEstadoEmpleado estadoIgual,
-                                         EEstadoEmpleado estadoActivo,
-                                         EEstadoEmpleado estadoInactivo) {
+    public List<EmpleadoResponseDTO> buscarTodos(
+            Integer dniIgual, Integer dniContiene,
+            String nombreIgual, String nombreContiene,
+            String apellidoIgual, String apellidoContiene,
+            String telefonoIgual, String telefonoContiene,
+            String cuitIgual, String cuitContiene,
+            Double sueldoIgual, Double sueldoMenor, Double sueldoMayor,
+            String sectorIgual, String sectorContiene,
+            String rolIgual, String rolContiene,
+            String calleIgual, String calleContiene,
+            Integer numeroIgual, Integer numeroContiene,
+            String ciudadIgual, String ciudadContiene,
+            String provinciaIgual, String provinciaContiene,
+            EEstadoEmpleado estadoIgual) {
 
         PredicateSpecification<EmpleadoEntity> spec =
                 PredicateSpecification.allOf(
@@ -204,9 +220,7 @@ public class EmpleadoService implements IEmpleadoService {
                         EmpleadoSpecification.ciudadContiene(ciudadContiene),
                         EmpleadoSpecification.provinciaIgual(provinciaIgual),
                         EmpleadoSpecification.provinciaContiene(provinciaContiene),
-                        EmpleadoSpecification.estadoIgual(estadoIgual),
-                        EmpleadoSpecification.estadoActivo(estadoActivo),
-                        EmpleadoSpecification.estadoInactivo(estadoInactivo)
+                        EmpleadoSpecification.estadoIgual(estadoIgual)
                 );
 
 

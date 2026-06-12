@@ -19,11 +19,10 @@ public class EmpleadoResponseDTO {
     private String email;
     private double sueldo;
     private String cuit;
-    private EEstadoEmpleado estado;
+    private EEstadoEmpleado estadoEmpleado;
     private String telefono;
     private DireccionDTO direccion;
     private SectorDTO sector;
     private RolDTO rol;
-
-    private UUID usuarioPublicId; // ← solo el publicId, sin credenciales
+    private UUID usuarioPublicId;
 }

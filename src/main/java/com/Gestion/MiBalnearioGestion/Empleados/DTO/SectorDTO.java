@@ -17,7 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class SectorDTO {
-    @NotNull
     private UUID publicId;
     @NotNull
     @NotBlank
