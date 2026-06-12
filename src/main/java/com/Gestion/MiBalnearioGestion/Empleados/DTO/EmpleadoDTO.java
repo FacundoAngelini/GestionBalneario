@@ -54,11 +54,11 @@ public class EmpleadoDTO {
 
     @Valid
     @NotNull(message = "La direccion no puede estar vacia")
-    private DireccionEntity direccion;
+    private DireccionDTO direccion;
 
-    private UsuarioDTO usuario;// no entity y posible cambio
-    private RolEntity rol;
-    private SectorEntity sector;
+    private UsuarioDTO usuario;
+    private RolDTO rol;
+    private SectorDTO sector;
 
     @Valid
     @NotNull

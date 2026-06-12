@@ -101,7 +101,7 @@ public class AuthService {
                 .dni(request.getDni())
                 .email(request.getEmail())
                 .telefono(request.getTelefono())
-                .fecha_alta(LocalDate.now())
+                .fechaAlta(LocalDate.now())
                 .estado(true)
                 .usuario(nuevoUsuario) // Vinculado a la identidad base
                 .build();

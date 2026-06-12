@@ -16,15 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
     public class UsuarioDTO {
-    private UUID clienteId; // Mismo nombre que en la entidad para facilitarle la vida a ModelMapper
-    private String nombreUsuario; // Lo vamos a traer desde la Credencial asociada
-    private Set<String> roles;
-  /*  @NotBlank
+    private UUID clienteId;
     private String nombreUsuario;
-    @NotBlank
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String contrasenia;
-*/
-
-
+    private Set<String> roles;
 }

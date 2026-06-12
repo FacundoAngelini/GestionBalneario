@@ -11,42 +11,52 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/v1/clientes")
 @RequiredArgsConstructor
 public class ClienteController {
 
     private final IClienteService clienteService;
 
-    @GetMapping //Response entity
-    public ResponseEntity<List<ClienteResponse>> listarTodos(){return new ResponseEntity<>(clienteService.listarTodos(),HttpStatus.OK);}
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ClienteResponse> buscarPorIdpublico(@PathVariable UUID IDpublico)
-    {
-        return new ResponseEntity<ClienteResponse>(clienteService.buscarPorIDpublico(IDpublico), HttpStatus.OK);
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<List<ClienteResponse>> listarTodos(
+            @RequestParam(required = false) String nombreIgual,
+            @RequestParam(required = false) String nombreContiene,
+            @RequestParam(required = false) String apellidoIgual,
+            @RequestParam(required = false) String apellidoContiene,
+            @RequestParam(required = false) Integer dniIgual,
+            @RequestParam(required = false) String emailContiene,
+            @RequestParam(required = false) String telefonoIgual,
+            @RequestParam(required = false) Boolean estadoIgual) {
+        return ResponseEntity.ok(clienteService.listarTodos(nombreIgual, nombreContiene, apellidoIgual, apellidoContiene, dniIgual, emailContiene, telefonoIgual, estadoIgual));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esElPropioCliente(#id)")
+    public ResponseEntity<ClienteResponse> buscarPorIdPublico(@PathVariable UUID id) {
+        return ResponseEntity.ok(clienteService.buscarPorIDpublico(id));
+    }
+
     @PostMapping
-    public ResponseEntity<ClienteResponse> crearCliente (@Valid @RequestBody ClienteRequest clienteNuevo)
-    {
-        return new ResponseEntity<ClienteResponse>(clienteService.crearCliente(clienteNuevo),HttpStatus.CREATED);
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<ClienteResponse> crearCliente(
+            @Valid @RequestBody ClienteRequest clienteNuevo) {
+        return new ResponseEntity<>(clienteService.crearCliente(clienteNuevo), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteResponse> actualizarCliente (@PathVariable UUID IDpublico, @Valid @RequestBody ClienteRequest clienteNuevo)
-    {
-        return new ResponseEntity<ClienteResponse>(clienteService.actualizarCliente(IDpublico,clienteNuevo),HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElPropioCliente(#id)")
+    public ResponseEntity<ClienteResponse> actualizarCliente(
+            @PathVariable UUID id,
+            @Valid @RequestBody ClienteRequest clienteNuevo) {
+        return ResponseEntity.ok(clienteService.actualizarCliente(id, clienteNuevo));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser (@PathVariable UUID IDpublico)
-    {
-        clienteService.borrarCliente(IDpublico);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> borrarCliente(@PathVariable UUID id) {
+        clienteService.borrarCliente(id);
+        return ResponseEntity.noContent().build();
     }
-
-
 }

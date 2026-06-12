@@ -101,14 +101,14 @@ public class EmpleadoService implements IEmpleadoService {
         empleado.setUsuario(nuevoUsuario);
         empleado.setEstadoEmpleado(dtoEmpleado.getEstado());
 
-        if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getId() != null) {
-            SectorEntity sector = sectorRepository.findById(dtoEmpleado.getSector().getId())
+        if (dtoEmpleado.getSector() != null && dtoEmpleado.getSector().getPublicId() != null) {
+            SectorEntity sector = sectorRepository.findByPublicId(dtoEmpleado.getSector().getPublicId())
                     .orElseThrow(() -> new RuntimeException("El sector no existe."));
             empleado.setSector(sector);
         }
 
-        if (dtoEmpleado.getRol() != null && dtoEmpleado.getRol().getId() != null) {
-            RolEntity rolNegocio = rolRepository.findById(dtoEmpleado.getRol().getId())
+        if (dtoEmpleado.getRol() != null && dtoEmpleado.getRol().getPublicId() != null) {
+            RolEntity rolNegocio = rolRepository.findByPublicId(dtoEmpleado.getRol().getPublicId())
                     .orElseThrow(() -> new RuntimeException("El rol de negocio no existe."));
             empleado.setRol(rolNegocio);
         }

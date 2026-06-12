@@ -175,7 +175,7 @@ public class DataLoader implements CommandLineRunner {
                     .dni(12345678)
                     .email("juan.perez@example.com")
                     .telefono("2235555555")
-                    .fecha_alta(LocalDate.now())
+                    .fechaAlta(LocalDate.now())
                     .estado(true)
                     .usuario(usuarioCliente)
                     .build();
