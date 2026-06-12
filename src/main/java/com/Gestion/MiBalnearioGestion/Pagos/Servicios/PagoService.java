@@ -37,7 +37,7 @@ public class PagoService {
 
 
     @Transactional
-    public void procesarNotificacionPago(String paymentIdMP) {
+    public synchronized void procesarNotificacionPago(String paymentIdMP) {
         try {
             MercadoPagoConfig.setAccessToken(accessToken);
 
@@ -56,6 +56,17 @@ public class PagoService {
             System.out.println(payment.getStatus());
 
             if ("approved".equals(payment.getStatus())) {
+
+                // ==================== CORRECCIÓN ACÁ ====================
+                // Validamos si el otro hilo mutuo de Mercado Pago ya generó el ticket
+                boolean yaExisteTicket = ticketRepository.existsByPagoEntityId(pagoGeneric.getId());
+
+                if (yaExisteTicket) {
+                    System.out.println("La notificación ya fue procesada anteriormente. Evitando duplicados.");
+                    return; // Corta la ejecución acá, no hace inserts repetidos ni rompe por deadlock
+                }
+                // ========================================================
+
                 System.out.println("ENTRO IF DE PAGO APPROVED");
                 pagoGeneric.setEestadoPago(EestadoPago.PAGADO);
                 pagoRepository.save(pagoGeneric);

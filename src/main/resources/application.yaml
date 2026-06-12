@@ -23,13 +23,13 @@ jwt:
 
 mp:
   accesstoken: ${MP_ACCESS_TOKEN}
-  webhook: "https://culinary-bleep-woof.ngrok-free.dev/api/v1/public/webhooks/mercadopago"
+  webhook: "${MP_WEBHOOK_URL}/api/v1/public/webhooks/mercadopago"
   backurl:
-    success: "https://culinary-bleep-woof.ngrok-free.dev/pago-exitoso"
-    failure: "https://culinary-bleep-woof.ngrok-free.dev/pago-fallido"
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
   backurls:
-    success: "https://culinary-bleep-woof.ngrok-free.dev/pago-exitoso"
-    failure: "https://culinary-bleep-woof.ngrok-free.dev/pago-fallido"
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
 
 mail:
     host: smtp.gmail.com

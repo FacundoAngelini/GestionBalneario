@@ -13,4 +13,5 @@ public interface iTicketRepository extends JpaRepository<TicketEntity, Long> {
 
     Optional<TicketEntity>findByPublicId(UUID publicId);
     boolean existsByPublicId(UUID publicId);
+    boolean existsByPagoEntityId(Long pagoId);
 }
