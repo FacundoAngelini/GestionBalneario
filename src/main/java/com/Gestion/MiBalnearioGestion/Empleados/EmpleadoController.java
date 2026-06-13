@@ -4,6 +4,9 @@ import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Servicio.IEmpleadoService;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioContraseniaRequest;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioNombreUsuarioRequest;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,20 +57,20 @@ public class EmpleadoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')or @securityService.esElPropioEmpleado(#id)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElPropioEmpleado(#id)")
     ResponseEntity<EmpleadoResponseDTO>buscarPorId(@PathVariable UUID id){
         return ResponseEntity.ok(empleadoService.buscarPorIDpublico(id));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    ResponseEntity<EmpleadoResponseDTO> crearEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo){
+    ResponseEntity<EmpleadoResponseDTO> crearEmpleado(@Valid @RequestBody EmpleadoDTO EmpleadoNuevo){
         return new ResponseEntity<>(empleadoService.crearEmpleado(EmpleadoNuevo),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElPropioEmpleado(#id)")
-    ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@RequestBody EmpleadoDTO EmpleadoNuevo, @PathVariable UUID id){
+    ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@Valid @RequestBody EmpleadoDTO EmpleadoNuevo, @PathVariable UUID id){
         return ResponseEntity.ok(empleadoService.actualizarEmpleado(id, EmpleadoNuevo));
     }
 
@@ -75,6 +78,30 @@ public class EmpleadoController {
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Void> eliminarEmpleado(@PathVariable UUID id){
         empleadoService.borrarEmpleado(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/reactivar")
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<EmpleadoResponseDTO> reactivarEmpleado(@PathVariable UUID id) {
+        return ResponseEntity.ok(empleadoService.reactivarEmpleado(id));
+    }
+
+    @PatchMapping("/{id}/nombre-usuario")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.esElPropioEmpleado(#id)")
+    ResponseEntity<Void> cambiarNombreUsuario(
+            @PathVariable UUID id,
+            @Valid @RequestBody CambioNombreUsuarioRequest request) {
+        empleadoService.cambiarNombreUsuarioEmpleado(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/contrasenia")
+    @PreAuthorize("@securityService.esElPropioEmpleado(#id)")
+    ResponseEntity<Void> cambiarContrasenia(
+            @PathVariable UUID id,
+            @Valid @RequestBody CambioContraseniaRequest request) {
+        empleadoService.cambiarContraseniaEmpleado(id, request);
         return ResponseEntity.noContent().build();
     }
 

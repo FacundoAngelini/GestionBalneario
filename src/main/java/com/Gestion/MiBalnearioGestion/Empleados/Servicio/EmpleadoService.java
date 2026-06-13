@@ -14,10 +14,7 @@ import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioService;
+import com.Gestion.MiBalnearioGestion.Usuarios.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
@@ -229,5 +226,54 @@ public class EmpleadoService implements IEmpleadoService {
                 .map(empleadoMapper::convertToResponseDTO)
                 .toList();
     }
+
+    @Transactional
+    @Override
+    public EmpleadoResponseDTO reactivarEmpleado(UUID publicId) {
+        EmpleadoEntity empleado = empleadosRepositorio
+                .findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Empleado no encontrado: ", publicId.toString()));
+
+        if (empleado.getEstadoEmpleado() == EEstadoEmpleado.ACTIVO) {
+            throw new IllegalStateException("El empleado ya está activo");
+        }
+
+        empleado.setEstadoEmpleado(EEstadoEmpleado.ACTIVO);
+        empleadosRepositorio.save(empleado);
+
+        if (empleado.getUsuario() != null) {
+            usuarioService.reactivarCuenta(empleado.getUsuario());
+        }
+
+        return empleadoMapper.convertToResponseDTO(empleado);
+    }
+
+    @Transactional
+    @Override
+    public void cambiarNombreUsuarioEmpleado(UUID publicId, CambioNombreUsuarioRequest request) {
+        EmpleadoEntity empleado = empleadosRepositorio
+                .findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Empleado no encontrado: ", publicId.toString()));
+
+        usuarioService.cambiarNombreUsuario(empleado.getUsuario(), request.nuevoNombreUsuario());
+    }
+
+    @Transactional
+    @Override
+    public void cambiarContraseniaEmpleado(UUID publicId, CambioContraseniaRequest request) {
+        EmpleadoEntity empleado = empleadosRepositorio
+                .findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Empleado no encontrado: ", publicId.toString()));
+
+        usuarioService.cambiarContrasenia(
+                empleado.getUsuario(),
+                request.contraseniaActual(),
+                request.nuevaContrasenia(),
+                passwordEncoder);
+    }
+
 
 }

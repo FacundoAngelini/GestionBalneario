@@ -3,6 +3,8 @@ package com.Gestion.MiBalnearioGestion.Empleados.Servicio;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioContraseniaRequest;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioNombreUsuarioRequest;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,4 +29,7 @@ public interface IEmpleadoService {
             String provinciaIgual, String provinciaContiene,
             EEstadoEmpleado estadoIgual);
     EmpleadoResponseDTO buscarPorIDpublico(UUID IDpublico);
+    EmpleadoResponseDTO reactivarEmpleado(UUID publicId);
+    void cambiarContraseniaEmpleado(UUID publicId, CambioContraseniaRequest request);
+    void cambiarNombreUsuarioEmpleado(UUID publicId, CambioNombreUsuarioRequest request);
 }

@@ -11,11 +11,8 @@ import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioMapper;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
+import com.Gestion.MiBalnearioGestion.Usuarios.*;
 
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -170,5 +167,53 @@ public class ClienteService implements IClienteService {
                 .stream()
                 .map(clienteMapper::convertToResponseDTO)
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public ClienteResponse reactivarCliente(UUID publicId) {
+        ClienteEntity cliente = clienteRepository
+                .findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Cliente no encontrado: ", publicId.toString()));
+
+        if (cliente.isEstado()) {
+            throw new IllegalStateException("El cliente ya está activo");
+        }
+
+        cliente.setEstado(true);
+        clienteRepository.save(cliente);
+
+        if (cliente.getUsuario() != null) {
+            usuarioService.reactivarCuenta(cliente.getUsuario());
+        }
+
+        return clienteMapper.convertToResponseDTO(cliente);
+    }
+
+    @Transactional
+    @Override
+    public void cambiarNombreUsuarioCliente(UUID publicId, CambioNombreUsuarioRequest request) {
+        ClienteEntity cliente = clienteRepository
+                .findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Cliente no encontrado: ", publicId.toString()));
+
+        usuarioService.cambiarNombreUsuario(cliente.getUsuario(), request.nuevoNombreUsuario());
+    }
+
+    @Transactional
+    @Override
+    public void cambiarContraseniaCliente(UUID publicId, CambioContraseniaRequest request) {
+        ClienteEntity cliente = clienteRepository
+                .findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Cliente no encontrado: ", publicId.toString()));
+
+        usuarioService.cambiarContrasenia(
+                cliente.getUsuario(),
+                request.contraseniaActual(),
+                request.nuevaContrasenia(),
+                passwordEncoder);
     }
 }

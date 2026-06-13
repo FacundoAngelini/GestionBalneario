@@ -28,9 +28,10 @@ public class SecurityService {
 
 
     public boolean esElPropioEmpleado(UUID publicId) {
-        String usernameLogueado = obtenerUsernameActual();
 
-        return empleadosRepositorio.findByPublicId(publicId)
+         String usernameLogueado = obtenerUsernameActual();
+
+            return empleadosRepositorio.findByPublicId(publicId)
                 .map(empleado -> empleado.getUsuario())
                 .map(usuario -> usuario.getCredencial())
                 .map(credencial -> credencial.getNombreUsuario())

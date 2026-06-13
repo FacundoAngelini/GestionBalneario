@@ -141,4 +141,21 @@ public class AuthService {
 
         return new AuthResponse(newAccessToken, newRefreshToken);
     }
+
+    @Transactional
+    public void logout(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido");
+        }
+
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+
+        CredencialEntity credencial = credentialsRepository.findByNombreUsuario(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        // invalida el refresh token — ya no puede renovar el access token
+        credencial.setRefreshToken(null);
+        credentialsRepository.save(credencial);
+    }
 }

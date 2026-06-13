@@ -2,6 +2,8 @@ package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioContraseniaRequest;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioNombreUsuarioRequest;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,4 +25,8 @@ public interface IClienteService {
             String emailContiene,
             String telefonoIgual,
             Boolean estadoIgual);
+
+    void cambiarNombreUsuarioCliente(UUID publicId, CambioNombreUsuarioRequest request);
+    void cambiarContraseniaCliente(UUID publicId, CambioContraseniaRequest request);
+    ClienteResponse reactivarCliente(UUID publicId);
 }

@@ -2,6 +2,8 @@ package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioContraseniaRequest;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioNombreUsuarioRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -57,6 +59,30 @@ public class ClienteController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> borrarCliente(@PathVariable UUID id) {
         clienteService.borrarCliente(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/reactivar")
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<ClienteResponse> reactivarCliente(@PathVariable UUID id) {
+        return ResponseEntity.ok(clienteService.reactivarCliente(id));
+    }
+
+    @PatchMapping("/{id}/nombre-usuario")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.esElPropioCliente(#id)")
+    ResponseEntity<Void> cambiarNombreUsuario(
+            @PathVariable UUID id,
+            @Valid @RequestBody CambioNombreUsuarioRequest request) {
+        clienteService.cambiarNombreUsuarioCliente(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/contrasenia")
+    @PreAuthorize("@securityService.esElPropioCliente(#id)")
+    ResponseEntity<Void> cambiarContrasenia(
+            @PathVariable UUID id,
+            @Valid @RequestBody CambioContraseniaRequest request) {
+        clienteService.cambiarContraseniaCliente(id, request);
         return ResponseEntity.noContent().build();
     }
 }
