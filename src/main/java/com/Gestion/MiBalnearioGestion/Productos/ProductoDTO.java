@@ -13,7 +13,7 @@ import java.util.UUID;
 @ToString
 public class ProductoDTO {
 
-    @NotNull
+
     private UUID publicId;
 
     @NotBlank

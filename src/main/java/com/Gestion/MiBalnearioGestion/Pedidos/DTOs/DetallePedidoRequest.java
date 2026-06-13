@@ -1,12 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.DTOs;
 
-import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
 import com.Gestion.MiBalnearioGestion.Productos.ProductoDTO;
-import com.Gestion.MiBalnearioGestion.Productos.ProductoEntity;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class DetallePedidoDTO {
+public class DetallePedidoRequest {
 
-    @NotNull
+
     private UUID publicId;
 
     @NotNull
@@ -27,10 +23,7 @@ public class DetallePedidoDTO {
     @NotNull
     private double precio;
 
-    //@Min quiza se puede implementar para no tener pedidos vacios averiguar como
     @NotNull
-    private List<ProductoDTO> productos = new ArrayList<>();
+    private List<ProductoDTO> productos;
 
-    @NotNull
-    private PedidoDTO pedidoDTO;
 }
