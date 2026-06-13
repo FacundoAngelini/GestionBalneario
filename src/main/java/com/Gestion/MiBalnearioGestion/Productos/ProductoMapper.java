@@ -18,7 +18,7 @@ public class ProductoMapper implements IMapper<ProductoEntity,ProductoDTO> {
 
     @Override
     public ProductoEntity convertToEntity(ProductoDTO productoDTO, Class<ProductoEntity> entityClass) {
-        return modelMapper.map(productoDTO, ProductoEntity.class);
+        return modelMapper.map(productoDTO, entityClass);
     }
 
     public void updateEntityFromDTO(ProductoDTO dto, ProductoEntity entity) { //actualiza la entity con los datos del dto sin encesidad de crear una nueva y sin perder los datps de otros campos

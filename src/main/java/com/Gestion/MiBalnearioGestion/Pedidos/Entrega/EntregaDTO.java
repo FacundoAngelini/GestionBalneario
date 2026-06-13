@@ -1,7 +1,8 @@
-package com.Gestion.MiBalnearioGestion.Pedidos.DTOs;
+package com.Gestion.MiBalnearioGestion.Pedidos.Entrega;
 
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoReservaDTO;
+import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.PedidoRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -23,7 +24,7 @@ public class EntregaDTO {
     private PedidoRequest pedidoDTO;
 
     @NotNull
-    private EmpleadoDTO empleadoDTOw;
+    private EmpleadoDTO empleadoDTO;
 
     @NotNull
     private PagoPedidoReservaDTO pagoPedidoReserva;

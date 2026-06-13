@@ -15,7 +15,6 @@ import java.util.List;
 public class PedidoRequest {
 
 
-
     @NotNull
     private ETipoPedido tipoPedido;
 

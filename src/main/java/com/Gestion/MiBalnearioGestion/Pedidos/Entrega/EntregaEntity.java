@@ -1,7 +1,8 @@
-package com.Gestion.MiBalnearioGestion.Pedidos.Entity;
+package com.Gestion.MiBalnearioGestion.Pedidos.Entrega;
 
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoReservaEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;

@@ -15,8 +15,6 @@ import java.util.UUID;
 public class DetallePedidoRequest {
 
 
-    private UUID publicId;
-
     @NotNull
     private int cantidad;
 
@@ -24,6 +22,6 @@ public class DetallePedidoRequest {
     private double precio;
 
     @NotNull
-    private List<ProductoDTO> productos;
+    private List<UUID> productoIds;
 
 }

@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Servicios;
 
+import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.*;
@@ -34,6 +35,7 @@ public class PagoService {
     private final iPagoRepository pagoRepository;
     private final iTicketRepository ticketRepository;
     private final ReservaRepository reservaRepository;
+    private final EmailService emailService;
 
 
     @Transactional
@@ -47,7 +49,7 @@ public class PagoService {
             UUID publicIdLocal = UUID.fromString(payment.getExternalReference());
 
             PagoEntity pagoGeneric = pagoRepository.findByPublicId(publicIdLocal)
-                    .orElseThrow(() -> new RuntimeException("No existe el registro de pago local para ID: " + publicIdLocal));
+                    .orElseThrow(() -> new EntidadNoEncontradaException("No existe el registro de pago local para ID: " + publicIdLocal,"PagoEntity UUID"));
 
             if (pagoGeneric.getEestadoPago() == EestadoPago.PAGADO) {
                 return;
@@ -87,6 +89,8 @@ public class PagoService {
                         .build();
 
                 ticketRepository.save(ticket);
+
+                emailService.confirmacionPagoReserva((PagoReservaEntity) pagoGeneric,ticket);
 
             } else if ("rejected".equals(payment.getStatus())) {
                 pagoGeneric.setEestadoPago(EestadoPago.RECHAZADO);
