@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.DTOs;
 
+import com.Gestion.MiBalnearioGestion.Productos.ProductoDTO;
 import lombok.*;
 
 import java.util.List;
@@ -13,5 +14,5 @@ public class DetallePedidoResponse {
     private UUID publicId;
     private int cantidad;
     private double precio;
-    private List<UUID> IDSproductos;
+    private ProductoDTO producto;
 }

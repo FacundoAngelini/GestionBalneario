@@ -5,8 +5,10 @@ import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.DetallePedidoRequest;
 import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.DetallePedidoResponse;
 import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.PedidoRequest;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.DetallePedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Mappers.DetallePedidoMapper;
 import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iDetallePedidoRepository;
+import com.Gestion.MiBalnearioGestion.Productos.ProductoEntity;
 import com.Gestion.MiBalnearioGestion.Productos.ProductoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,20 +25,27 @@ public class DetallePedidoService {
     private final ProductoRepository productoRepository;
 
     @Transactional
-    public DetallePedidoResponse crearDetallePedido(DetallePedidoRequest request) {
+    public DetallePedidoEntity crearDetallePedido(DetallePedidoRequest request, PedidoEntity pedido) {
 
-        DetallePedidoEntity detallePedido= detallePedidoMapper.convertToEntity(request,DetallePedidoEntity.class);
-        detallePedido.setPublicId(UUID.randomUUID());
-        detallePedido.getProductos().stream()
-                .filter(producto -> !producto.isProductoDisponible())
-                .findFirst()
-                .ifPresent(productoNoDisponible -> {
-                    throw new ProductoException(
-                            String.format("El producto '%s' (ID: %s) no está disponible",
-                                    productoNoDisponible.getNombre(),
-                                    productoNoDisponible.getPublicId())
-                    );
-                });
-        return detallePedidoMapper.convertToResponseDTO(detallePedidoRepository.save(detallePedido));
+        ProductoEntity producto = productoRepository.findByPublicId(request.getProductoId())
+                .orElseThrow(() -> new ProductoException("Producto no encontrado"));
+
+        if (!producto.isProductoDisponible()) {
+            throw new ProductoException("Producto no disponible: " + producto.getNombre());
+        }
+
+        DetallePedidoEntity detalle = DetallePedidoEntity.builder()
+                .cantidad(request.getCantidad())
+                .precio(request.getPrecio())
+                .producto(producto)
+                .pedido(pedido)
+                .build();
+
+        return detallePedidoRepository.save(detalle);
+    }
+
+    public DetallePedidoResponse convertToResponse(DetallePedidoEntity entity) {
+        return detallePedidoMapper.convertToResponseDTO(entity);
     }
 }
+

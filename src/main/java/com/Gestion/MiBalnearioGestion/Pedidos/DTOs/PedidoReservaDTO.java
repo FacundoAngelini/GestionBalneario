@@ -4,15 +4,15 @@ import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoReservaDTO;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entrega.EntregaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-public class PedidoReservaDTO {
+import java.util.UUID;
 
+
+@Getter @Setter @NoArgsConstructor
+@SuperBuilder
+public class PedidoReservaDTO extends PedidoRequest {
     @NotNull
-     private ReservaDTO reserva;
-
-    @NotNull
-     private PagoPedidoReservaDTO pagoPedidoReservaDTO;
-
-    @NotNull
-    private EntregaDTO entregaDTO;
+    private UUID reservaId;
 }

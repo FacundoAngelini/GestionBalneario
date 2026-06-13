@@ -8,15 +8,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-public class PedidoMesaDTO {
 
+@Getter
+@Setter @NoArgsConstructor @SuperBuilder
+public class PedidoMesaDTO extends PedidoRequest {
     @NotNull
-    private UUID MesaId;
-
-    @NotNull
-    private PagoPedidoMesaDTO pagoPedidoMesaDTO;
-
+    private UUID mesaId;
 }
