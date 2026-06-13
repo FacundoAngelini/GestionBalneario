@@ -1,11 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Common.Handlers;
 
 
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.RecursoException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.ReservaException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.RecursoOcupadoException;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -92,6 +88,13 @@ public class GlobalExcepcionHandler {
     @ExceptionHandler(ReservaException.class)
     public ResponseEntity<ErrorResponse> ReservaExceptionHandler(ReservaException ex, HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(500, "Error en la reserva" + ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(403).body(error);
+    }
+
+    @ExceptionHandler(ProductoException.class)
+    public ResponseEntity<ErrorResponse> ProductoExceptionHandler (ProductoException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(500, "Producto no disponible" + ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(403).body(error);
     }

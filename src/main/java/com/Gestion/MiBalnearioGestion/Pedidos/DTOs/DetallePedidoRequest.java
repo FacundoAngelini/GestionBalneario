@@ -22,6 +22,6 @@ public class DetallePedidoRequest {
     private double precio;
 
     @NotNull
-    private List<UUID> productoIds;
+    private List<ProductoDTO> productos;
 
 }
