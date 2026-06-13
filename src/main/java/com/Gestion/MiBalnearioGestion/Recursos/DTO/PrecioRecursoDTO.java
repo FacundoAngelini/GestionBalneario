@@ -14,7 +14,6 @@ import java.util.UUID;
 @Builder
 public class PrecioRecursoDTO {
 
-    @NotNull
     private UUID publicId;
 
     @NotNull

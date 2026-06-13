@@ -2,8 +2,8 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CanchaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.ETipoCancha;
@@ -76,8 +76,7 @@ public class CanchaServicio implements ICanchaServicio {
                                        Integer capacidadIgual,
                                        Integer capacidadMenor,
                                        Integer capacidadMayor,
-                                       boolean iluminacion,
-                                       boolean noIluminacion){
+                                       boolean iluminacion){
 
         PredicateSpecification<CanchaEntity> spec=
                 PredicateSpecification.allOf(
@@ -85,8 +84,7 @@ public class CanchaServicio implements ICanchaServicio {
                         CanchaSpecification.capacidadIgual(capacidadIgual),
                         CanchaSpecification.capacidadMenor(capacidadMenor),
                         CanchaSpecification.capacidadMayor(capacidadMayor),
-                        CanchaSpecification.iluminacion(iluminacion),
-                        CanchaSpecification.Noiluminacion(noIluminacion)
+                        CanchaSpecification.iluminacion(iluminacion)
                 );
 
         return canchaRepositorio.findAll(spec)

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -21,16 +22,19 @@ public class PrecioRecursoControlador {
     private final IPrecioRecursoServicio precioRecursoServicio;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PrecioRecursoDTO> crearPrecio(@Valid @RequestBody PrecioRecursoDTO precioRecursoDTO){
         return new ResponseEntity<>(precioRecursoServicio.crearPrecio(precioRecursoDTO), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PrecioRecursoDTO> obtenerPrecio(@PathVariable UUID id){
         return ResponseEntity.ok(precioRecursoServicio.buscarPorPublicId(id));
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<PrecioRecursoDTO>> obtenerPrecio(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate precioVigenciaIgual,
                                                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate precioVigenciaMenor,
                                                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate precioVigenciaMayor,

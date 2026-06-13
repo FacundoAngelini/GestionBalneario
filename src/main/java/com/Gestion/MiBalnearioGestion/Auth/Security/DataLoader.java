@@ -14,12 +14,15 @@ import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
+import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ConfgTemporadaRepository;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ConfiguracionTemporadaEntity;
+import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +32,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 

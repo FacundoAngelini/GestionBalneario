@@ -1,6 +1,6 @@
-package com.Gestion.MiBalnearioGestion.Empleados.DTO;
+package com.Gestion.MiBalnearioGestion.Sector;
 
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -10,9 +10,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RolDTO {
+public class SectorDTO {
     private UUID publicId;
     @NotNull
-    private EtipoRol tipoRol;
+    @NotBlank
+    private String nombre;
 
 }

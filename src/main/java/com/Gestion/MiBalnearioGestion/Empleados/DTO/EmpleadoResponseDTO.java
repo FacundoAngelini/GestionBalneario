@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
+import com.Gestion.MiBalnearioGestion.Sector.SectorDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

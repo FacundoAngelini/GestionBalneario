@@ -13,7 +13,10 @@ import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
+import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Usuarios.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +28,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

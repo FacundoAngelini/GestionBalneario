@@ -2,8 +2,8 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.SombrillaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.SombrillaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.EtamanioSombrilla;
@@ -13,7 +13,6 @@ import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.ISombrillaSe
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.SombrillaSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

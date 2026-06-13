@@ -1,6 +1,5 @@
-package com.Gestion.MiBalnearioGestion.Empleados.Repositorio;
+package com.Gestion.MiBalnearioGestion.Sector;
 
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
