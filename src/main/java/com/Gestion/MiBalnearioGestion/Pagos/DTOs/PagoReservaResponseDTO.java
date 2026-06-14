@@ -14,9 +14,9 @@ import java.util.UUID;
 @Builder
 public class PagoReservaResponseDTO {
     private UUID publicId;
-    private double monto;
+    private Double monto;
     private EestadoPago estadoPago;
     private LocalDate fechaPago;
     private MetodoPago metodoPago;
-    private double descuento;
+    private Double descuento;
 }

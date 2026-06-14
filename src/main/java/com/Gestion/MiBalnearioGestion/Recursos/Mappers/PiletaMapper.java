@@ -14,28 +14,36 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Component
 @RequiredArgsConstructor
 public class PiletaMapper implements IMapper<PiletaEntity, PiletaDTO> {
-    private final ModelMapper modelMapper;
 
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(PiletaDTO.class, PiletaEntity.class)
-                .addMappings(mapper -> mapper.skip(PiletaEntity::setPublicId));
+    @Override
+    public PiletaDTO convertToDTO(PiletaEntity entity) {
+        PiletaDTO dto = new PiletaDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        if (entity.getSector() != null) {
+            dto.setSectorPublicId(entity.getSector().getPublicId());
+        }
+        dto.setEsClimatizada(entity.isEsClimatizada());
+        dto.setTamanio(entity.getTamanio());
+        return dto;
     }
 
     @Override
-    public PiletaEntity convertToEntity(PiletaDTO dto, Class<PiletaEntity> piletaEntityClass){
-        return modelMapper.map(dto, PiletaEntity.class);
+    public PiletaEntity convertToEntity(PiletaDTO dto, Class<PiletaEntity> clase) {
+        PiletaEntity entity = new PiletaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setEsReservable(dto.getEsReservable() != null && dto.getEsReservable());
+        entity.setEsClimatizada(dto.getEsClimatizada() != null && dto.getEsClimatizada());
+        entity.setTamanio(dto.getTamanio() != null ? dto.getTamanio() : 0);
+        return entity;
     }
 
-    @Override
-    public PiletaDTO convertToDTO(PiletaEntity entity){
-        return modelMapper.map(entity, PiletaDTO.class);
+    public void updateEntityFromDTO(PiletaDTO dto, PiletaEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        if (dto.getEsReservable() != null) entity.setEsReservable(dto.getEsReservable());
+        if (dto.getEsClimatizada() != null) entity.setEsClimatizada(dto.getEsClimatizada());
+        if (dto.getTamanio() != null) entity.setTamanio(dto.getTamanio());
     }
-
-    public void updateEntityFromDTO(PiletaDTO dto, PiletaEntity entity){
-        modelMapper.map(dto, entity);
-    }
-
-
 }
+

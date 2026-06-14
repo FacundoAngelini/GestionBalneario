@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CocheraDTO;
@@ -24,14 +25,12 @@ public class CocheraServicio implements ICocheraServicio {
     private final CocheraRepositorio cocheraRepositorio;
     private final SectorRepositorio sectorRepositorio;
     private final CocheraMapper cocheraMapper;
+    private final RecursoRepositorio recursoRepositorio;
 
     @Transactional
     @Override
     public CocheraDTO crearCochera(CocheraDTO dto) {
-        if(cocheraRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una cochera con este id", "CocheraEntity");
-        }
-        if(cocheraRepositorio.findByNumeroCochera(dto.getNumero_cochera()).isPresent()){
+        if(cocheraRepositorio.findByNumeroCochera(dto.getNumeroCochera()).isPresent()){
             throw new EntidadExistenteException("Ya existe una cochera con este numero", "CocheraEntity");
         }
         SectorEntity sectorDb = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
@@ -51,13 +50,13 @@ public class CocheraServicio implements ICocheraServicio {
                 .findByPublicId(id)
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro ninguna cochera con ese id", "CocheraEntity"));
 
-        if(!cochera.getSector().getPublicId().equals(dto.getPublicID())){
+        if(!cochera.getSector().getPublicId().equals(dto.getPublicId())){
             SectorEntity nuevoSector= sectorRepositorio.findByPublicId(dto.getSectorPublicId())
                     .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
             cochera.setSector(nuevoSector);
 
         }
-        cocheraMapper.updateToEntityFromDTO(dto,cochera);
+        cocheraMapper.updateEntityFromDTO(dto,cochera);
         return cocheraMapper.convertToDTO(cochera);
     }
 

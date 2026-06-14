@@ -30,14 +30,14 @@ public class EmpleadoDTO {
     private String apellido;
 
     @NotNull
-    private int dni;
+    private Integer dni;
 
     @NotBlank
     @Email
     private String email;
 
     @NotNull
-    private double sueldo;
+    private Double sueldo;
 
     @NotBlank
     @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")

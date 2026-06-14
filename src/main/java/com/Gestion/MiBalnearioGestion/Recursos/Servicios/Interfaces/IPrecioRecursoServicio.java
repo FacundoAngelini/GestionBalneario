@@ -19,4 +19,5 @@ public interface IPrecioRecursoServicio {
                                        Double precioMenor,
                                        Double precioMayor
     );
+    PrecioRecursoDTO actualizarPrecio(UUID publicId, PrecioRecursoDTO dto);
 }

@@ -18,11 +18,11 @@ public class ClienteResponse {
     private UUID publicId;
     private String nombre;
     private String apellido;
-    private int dni;
+    private Integer dni;
     private String email;
     private String telefono;
     private LocalDate fechaAlta;
-    private boolean estado;
+    private Boolean estado;
 
 
 }

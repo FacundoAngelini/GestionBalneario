@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Empleados;
 
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoUpdateDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Servicio.IEmpleadoService;
 import com.Gestion.MiBalnearioGestion.Usuarios.CambioContraseniaRequest;
@@ -31,47 +32,48 @@ public class EmpleadoController {
             @RequestParam(required = false) String nombreIgual,
             @RequestParam(required = false) String nombreContiene,
             @RequestParam(required = false) String apellidoIgual,
-            @RequestParam(required = false) String apellidoContiene,
+            @RequestParam(required = false)String apellidoContiene,
             @RequestParam(required = false) String telefonoIgual,
             @RequestParam(required = false) String telefonoContiene,
             @RequestParam(required = false) String cuitIgual,
             @RequestParam(required = false) String cuitContiene,
-            @RequestParam(required = false) Double sueldoIgual,
-            @RequestParam(required = false) Double sueldoMenor,
-            @RequestParam(required = false) Double sueldoMayor,
+            @RequestParam(required = false)Double sueldoIgual,
+            @RequestParam(required = false)Double sueldoMenor,
+            @RequestParam(required = false)Double sueldoMayor,
             @RequestParam(required = false) String sectorIgual,
-            @RequestParam(required = false) String sectorContiene,
+            @RequestParam(required = false)String sectorContiene,
             @RequestParam(required = false) String rolIgual,
-            @RequestParam(required = false) String rolContiene,
+            @RequestParam(required = false)String rolContiene,
             @RequestParam(required = false) String calleIgual,
             @RequestParam(required = false) String calleContiene,
             @RequestParam(required = false) Integer numeroIgual,
-            @RequestParam(required = false) Integer numeroContiene,
+            @RequestParam(required = false)Integer numeroContiene,
             @RequestParam(required = false) String ciudadIgual,
-            @RequestParam(required = false) String ciudadContiene,
+            @RequestParam(required = false)String ciudadContiene,
             @RequestParam(required = false) String provinciaIgual,
-            @RequestParam(required = false) String provinciaContiene,
+            @RequestParam(required = false)String provinciaContiene,
             @RequestParam(required = false, defaultValue = "ACTIVO") EEstadoEmpleado estadoIgual) {
-        return ResponseEntity.ok(empleadoService.buscarTodos(dniIgual, dniContiene, nombreIgual, nombreContiene, apellidoIgual, apellidoContiene, telefonoIgual, telefonoContiene, cuitIgual, cuitContiene, sueldoIgual, sueldoMenor, sueldoMayor, sectorIgual, sectorContiene, rolIgual, rolContiene,
-                calleIgual, calleContiene, numeroIgual, numeroContiene, ciudadIgual, ciudadContiene, provinciaIgual, provinciaContiene, estadoIgual));
+        return ResponseEntity.ok(empleadoService.listarEmpleados(dniIgual, dniContiene, nombreIgual, nombreContiene, apellidoIgual, apellidoContiene, telefonoIgual, telefonoContiene, cuitIgual, cuitContiene, sueldoIgual, sueldoMenor, sueldoMayor, sectorIgual, sectorContiene, rolIgual, rolContiene, calleIgual, calleContiene, numeroIgual, numeroContiene, ciudadIgual, ciudadContiene, provinciaIgual, provinciaContiene, estadoIgual));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElPropioEmpleado(#id)")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE') or @securityService.esElPropioEmpleado(#id)")
     ResponseEntity<EmpleadoResponseDTO>buscarPorId(@PathVariable UUID id){
         return ResponseEntity.ok(empleadoService.buscarPorIDpublico(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     ResponseEntity<EmpleadoResponseDTO> crearEmpleado(@Valid @RequestBody EmpleadoDTO EmpleadoNuevo){
         return new ResponseEntity<>(empleadoService.crearEmpleado(EmpleadoNuevo),HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElPropioEmpleado(#id)")
-    ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@Valid @RequestBody EmpleadoDTO EmpleadoNuevo, @PathVariable UUID id){
-        return ResponseEntity.ok(empleadoService.actualizarEmpleado(id, EmpleadoNuevo));
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
+    ResponseEntity<EmpleadoResponseDTO> actualizar(@PathVariable UUID id, @RequestBody @Valid EmpleadoUpdateDTO dto){
+        return ResponseEntity.ok(
+                empleadoService.actualizarEmpleado(id,dto)
+        );
     }
 
     @DeleteMapping("/{id}")

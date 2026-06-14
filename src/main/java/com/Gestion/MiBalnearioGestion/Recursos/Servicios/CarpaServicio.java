@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
@@ -24,13 +25,11 @@ public class CarpaServicio implements ICarpaServicio {
     private final CarpaRepositorio  carpaRepositorio;
     private final CarpaMapper  carpaMapper;
     private final SectorRepositorio sectorRepositorio;
+    private final RecursoRepositorio recursoRepositorio;
 
     @Transactional
     @Override
     public CarpaDTO crearCarpa(CarpaDTO carpa){
-        if(carpaRepositorio.findByPublicId(carpa.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe na carpa con este id", "CarpaEntity");
-        }
         if(carpaRepositorio.findByNumero(carpa.getNumero()).isPresent()){
             throw new EntidadExistenteException("Ya existe na carpa con este numero", "CarpaEntity");
         }
@@ -57,7 +56,7 @@ public class CarpaServicio implements ICarpaServicio {
             carpaEntity.setSector(nuevoSector);
         }
 
-        carpaMapper.updateToEntityFromDTO(carpa,carpaEntity);
+        carpaMapper.updateEntityFromDTO(carpa,carpaEntity);
         return carpaMapper.convertToDTO(carpaEntity);
     }
 

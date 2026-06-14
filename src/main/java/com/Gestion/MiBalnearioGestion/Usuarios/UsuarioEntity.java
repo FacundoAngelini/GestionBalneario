@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Usuarios;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

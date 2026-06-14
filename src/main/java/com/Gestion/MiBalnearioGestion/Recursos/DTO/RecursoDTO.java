@@ -17,13 +17,13 @@ import java.util.UUID;
 @SuperBuilder
 public class RecursoDTO {
 
-    private UUID publicID;
+    private UUID publicId;
 
     @NotBlank
     private String nombre;
 
     @NotNull
-    private boolean esReservable;
+    private Boolean esReservable;
 
     @NotNull
     private UUID sectorPublicId;

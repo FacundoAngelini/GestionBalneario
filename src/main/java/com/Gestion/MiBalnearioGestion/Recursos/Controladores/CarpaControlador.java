@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/recursos/carpas")
+@RequestMapping("/api/v1/recursos-carpas")
 @RestController
 @RequiredArgsConstructor
 public class CarpaControlador {

@@ -15,25 +15,29 @@ import org.springframework.stereotype.Component;
 public class CocheraMapper implements IMapper <CocheraEntity, CocheraDTO> {
     private final ModelMapper modelMapper;
 
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(CocheraDTO.class, CocheraEntity.class)
-                .addMappings(mapper -> mapper.skip(CocheraEntity::setPublicId));
-    }
-
-    @Override
-    public CocheraEntity convertToEntity(CocheraDTO dto, Class<CocheraEntity> clazz) {
-        return modelMapper.map(dto, CocheraEntity.class);
-    }
-
     @Override
     public CocheraDTO convertToDTO(CocheraEntity entity) {
-        return modelMapper.map(entity, CocheraDTO.class);
+        CocheraDTO dto = new CocheraDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        if (entity.getSector() != null) dto.setSectorPublicId(entity.getSector().getPublicId());
+        dto.setNumeroCochera(entity.getNumeroCochera());
+        return dto;
     }
 
-    public void updateToEntityFromDTO(CocheraDTO dto, CocheraEntity entity) {
-        modelMapper.map(dto, entity);
+    @Override
+    public CocheraEntity convertToEntity(CocheraDTO dto, Class<CocheraEntity> clase) {
+        CocheraEntity entity = new CocheraEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setEsReservable(dto.getEsReservable() != null && dto.getEsReservable());
+        entity.setNumeroCochera(dto.getNumeroCochera());
+        return entity;
     }
 
+    public void updateEntityFromDTO(CocheraDTO dto, CocheraEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        if (dto.getEsReservable() != null) entity.setEsReservable(dto.getEsReservable());
+        if (dto.getNumeroCochera() > 0) entity.setNumeroCochera(dto.getNumeroCochera());
+    }
 }

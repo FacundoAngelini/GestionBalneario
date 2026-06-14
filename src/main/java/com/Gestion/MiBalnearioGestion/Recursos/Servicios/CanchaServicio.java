@@ -29,10 +29,6 @@ public class CanchaServicio implements ICanchaServicio {
     @Transactional
     @Override
     public CanchaDTO crearCancha(CanchaDTO canchaDTO){
-        if(canchaRepositorio.findByPublicId(canchaDTO.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una cancha con esta id", "CanchaEntity");
-        }
-
         SectorEntity sectorDb = sectorRepositorio.findByPublicId(canchaDTO.getSectorPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
@@ -66,7 +62,7 @@ public class CanchaServicio implements ICanchaServicio {
             cancha.setSector(nuevoSector);
         }
 
-        canchaMapper.updateToEntity(canchaDTO,cancha);
+        canchaMapper.updateEntityFromDTO(canchaDTO,cancha);
         return canchaMapper.convertToDTO(cancha);
     }
 
@@ -76,7 +72,7 @@ public class CanchaServicio implements ICanchaServicio {
                                        Integer capacidadIgual,
                                        Integer capacidadMenor,
                                        Integer capacidadMayor,
-                                       boolean iluminacion){
+                                       Boolean iluminacion){
 
         PredicateSpecification<CanchaEntity> spec=
                 PredicateSpecification.allOf(

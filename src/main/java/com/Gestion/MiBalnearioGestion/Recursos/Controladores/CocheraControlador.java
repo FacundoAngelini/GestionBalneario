@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@RequestMapping("/recrusos/cocheras")
+@RequestMapping("/api/v1/recursos-cocheras")
 @RestController
 public class CocheraControlador {
     private final ICocheraServicio cocheraServicio;

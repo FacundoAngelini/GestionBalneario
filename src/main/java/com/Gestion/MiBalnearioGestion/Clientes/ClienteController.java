@@ -41,7 +41,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     public ResponseEntity<ClienteResponse> crearCliente(
             @Valid @RequestBody ClienteRequest clienteNuevo) {
         return new ResponseEntity<>(clienteService.crearCliente(clienteNuevo), HttpStatus.CREATED);
@@ -56,7 +56,7 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.esElPropioCliente(#id)")
     public ResponseEntity<Void> borrarCliente(@PathVariable UUID id) {
         clienteService.borrarCliente(id);
         return ResponseEntity.noContent().build();

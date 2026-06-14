@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/recursos-pileta")
+@RequestMapping("/api/v1/recursos-piletas")
 @RequiredArgsConstructor
 public class PiletaControlador {
     private final IPiletaServicio  piletaServicio;
@@ -26,14 +26,14 @@ public class PiletaControlador {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PiletaDTO> actualizarPileta(@Valid @RequestBody PiletaDTO piletaDTO, @PathVariable UUID Id){
-        return ResponseEntity.ok(piletaServicio.actualizarPileta(piletaDTO, Id));
+    public ResponseEntity<PiletaDTO> actualizarPileta(@Valid @RequestBody PiletaDTO piletaDTO, @PathVariable UUID id){
+        return ResponseEntity.ok(piletaServicio.actualizarPileta(piletaDTO, id));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PiletaDTO> obtenerPileta(@PathVariable UUID Id){
-        return ResponseEntity.ok(piletaServicio.obtenerPileta(Id));
+    public ResponseEntity<PiletaDTO> obtenerPileta(@PathVariable UUID id){
+        return ResponseEntity.ok(piletaServicio.obtenerPileta(id));
     }
 
     @GetMapping

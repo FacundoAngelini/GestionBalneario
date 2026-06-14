@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Recursos.DTO;
 
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.EtamanioSombrilla;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,8 @@ import lombok.experimental.SuperBuilder;
 public class SombrillaDTO extends RecursoDTO{
     @NotNull
     @Min(1)
-    private int numero;
+    private Integer numero;
 
     @NotNull
-    private EtamanioSombrilla etamanio;
+    private EtamanioSombrilla tamanio;
 }

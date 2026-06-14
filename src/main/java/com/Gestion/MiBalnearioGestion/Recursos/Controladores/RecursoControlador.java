@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/recursos")
+@RequestMapping("/api/v1/recursos")
 @RequiredArgsConstructor
 @RestController
 public class RecursoControlador {

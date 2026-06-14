@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.PiletaDTO;
@@ -24,13 +25,11 @@ public class PiletaServicio implements IPiletaServicio {
     private final PiletaRepositorio piletaRepositorio;
     private final PiletaMapper  piletaMapper;
     private final SectorRepositorio sectorRepositorio;
+    private final RecursoRepositorio recursoRepositorio;
 
     @Transactional
     @Override
     public PiletaDTO crearPileta(PiletaDTO dto){
-        if (piletaRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una entidad con esta id", "PiletaEntity");
-        }
         SectorEntity sectorDb = sectorRepositorio.findByPublicId(dto.getSectorPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 

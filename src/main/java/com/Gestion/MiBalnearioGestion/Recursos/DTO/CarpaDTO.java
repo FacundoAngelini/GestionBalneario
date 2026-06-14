@@ -16,11 +16,11 @@ import lombok.experimental.SuperBuilder;
 public class CarpaDTO extends RecursoDTO{
     @NotNull
     @Min(1)
-    private int numero;
+    private Integer numero;
     @NotNull
     @Min(1)
-    private int pasillo;
+    private Integer pasillo;
     @NotNull
     @Min(2)
-    private int capacidad;
+    private Integer capacidad;
 }

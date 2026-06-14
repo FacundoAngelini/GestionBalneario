@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.MesaDTO;
@@ -24,13 +25,11 @@ public class MesaServicio implements IMesaServcio {
     private final MesaRepositorio mesaRepositorio;
     private final MesaMapper mesaMapper;
     private final SectorRepositorio sectorRepositorio;
+    private final RecursoRepositorio recursoRepositorio;
 
     @Transactional
     @Override
     public MesaDTO crearMesa(MesaDTO dto){
-        if(mesaRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una mesa con esta id", "MesaEntity");
-        }
         if(mesaRepositorio.findByNumero(dto.getNumero()).isPresent()){
             throw new EntidadExistenteException("Ya existe una mesa con esta numero", "MesaEntity");
         }
@@ -56,7 +55,7 @@ public class MesaServicio implements IMesaServcio {
             mesa.setSector(nuevoSector);
 
         }
-        mesaMapper.updateToEntity(dto, mesa);
+        mesaMapper.updateEntityFromDTO(dto, mesa);
         return mesaMapper.convertToDTO(mesa);
     }
 

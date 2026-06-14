@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,8 +16,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class PiletaDTO extends RecursoDTO{
     @NotNull
-    private boolean esClimatizada;
+    private Boolean esClimatizada;
 
     @NotNull
-    private int tamanio;
+    private Integer tamanio;
 }

@@ -15,6 +15,6 @@ public class CheckoutResponseDTO {
     private UUID reservaPublicId;
     private UUID pagoPublicId;
     private String urlMercadoPago;
-    private double montoTotal;
+    private Double montoTotal;
     private String mensaje;
 }

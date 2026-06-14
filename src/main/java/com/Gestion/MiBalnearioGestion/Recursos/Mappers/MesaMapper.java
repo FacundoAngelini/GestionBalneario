@@ -15,25 +15,32 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class MesaMapper implements IMapper<MesaEntity, MesaDTO> {
-    private final ModelMapper modelMapper;
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.typeMap(MesaDTO.class, MesaEntity.class)
-                .addMappings(mapper -> mapper.skip(MesaEntity::setPublicId));
+    @Override
+    public MesaDTO convertToDTO(MesaEntity entity) {
+        MesaDTO dto = new MesaDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        if (entity.getSector() != null) dto.setSectorPublicId(entity.getSector().getPublicId());
+        dto.setNumero(entity.getNumero());
+        dto.setCapacidad(entity.getCapacidad());
+        return dto;
     }
 
     @Override
-    public MesaEntity convertToEntity (MesaDTO dto, Class<MesaEntity> entityClass){
-        return modelMapper.map(dto, MesaEntity.class);
+    public MesaEntity convertToEntity(MesaDTO dto, Class<MesaEntity> clase) {
+        MesaEntity entity = new MesaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setEsReservable(dto.getEsReservable() != null && dto.getEsReservable());
+        entity.setNumero(dto.getNumero());
+        entity.setCapacidad(dto.getCapacidad());
+        return entity;
     }
 
-    @Override
-    public MesaDTO convertToDTO (MesaEntity entity){
-        return modelMapper.map(entity, MesaDTO.class);
-    }
-
-    public void updateToEntity(MesaDTO dto, MesaEntity entity){
-        modelMapper.map(dto, entity);
+    public void updateEntityFromDTO(MesaDTO dto, MesaEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        if (dto.getEsReservable() != null) entity.setEsReservable(dto.getEsReservable());
+        if (dto.getNumero() > 0) entity.setNumero(dto.getNumero());
+        if (dto.getCapacidad() > 0) entity.setCapacidad(dto.getCapacidad());
     }
 }

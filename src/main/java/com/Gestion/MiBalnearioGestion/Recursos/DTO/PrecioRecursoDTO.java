@@ -18,7 +18,7 @@ public class PrecioRecursoDTO {
 
     @NotNull
     @Min(0)
-    private double precio;
+    private Double precio;
 
     @NotNull
     private LocalDate fechaVigencia;

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@RequestMapping("/recursos/canchas")
+@RequestMapping("/api/v1/recursos-canchas")
 @RestController
 public class CanchaControlador {
     private final ICanchaServicio canchaServicio;
@@ -44,7 +44,7 @@ public class CanchaControlador {
                                                           Integer capacidadIgual,
                                                           Integer capacidadMenor,
                                                           Integer capacidadMayor,
-                                                          boolean iluminacion) {
+                                                          Boolean iluminacion) {
         return ResponseEntity.ok(canchaServicio.buscarTodas(cancha, capacidadIgual, capacidadMenor, capacidadMayor, iluminacion));
     }
 }

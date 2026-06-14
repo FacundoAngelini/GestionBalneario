@@ -29,9 +29,7 @@ public class PrecioRecursoServicio implements IPrecioRecursoServicio {
     @Transactional
     @Override
     public PrecioRecursoDTO crearPrecio(PrecioRecursoDTO dto){
-        if(precioRecursoRepositorio.findByPublicId(dto.getPublicId()).isPresent()){
-            throw new EntidadExistenteException("Ya existe un precio con esta id", "PrecioRecursoEntity");
-        }
+
         RecursoEntity recurso= recursoRepositorio.findByPublicId(dto.getRecursoPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("Recurso no encontrado", "RecursoEntity"));
 
@@ -80,5 +78,26 @@ public class PrecioRecursoServicio implements IPrecioRecursoServicio {
                 .map(precioRecursoMapper::convertToDTO)
                 .toList();
 
+    }
+    @Transactional
+    @Override
+    public PrecioRecursoDTO actualizarPrecio(UUID publicId, PrecioRecursoDTO dto) {
+        PrecioRecursoEntity precio = precioRecursoRepositorio.findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "Precio no encontrado", "PrecioRecursoEntity"));
+
+        precio.setPrecio(dto.getPrecio());
+        precio.setFechaVigencia(dto.getFechaVigencia());
+        precio.setFechaCaducada(dto.getFechaCaducada());
+
+        // si cambió el recurso asociado
+        if (!precio.getRecurso().getPublicId().equals(dto.getRecursoPublicId())) {
+            RecursoEntity recurso = recursoRepositorio.findByPublicId(dto.getRecursoPublicId())
+                    .orElseThrow(() -> new EntidadNoEncontradaException(
+                            "Recurso no encontrado", "RecursoEntity"));
+            precio.setRecurso(recurso);
+        }
+
+        return precioRecursoMapper.convertToDTO(precioRecursoRepositorio.save(precio));
     }
 }

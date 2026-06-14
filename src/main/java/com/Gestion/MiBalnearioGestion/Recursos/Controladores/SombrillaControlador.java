@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/recursos-sombrilla")
+@RequestMapping("/api/v1/recursos-sombrillas")
 @RequiredArgsConstructor
 public class SombrillaControlador {
     private final ISombrillaServicio sombrillaServicio;

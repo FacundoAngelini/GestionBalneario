@@ -18,15 +18,16 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class CanchaDTO extends RecursoDTO{
 
+
     @NotNull
     private ETipoCancha tipoCancha;
 
     @Min(2)
     @NotNull
-    private int capacidad;
+    private Integer capacidad;
 
     @NotNull
-    private boolean iluminacion;
+    private Boolean iluminacion;
 
 
 }

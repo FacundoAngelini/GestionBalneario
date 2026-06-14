@@ -13,31 +13,35 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CarpaMapper implements IMapper<CarpaEntity, CarpaDTO> {
-
-    private final ModelMapper modelMapper;
-
-    @PostConstruct
-    public void configureMapper() {
-        // 1. Evitamos que si un campo viene null en el DTO, te borre lo que ya habia en la BD
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-
-        // 2. Le decimos explicitamente que cuando actualice una CanchaEntity,
-        // JAMÁS intente pisar el publicId heredado del Padre.
-        modelMapper.typeMap(CarpaDTO.class, CarpaEntity.class)
-                .addMappings(mapper -> mapper.skip(CarpaEntity::setPublicId));
+    @Override
+    public CarpaDTO convertToDTO(CarpaEntity entity) {
+        CarpaDTO dto = new CarpaDTO();
+        dto.setPublicId(entity.getPublicId());
+        dto.setNombre(entity.getNombre());
+        dto.setEsReservable(entity.isEsReservable());
+        if (entity.getSector() != null) dto.setSectorPublicId(entity.getSector().getPublicId());
+        dto.setNumero(entity.getNumero());
+        dto.setPasillo(entity.getPasillo());
+        dto.setCapacidad(entity.getCapacidad());
+        return dto;
     }
 
     @Override
-    public CarpaEntity convertToEntity(CarpaDTO carpaDTO, Class<CarpaEntity> carpaEntityClass){
-        return modelMapper.map(carpaDTO, CarpaEntity.class);
+    public CarpaEntity convertToEntity(CarpaDTO dto, Class<CarpaEntity> clase) {
+        CarpaEntity entity = new CarpaEntity();
+        entity.setNombre(dto.getNombre());
+        entity.setEsReservable(dto.getEsReservable() != null && dto.getEsReservable());
+        entity.setNumero(dto.getNumero());
+        entity.setPasillo(dto.getPasillo());
+        entity.setCapacidad(dto.getCapacidad());
+        return entity;
     }
 
-    @Override
-    public CarpaDTO convertToDTO(CarpaEntity carpaEntity){
-        return modelMapper.map(carpaEntity, CarpaDTO.class);
-    }
-
-    public void  updateToEntityFromDTO(CarpaDTO carpaDTO, CarpaEntity entity){
-        modelMapper.map(carpaDTO, CarpaDTO.class);
+    public void updateEntityFromDTO(CarpaDTO dto, CarpaEntity entity) {
+        if (dto.getNombre() != null) entity.setNombre(dto.getNombre());
+        if (dto.getEsReservable() != null) entity.setEsReservable(dto.getEsReservable());
+        if (dto.getNumero() > 0) entity.setNumero(dto.getNumero());
+        if (dto.getPasillo() > 0) entity.setPasillo(dto.getPasillo());
+        if (dto.getCapacidad() > 0) entity.setCapacidad(dto.getCapacidad());
     }
 }

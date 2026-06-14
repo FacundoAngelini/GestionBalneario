@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/precios-recursos")
+@RequestMapping("/api/v1/recursos-precios")
 @RequiredArgsConstructor
 public class PrecioRecursoControlador {
     private final IPrecioRecursoServicio precioRecursoServicio;
@@ -46,5 +46,12 @@ public class PrecioRecursoControlador {
                                                                 @RequestParam(required = false) Double precioMayor){
         return ResponseEntity.ok(precioRecursoServicio.buscarTodos(precioVigenciaIgual, precioVigenciaMenor, precioVigenciaMayor, precioCaducidoIgual, precioCaducidoMenor, precioCaducidoMayor, precioIgual, precioMenor, precioMayor));
 
+    }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PrecioRecursoDTO> actualizarPrecio(
+            @PathVariable UUID id,
+            @Valid @RequestBody PrecioRecursoDTO dto) {
+        return ResponseEntity.ok(precioRecursoServicio.actualizarPrecio(id, dto));
     }
 }

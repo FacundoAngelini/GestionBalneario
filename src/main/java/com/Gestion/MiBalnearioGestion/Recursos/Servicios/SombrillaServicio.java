@@ -29,9 +29,6 @@ public class SombrillaServicio implements ISombrillaServicio {
     @Transactional
     @Override
     public SombrillaDTO crearSombrilla(SombrillaDTO dto){
-        if(sombrillaRepositorio.findByPublicId(dto.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una sombrilla con esta id", "SombrillaEntity");
-        }
         if(sombrillaRepositorio.findByNumero(dto.getNumero()).isPresent()){
             throw new EntidadExistenteException("Ya existe una sombrilla con esta numero", "SombrillaEntity");
         }

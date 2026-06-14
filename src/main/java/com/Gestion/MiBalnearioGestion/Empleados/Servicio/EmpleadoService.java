@@ -9,6 +9,7 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaExcep
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoUpdateDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Empleados.Mapper.EmpleadoMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class EmpleadoService implements IEmpleadoService {
@@ -146,22 +148,27 @@ public class EmpleadoService implements IEmpleadoService {
 
     @Transactional
     @Override
-    public EmpleadoResponseDTO actualizarEmpleado(UUID IDpublico, EmpleadoDTO empleadoDto) {
-        EmpleadoEntity empleado = empleadosRepositorio
-                .findByPublicId(IDpublico)
-                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontró : ", IDpublico.toString()));
-        boolean esAdminOGerente = SecurityContextHolder.getContext()
-                .getAuthentication().getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(a -> a.contains("ADMIN") || a.contains("GERENTE"));
+    public EmpleadoResponseDTO actualizarEmpleado(UUID IDpublico, EmpleadoUpdateDTO dto)
+    {
+        EmpleadoEntity empleado = empleadosRepositorio.findByPublicId(IDpublico)
+                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no encontrado "+IDpublico.toString(), "EmpleadoEntity"));
 
-        empleadoMapper.updateEntityFromDTO(empleadoDto, empleado);
+        if (empleadosRepositorio.findByDni(dto.getDni()).isPresent())
+            throw new EntidadExistenteException("Ya existe un empleado con ese DNI", "EmpleadoEntity");
+        if (empleadosRepositorio.findByEmail(dto.getEmail()).isPresent())
+            throw new EntidadExistenteException("Ya existe un empleado con ese email", "EmpleadoEntity");
+        if (empleadosRepositorio.findByCuit(dto.getCuit()).isPresent())
+            throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
 
-        // en caso de que no sea un admin o gerente, el sueldo queda igual, lo mas limpio es hacer otro dto
-        if (!esAdminOGerente) {
-            empleado.setSueldo(empleadosRepositorio
-                    .findByPublicId(IDpublico)
-                    .get().getSueldo());
+        empleadoMapper.updateEntityFromDTO(dto, empleado);
+        if(dto.getRolPublicId()!=null){RolEntity rol = rolRepository.findByPublicId(dto.getRolPublicId())
+                .orElseThrow(() -> new EntidadNoEncontradaException("Rol no encontrado"+ dto.getRolPublicId().toString(),"RolEntity"));
+            empleado.setRol(rol);
+        }
+        if(dto.getSectorPublicId()!=null){
+            SectorEntity sector = sectorRepository.findByPublicId(dto.getSectorPublicId())
+                    .orElseThrow(() -> new EntidadNoEncontradaException("Sector no encontrado"+ dto.getSectorPublicId().toString(),"SectorEntity"));
+            empleado.setSector(sector);
         }
 
         return empleadoMapper.convertToResponseDTO(empleadosRepositorio.save(empleado));
@@ -177,20 +184,19 @@ public class EmpleadoService implements IEmpleadoService {
     }
 
     @Override
-    public List<EmpleadoResponseDTO> buscarTodos(
-            Integer dniIgual, Integer dniContiene,
-            String nombreIgual, String nombreContiene,
-            String apellidoIgual, String apellidoContiene,
-            String telefonoIgual, String telefonoContiene,
-            String cuitIgual, String cuitContiene,
-            Double sueldoIgual, Double sueldoMenor, Double sueldoMayor,
-            String sectorIgual, String sectorContiene,
-            String rolIgual, String rolContiene,
-            String calleIgual, String calleContiene,
-            Integer numeroIgual, Integer numeroContiene,
-            String ciudadIgual, String ciudadContiene,
-            String provinciaIgual, String provinciaContiene,
-            EEstadoEmpleado estadoIgual) {
+    public List<EmpleadoResponseDTO> listarEmpleados(  Integer dniIgual, Integer dniContiene,
+                                               String nombreIgual, String nombreContiene,
+                                               String apellidoIgual, String apellidoContiene,
+                                               String telefonoIgual, String telefonoContiene,
+                                               String cuitIgual, String cuitContiene,
+                                               Double sueldoIgual, Double sueldoMenor, Double sueldoMayor,
+                                               String sectorIgual, String sectorContiene,
+                                               String rolIgual, String rolContiene,
+                                               String calleIgual, String calleContiene,
+                                               Integer numeroIgual, Integer numeroContiene,
+                                               String ciudadIgual, String ciudadContiene,
+                                               String provinciaIgual, String provinciaContiene,
+                                               EEstadoEmpleado estadoIgual) {
 
         PredicateSpecification<EmpleadoEntity> spec =
                 PredicateSpecification.allOf(
@@ -205,25 +211,22 @@ public class EmpleadoService implements IEmpleadoService {
                         EmpleadoSpecification.cuitIgual(cuitIgual),
                         EmpleadoSpecification.cuitContiene(cuitContiene),
                         EmpleadoSpecification.sueldoIgual(sueldoIgual),
-                        EmpleadoSpecification.sueldoMenor(sueldoMenor),
                         EmpleadoSpecification.sueldoMayor(sueldoMayor),
+                        EmpleadoSpecification.sueldoMenor(sueldoMenor),
                         EmpleadoSpecification.sectorIgual(sectorIgual),
                         EmpleadoSpecification.sectorContiene(sectorContiene),
                         EmpleadoSpecification.rolIgual(rolIgual),
                         EmpleadoSpecification.rolContiene(rolContiene),
                         EmpleadoSpecification.calleIgual(calleIgual),
                         EmpleadoSpecification.calleContiene(calleContiene),
-                        EmpleadoSpecification.numeroIgual(numeroIgual),
-                        EmpleadoSpecification.numeroContiene(numeroContiene),
                         EmpleadoSpecification.ciudadIgual(ciudadIgual),
                         EmpleadoSpecification.ciudadContiene(ciudadContiene),
                         EmpleadoSpecification.provinciaIgual(provinciaIgual),
                         EmpleadoSpecification.provinciaContiene(provinciaContiene),
                         EmpleadoSpecification.estadoIgual(estadoIgual)
                 );
-
-
-        return empleadosRepositorio.findAll(spec)
+        return empleadosRepositorio
+                .findAll(spec)
                 .stream()
                 .map(empleadoMapper::convertToResponseDTO)
                 .toList();

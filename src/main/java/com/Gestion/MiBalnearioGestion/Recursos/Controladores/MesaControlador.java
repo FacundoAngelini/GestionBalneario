@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/recursos-mesas")
+@RequestMapping("/api/v1/recursos-mesas")
 @RequiredArgsConstructor
 public class MesaControlador {
     private final IMesaServcio mesaServcio;
