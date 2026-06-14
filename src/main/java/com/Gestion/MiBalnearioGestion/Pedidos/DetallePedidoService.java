@@ -44,8 +44,5 @@ public class DetallePedidoService {
         return detallePedidoRepository.save(detalle);
     }
 
-    public DetallePedidoResponse convertToResponse(DetallePedidoEntity entity) {
-        return detallePedidoMapper.convertToResponseDTO(entity);
-    }
 }
 

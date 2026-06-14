@@ -8,8 +8,6 @@ import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoMesaEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ETipoPedido;
 import com.Gestion.MiBalnearioGestion.Pedidos.Mappers.PedidoMapper;
-import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iDetallePedidoRepository;
-import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iEntregaPedidoRepository;
 import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iPedidoRepository;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.MesaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.MesaRepositorio;

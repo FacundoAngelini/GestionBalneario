@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Pedidos.Entrega;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoReservaDTO;
 import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.PedidoRequest;
+import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.PedidoResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -21,11 +22,11 @@ public class EntregaDTO {
     private boolean estadoEntrega;
 
     @NotNull
-    private PedidoRequest pedidoDTO;
+    private PedidoResponse pedidoDTO;
 
     @NotNull
     private EmpleadoDTO empleadoDTO;
 
-    @NotNull
-    private PagoPedidoReservaDTO pagoPedidoReserva;
+    //@NotNull
+    //private PagoPedidoReservaDTO pagoPedidoReserva;
 }

@@ -43,20 +43,5 @@ public class TicketService {
         return ticketMapper.convertToDTO(ticketRepository.save(ticket));
     }
 
-    /** NO SABRIA DECIRTE SI SE DEBERIA PODER ACTUALIZAR IMAGINO QUE NO POR ESO LO BORRO
-     @Transaccional
-    public TicketDTO actualizar(UUID publicId,TicketDTO dto)
-    {
-       TicketEntity ticket = ticketMapper.convertToEntity(buscarPorPublicId(publicId),TicketEntity.class);
-       ticketMapper.updateEntityFromDTO(dto,ticket);
-        return ticketMapper.convertToDTO(ticketRepository.save(ticket));
-    } */
 
-    //QUIZA TENEMOS QUE HACERLO CASCADE DELETE CON EL PAGO
-
-    @Transactional
-    public TicketDTO enviarTicketXMail (TicketDTO dto)
-    {
-        return null;
-    }
 }

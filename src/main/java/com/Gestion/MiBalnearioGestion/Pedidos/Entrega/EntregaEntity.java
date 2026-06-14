@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Pedidos.Entrega;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -17,26 +18,27 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class EntregaEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="public_id", unique=true, nullable=false, updatable = false)
+    @Column(name = "public_id", unique = true, nullable = false, updatable = false)
     @UuidGenerator
     private UUID publicId;
 
-    @Column(name="estado_entrega", nullable = false)
+    @Column(name = "estado_entrega", nullable = false)
     private boolean estadoEntrega;
 
     @OneToOne
-    @JoinColumn(name="pedido_reserva_id", nullable = false)
-    private PedidoEntity pedidoReserva;
+    @JoinColumn(name = "pedido_reserva_id", nullable = false)
+    private PedidoReservaEntity pedidoReserva;  // corregido
 
     @ManyToOne
-    @JoinColumn(name="empleado_id", nullable = false)
+    @JoinColumn(name = "empleado_id", nullable = false)
     private EmpleadoEntity empleado;
 
-    @OneToOne
-    @JoinColumn(name="pago_pedido_reserva", nullable = false)
-    private PagoPedidoReservaEntity pagoPedidoReserva;
+    //@OneToOne
+    //@JoinColumn(name="pago_pedido_reserva", nullable = false)
+    //private PagoPedidoReservaEntity pagoPedidoReserva;
 }
