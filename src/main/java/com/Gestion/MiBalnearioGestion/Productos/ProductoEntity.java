@@ -30,14 +30,14 @@ public class ProductoEntity {
     private String nombre;
 
     @Column(name="precio", nullable = false)
-    private double precio;
+    private Double precio;
 
     @Enumerated(EnumType.STRING)
     @Column(name="categoria", nullable = false)
     private ECategoriaProdcuto categoria;
 
     @Column(name="producto_disponible", nullable = false)
-    private boolean productoDisponible;
+    private Boolean productoDisponible;
 
     @OneToMany(mappedBy = "producto")
     private List<DetallePedidoEntity> detallePedidos = new ArrayList<>();

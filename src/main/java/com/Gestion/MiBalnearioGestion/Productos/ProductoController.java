@@ -1,51 +1,72 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
+import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 @RestController
-@RequestMapping("/productos")
+@RequestMapping("/api/v1/productos")
 @RequiredArgsConstructor
 public class ProductoController {
 
-    private final ProductoService productoService;
+    private final IProductoService productoService;
 
-    @GetMapping
-    public ResponseEntity<List<ProductoDTO>>listarTodos()
-    {
-        return ResponseEntity.ok(productoService.listarTodos());
+    @GetMapping("/disponibles")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<ProductoDTO>> listarDisponibles() {
+        return ResponseEntity.ok(productoService.listarDisponibles());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductoDTO>obtenerProducto(@PathVariable UUID publicId)
-    {
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<List<ProductoDTO>> listarTodos(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) ECategoriaProdcuto categoria,
+            @RequestParam(required = false) Boolean disponible) {
+
+        return ResponseEntity.ok(productoService.listarTodos(nombre, categoria, disponible));
+    }
+
+
+    @GetMapping("/{publicId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<ProductoDTO> obtenerProducto(@PathVariable UUID publicId) {
         return ResponseEntity.ok(productoService.buscar(publicId));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void>borrar(@PathVariable UUID publicId)
-    {
-        productoService.borrar(publicId);
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
 
     @PostMapping
-    public ResponseEntity<ProductoDTO>crear(@Valid @RequestBody ProductoDTO productoNuevo)
-    {
-        return ResponseEntity.ok(productoService.crear(productoNuevo));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductoDTO>actualizar(@PathVariable UUID publicId, @Valid @RequestBody ProductoDTO dto)
-    {
-        return ResponseEntity.ok(productoService.actualziar(publicId,dto));
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<ProductoDTO> crear(@Valid @RequestBody ProductoDTO productoNuevo) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoService.crear(productoNuevo));
     }
 
 
+    @PutMapping("/{publicId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    public ResponseEntity<ProductoDTO> actualizar(@PathVariable UUID publicId,
+                                                  @Valid @RequestBody ProductoDTO dto) {
+        return ResponseEntity.ok(productoService.actualziar(publicId, dto));
+    }
+
+    @DeleteMapping("/{publicId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
+    public ResponseEntity<Void> borrar(@PathVariable UUID publicId) {
+        productoService.borrar(publicId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @PatchMapping("/{publicId}/reactivar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
+    public ResponseEntity<Void> reactivar(@PathVariable UUID publicId) {
+        productoService.reactivar(publicId);
+        return ResponseEntity.ok().build();
+    }
 }

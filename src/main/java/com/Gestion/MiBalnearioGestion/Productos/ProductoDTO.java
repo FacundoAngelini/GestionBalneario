@@ -12,19 +12,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 public class ProductoDTO {
-
-
     private UUID publicId;
 
     @NotBlank
     private String nombre;
 
     @NotNull
-    private double precio;
+    private Double precio;
 
     @NotNull
     private ECategoriaProdcuto categoria;
 
     @NotNull
-    private boolean productoDisponible;
+    private Boolean productoDisponible;
 }

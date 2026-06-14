@@ -45,7 +45,7 @@ public class PedidoService {
 
         pedido = (PedidoMesaEntity) pedidoRepository.save(pedido);
 
-        agregarDetalles(pedido, dto.getPedidos());
+      //  agregarDetalles(pedido, dto.getPedidos());
 
         return pedidoMapper.convertToResponseDTO(pedido);
     }
@@ -64,16 +64,16 @@ public class PedidoService {
 
         pedido = (PedidoReservaEntity) pedidoRepository.save(pedido);
 
-        agregarDetalles(pedido, dto.getPedidos());
+       // agregarDetalles(pedido, dto.getPedidos());
 
         return pedidoMapper.convertToResponseDTO(pedido);
     }
 
-    private void agregarDetalles(PedidoEntity pedido, List<DetallePedidoRequest> detallesRequest) {
+    /*private void agregarDetalles(PedidoEntity pedido, List<DetallePedidoRequest> detallesRequest) {
         List<DetallePedidoEntity> detalles = detallesRequest.stream()
                 .map(req -> detallePedidoService.crearDetallePedido(req, pedido))
                 .collect(Collectors.toList());
 
         pedido.setDetallePedidos(detalles);
-    }
+    }*/
 }

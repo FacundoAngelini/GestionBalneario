@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/reservas/**").permitAll()
                         .requestMatchers("/api/v1/pagos/**").permitAll()
                         .requestMatchers("/api/v1/public/**").permitAll()
+                        .requestMatchers("/api/v1/productos/**").permitAll()
                         .requestMatchers("/api/v1/pagos-reservas/**").authenticated()
                         //.requestMatchers("/api/v1/reservas-pagos/**").permitAll()
                         .requestMatchers("/api/v1/recursos/**").permitAll()

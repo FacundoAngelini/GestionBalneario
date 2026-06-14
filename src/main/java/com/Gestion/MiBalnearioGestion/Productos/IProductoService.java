@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Productos;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -9,18 +10,19 @@ import java.util.UUID;
 
 public interface IProductoService {
 
-    public List<ProductoDTO> listarTodos();
+    ProductoDTO crear(ProductoDTO dto);
 
-    @Transactional
-    public ProductoDTO crear(ProductoDTO dto);
+    void borrar (UUID publicId);
 
-    @Transactional
-    public void borrar (UUID publicId);
+    ProductoDTO actualziar (UUID publicId, ProductoDTO dto);
 
+    ProductoDTO buscar (UUID publicId);
 
-    @Transactional
-    public ProductoDTO actualziar (UUID publicId, ProductoDTO dto);
+    void reactivar(UUID publicId);
 
+    List<ProductoDTO> listarDisponibles ();
 
-    public ProductoDTO buscar (UUID publicId);
+    List<ProductoDTO> listarTodos(String nombre,
+                                  ECategoriaProdcuto categoria,
+                                  Boolean disponible);
 }

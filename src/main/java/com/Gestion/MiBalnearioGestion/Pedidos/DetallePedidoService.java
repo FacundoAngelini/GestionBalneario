@@ -23,14 +23,14 @@ public class DetallePedidoService {
     private final DetallePedidoMapper detallePedidoMapper;
     private final iDetallePedidoRepository detallePedidoRepository;
     private final ProductoRepository productoRepository;
-
+/*
     @Transactional
     public DetallePedidoEntity crearDetallePedido(DetallePedidoRequest request, PedidoEntity pedido) {
 
         ProductoEntity producto = productoRepository.findByPublicId(request.getProductoId())
                 .orElseThrow(() -> new ProductoException("Producto no encontrado"));
 
-        if (!producto.isProductoDisponible()) {
+        if (!producto.()) {
             throw new ProductoException("Producto no disponible: " + producto.getNombre());
         }
 
@@ -45,4 +45,5 @@ public class DetallePedidoService {
     }
 
 }
-
+*/
+}
