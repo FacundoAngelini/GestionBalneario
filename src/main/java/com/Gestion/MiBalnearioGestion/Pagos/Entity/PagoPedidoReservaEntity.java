@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -15,12 +16,11 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 public class PagoPedidoReservaEntity extends PagoEntity {
 
     @OneToOne
     @JoinColumn(name="pedido_reserva_id", nullable = false)
     private PedidoReservaEntity pedidoReserva;
 
-    @OneToOne(mappedBy = "pagoPedidoReserva")
-    private EntregaEntity entrega;
 }

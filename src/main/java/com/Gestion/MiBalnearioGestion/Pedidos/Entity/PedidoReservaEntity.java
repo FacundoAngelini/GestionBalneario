@@ -23,6 +23,5 @@ public class PedidoReservaEntity extends PedidoEntity {
     @OneToOne(mappedBy = "pedidoReserva")
     private PagoPedidoReservaEntity pagoPedidoReserva;
 
-    @OneToOne(mappedBy = "pedidoReserva")
-    private EntregaEntity entrega;
+
 }
