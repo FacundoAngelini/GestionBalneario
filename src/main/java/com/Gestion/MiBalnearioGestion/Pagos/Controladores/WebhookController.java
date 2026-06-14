@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Controladores;
 
-import com.Gestion.MiBalnearioGestion.Pagos.Servicios.PagoService;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago.PagoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

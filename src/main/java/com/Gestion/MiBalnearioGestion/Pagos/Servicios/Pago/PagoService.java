@@ -1,12 +1,15 @@
-package com.Gestion.MiBalnearioGestion.Pagos.Servicios;
+package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.*;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.*;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Mappers.PagoReservaMapper;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iTicketRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoService;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Specification.PagoSpecification;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
@@ -18,25 +21,30 @@ import com.mercadopago.resources.payment.Payment;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PagoService {
+public class PagoService implements IPagoService {
     @Value("${mp.accesstoken}")
     private String accessToken;
 
     private final iPagoRepository pagoRepository;
     private final iTicketRepository ticketRepository;
     private final ReservaRepository reservaRepository;
+    private final PagoReservaMapper pagoReservaMapper;
 
 
     @Transactional
+    @Override
     public synchronized void procesarNotificacionPago(String paymentIdMP) {
         try {
             MercadoPagoConfig.setAccessToken(accessToken);
@@ -57,8 +65,6 @@ public class PagoService {
 
             if ("approved".equals(payment.getStatus())) {
 
-                // ==================== CORRECCIÓN ACÁ ====================
-                // Validamos si el otro hilo mutuo de Mercado Pago ya generó el ticket
                 boolean yaExisteTicket = ticketRepository.existsByPagoEntityId(pagoGeneric.getId());
 
                 if (yaExisteTicket) {
@@ -105,6 +111,7 @@ public class PagoService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public PagoReservaResponseDTO obtenerPagoPorReserva(UUID reservaPublicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
                 .orElseThrow(() -> new EntidadNoEncontradaException(
@@ -122,5 +129,66 @@ public class PagoService {
                 .metodoPago(pago.getMetodoPago())
                 .descuento(pago.getDescuento())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<PagoReservaResponseDTO> buscarPagosConFiltros(EestadoPago estado,
+                                                              MetodoPago metodo,
+                                                              Double montoMin,
+                                                              Double montoMax,
+                                                              LocalDate fechaDesde,
+                                                              LocalDate fechaHasta) {
+        PredicateSpecification<PagoEntity> spec =
+                PredicateSpecification.allOf(
+                        PagoSpecification.estadoIgual(estado),
+                        PagoSpecification.metodoPagoIgual(metodo),
+                        PagoSpecification.montoMenorOIgual(montoMax),
+                        PagoSpecification.montoMayorOIgual(montoMin),
+                        PagoSpecification.fechaPagoDesde(fechaDesde),
+                        PagoSpecification.fechaPagoHasta(fechaHasta)
+                );
+
+        return pagoRepository.findAll(spec)
+                .stream()
+                .filter(pago -> pago instanceof PagoReservaEntity)
+                .map(pago -> (PagoReservaEntity) pago)
+                .map(pagoReserva -> PagoReservaResponseDTO.builder()
+                        .publicId(pagoReserva.getPublicId())
+                        .reservaPublicId(pagoReserva.getReserva() != null ? pagoReserva.getReserva().getPublicId() : null)
+                        .monto(pagoReserva.getMonto())
+                        .estadoPago(pagoReserva.getEestadoPago())
+                        .fechaPago(pagoReserva.getFechaPago())
+                        .metodoPago(pagoReserva.getMetodoPago())
+                        .descuento(pagoReserva.getDescuento())
+                        .build())
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void cancelarPagoYReserva(UUID reservaPublicId) {
+        ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException("No se puede cancelar. La reserva no existe"+ reservaPublicId.toString(), "ReservaEntity"));
+
+        if (reserva.getEstadoReserva() == EReservaEstado.CANCELADA) {
+            throw new IllegalStateException("La reserva ya se encuentra cancelada en el sistema");
+        }
+        if (reserva.getEstadoReserva() == EReservaEstado.RECHAZADA) {
+            throw new IllegalStateException("No se puede cancelar una reserva que ya fue RECHAZADA");
+        }
+
+        reserva.setEstadoReserva(EReservaEstado.CANCELADA);
+        reserva.setReservado(false);
+        reservaRepository.save(reserva);
+
+
+        PagoEntity pago = pagoRepository.findByReservaPublicId(reservaPublicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontro ningun registro de pago para la reserva especificada."+ reservaPublicId.toString(),"PagoEntity"));
+
+        if (pago.getEestadoPago() != EestadoPago.RECHAZADO) {
+            pago.setEestadoPago(EestadoPago.RECHAZADO);
+            pagoRepository.save(pago);
+        }
     }
 }

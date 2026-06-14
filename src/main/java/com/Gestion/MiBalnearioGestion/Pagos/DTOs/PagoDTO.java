@@ -21,9 +21,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PagoDTO {
-
-
-    @NotNull
     private UUID publicId;
 
     @NotNull(message = "El monto no puede ser nulo")

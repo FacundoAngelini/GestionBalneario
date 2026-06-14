@@ -1,9 +1,11 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Controladores;
 
-import com.Gestion.MiBalnearioGestion.Pagos.Servicios.PagoReservaService;
-import com.Gestion.MiBalnearioGestion.Reservas.DTO.CheckoutResponseDTO;
+import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoReservaResponseDTO;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoReservaService;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoService;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago.PagoReservaService;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago.PagoService;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
-import com.Gestion.MiBalnearioGestion.Reservas.Servicio.ReservaServicio;
 import com.mercadopago.net.HttpStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +19,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReservaPagoController {
 
-    private final PagoReservaService pagoReservaService;
-    private final ReservaServicio reservaServicio;
+    private final IPagoReservaService pagoReservaService;
+    private final IPagoService pagoService;
 
-    @PostMapping("/mostrador-efectivo")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION)")
-    public ResponseEntity<Void> iniciarReservaPresencial(
-            @Valid @RequestBody ReservaDTO dto,
-            @RequestParam UUID empleadoPublicId) {
+    @PostMapping("/efectivo/empleado/{empleadoPublicId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    public ResponseEntity<PagoReservaResponseDTO> iniciarReservaPresencial(@Valid @RequestBody ReservaDTO dto, @PathVariable UUID empleadoPublicId) {
 
-        pagoReservaService.procesarPagoEfectivoMostrador(dto, empleadoPublicId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.ok(pagoReservaService.procesarPagoEfectivoMostrador(dto, empleadoPublicId));
+    }
+    @PutMapping("/{reservaPublicId}/cancelar-pago")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    public ResponseEntity<Void> cancelarPagoReserva(@PathVariable UUID reservaPublicId) {
+        pagoService.cancelarPagoYReserva(reservaPublicId);
+        return ResponseEntity.noContent().build();
     }
 }

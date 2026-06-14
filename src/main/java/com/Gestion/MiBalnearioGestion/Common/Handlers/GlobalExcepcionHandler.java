@@ -6,6 +6,7 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaExcep
 import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,10 +15,13 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,10 +137,46 @@ public class GlobalExcepcionHandler {
        errorResponse.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
     }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(MethodArgumentNotValidException ex, HttpServletRequest  request) {
+        ErrorResponse errorResponse= new ErrorResponse(400, "Error de parametro" + ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handeNotFoud(NoResourceFoundException ex, HttpServletRequest  request) {
+        ErrorResponse errorResponse= new ErrorResponse(400, "URL mal escrita" + ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
+    }
+
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentificationError(AuthenticationException ex, HttpServletRequest  request) {
+        ErrorResponse errorResponse= new ErrorResponse(401, "Error de autentificacion" + ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(401).body(errorResponse) ;
+    }
+
+    @ExceptionHandler( DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest  request) {
+        ErrorResponse errorResponse= new ErrorResponse(403, "Acceso Restringido" + ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(403).body(errorResponse) ;
+    }
+
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(400, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(400).body(error);
     }
+
+
+
+
+
 }

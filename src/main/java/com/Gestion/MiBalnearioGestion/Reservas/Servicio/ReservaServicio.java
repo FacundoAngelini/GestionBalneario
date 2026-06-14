@@ -10,6 +10,7 @@ import com.Gestion.MiBalnearioGestion.Pagos.MercadoPagoService;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.TemporadaValidator;
 import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.CancelarReservaDTO;
@@ -20,6 +21,7 @@ import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Mapper.ReservaMapper;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +34,7 @@ import java.util.UUID;
 
 @Service
     @RequiredArgsConstructor
-    public class ReservaServicio {
+    public class ReservaServicio implements IReservaServicio{
 
         private final ReservaRepository reservaRepository;
         private final ClientesRepository clienteRepository;
@@ -40,8 +42,10 @@ import java.util.UUID;
         private final iPagoRepository ipagoRepository;
         private final ReservaMapper reservaMapper;
         private final MercadoPagoService mercadoPagoService;
+        private final TemporadaValidator temporadaValidator;
 
     @Transactional
+    @Override
     public ReservaEntity crearReservaInicial(ReservaDTO dto) {
         ClienteEntity cliente = clienteRepository.findByPublicId(dto.getClientePublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("Cliente no encontrado", dto.getClientePublicId().toString()));
@@ -52,7 +56,7 @@ import java.util.UUID;
         if (dto.getFechaInicio().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("No se pueden realizar reservas para fechas pasadas");
         }
-        validarLimitesTemporada(dto.getFechaInicio(), dto.getFechaFin());
+        temporadaValidator.validarFechasEnTemporada(dto.getFechaInicio(), dto.getFechaFin());
         long diasEstadia = ChronoUnit.DAYS.between(dto.getFechaInicio(), dto.getFechaFin()) + 1;
         double montoTotal = 0.0;
         List<RecursoEntity> recursosEntities = new ArrayList<>();
@@ -67,7 +71,7 @@ import java.util.UUID;
                     .orElseThrow(() -> new EntidadNoEncontradaException("Recurso no encontrado", recursoId.toString()));
 
             if (!recurso.isEsReservable()) {
-                throw new RuntimeException("El recurso " + recurso.getNombre() + " esta desactivado.");
+                throw new RecursoOcupadoException("El recurso " + recurso.getNombre() + " esta desactivado", "RecursoEntity");
             }
 
             montoTotal += (obtenerPrecioVigente(recurso, dto.getFechaInicio()) * diasEstadia);
@@ -89,6 +93,7 @@ import java.util.UUID;
     }
 
     @Transactional
+    @Override
     public CheckoutResponseDTO crearReservaYGenerarCheckout(ReservaDTO dto) {
         ReservaEntity reserva = this.crearReservaInicial(dto);
         PagoReservaEntity pagoReserva = PagoReservaEntity.builder()
@@ -97,7 +102,7 @@ import java.util.UUID;
                 .fechaPago(LocalDate.now())
                 .metodoPago(MetodoPago.TARJETA)
                 .descuento(0.0)
-                .reserva(reserva) // ESTO LE ASIGNA LA RESERVA AL PAGO
+                .reserva(reserva)
                 .build();
         PagoReservaEntity pagoGuardado = ipagoRepository.save(pagoReserva);
         reserva.setPagosReservaaa(pagoGuardado);
@@ -117,6 +122,7 @@ import java.util.UUID;
     }
 
     @Transactional(readOnly = true)
+    @Override
     public ReservaDTO buscarPorPublicId(UUID publicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new EntidadNoEncontradaException("La reserva especificada no existe.", publicId.toString()));
@@ -124,13 +130,25 @@ import java.util.UUID;
     }
 
     @Transactional(readOnly = true)
-    public List<ReservaDTO> listarTodas() {
-        return reservaRepository.findAll().stream()
+    @Override
+    public List<ReservaDTO> listarReservasConFiltros(EReservaEstado estado,
+                                                     LocalDate fechaDesde,
+                                                     LocalDate fechaHasta,
+                                                     UUID clientePublicId){
+        PredicateSpecification<ReservaEntity> spec=
+                PredicateSpecification.allOf(
+                        ReservaSpecification.estadoIgual(estado),
+                        ReservaSpecification.fechaInicioDesde(fechaDesde),
+                        ReservaSpecification.fechaFinHasta(fechaHasta),
+                        ReservaSpecification.clientePublicIdIgual(clientePublicId)
+                );
+        return reservaRepository.findAll(spec).stream()
                 .map(reservaMapper::convertToDTO)
                 .toList();
     }
 
     @Transactional
+    @Override
     public void cancelarReservaConAnticipacion(CancelarReservaDTO dto) {
         ReservaEntity reserva = reservaRepository.findByPublicId(dto.getPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException(
@@ -166,14 +184,7 @@ import java.util.UUID;
     }
 
 
-    private void validarLimitesTemporada(LocalDate inicio, LocalDate fin) {
-        if (inicio.getMonthValue() > 4 && inicio.getMonthValue() < 12) {
-            throw new IllegalArgumentException("Fuera de temporada. El balneario opera del 1 de Diciembre al 15 de Abril.");
-        }
-        if (fin.getMonthValue() == 4 && fin.getDayOfMonth() > 15) {
-            throw new IllegalArgumentException("La temporada finaliza estrictamente el 15 de Abril.");
-        }
-    }
+
 
 
     private double obtenerPrecioVigente(RecursoEntity recurso, LocalDate fechaReserva) {

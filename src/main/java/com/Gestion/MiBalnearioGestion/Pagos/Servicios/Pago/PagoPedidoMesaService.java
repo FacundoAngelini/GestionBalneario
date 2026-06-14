@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Pagos.Servicios;
+package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago;
 
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoMesaDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoMesaEntity;
@@ -6,6 +6,7 @@ import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
 import com.Gestion.MiBalnearioGestion.Pagos.Mappers.PagoPedidoMesaMapper;
 import com.Gestion.MiBalnearioGestion.Pagos.MercadoPagoService;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoPedidoMesaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +16,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PagoPedidoMesaService {
+public class PagoPedidoMesaService implements IPagoPedidoMesaService {
 
     private final iPagoRepository pagoRepository;
     private final PagoPedidoMesaMapper mapper;
     private final MercadoPagoService mercadoPagoService;
 
     @Transactional
+    @Override
     public String iniciarPago(PagoPedidoMesaDTO dto) {
         PagoPedidoMesaEntity entity = mapper.convertToEntity(dto, PagoPedidoMesaEntity.class);
 

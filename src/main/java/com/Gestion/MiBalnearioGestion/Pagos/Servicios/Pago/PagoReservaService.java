@@ -1,13 +1,16 @@
-package com.Gestion.MiBalnearioGestion.Pagos.Servicios;
+package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago;
 
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
+import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoReservaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iTicketRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoReservaService;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
@@ -22,7 +25,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
-public class PagoReservaService {
+public class PagoReservaService implements IPagoReservaService {
 
     private final iPagoRepository pagoRepository;
     private final ReservaRepository reservaRepository;
@@ -31,9 +34,10 @@ public class PagoReservaService {
     private final ReservaServicio reservaServicio;
 
     @Transactional
-    public void procesarPagoEfectivoMostrador(ReservaDTO reservaDTO, UUID empleadoPublicId) {
+    @Override
+    public PagoReservaResponseDTO procesarPagoEfectivoMostrador(ReservaDTO reservaDTO, UUID empleadoPublicId) {
         EmpleadoEntity empleadoCaja = empleadoRepository.findByPublicId(empleadoPublicId)
-                .orElseThrow(() -> new RuntimeException("Cajero no identificado en el sistema."));
+                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no identificado en el sistema", "EmpleadoEntity"));
 
         ReservaEntity reserva = reservaServicio.crearReservaInicial(reservaDTO);
 
@@ -63,5 +67,19 @@ public class PagoReservaService {
                 .build();
 
         ticketRepository.save(ticket);
+        PagoReservaResponseDTO respuesta = new PagoReservaResponseDTO();
+
+        respuesta.setPublicId(pagoReserva.getPublicId());
+        respuesta.setMonto(pagoReserva.getMonto());
+        respuesta.setEstadoPago(pagoReserva.getEestadoPago());
+        respuesta.setFechaPago(pagoReserva.getFechaPago());
+        respuesta.setMetodoPago(pagoReserva.getMetodoPago());
+        respuesta.setDescuento(pagoReserva.getDescuento());
+        respuesta.setReservaPublicId(
+                reserva.getPublicId()
+        );
+
+
+        return respuesta;
     }
 }

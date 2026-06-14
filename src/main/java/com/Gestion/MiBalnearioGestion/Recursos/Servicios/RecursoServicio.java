@@ -5,17 +5,21 @@ import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.TemporadaValidator;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.RecursoMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.IRecursoServicio;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.RecursoSpecification;
+import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
+import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +29,7 @@ import java.util.UUID;
 public class RecursoServicio implements IRecursoServicio {
     private final RecursoRepositorio recursoRepositorio;
     private final RecursoMapper recursoMapper;
+    private final TemporadaValidator temporadaValidator;
 
 
     @Transactional(readOnly = true)
@@ -88,6 +93,25 @@ public class RecursoServicio implements IRecursoServicio {
                 .orElseThrow(()->new EntidadNoEncontradaException("Recurso no encontrado : ", IdPublico.toString()));
         recursoRepositorio.delete(buscado);
         System.out.println("Recurso eliminado con exito");
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RecursoDTO> listarDisponiblesParaElCliente(LocalDate fechaInicio, LocalDate fechaFin) {
+        if (fechaInicio.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("No se pueden buscar recursos para fechas pasadas.");
+        }
+
+        // 💡 El nuevo escudo dinámico conectado a la Base de Datos
+        temporadaValidator.validarFechasEnTemporada(fechaInicio, fechaFin);
+
+        List<EReservaEstado> estadosConflictivos = List.of(EReservaEstado.PENDIENTE, EReservaEstado.CONFIRMADA);
+        List<RecursoEntity> disponibles = recursoRepositorio.encontrarDisponiblesEnRango(fechaInicio, fechaFin, estadosConflictivos);
+
+        return disponibles.stream()
+                .map(recursoMapper::convertToDTO)
+                .toList();
     }
 
 }

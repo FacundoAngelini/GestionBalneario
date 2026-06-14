@@ -19,4 +19,5 @@ public class PagoReservaResponseDTO {
     private LocalDate fechaPago;
     private MetodoPago metodoPago;
     private Double descuento;
+    private UUID reservaPublicId;
 }

@@ -23,7 +23,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TicketDTO {
 
-    @NotNull
     private UUID publicId;
 
     @NotNull
@@ -37,6 +36,5 @@ public class TicketDTO {
     @NotNull
     private PagoDTO pagoDTO;
 
-    @NotNull
-    private EmpleadoDTO empleadoDTO;
+    private  UUID empleadoPublicId;
 }

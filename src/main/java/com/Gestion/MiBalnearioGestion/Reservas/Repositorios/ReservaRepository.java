@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Reservas.Repositorios;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
+public interface ReservaRepository extends JpaRepository<ReservaEntity, Long>, JpaSpecificationExecutor<ReservaEntity> {
  Optional<ReservaEntity>findByPublicId(UUID publicId);
 
     @Query("SELECT COUNT(r) > 0 FROM ReservaEntity r JOIN r.recursos rec " +
