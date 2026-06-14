@@ -80,12 +80,7 @@ public class PagoService implements IPagoService {
                 pagoGeneric.setEestadoPago(EestadoPago.PAGADO);
                 pagoRepository.save(pagoGeneric);
 
-                if (pagoGeneric instanceof PagoReservaEntity pagoReserva) {
-                    ReservaEntity reserva = pagoReserva.getReserva();
-                    reserva.setEstadoReserva(EReservaEstado.CONFIRMADA);
-                    reserva.setReservado(true);
-                    reservaRepository.save(reserva);
-                }
+
 
                 TicketEntity ticket = TicketEntity.builder()
                         .publicId(UUID.randomUUID())
@@ -95,8 +90,18 @@ public class PagoService implements IPagoService {
                         //.empleado(empleadoSistema)
                         .build();
 
-                ticketRepository.save(ticket);
-                emailService.confirmacionPagoReserva((PagoReservaEntity) pagoGeneric,ticket);
+                TicketEntity ticketGuardado = ticketRepository.save(ticket);
+
+                if (pagoGeneric instanceof PagoReservaEntity pagoReserva) {
+                    ReservaEntity reserva = pagoReserva.getReserva();
+                    reserva.setEstadoReserva(EReservaEstado.CONFIRMADA);
+                    reserva.setReservado(true);
+                    reservaRepository.save(reserva);
+                    emailService.confirmacionPagoReserva(pagoReserva, ticketGuardado);
+                }
+
+
+
 
             } else if ("rejected".equals(payment.getStatus())) {
                 pagoGeneric.setEestadoPago(EestadoPago.RECHAZADO);

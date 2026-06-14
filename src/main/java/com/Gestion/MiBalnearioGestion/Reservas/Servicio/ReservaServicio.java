@@ -79,7 +79,6 @@ public class ReservaServicio implements IReservaServicio{
             montoTotal += (obtenerPrecioVigente(recurso, dto.getFechaInicio()) * diasEstadia);
             recursosEntities.add(recurso);
         }
-
         ReservaEntity reserva = ReservaEntity.builder()
                 .publicId(UUID.randomUUID())
                 .fechaInicio(dto.getFechaInicio())
@@ -113,7 +112,7 @@ public class ReservaServicio implements IReservaServicio{
                 pagoGuardado.getPublicId(),
                 reserva.getMontoTotal(),
                 "Reserva Balneario - Codigo: " + reserva.getPublicId().toString().substring(0, 8));
-        emailService.confirmacionReserva(reserva);
+        emailService.confirmacionReserva(reserva, urlMp);
         return CheckoutResponseDTO.builder()
                 .reservaPublicId(reserva.getPublicId())
                 .pagoPublicId(pagoGuardado.getPublicId())

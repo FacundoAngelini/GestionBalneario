@@ -84,7 +84,7 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(MailException.class)
     public ResponseEntity<ErrorResponse> handleMailException(MailException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(500, "Error al enviar el mail" + ex.getMessage());
+        ErrorResponse error = new ErrorResponse(403, "Error al enviar el mail" + ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(403).body(error);
     }

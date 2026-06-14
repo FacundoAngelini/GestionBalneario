@@ -9,6 +9,7 @@ import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
 import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
@@ -39,6 +40,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final RolesRepositorio rolesRepositorio;
     private final ClientesRepository clientesRepository;
+    private final EmailService emailService;
 
     @Transactional
     public AuthResponse authenticate(AuthRequest input) {
@@ -114,6 +116,7 @@ public class AuthService {
         usuarioRepository.save(nuevoUsuario);
         credentialsRepository.save(nuevaCredencial);
         clientesRepository.save(nuevoCliente);
+        emailService.BienvenidaClienteRegistro(request);
 
         // 9. Mapear y retornar el DTO que contiene el "clienteId"
         return usuarioMapper.convertToDTO(nuevoUsuario);

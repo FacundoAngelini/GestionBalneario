@@ -85,7 +85,7 @@ public class ClienteService implements IClienteService {
         credencialRepositorio.save(nuevaCredencial);
         ClienteEntity guardado = clienteRepository.save(nuevoCliente);
 
-        // emailService.BienvenidaCliente(dto); me tira error, despues ver para que funcione
+         emailService.BienvenidaCliente(dto);
 
         return clienteMapper.convertToResponseDTO(guardado);
     }
