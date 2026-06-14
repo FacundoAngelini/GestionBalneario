@@ -33,8 +33,7 @@ public class TicketDTO {
     @PositiveOrZero
     private Double total;
 
-    @NotNull
-    private PagoDTO pagoDTO;
+   private UUID pagoPublicId;
 
     private  UUID empleadoPublicId;
 }
