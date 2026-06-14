@@ -1,6 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago;
 
+import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.*;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.*;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
@@ -31,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+
 @Service
 @RequiredArgsConstructor
 public class PagoService implements IPagoService {
@@ -41,7 +44,7 @@ public class PagoService implements IPagoService {
     private final iTicketRepository ticketRepository;
     private final ReservaRepository reservaRepository;
     private final PagoReservaMapper pagoReservaMapper;
-
+    private final EmailService emailService;
 
     @Transactional
     @Override
@@ -71,7 +74,7 @@ public class PagoService implements IPagoService {
                     System.out.println("La notificación ya fue procesada anteriormente. Evitando duplicados.");
                     return; // Corta la ejecución acá, no hace inserts repetidos ni rompe por deadlock
                 }
-                // ========================================================
+
 
                 System.out.println("ENTRO IF DE PAGO APPROVED");
                 pagoGeneric.setEestadoPago(EestadoPago.PAGADO);
@@ -93,6 +96,7 @@ public class PagoService implements IPagoService {
                         .build();
 
                 ticketRepository.save(ticket);
+                emailService.confirmacionPagoReserva((PagoReservaEntity) pagoGeneric,ticket);
 
             } else if ("rejected".equals(payment.getStatus())) {
                 pagoGeneric.setEestadoPago(EestadoPago.RECHAZADO);

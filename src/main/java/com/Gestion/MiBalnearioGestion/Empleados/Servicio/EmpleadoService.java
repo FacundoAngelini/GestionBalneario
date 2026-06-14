@@ -5,6 +5,7 @@ import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
+import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
@@ -46,7 +47,7 @@ public class EmpleadoService implements IEmpleadoService {
     private final JwtService jwtService;
     private final RolRepositorio rolRepository;
     private final SectorRepositorio sectorRepository;
-
+    private final EmailService emailService;
 
     @Transactional
     @Override
@@ -90,7 +91,7 @@ public class EmpleadoService implements IEmpleadoService {
                 .build();
         nuevaCredencial.setRefreshToken(jwtService.generateRefreshToken(nuevaCredencial));
         credentialsRepository.save(nuevaCredencial);
-
+        emailService.BienvenidaEmpleado(dtoEmpleado);
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado);
         empleado.setUsuario(nuevoUsuario);
         empleado.setEstadoEmpleado(dtoEmpleado.getEstado());

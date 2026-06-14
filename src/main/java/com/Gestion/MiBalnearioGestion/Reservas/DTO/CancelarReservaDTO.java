@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class CancelarReservaDTO {
-    @NotNull
+
     private UUID publicId;
     @NotNull
     private UUID clientePublicId;

@@ -18,7 +18,7 @@ public class ProductoService  implements IProductoService{
     private final ProductoMapper productoMapper;
 
     public List<ProductoDTO> listarTodos(){
-        return productoRepository.findAll()
+        return productoRepository.findByProductoDisponible(true)
                 .stream()
                 .map(productoMapper::convertToDTO)
                 .toList();
@@ -41,7 +41,10 @@ public class ProductoService  implements IProductoService{
         ProductoEntity buscado = productoRepository.
                 findByPublicId(publicId)
                 .orElseThrow(()-> new EntidadNoEncontradaException("El producto no se encontró  con id: ", publicId.toString()));
-        productoRepository.delete(buscado);
+
+        //baja logica
+        buscado.setProductoDisponible(false);
+        productoRepository.save(buscado);
     }
 
     @Transactional

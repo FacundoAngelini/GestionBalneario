@@ -31,15 +31,11 @@ public class DetallePedidoEntity {
     @Column(name="precio", nullable = false)
     private double precio;
 
-    @ManyToMany
-    @JoinTable(
-            name="detalle_productos",
-            joinColumns = @JoinColumn(name="detalle_id"),
-            inverseJoinColumns = @JoinColumn(name="producto_id")
-    )
-    private List<ProductoEntity> productos = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "producto_id", referencedColumnName = "id", nullable = false)
+    private ProductoEntity producto;
 
-    @ManyToOne
-    @JoinColumn(name="pedido_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pedido_id", referencedColumnName = "id", nullable = false)
     private PedidoEntity pedido;
 }

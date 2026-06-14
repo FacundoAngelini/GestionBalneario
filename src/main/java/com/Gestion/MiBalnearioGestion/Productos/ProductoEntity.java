@@ -37,8 +37,8 @@ public class ProductoEntity {
     private ECategoriaProdcuto categoria;
 
     @Column(name="producto_disponible", nullable = false)
-    private boolean producto_disponible;
+    private boolean productoDisponible;
 
-    @ManyToMany(mappedBy = "productos")
+    @OneToMany(mappedBy = "producto")
     private List<DetallePedidoEntity> detallePedidos = new ArrayList<>();
 }

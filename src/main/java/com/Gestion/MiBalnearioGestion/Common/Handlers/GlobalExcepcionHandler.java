@@ -1,9 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Common.Handlers;
 
 
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,9 +20,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExcepcionHandler {
@@ -91,7 +86,28 @@ public class GlobalExcepcionHandler {
     public ResponseEntity<ErrorResponse> handleMailException(MailException ex, HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(500, "Error al enviar el mail" + ex.getMessage());
         error.setPath(request.getRequestURI());
-        return ResponseEntity.status(500).body(error);
+        return ResponseEntity.status(403).body(error);
+    }
+
+    @ExceptionHandler(ReservaException.class)
+    public ResponseEntity<ErrorResponse> ReservaExceptionHandler(ReservaException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(500, "Error en la reserva" + ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(403).body(error);
+    }
+
+    @ExceptionHandler(ProductoException.class)
+    public ResponseEntity<ErrorResponse> ProductoExceptionHandler (ProductoException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(500, "Producto no disponible" + ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(403).body(error);
+    }
+
+    @ExceptionHandler(RecursoException.class)
+    public ResponseEntity<ErrorResponse> RecursoExceptionHandler(RecursoException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(500, "Error en el recurso" + ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(403).body(error);
     }
 
     @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class, DisabledException.class,

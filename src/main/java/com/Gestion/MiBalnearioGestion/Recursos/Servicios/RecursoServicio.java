@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.RecursoException;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoDTO;
@@ -36,7 +37,7 @@ public class RecursoServicio implements IRecursoServicio {
     @Override
     public RecursoDTO buscarPorPublicId(UUID publicId) {
         RecursoEntity recurso = recursoRepositorio.findByPublicId(publicId)
-                .orElseThrow(() -> new RuntimeException("No se encontro el recurso con el UUID especificado"));
+                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontro el recurso con el UUID especificado","RecursoEntity"));
         return recursoMapper.convertToDTO(recurso);
     }
 
