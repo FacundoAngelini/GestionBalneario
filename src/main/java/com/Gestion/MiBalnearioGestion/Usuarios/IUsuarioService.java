@@ -6,8 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IUsuarioService {
-    List<UsuarioDTO> buscarTodosUsuarios();
-    UsuarioDTO buscarPorIdPublica(UUID idPublica);
-    UsuarioDTO actualizarUsuario (UUID idPublica, UsuarioDTO dtoUsuario);
-    void borrarUsuario (UUID idPublica);
+     void desactivarCuenta(UsuarioEntity usuario);
 }

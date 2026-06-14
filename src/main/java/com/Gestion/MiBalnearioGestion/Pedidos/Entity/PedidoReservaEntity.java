@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Entity;
 
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoReservaEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entrega.EntregaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,5 @@ public class PedidoReservaEntity extends PedidoEntity {
     @OneToOne(mappedBy = "pedidoReserva")
     private PagoPedidoReservaEntity pagoPedidoReserva;
 
-    @OneToOne(mappedBy = "pedidoReserva")
-    private EntregaEntity entrega;
+
 }

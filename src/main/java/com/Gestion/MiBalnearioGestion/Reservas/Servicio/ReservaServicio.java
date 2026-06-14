@@ -2,7 +2,10 @@ package com.Gestion.MiBalnearioGestion.Reservas.Servicio;
 
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.RecursoException;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.ReservaException;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
@@ -10,7 +13,7 @@ import com.Gestion.MiBalnearioGestion.Pagos.MercadoPagoService;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
-import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.RecursoOcupadoException;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.CancelarReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.CheckoutResponseDTO;
@@ -40,6 +43,7 @@ import java.util.UUID;
         private final iPagoRepository ipagoRepository;
         private final ReservaMapper reservaMapper;
         private final MercadoPagoService mercadoPagoService;
+        private final EmailService emailService;
 
     @Transactional
     public ReservaEntity crearReservaInicial(ReservaDTO dto) {
@@ -67,7 +71,7 @@ import java.util.UUID;
                     .orElseThrow(() -> new EntidadNoEncontradaException("Recurso no encontrado", recursoId.toString()));
 
             if (!recurso.isEsReservable()) {
-                throw new RuntimeException("El recurso " + recurso.getNombre() + " esta desactivado.");
+                throw new RecursoException("El recurso " + recurso.getNombre() + " esta desactivado.");
             }
 
             montoTotal += (obtenerPrecioVigente(recurso, dto.getFechaInicio()) * diasEstadia);
@@ -105,8 +109,9 @@ import java.util.UUID;
         String urlMp = mercadoPagoService.crearPreferenciaPago(
                 pagoGuardado.getPublicId(),
                 reserva.getMontoTotal(),
-                "Reserva Balneario - Codigo: " + reserva.getPublicId().toString().substring(0, 8)
-        );
+                "Reserva Balneario - Codigo: " + reserva.getPublicId().toString().substring(0, 8));
+
+        emailService.confirmacionReserva(reserva);
         return CheckoutResponseDTO.builder()
                 .reservaPublicId(reserva.getPublicId())
                 .pagoPublicId(pagoGuardado.getPublicId())
@@ -138,20 +143,20 @@ import java.util.UUID;
                         dto.getPublicId().toString()
                 ));
         if (!reserva.getCliente().getPublicId().equals(dto.getClientePublicId())) {
-            throw new RuntimeException("Acceso denegado. Esta reserva no pertenece al cliente informado");
+            throw new ReservaException("Acceso denegado. Esta reserva no pertenece al cliente informado");
         }
         if (reserva.getEstadoReserva() == EReservaEstado.CANCELADA) {
-            throw new RuntimeException("La reserva ya se encuentra cancelada");
+            throw new ReservaException("La reserva ya se encuentra cancelada");
         }
         if (reserva.getPagosReservaaa() != null &&
                 reserva.getPagosReservaaa().getEestadoPago() == EestadoPago.PAGADO) {
-            throw new RuntimeException("No se puede cancelar una reserva ya pagada. Contacte al administrador para gestionar el reembolso");
+            throw new ReservaException("No se puede cancelar una reserva ya pagada. Contacte al administrador para gestionar el reembolso");
         }
         LocalDateTime ahora = LocalDateTime.now();
         LocalDateTime limiteCancelacion = reserva.getFechaInicio().atStartOfDay().minusHours(24);
 
         if (ahora.isAfter(limiteCancelacion)) {
-            throw new RuntimeException("Plazo vencido. Las cancelaciones deben hacerse con al menos 24 horas de anticipacion");
+            throw new ReservaException("Plazo vencido. Las cancelaciones deben hacerse con al menos 24 horas de anticipacion");
         }
 
         reserva.setEstadoReserva(EReservaEstado.CANCELADA);
@@ -160,7 +165,7 @@ import java.util.UUID;
         if (reserva.getPagosReservaaa() != null) {
             reserva.getPagosReservaaa().setEestadoPago(EestadoPago.RECHAZADO);
         }
-
+        emailService.cancelacionReserva(reserva);
         reservaRepository.save(reserva);
         System.out.println("Reserva " + dto.getClientePublicId() + " cancelada correctamente");
     }

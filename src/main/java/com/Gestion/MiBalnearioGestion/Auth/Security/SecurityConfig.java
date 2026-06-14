@@ -40,11 +40,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain (HttpSecurity http) throws
             Exception {
         http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/reservas/**").permitAll()
                         .requestMatchers("/api/v1/pagos/**").permitAll()
                         .requestMatchers("/api/v1/reservas-pagos/**").permitAll()
                         .requestMatchers("/api/v1/public/**").permitAll()
+                        .requestMatchers("/api/v1/public/webhooks/**").permitAll()
                         .anyRequest().authenticated())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

@@ -43,7 +43,7 @@ public class ClienteEntity {
     private String telefono;
 
     @Column(name="fecha_alta", nullable = false)
-    private LocalDate fecha_alta;
+    private LocalDate fechaAlta;
 
     @Column(name="estado", nullable = false)
     private boolean estado;
@@ -57,8 +57,8 @@ public class ClienteEntity {
 
     @PrePersist
     protected void onCreate() {
-        if (this.fecha_alta == null) { // cambiá fechaalta por el nombre exacto la variable
-            this.fecha_alta = LocalDate.now();
+        if (this.fechaAlta == null) {
+            this.fechaAlta = LocalDate.now();
         }
     }
 }

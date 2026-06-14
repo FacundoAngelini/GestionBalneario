@@ -2,6 +2,8 @@ package com.Gestion.MiBalnearioGestion.Clientes;
 
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioContraseniaRequest;
+import com.Gestion.MiBalnearioGestion.Usuarios.CambioNombreUsuarioRequest;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,11 +12,21 @@ public interface IClienteService {
 
     ClienteResponse crearCliente(ClienteRequest dto);
 
-    public void borrarCliente(UUID IDpublico);
+    void borrarCliente(UUID IDpublico);
 
-    public ClienteResponse actualizarCliente(UUID IDpublico, ClienteRequest clienteUpdateDTO);
+    ClienteResponse actualizarCliente(UUID IDpublico, ClienteRequest clienteUpdateDTO);
 
-    public ClienteResponse buscarPorIDpublico(UUID IDpublico);
+    ClienteResponse buscarPorIDpublico(UUID IDpublico);
 
-    public List<ClienteResponse> listarTodos();
+    List<ClienteResponse> listarTodos(
+            String nombreIgual,    String nombreContiene,
+            String apellidoIgual,  String apellidoContiene,
+            Integer dniIgual,
+            String emailContiene,
+            String telefonoIgual,
+            Boolean estadoIgual);
+
+    void cambiarNombreUsuarioCliente(UUID publicId, CambioNombreUsuarioRequest request);
+    void cambiarContraseniaCliente(UUID publicId, CambioContraseniaRequest request);
+    ClienteResponse reactivarCliente(UUID publicId);
 }

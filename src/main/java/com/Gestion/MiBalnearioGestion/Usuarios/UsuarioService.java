@@ -1,5 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Usuarios;
 
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Repositorio.CredencialRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.NewAccountRequest;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
@@ -15,48 +17,67 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UsuarioService implements IUsuarioService{
 
-    private final UsuarioRepository usuarioRepositorio;
-    private final UsuarioMapper usuarioMapper;
-
-    @Override
-    public List<UsuarioDTO> buscarTodosUsuarios(){
-        return usuarioRepositorio.findAll().
-                stream().
-                map(usuarioMapper::convertToDTO)
-                .toList();
-    }
-
-    @Override
-    public UsuarioDTO buscarPorIdPublica(UUID idPublica){
-        return usuarioRepositorio.
-                findByPublicId(idPublica)
-                .map(usuarioMapper::convertToDTO)
-                .orElseThrow(()->new EntidadNoEncontradaException("No se encontro un usuario con esa id", "UsuarioEntity"));
-    }
-
+    private final CredencialRepositorio credencialRepositorio;
 
     @Transactional
-    @Override
-    public UsuarioDTO actualizarUsuario (UUID idPublica, UsuarioDTO dtoUsuario){
-        UsuarioEntity usuario = usuarioRepositorio
-                .findByPublicId(idPublica)
-                .orElseThrow(()-> new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
+    public void desactivarCuenta(UsuarioEntity usuario) {
+        CredencialEntity credencial = credencialRepositorio
+                .findByUsuario(usuario)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No tiene credencial asociada", "CredencialEntity"));
 
-        if(usuarioRepositorio.findByNombreUsuario(dtoUsuario.getNombreUsuario()).isPresent()){
-            throw new EntidadExistenteException("Ya existe un usuario con ese nombre", "UsuarioEntity");
+        credencial.setEnabled(false);
+        credencialRepositorio.save(credencial);
+    }
+
+    @Transactional
+    public void reactivarCuenta(UsuarioEntity usuario) {
+        CredencialEntity credencial = credencialRepositorio
+                .findByUsuario(usuario)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No tiene credencial asociada", "CredencialEntity"));
+
+        if (credencial.isEnabled()) {
+            throw new IllegalStateException("La cuenta ya está activa");
         }
 
-        return usuarioMapper.convertToDTO(usuarioRepositorio.save(usuario));
+        credencial.setEnabled(true);
+        credencialRepositorio.save(credencial);
     }
 
     @Transactional
-    @Override
-    public void borrarUsuario (UUID idPublica){
-        UsuarioEntity usuario = usuarioRepositorio
-                .findByPublicId(idPublica)
-                .orElseThrow(()-> new EntidadNoEncontradaException("No se encontro un usuario con ese id", "UsuarioEntity"));
+    public void cambiarNombreUsuario(UsuarioEntity usuario, String nuevoNombre) {
+        if (credencialRepositorio.findByNombreUsuario(nuevoNombre).isPresent()) {
+            throw new EntidadExistenteException(
+                    "Ya existe ese nombre de usuario", "CredencialEntity");
+        }
 
-        usuarioRepositorio.delete(usuario); // tendria que tener un estado y que se camie a inactivo
+        CredencialEntity credencial = credencialRepositorio
+                .findByUsuario(usuario)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No tiene credencial asociada", "CredencialEntity"));
+
+        credencial.setNombreUsuario(nuevoNombre);
+        credencialRepositorio.save(credencial);
+    }
+
+    @Transactional
+    public void cambiarContrasenia(UsuarioEntity usuario,
+                                   String contraseniaActual,
+                                   String nuevaContrasenia,
+                                   PasswordEncoder passwordEncoder) {
+        CredencialEntity credencial = credencialRepositorio
+                .findByUsuario(usuario)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No tiene credencial asociada", "CredencialEntity"));
+
+        // verifica que la contraseña actual sea correcta
+        if (!passwordEncoder.matches(contraseniaActual, credencial.getContrasenia())) {
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+        }
+
+        credencial.setContrasenia(passwordEncoder.encode(nuevaContrasenia));
+        credencialRepositorio.save(credencial);
     }
 
 }

@@ -2,15 +2,13 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CarpaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.CarpaMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.CarpaRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.ICarpaServicio;
-import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.CanchaSpecification;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.CarpaSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;

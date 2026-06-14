@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Servicios;
 
+import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.*;
@@ -34,10 +35,11 @@ public class PagoService {
     private final iPagoRepository pagoRepository;
     private final iTicketRepository ticketRepository;
     private final ReservaRepository reservaRepository;
+    private final EmailService emailService;
 
 
     @Transactional
-    public void procesarNotificacionPago(String paymentIdMP) {
+    public synchronized void procesarNotificacionPago(String paymentIdMP) {
         try {
             MercadoPagoConfig.setAccessToken(accessToken);
 
@@ -47,13 +49,27 @@ public class PagoService {
             UUID publicIdLocal = UUID.fromString(payment.getExternalReference());
 
             PagoEntity pagoGeneric = pagoRepository.findByPublicId(publicIdLocal)
-                    .orElseThrow(() -> new RuntimeException("No existe el registro de pago local para ID: " + publicIdLocal));
+                    .orElseThrow(() -> new EntidadNoEncontradaException("No existe el registro de pago local para ID: " + publicIdLocal,"PagoEntity UUID"));
 
             if (pagoGeneric.getEestadoPago() == EestadoPago.PAGADO) {
                 return;
             }
 
+            System.out.println(payment.getStatus());
+
             if ("approved".equals(payment.getStatus())) {
+
+                // ==================== CORRECCIÓN ACÁ ====================
+                // Validamos si el otro hilo mutuo de Mercado Pago ya generó el ticket
+                boolean yaExisteTicket = ticketRepository.existsByPagoEntityId(pagoGeneric.getId());
+
+                if (yaExisteTicket) {
+                    System.out.println("La notificación ya fue procesada anteriormente. Evitando duplicados.");
+                    return; // Corta la ejecución acá, no hace inserts repetidos ni rompe por deadlock
+                }
+                // ========================================================
+
+                System.out.println("ENTRO IF DE PAGO APPROVED");
                 pagoGeneric.setEestadoPago(EestadoPago.PAGADO);
                 pagoRepository.save(pagoGeneric);
 
@@ -73,6 +89,8 @@ public class PagoService {
                         .build();
 
                 ticketRepository.save(ticket);
+
+                emailService.confirmacionPagoReserva((PagoReservaEntity) pagoGeneric,ticket);
 
             } else if ("rejected".equals(payment.getStatus())) {
                 pagoGeneric.setEestadoPago(EestadoPago.RECHAZADO);

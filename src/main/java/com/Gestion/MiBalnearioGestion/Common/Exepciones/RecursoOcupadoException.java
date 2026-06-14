@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Recursos.Exception;
+package com.Gestion.MiBalnearioGestion.Common.Exepciones;
 
 import java.time.Instant;
 

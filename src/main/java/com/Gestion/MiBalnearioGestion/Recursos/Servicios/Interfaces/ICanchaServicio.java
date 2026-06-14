@@ -14,6 +14,5 @@ public interface ICanchaServicio {
                                 Integer capacidadIgual,
                                 Integer capacidadMenor,
                                 Integer capacidadMayor,
-                                boolean iluminacion,
-                                boolean noIluminacion);
+                                boolean iluminacion);
 }

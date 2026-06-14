@@ -1,6 +1,8 @@
-package com.Gestion.MiBalnearioGestion.Empleados.Entities;
+package com.Gestion.MiBalnearioGestion.Sector;
 
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -29,9 +31,11 @@ public class SectorEntity {
     private String nombre;
 
     @OneToMany(mappedBy = "sector")
+    @JsonIgnoreProperties("sector")
     private List<RecursoEntity> recursos = new ArrayList<>();
 
     @OneToMany(mappedBy = "sector")
+    @JsonIgnoreProperties("sector")
     private List<EmpleadoEntity> empleados;
 
 

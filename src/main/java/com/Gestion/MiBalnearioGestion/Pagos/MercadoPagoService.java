@@ -1,14 +1,14 @@
 package com.Gestion.MiBalnearioGestion.Pagos;
 import org.springframework.beans.factory.annotation.Value;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.client.preference.*;
+import com.mercadopago.resources.preference.Preference;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-import java.util.*;
 @Service
 public class MercadoPagoService {
 
@@ -26,51 +26,53 @@ public class MercadoPagoService {
 
     public String crearPreferenciaPago(UUID publicIdPago, double monto, String descripcionItem) {
         try {
-            String url = "https://api.mercadopago.com/checkout/preferences";
-            RestTemplate clienteHttp = new RestTemplate();
+            // seatamos el token de mp
+            MercadoPagoConfig.setAccessToken(accessToken);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + accessToken);
+            // se crea el item del balneario
+            PreferenceItemRequest item = PreferenceItemRequest.builder()
+                    .id(publicIdPago.toString())
+                    .title(descripcionItem)
+                    .quantity(1)
+                    .unitPrice(new BigDecimal(monto))
+                    .currencyId("ARS")
+                    .build();
 
-            Map<String, Object> item = new HashMap<>();
-            item.put("id", publicIdPago.toString());
-            item.put("title", descripcionItem);
-            item.put("quantity", 1);
-            item.put("unit_price", monto);
-            item.put("currency_id", "ARS");
-
-
-            List<Map<String, Object>> items = new ArrayList<>();
+            List<PreferenceItemRequest> items = new ArrayList<>();
             items.add(item);
 
-            Map<String, String> backUrls = new HashMap<>();
-            backUrls.put("success", backUrlSuccess);
-            backUrls.put("failure", backUrlFailure);
-            backUrls.put("pending", backUrlFailure);
+            // creamos los back url de forma nativa
+            PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                    .success(backUrlSuccess)
+                    .failure(backUrlFailure)
+                    .pending(backUrlFailure)
+                    .build();
 
-            Map<String, Object> body = new HashMap<>();
-            body.put("items", items);
-            body.put("back_urls", backUrls);
-            body.put("external_reference", publicIdPago.toString());
-            body.put("notification_url", notificationUrl);
+            //armamos la peticion
+            PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                    .items(items)
+                    .backUrls(backUrls)
+                    .externalReference(publicIdPago.toString()) // hilo conductor para webhook
+                    .notificationUrl(notificationUrl)           //link de ngrok público
+                    .autoReturn("approved")                      // retorno automatico obligatorio
+                    .build();
 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-            ResponseEntity<Map> response = clienteHttp.postForEntity(url, entity, Map.class);
+            // usamos el cliente oficial de mp
+            PreferenceClient client = new PreferenceClient();
+            Preference preference = client.create(preferenceRequest);
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return (String) response.getBody().get("init_point");
-            } else {
-                throw new RuntimeException("Respuesta inesperada de Mercado Pago");
-            }
+            // retornamos el link de pago
+            return preference.getInitPoint();
 
-        } catch (org.springframework.web.client.HttpClientErrorException e) {
-            System.err.println("ERROR DE LA API DE MERCADO PAGO: " + e.getResponseBodyAsString());
-            throw new RuntimeException("Mercado Pago rechazó la solicitud: " + e.getMessage(), e);
+        } catch (com.mercadopago.exceptions.MPApiException e) {
+            // esto por ahora esta para ayudarnos si se rompe algo
+            System.err.println("CODIGO DE ERROR MP: " + e.getApiResponse().getStatusCode());
+            System.err.println("DETALLE DE LA API DE MP: " + e.getApiResponse().getContent());
+            throw new RuntimeException("Mercado Pago rechazó los datos: " + e.getApiResponse().getContent(), e);
         } catch (Exception e) {
-            System.err.println("ERROR INTERNO EN EL PROCESAMIENTO:");
+            System.err.println("ERROR EN LA GENERACIÓN DE PREFERENCIA MERCADO PAGO:");
             e.printStackTrace();
-            throw new RuntimeException("Error al conectar con Mercado Pago: " + e.getMessage(), e);
+            throw new RuntimeException("Error al conectar con Mercado Pago mediante SDK: " + e.getMessage(), e);
         }
     }
 }

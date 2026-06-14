@@ -2,8 +2,8 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.PiletaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PiletaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.PiletaMapper;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 import java.util.UUID;
@@ -70,8 +69,7 @@ public class PiletaServicio implements IPiletaServicio {
 
     @Transactional(readOnly = true)
     @Override
-    public List<PiletaDTO> obtenerPiletas(boolean climatizada,
-                                          boolean noClimatizada,
+    public List<PiletaDTO> obtenerPiletas(Boolean climatizada,
                                           Integer tamanioIgual,
                                           Integer TamanioMayor,
                                           Integer TamanioMenor){
@@ -79,7 +77,6 @@ public class PiletaServicio implements IPiletaServicio {
         PredicateSpecification<PiletaEntity> spec =
                 PredicateSpecification.allOf(
                         PiletaSpecification.climatizada(climatizada),
-                        PiletaSpecification.noClimatizada(noClimatizada),
                         PiletaSpecification.tamanioIgual(tamanioIgual),
                         PiletaSpecification.tamanioMayor(TamanioMayor),
                         PiletaSpecification.tamanioMenor(TamanioMenor)

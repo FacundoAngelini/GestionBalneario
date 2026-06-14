@@ -1,0 +1,27 @@
+package com.Gestion.MiBalnearioGestion.Sector;
+
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapper;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class SectorMapper implements IMapper<SectorEntity, SectorDTO> {
+
+    private final ModelMapper modelMapper;
+
+    @Override
+    public SectorDTO convertToDTO(SectorEntity entity) {
+        return modelMapper.map(entity, SectorDTO.class);
+    }
+
+    @Override
+    public SectorEntity convertToEntity(SectorDTO dto, Class<SectorEntity> clase) {
+        return modelMapper.map(dto, SectorEntity.class);
+    }
+
+    public void updateEntityFromDTO(SectorDTO dto, SectorEntity entity) {
+        modelMapper.map(dto, entity);
+    }
+}

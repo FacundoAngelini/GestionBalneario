@@ -23,19 +23,26 @@ jwt:
 
 mp:
   accesstoken: ${MP_ACCESS_TOKEN}
-  webhook: "https://culinary-bleep-woof.ngrok-free.dev/api/v1/public/webhooks/mercadopago"
+  webhook: "${MP_WEBHOOK_URL}/api/v1/public/webhooks/mercadopago"
   backurl:
-    success: "http://localhost:5173/pago-exitoso"
-    failure: "http://localhost:5173/pago-fallido"
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
+  backurls:
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
 
 mail:
-    host: smtp.gmail.com
-    port: 587
-    username: balnearioapiutn@gmail.com
-    password: ${GMAIL_APP}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+  host: smtp.gmail.com
+  port: 587
+  username: balnearioapiutn@gmail.com
+  password: ${GMAIL_APP}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
