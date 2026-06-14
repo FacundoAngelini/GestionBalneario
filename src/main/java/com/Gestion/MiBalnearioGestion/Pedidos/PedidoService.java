@@ -13,12 +13,14 @@ import com.Gestion.MiBalnearioGestion.Recursos.Entity.MesaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.MesaRepositorio;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,5 +77,33 @@ public class PedidoService {
                 .collect(Collectors.toList());
 
         pedido.setDetallePedidos(detalles);
+    }
+
+    public PedidoResponse obtenerPedido(UUID publicId) {
+        PedidoEntity pedido = pedidoRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException("Pedido no encontrado","PedidoEntity"));
+        return pedidoMapper.convertToResponseDTO(pedido);
+    }
+
+    public List<PedidoResponse> obtenerTodos() {
+        return pedidoRepository.findAll().stream()
+                .map(pedidoMapper::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<PedidoResponse> obtenerPorTipo(ETipoPedido tipo) {
+        return pedidoRepository.findByTipoPedido(tipo).stream()
+                .map(pedidoMapper::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PedidoResponse agregarProductos(UUID pedidoPublicId, List<DetallePedidoRequest> nuevosDetalles) {
+        PedidoEntity pedido = pedidoRepository.findByPublicId(pedidoPublicId)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido no encontrado"));
+
+        agregarDetalles(pedido, nuevosDetalles);
+        return pedidoMapper.convertToResponseDTO(pedido);
     }
 }
