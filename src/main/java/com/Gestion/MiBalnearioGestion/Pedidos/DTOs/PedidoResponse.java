@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.DTOs;
 
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
+import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
 import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ETipoPedido;
 import lombok.*;
 
@@ -15,10 +16,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PedidoResponse {
-    private Long id;
     private UUID publicId;
     private LocalDate fechaPedido;
     private ETipoPedido tipoPedido;
+    private EEstadoPedido estadoPedido;
     private List<DetallePedidoResponse> detalles;
-    private List<EmpleadoResponseDTO> empleados;
+    private List<UUID> empleadosIds;
+    private String linkPago;
 }

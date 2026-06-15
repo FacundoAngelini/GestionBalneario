@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface iDetallePedidoRepository extends JpaRepository<DetallePedidoEntity, Long> {
+    Optional<DetallePedidoEntity> findByPublicId(UUID id);
 
 
 }

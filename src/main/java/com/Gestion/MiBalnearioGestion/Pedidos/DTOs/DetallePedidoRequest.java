@@ -16,10 +16,10 @@ public class DetallePedidoRequest {
 
 
     @NotNull
-    private int cantidad;
+    private Integer cantidad;
 
     @NotNull
-    private double precio;
+    private Double precio;
 
     @NotNull
     private UUID productoId;

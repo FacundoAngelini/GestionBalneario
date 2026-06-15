@@ -1,31 +1,29 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Configuracion.*;
-import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoMesaDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoPedidoReservaDTO;
-import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoMesaEntity;
-import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoReservaEntity;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoLugarEntity;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PagoPedidoReservaMapper implements IMapper<PagoPedidoReservaEntity, PagoPedidoReservaDTO> {
+public class PagoPedidoReservaMapper implements IMapper<PagoPedidoLugarEntity, PagoPedidoReservaDTO> {
 
     private final ModelMapper modelMapper;
 
     @Override
-    public PagoPedidoReservaDTO convertToDTO(PagoPedidoReservaEntity entity) {
+    public PagoPedidoReservaDTO convertToDTO(PagoPedidoLugarEntity entity) {
         return modelMapper.map(entity, PagoPedidoReservaDTO.class);
     }
 
     @Override
-    public PagoPedidoReservaEntity convertToEntity(PagoPedidoReservaDTO dto, Class<PagoPedidoReservaEntity> entityClass) {
-        return modelMapper.map(dto, PagoPedidoReservaEntity.class);
+    public PagoPedidoLugarEntity convertToEntity(PagoPedidoReservaDTO dto, Class<PagoPedidoLugarEntity> entityClass) {
+        return modelMapper.map(dto, PagoPedidoLugarEntity.class);
     }
 
-    public void updateEntityFromDTO(PagoPedidoReservaDTO dto, PagoPedidoReservaEntity entity) {
+    public void updateEntityFromDTO(PagoPedidoReservaDTO dto, PagoPedidoLugarEntity entity) {
         modelMapper.map(dto, entity);
     }
 }

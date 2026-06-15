@@ -1,6 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

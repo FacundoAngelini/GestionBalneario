@@ -1,4 +1,4 @@
-package com.Gestion.MiBalnearioGestion.Pedidos.Enum;
+package com.Gestion.MiBalnearioGestion.Productos;
 
 public enum ECategoriaProdcuto {
     BEBIDAS_FRIAS,

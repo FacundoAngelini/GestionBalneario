@@ -2,7 +2,7 @@ package com.Gestion.MiBalnearioGestion.Reservas.Entity;
 
 import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoReservaEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -64,9 +64,6 @@ public class ReservaEntity {
     )
     @JsonManagedReference
     private List<RecursoEntity> recursos = new ArrayList<>();
-
-    @OneToMany(mappedBy = "reserva")
-    private List<PedidoReservaEntity> pedidoReserva;
 
     @OneToOne(mappedBy = "reserva")
     @JsonManagedReference

@@ -10,10 +10,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,13 +18,12 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TicketDTO {
 
     private UUID publicId;
 
-    @NotNull
-    @PastOrPresent
-    private LocalDateTime fechaTicket;
+    private LocalDateTime fechaTicket = LocalDateTime.now();
 
     @NotNull
     @PositiveOrZero

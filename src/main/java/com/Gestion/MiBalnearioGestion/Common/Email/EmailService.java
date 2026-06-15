@@ -6,18 +6,19 @@ import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoEntity;
-import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.DetallePedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
-import com.Gestion.MiBalnearioGestion.Recursos.Mappers.RecursoMapper;
-import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -121,6 +122,93 @@ public class EmailService {
                 + "¡Te esperamos para disfrutar del verano con todo listo!");
 
         mailSender.send(mailMessage);
+    }
+    public void enviarLinkPagoPedido(PedidoLugarEntity pedido, PagoEntity pago, String linkPago) {
+        ClienteEntity cliente = pedido.getCliente();
+
+        // Arma el detalle de productos
+        String detalle = pedido.getDetallePedidos().stream()
+                .map(d -> "  - " + d.getProducto().getNombre()
+                        + " x" + d.getCantidad()
+                        + "  →  $" + d.getPrecio())
+                .collect(Collectors.joining("\n"));
+
+        double total = pedido.getDetallePedidos().stream()
+                .mapToDouble(DetallePedidoEntity::getPrecio)
+                .sum();
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setFrom("balnearioapiutn@gmail.com");
+        mail.setTo(cliente.getEmail());
+        mail.setSubject("Tu pedido en el Balneario está listo para pagar 🏖️");
+
+        mail.setText(
+                "¡Hola, " + cliente.getNombre() + "!\n\n"
+                        + "Recibimos tu pedido correctamente. Para que lo preparemos, completá el pago "
+                        + "usando el siguiente enlace antes de que expire.\n\n"
+                        + "=========================================\n"
+                        + "           DETALLE DEL PEDIDO            \n"
+                        + "=========================================\n"
+                        + "Código de Pedido : " + pedido.getPublicId() + "\n"
+                        + "Fecha            : " + pedido.getFechaPedido() + "\n"
+                        + "Tipo             : " + pedido.getTipoPedido() + "\n\n"
+                        + "Productos:\n"
+                        + detalle + "\n\n"
+                        + "─────────────────────────────────────────\n"
+                        + "TOTAL A PAGAR    : $" + total + "\n"
+                        + "─────────────────────────────────────────\n\n"
+                        + "=========================================\n"
+                        + "          ENLACE DE PAGO (MERCADO PAGO)  \n"
+                        + "=========================================\n"
+                        + linkPago + "\n\n"
+                        + "IMPORTANTE: Tenés 15 minutos para completar el pago o el pedido será cancelado automáticamente.\n\n"
+                        + "¡Muchas gracias por elegirnos!"
+        );
+
+        mailSender.send(mail);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+// 📧 EMAIL 2: Cuando el pago se confirma (webhook de MP) → le avisás que
+//             el pedido entró a cocina
+// ─────────────────────────────────────────────────────────────────────────────
+    public void confirmacionPagoPedido(PedidoLugarEntity pedido, TicketEntity ticket) {
+        ClienteEntity cliente = pedido.getCliente();
+
+        String detalle = pedido.getDetallePedidos().stream()
+                .map(d -> "  - " + d.getProducto().getNombre()
+                        + " x" + d.getCantidad()
+                        + "  →  $" + d.getPrecio())
+                .collect(Collectors.joining("\n"));
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setFrom("balnearioapiutn@gmail.com");
+        mail.setTo(cliente.getEmail());
+        mail.setSubject("¡Pago confirmado! Tu pedido está en preparación 🍽️");
+
+        mail.setText(
+                "¡Hola, " + cliente.getNombre() + "!\n\n"
+                        + "Confirmamos que recibimos tu pago y tu pedido ya está en preparación.\n\n"
+                        + "=========================================\n"
+                        + "           DETALLE DEL PEDIDO            \n"
+                        + "=========================================\n"
+                        + "Código de Pedido : " + pedido.getPublicId() + "\n"
+                        + "Fecha            : " + pedido.getFechaPedido() + "\n"
+                        + "Tipo             : " + pedido.getTipoPedido() + "\n\n"
+                        + "Productos:\n"
+                        + detalle + "\n\n"
+                        + "─────────────────────────────────────────\n"
+                        + "TOTAL ABONADO    : $" + ticket.getTotal() + "\n"
+                        + "─────────────────────────────────────────\n\n"
+                        + "=========================================\n"
+                        + "            COMPROBANTE DE PAGO          \n"
+                        + "=========================================\n"
+                        + "ID Ticket        : " + ticket.getPublicId() + "\n"
+                        + "Fecha de Pago    : " + ticket.getFechaTicket() + "\n\n"
+                        + "En breve un repartidor te llevará tu pedido. ¡Gracias por elegirnos! 🏖️"
+        );
+
+        mailSender.send(mail);
     }
     /**
      * Con Empleado Request eventualmente

@@ -1,6 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Entity;
 
+import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
 import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ETipoPedido;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +24,6 @@ import java.util.UUID;
 @SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 public class PedidoEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,8 +39,14 @@ public class PedidoEntity {
     @Column(name="tipo_pedido", nullable = false)
     private ETipoPedido tipoPedido;
 
-    @OneToMany(mappedBy = "pedido")
-    private List<DetallePedidoEntity> detallePedidos;
+    @Enumerated(EnumType.STRING)
+    @Column(name="estado_pedido", nullable = false)
+    private EEstadoPedido estadoPedido;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private List<DetallePedidoEntity> detallePedidos = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -47,5 +55,9 @@ public class PedidoEntity {
             inverseJoinColumns = @JoinColumn(name="empleado_id")
     )
     private List<EmpleadoEntity> empleados = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id", nullable = true)
+    private ClienteEntity cliente;
 
 }

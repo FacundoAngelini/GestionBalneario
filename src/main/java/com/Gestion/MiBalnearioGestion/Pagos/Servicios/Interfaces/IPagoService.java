@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces;
 
+import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoReservaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
@@ -18,5 +19,6 @@ public interface IPagoService {
                                                        LocalDate fechaDesde,
                                                        LocalDate fechaHasta);
     void cancelarPagoYReserva(UUID reservaPublicId);
+    PagoDTO obtenerPagoPorPedido(UUID pedidoPublicId);
 
 }

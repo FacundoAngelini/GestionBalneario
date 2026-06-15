@@ -1,7 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.DetallePedidoEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;

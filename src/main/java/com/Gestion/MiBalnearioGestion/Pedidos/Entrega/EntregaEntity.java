@@ -1,9 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Entrega;
 
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
-import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoPedidoReservaEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoReservaEntity;
+
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -32,7 +31,7 @@ public class EntregaEntity {
 
     @OneToOne
     @JoinColumn(name = "pedido_reserva_id", nullable = false)
-    private PedidoReservaEntity pedidoReserva;  // corregido
+    private PedidoLugarEntity pedidoReserva;  // corregido
 
     @ManyToOne
     @JoinColumn(name = "empleado_id", nullable = false)

@@ -1,6 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

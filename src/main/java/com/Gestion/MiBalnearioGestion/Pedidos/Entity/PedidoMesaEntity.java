@@ -11,14 +11,10 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 public class PedidoMesaEntity extends PedidoEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mesa_id", nullable = false)
     private MesaEntity mesa;
-
-    @OneToOne(mappedBy = "pedidoMesa")
-    private PagoPedidoMesaEntity pagoPedidoMesa;
 }

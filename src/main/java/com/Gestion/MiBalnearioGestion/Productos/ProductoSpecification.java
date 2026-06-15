@@ -1,6 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
 public class ProductoSpecification {

@@ -1,10 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Productos;
 
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
-import jakarta.transaction.Transactional;
-
 import java.util.List;
 import java.util.UUID;
 

@@ -2,7 +2,6 @@ package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago;
 
 import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.*;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.*;
 import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
@@ -12,13 +11,15 @@ import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.iTicketRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoService;
 import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Specification.PagoSpecification;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoMesaEntity;
+import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iPedidoRepository;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
-import com.mercadopago.exceptions.MPApiException;
-import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.payment.Payment;
 
 
@@ -45,6 +46,23 @@ public class PagoService implements IPagoService {
     private final ReservaRepository reservaRepository;
     private final PagoReservaMapper pagoReservaMapper;
     private final EmailService emailService;
+    private final iPedidoRepository pedidoRepository;
+
+    @Transactional(readOnly = true)
+    @Override
+    public PagoDTO obtenerPagoPorPedido(UUID pedidoPublicId) {
+        PagoEntity pago = pagoRepository.findByPedidoPublicId(pedidoPublicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No existe pago para el pedido", pedidoPublicId.toString()));
+
+        return PagoDTO.builder()
+                .publicId(pago.getPublicId())
+                .monto(pago.getMonto())
+                .eestadoPago(pago.getEestadoPago())
+                .fechaPago(pago.getFechaPago())
+                .metodoPago(pago.getMetodoPago())
+                .build();
+    }
 
     @Transactional
     @Override
@@ -53,69 +71,70 @@ public class PagoService implements IPagoService {
             MercadoPagoConfig.setAccessToken(accessToken);
 
             PaymentClient client = new PaymentClient();
-            Payment payment = client.get(Long.parseLong(paymentIdMP));
+
+            Payment payment;
+            try {
+                payment = client.get(Long.parseLong(paymentIdMP));
+            } catch (com.mercadopago.exceptions.MPException | com.mercadopago.exceptions.MPApiException mpEx) {
+                System.err.println("Error al consultar el pago en Mercado Pago: " + mpEx.getMessage());
+                throw new RuntimeException("Error de comunicación con la API externa de Mercado Pago", mpEx);
+            }
 
             UUID publicIdLocal = UUID.fromString(payment.getExternalReference());
 
             PagoEntity pagoGeneric = pagoRepository.findByPublicId(publicIdLocal)
-                    .orElseThrow(() -> new RuntimeException("No existe el registro de pago local para ID: " + publicIdLocal));
+                    .orElseThrow(() -> new RuntimeException(
+                            "No existe el registro de pago local para ID: " + publicIdLocal));
 
             if (pagoGeneric.getEestadoPago() == EestadoPago.PAGADO) {
                 return;
             }
 
-            System.out.println(payment.getStatus());
+            System.out.println("Estado del pago MP: " + payment.getStatus());
 
             if ("approved".equals(payment.getStatus())) {
 
                 boolean yaExisteTicket = ticketRepository.existsByPagoEntityId(pagoGeneric.getId());
+                if (yaExisteTicket) return;
 
-                if (yaExisteTicket) {
-                    System.out.println("La notificación ya fue procesada anteriormente. Evitando duplicados.");
-                    return; // Corta la ejecución acá, no hace inserts repetidos ni rompe por deadlock
-                }
-
-
-                System.out.println("ENTRO IF DE PAGO APPROVED");
                 pagoGeneric.setEestadoPago(EestadoPago.PAGADO);
                 pagoRepository.save(pagoGeneric);
 
-
-
-                TicketEntity ticket = TicketEntity.builder()
+                TicketEntity ticketGuardado = ticketRepository.save(TicketEntity.builder()
                         .publicId(UUID.randomUUID())
                         .fechaTicket(LocalDateTime.now())
                         .total(payment.getTransactionAmount().doubleValue())
                         .pagoEntity(pagoGeneric)
-                        //.empleado(empleadoSistema)
-                        .build();
+                        .build());
 
-                TicketEntity ticketGuardado = ticketRepository.save(ticket);
 
                 if (pagoGeneric instanceof PagoReservaEntity pagoReserva) {
+                    // Alquiler del día (carpa o sombrilla) → confirma la reserva
                     ReservaEntity reserva = pagoReserva.getReserva();
                     reserva.setEstadoReserva(EReservaEstado.CONFIRMADA);
                     reserva.setReservado(true);
                     reservaRepository.save(reserva);
                     emailService.confirmacionPagoReserva(pagoReserva, ticketGuardado);
-                }
 
+                }  else if (pagoGeneric instanceof PagoPedidoLugarEntity pagoPedidoLugar) {
+                PedidoLugarEntity pedido = pagoPedidoLugar.getPedido();
+                pedido.setEstadoPedido(EEstadoPedido.CONFIRMADO);
+                pedidoRepository.save(pedido);
+                emailService.confirmacionPagoPedido(pedido, ticketGuardado);
 
+                } else if (pagoGeneric instanceof PagoPedidoMesaEntity pagoPedidoMesa) {
 
+                    PedidoMesaEntity pedidoMesa = pagoPedidoMesa.getPedidoMesa();
+                    pedidoMesa.setEstadoPedido(EEstadoPedido.CONFIRMADO);
+                    pedidoRepository.save(pedidoMesa);
 
-            } else if ("rejected".equals(payment.getStatus())) {
-                pagoGeneric.setEestadoPago(EestadoPago.RECHAZADO);
-                pagoRepository.save(pagoGeneric);
-
-                if (pagoGeneric instanceof PagoReservaEntity pagoReserva) {
-                    ReservaEntity reserva = pagoReserva.getReserva();
-                    reserva.setEstadoReserva(EReservaEstado.RECHAZADA);
-                    reservaRepository.save(reserva);
                 }
             }
 
-        } catch (MPException | MPApiException e) {
-            throw new RuntimeException("Fallo critico al validar la operación con la API de Mercado Pago", e);
+        } catch (Exception e) {
+            System.err.println("Error general procesando la notificación: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -164,7 +183,9 @@ public class PagoService implements IPagoService {
                 .map(pago -> (PagoReservaEntity) pago)
                 .map(pagoReserva -> PagoReservaResponseDTO.builder()
                         .publicId(pagoReserva.getPublicId())
-                        .reservaPublicId(pagoReserva.getReserva() != null ? pagoReserva.getReserva().getPublicId() : null)
+                        .reservaPublicId(pagoReserva.getReserva() != null
+                                ? pagoReserva.getReserva().getPublicId()
+                                : null)
                         .monto(pagoReserva.getMonto())
                         .estadoPago(pagoReserva.getEestadoPago())
                         .fechaPago(pagoReserva.getFechaPago())
@@ -178,22 +199,23 @@ public class PagoService implements IPagoService {
     @Override
     public void cancelarPagoYReserva(UUID reservaPublicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
-                .orElseThrow(() -> new EntidadNoEncontradaException("No se puede cancelar. La reserva no existe"+ reservaPublicId.toString(), "ReservaEntity"));
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No se puede cancelar. La reserva no existe: " + reservaPublicId, "ReservaEntity"));
 
         if (reserva.getEstadoReserva() == EReservaEstado.CANCELADA) {
-            throw new IllegalStateException("La reserva ya se encuentra cancelada en el sistema");
+            throw new IllegalStateException("La reserva ya se encuentra cancelada en el sistema.");
         }
         if (reserva.getEstadoReserva() == EReservaEstado.RECHAZADA) {
-            throw new IllegalStateException("No se puede cancelar una reserva que ya fue RECHAZADA");
+            throw new IllegalStateException("No se puede cancelar una reserva que ya fue RECHAZADA.");
         }
 
         reserva.setEstadoReserva(EReservaEstado.CANCELADA);
         reserva.setReservado(false);
         reservaRepository.save(reserva);
 
-
         PagoEntity pago = pagoRepository.findByReservaPublicId(reservaPublicId)
-                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontro ningun registro de pago para la reserva especificada."+ reservaPublicId.toString(),"PagoEntity"));
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No se encontró ningún registro de pago para la reserva: " + reservaPublicId, "PagoEntity"));
 
         if (pago.getEestadoPago() != EestadoPago.RECHAZADO) {
             pago.setEestadoPago(EestadoPago.RECHAZADO);

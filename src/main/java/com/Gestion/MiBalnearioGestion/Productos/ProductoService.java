@@ -2,7 +2,6 @@ package com.Gestion.MiBalnearioGestion.Productos;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ECategoriaProdcuto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;

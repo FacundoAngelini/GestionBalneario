@@ -15,6 +15,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -181,6 +182,13 @@ public class GlobalExcepcionHandler {
         ErrorResponse errorResponse= new ErrorResponse(403, "Acceso Restringido" + ex.getMessage());
         errorResponse.setPath(request.getRequestURI());
         return ResponseEntity.status(403).body(errorResponse) ;
+    }
+
+    @ExceptionHandler( HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest  request) {
+        ErrorResponse errorResponse= new ErrorResponse(405, "Metodo incorrecto" + ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(405).body(errorResponse) ;
     }
 
 

@@ -18,4 +18,8 @@ public interface iPagoRepository extends JpaRepository<PagoEntity, Long>, JpaSpe
     boolean existsByPublicId(UUID publicId);
     @Query("SELECT p FROM PagoReservaEntity p WHERE p.reserva.publicId = :reservaPublicId")
     Optional<PagoEntity> findByReservaPublicId(@Param("reservaPublicId") UUID reservaPublicId);
+    @Query("SELECT p FROM PagoEntity p WHERE " +
+            "(TYPE(p) = PagoPedidoLugarEntity AND TREAT(p AS PagoPedidoLugarEntity).pedido.publicId = :publicId) OR " +
+            "(TYPE(p) = PagoPedidoMesaEntity AND TREAT(p AS PagoPedidoMesaEntity).pedidoMesa.publicId = :publicId)")
+    Optional<PagoEntity> findByPedidoPublicId(@Param("publicId") UUID publicId);
 }
