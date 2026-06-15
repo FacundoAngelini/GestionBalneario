@@ -22,6 +22,9 @@ public class SectorMapper implements IMapper<SectorEntity, SectorDTO> {
     }
 
     public void updateEntityFromDTO(SectorDTO dto, SectorEntity entity) {
+        modelMapper.typeMap(SectorDTO.class, SectorEntity.class)
+                .addMappings(mapper -> mapper.skip(SectorEntity::setId));
+
         modelMapper.map(dto, entity);
     }
 }
