@@ -111,6 +111,8 @@ CREATE DATABASE arenadesk;
 
 Configurar las credenciales en:
 
+![Static Badge](https://img.shields.io/badge/application-yaml-blue?link=https%3A%2F%2Fgithub.com%2FFacundoAngelini%2FGestionBalneario%2Fblob%2Fmain%2Fsrc%2Fmain%2Fresources%2Fapplication.yaml)
+
 src/main/resources/application.yaml
 
 ## Variables de entorno
