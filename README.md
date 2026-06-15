@@ -144,7 +144,7 @@ mvn spring-boot:run
 
 ## Modelo de Base de Datos
 
-[Ver DER completo](balneario(4).pdf)
+[Ver DER completo](DER.pdf)
 
 ---
 
