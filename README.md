@@ -107,7 +107,21 @@ Entre las más relevantes se incluyen:
 
 Crear una base de datos:
 
-CREATE DATABASE arenadesk;
+-db_URL
+-db_username
+-db_password
+
+Gmail Contraseñas de aplicaciones (requiere verificacion de 2 pasos)
+
+-gmail_pass formato: xxxx-xxxx-xxxx-xxxx (borrar espacios entre caracteres en .env)
+
+MercadoPago Developer Key
+
+MP_ACCESS_TOKEN
+
+Crear .env al nivel de src, para testing.
+
+[![application.yaml](https://img.shields.io/badge/.env-example-blue)](https://github.com/FacundoAngelini/GestionBalneario/blob/main/.envExample)
 
 Configurar las credenciales en:
 
