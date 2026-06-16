@@ -40,6 +40,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain (HttpSecurity http) throws
             Exception {
         http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/reservas/**").permitAll()
                         .requestMatchers("/api/v1/pagos/**").permitAll()

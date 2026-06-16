@@ -47,7 +47,6 @@ public class NewAccountRequest {
     private String telefono;
 
     @Schema(description = "Documento Nacional de Identidad", example = "38123456")
-    @Size(min = 8, max = 9)
     @NotNull(message = "El DNI es obligatorio")
     @Positive(message = "El DNI debe ser un número positivo")
     private int dni;

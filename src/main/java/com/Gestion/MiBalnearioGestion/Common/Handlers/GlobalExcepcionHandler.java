@@ -214,28 +214,28 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingServlet(MissingServletRequestParameterException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Error al mandar los parametros");
+        ErrorResponse error = new ErrorResponse(400, "Error al mandar los parametros" +ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(400).body(error);
     }
 
     @ExceptionHandler(CuentaEncontradaException.class)
     public ResponseEntity<ErrorResponse> handleCuentaAsociada(CuentaEncontradaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(403, "Esta cuenta ya esta asociada");
+        ErrorResponse error = new ErrorResponse(403, "Esta cuenta ya esta asociada" +ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(403).body(error);
     }
 
     @ExceptionHandler(CuentaNoEncontradaException.class)
     public ResponseEntity<ErrorResponse> handleCuentaNoEncontrada(CuentaEncontradaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(404, "Esta cuenta no se encuentra");
+        ErrorResponse error = new ErrorResponse(404, "Esta cuenta no se encuentra" + ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(404).body(error);
     }
 
     @ExceptionHandler(DatosInvalidoException.class)
     public ResponseEntity<ErrorResponse> handleDatosInvalidos(DatosInvalidoException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Los datos son invalidos");
+        ErrorResponse error = new ErrorResponse(400, "Los datos son invalidos" + ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
