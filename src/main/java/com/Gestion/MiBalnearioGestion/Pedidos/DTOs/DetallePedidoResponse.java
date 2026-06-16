@@ -1,9 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.DTOs;
 
-import com.Gestion.MiBalnearioGestion.Productos.ProductoDTO;
+import com.Gestion.MiBalnearioGestion.Productos.DTO.ProductoDTO;
 import lombok.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Data

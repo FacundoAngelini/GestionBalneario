@@ -53,4 +53,11 @@ public class ReservaController {
         reservaServicio.cancelarReservaConAnticipacion(dto);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/cancelar-administrativo")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    public ResponseEntity<Void> cancelarReservaAdministrativa(@PathVariable UUID id) {
+        reservaServicio.cancelarReservaPorPersonal(id);
+        return ResponseEntity.noContent().build();
+    }
 }

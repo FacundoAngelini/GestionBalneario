@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Auth.Credenciales.Repositorio;
 
-import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

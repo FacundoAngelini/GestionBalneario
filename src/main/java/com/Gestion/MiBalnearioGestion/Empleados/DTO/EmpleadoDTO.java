@@ -1,9 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
-import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.AuthRequest;
+import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.DTO.AuthRequest;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
-import com.Gestion.MiBalnearioGestion.Sector.SectorDTO;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Sector.DTO.SectorDTO;
+import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Entity;
 
-import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

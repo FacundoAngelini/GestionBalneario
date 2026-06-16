@@ -1,9 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Entity;
 
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ETipoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.EEstadoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.ETipoPedido;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

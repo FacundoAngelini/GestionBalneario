@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Pagos.DTOs;
 
-import com.Gestion.MiBalnearioGestion.Pedidos.Entrega.EntregaDTO;
+import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.EntregaDTO;
 import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.PedidoLugarDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

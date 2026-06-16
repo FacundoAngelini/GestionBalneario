@@ -2,8 +2,8 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.Repositorio.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.SombrillaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.SombrillaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.EtamanioSombrilla;

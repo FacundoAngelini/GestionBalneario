@@ -33,13 +33,13 @@ public class CanchaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<CanchaDTO> obtenerCanchaId(@PathVariable UUID id) {
         return ResponseEntity.ok(canchaServicio.buscarPorId(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<List<CanchaDTO>> obtenerCanchas(ETipoCancha cancha,
                                                           Integer capacidadIgual,
                                                           Integer capacidadMenor,

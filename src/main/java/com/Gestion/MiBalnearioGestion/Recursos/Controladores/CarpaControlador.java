@@ -32,13 +32,13 @@ public class CarpaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<CarpaDTO> obtenerCarpaId(@PathVariable UUID id){
         return ResponseEntity.ok(carpaServicio.buscarPorId(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<List<CarpaDTO>> obtenerCarpas(@RequestParam(required = false) Integer numero,
                                                         @RequestParam(required = false) Integer numeroMayor,
                                                         @RequestParam(required = false) Integer numeroMenor,

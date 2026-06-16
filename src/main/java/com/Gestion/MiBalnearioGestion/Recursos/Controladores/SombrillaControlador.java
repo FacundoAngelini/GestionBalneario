@@ -32,13 +32,13 @@ public class SombrillaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<SombrillaDTO> obtenerSombrilla (@PathVariable UUID id) {
         return ResponseEntity.ok(sombrillaServicio.buscarPorId(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<List<SombrillaDTO>> obtenerSombrillas (@RequestParam(required = false) Integer numero,
                                                                  @RequestParam(required = false) Integer numeroMenor,
                                                                  @RequestParam(required = false) Integer numeroMayor,

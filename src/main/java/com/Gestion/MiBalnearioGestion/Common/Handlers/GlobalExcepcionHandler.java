@@ -2,6 +2,11 @@ package com.Gestion.MiBalnearioGestion.Common.Handlers;
 
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.*;
+import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoException;
+import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
+import com.Gestion.MiBalnearioGestion.Reservas.Exception.ReservaException;
+import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaEncontradaException;
+import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaNoEncontradaException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,6 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -92,23 +98,23 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(ReservaException.class)
     public ResponseEntity<ErrorResponse> ReservaExceptionHandler(ReservaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(500, "Error en la reserva" + ex.getMessage());
+        ErrorResponse error = new ErrorResponse(400, "Error en la reserva" + ex.getMessage());
         error.setPath(request.getRequestURI());
-        return ResponseEntity.status(403).body(error);
+        return ResponseEntity.status(400).body(error);
     }
 
     @ExceptionHandler(ProductoException.class)
     public ResponseEntity<ErrorResponse> ProductoExceptionHandler (ProductoException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(500, "Producto no disponible" + ex.getMessage());
+        ErrorResponse error = new ErrorResponse(422, "Producto no disponible" + ex.getMessage());
         error.setPath(request.getRequestURI());
-        return ResponseEntity.status(403).body(error);
+        return ResponseEntity.status(422).body(error);
     }
 
     @ExceptionHandler(RecursoException.class)
     public ResponseEntity<ErrorResponse> RecursoExceptionHandler(RecursoException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(500, "Error en el recurso" + ex.getMessage());
+        ErrorResponse error = new ErrorResponse(400, "Error en el recurso" + ex.getMessage());
         error.setPath(request.getRequestURI());
-        return ResponseEntity.status(403).body(error);
+        return ResponseEntity.status(400).body(error);
     }
 
     @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class, DisabledException.class,
@@ -150,9 +156,16 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(RecursoOcupadoException.class)
     public ResponseEntity<ErrorResponse> handleRecursoOcupado(RecursoOcupadoException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(400, "Error de recurso ocupado" + ex.getMessage());
+        ErrorResponse errorResponse= new ErrorResponse(409, "Error de recurso ocupado" + ex.getMessage());
        errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
+        return ResponseEntity.status(409).body(errorResponse) ;
+    }
+
+    @ExceptionHandler(AccionInvalidaException.class)
+    public ResponseEntity<ErrorResponse> handleAccionInvalida(AccionInvalidaException ex, HttpServletRequest  request) {
+        ErrorResponse errorResponse= new ErrorResponse(422, "No puede realizar esta accion" + ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        return ResponseEntity.status(422).body(errorResponse) ;
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -198,6 +211,35 @@ public class GlobalExcepcionHandler {
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(400).body(error);
     }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServlet(MissingServletRequestParameterException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(400, "Error al mandar los parametros");
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(400).body(error);
+    }
+
+    @ExceptionHandler(CuentaEncontradaException.class)
+    public ResponseEntity<ErrorResponse> handleCuentaAsociada(CuentaEncontradaException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(403, "Esta cuenta ya esta asociada");
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(403).body(error);
+    }
+
+    @ExceptionHandler(CuentaNoEncontradaException.class)
+    public ResponseEntity<ErrorResponse> handleCuentaNoEncontrada(CuentaEncontradaException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(404, "Esta cuenta no se encuentra");
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(404).body(error);
+    }
+
+    @ExceptionHandler(DatosInvalidoException.class)
+    public ResponseEntity<ErrorResponse> handleDatosInvalidos(DatosInvalidoException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(400, "Los datos son invalidos");
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 
 
 

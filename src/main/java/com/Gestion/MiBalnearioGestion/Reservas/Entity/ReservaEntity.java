@@ -1,8 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Reservas.Entity;
 
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -10,6 +9,7 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +51,9 @@ public class ReservaEntity {
 
     @Column(name = "disponible_hasta")
     private LocalDate disponibleHasta;
+
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    private LocalDateTime fechaCreacion;
 
     @ManyToOne
     @JoinColumn(name="cliente_id", nullable = false)

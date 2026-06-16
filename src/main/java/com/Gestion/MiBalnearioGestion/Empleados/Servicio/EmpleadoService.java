@@ -1,11 +1,12 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Servicio;
-import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Repositorio.CredencialRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.AccionInvalidaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
@@ -17,17 +18,22 @@ import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
-import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
-import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.*;
-import jakarta.transaction.Transactional;
+import com.Gestion.MiBalnearioGestion.Sector.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioContraseniaRequest;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioNombreUsuarioRequest;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaEncontradaException;
+import com.Gestion.MiBalnearioGestion.Usuarios.Repository.UsuarioRepository;
+import com.Gestion.MiBalnearioGestion.Usuarios.Service.UsuarioService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -62,7 +68,7 @@ public class EmpleadoService implements IEmpleadoService {
             throw new EntidadExistenteException("Ya existe un empleado con ese cuit", "EmpleadoEntity");
 
         if (credentialsRepository.findByNombreUsuario(dtoEmpleado.getCredencial().nombreUsuario()).isPresent())
-            throw new EntidadExistenteException("Ya existe ese nombre de usuario", "CredencialEntity");
+            throw new CuentaEncontradaException("Ya existe ese nombre de usuario", "CredencialEntity");
 
 
         boolean esGerente = SecurityContextHolder.getContext().getAuthentication()
@@ -72,7 +78,7 @@ public class EmpleadoService implements IEmpleadoService {
 
         String rolSolicitado = dtoEmpleado.getRolSolicitado().toUpperCase();
         if (esGerente && (rolSolicitado.contains("GERENTE") || rolSolicitado.contains("ADMIN")))
-            throw new AccessDeniedException("Un Gerente solo puede crear empleados de rango menor");
+            throw new AccionInvalidaException("Un Gerente solo puede crear empleados de rango menor", "EmpeladoEntity");
 
         UsuarioEntity nuevoUsuario = new UsuarioEntity();
         nuevoUsuario = usuarioRepository.save(nuevoUsuario);
@@ -107,27 +113,23 @@ public class EmpleadoService implements IEmpleadoService {
         }
 
         try {
-            // 1. Limpiamos el String: "ROLE_MOZO" -> "MOZO", "MOZO" -> "MOZO"
             String nombreRolPuro = rolSolicitado.replace("ROLE_", "").trim().toUpperCase();
 
-            // 2. Traducción de equivalencias (Mapeo manual para excepciones)
             if (nombreRolPuro.equals("EMPLEADO") || nombreRolPuro.equals("ADMINISTRACION")) {
-                nombreRolPuro = "ADMINISTRATIVO"; // Lo volcamos al enum que sí tenés
+                nombreRolPuro = "ADMINISTRATIVO";
             }
 
-            // 3. Convertimos al Enum de negocio de forma segura
             EtipoRol tipoRolNegocio = EtipoRol.valueOf(nombreRolPuro);
 
-            // 4. Buscamos en el repositorio de negocio
             RolEntity rolNegocio = rolRepository.findByTipoRol(tipoRolNegocio)
                     .orElseThrow(() -> new EntidadNoEncontradaException(
                             "El rol de negocio para " + tipoRolNegocio + " no existe en la base de datos", "RolEntity"));
 
             empleado.setRol(rolNegocio);
 
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("El rol solicitado '" + rolSolicitado +
-                    "' no se pudo asociar a ningún rol de negocio válido (Opciones: CARPERO, COCINERO, MOZO, CAJERO, GERENTE, GUARDAVIDAS, REPARTIDOR, ADMINISTRATIVO).");
+        } catch (AccionInvalidaException e) {
+            throw new AccionInvalidaException("El rol solicitado '" + rolSolicitado +
+                    "' no se pudo asociar a ningún rol de negocio válido (Opciones: CARPERO, COCINERO, MOZO, CAJERO, GERENTE, GUARDAVIDAS, REPARTIDOR, ADMINISTRATIVO, EMPLEADO)", "EmpleadoEntity");
         }
 
         return empleadoMapper.convertToResponseDTO(empleadosRepositorio.save(empleado));
@@ -138,8 +140,7 @@ public class EmpleadoService implements IEmpleadoService {
     {
         EmpleadoEntity buscado = empleadosRepositorio
                 .findByPublicId(IDpublico)
-                .orElseThrow(() -> new EntidadNoEncontradaException(
-                        "Empleado no se encontro: ", IDpublico.toString()));
+                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontro: ", IDpublico.toString()));
         buscado.setEstadoEmpleado(EEstadoEmpleado.INACTIVO);
         empleadosRepositorio.save(buscado);
         if (buscado.getUsuario() != null) {
@@ -175,7 +176,7 @@ public class EmpleadoService implements IEmpleadoService {
         return empleadoMapper.convertToResponseDTO(empleadosRepositorio.save(empleado));
     }
 
-
+@Transactional(readOnly = true)
     @Override
     public EmpleadoResponseDTO buscarPorIDpublico(UUID IDpublico) {
         return empleadosRepositorio.
@@ -184,6 +185,7 @@ public class EmpleadoService implements IEmpleadoService {
                 .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no se encontro :" , IDpublico.toString()));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<EmpleadoResponseDTO> listarEmpleados(  Integer dniIgual, Integer dniContiene,
                                                String nombreIgual, String nombreContiene,

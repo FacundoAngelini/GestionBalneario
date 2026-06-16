@@ -12,4 +12,5 @@ public class PedidoLugarEntity extends PedidoEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recurso_id", nullable = false)
     private RecursoEntity pedido;
+
 }

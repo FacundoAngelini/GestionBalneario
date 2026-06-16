@@ -4,8 +4,8 @@ import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoUpdateDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
-import com.Gestion.MiBalnearioGestion.Usuarios.CambioContraseniaRequest;
-import com.Gestion.MiBalnearioGestion.Usuarios.CambioNombreUsuarioRequest;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioContraseniaRequest;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioNombreUsuarioRequest;
 
 import java.util.List;
 import java.util.UUID;

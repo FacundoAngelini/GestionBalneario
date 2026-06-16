@@ -28,13 +28,13 @@ public class PrecioRecursoControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<PrecioRecursoDTO> obtenerPrecio(@PathVariable UUID id){
         return ResponseEntity.ok(precioRecursoServicio.buscarPorPublicId(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<List<PrecioRecursoDTO>> obtenerPrecio(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate precioVigenciaIgual,
                                                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate precioVigenciaMenor,
                                                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate precioVigenciaMayor,

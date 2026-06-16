@@ -1,8 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Auth.Security;
 
-import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Clientes.Repository.ClientesRepository;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
-import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iPedidoRepository;
+import com.Gestion.MiBalnearioGestion.Pedidos.Repository.IPedidoRepository;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -19,7 +19,7 @@ public class SecurityService {
     private final ClientesRepository clientesRepository;
     private final EmpleadosRepositorio empleadosRepositorio;
     private final ReservaRepository reservaRepository;
-    private final iPedidoRepository pedidoRepository;
+    private final IPedidoRepository pedidoRepository;
 
     public boolean esElPropioCliente(UUID publicId) {
         String usernameLogueado = obtenerUsernameActual();

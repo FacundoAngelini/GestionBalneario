@@ -2,10 +2,7 @@ package com.Gestion.MiBalnearioGestion.Pagos.Entity;
 
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,4 +22,6 @@ public class PagoReservaEntity extends PagoEntity {
     @JoinColumn(name="reserva_id", nullable = false)
     @JsonBackReference
     private ReservaEntity reserva;
+    @Column(name = "preference_id_mp")
+    private String preferenceIdMp;
 }

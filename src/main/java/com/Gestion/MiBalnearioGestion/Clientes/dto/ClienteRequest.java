@@ -1,7 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
-import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.AuthRequest;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.DTO.AuthRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 public class ClienteRequest {
@@ -36,5 +34,5 @@ public class ClienteRequest {
 
     @Valid
     @NotNull(message = "Las credenciales no pueden estar vacías")
-    private AuthRequest credencial; // ← reemplaza UsuarioDTO
+    private AuthRequest credencial;
 }

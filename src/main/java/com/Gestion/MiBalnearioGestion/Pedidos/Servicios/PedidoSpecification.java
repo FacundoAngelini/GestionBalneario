@@ -1,8 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ETipoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.EEstadoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.ETipoPedido;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
 import java.time.LocalDate;

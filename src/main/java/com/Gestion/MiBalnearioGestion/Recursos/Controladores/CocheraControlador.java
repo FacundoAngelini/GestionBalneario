@@ -25,19 +25,19 @@ public class CocheraControlador {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<CocheraDTO> actualizarCochera(@PathVariable UUID id, @Valid @RequestBody CocheraDTO dto) {
         return ResponseEntity.ok(cocheraServicio.actualizarCochera(id, dto));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<CocheraDTO> buscarCochera(@PathVariable UUID id) {
         return ResponseEntity.ok(cocheraServicio.buscarCochera(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<List<CocheraDTO>> obtenerCocheras(Integer cocheraIgual,
                                                             Integer cocheraMenor,
                                                             Integer cocheraMayor) {

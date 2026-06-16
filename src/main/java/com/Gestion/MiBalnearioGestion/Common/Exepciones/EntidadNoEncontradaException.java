@@ -18,11 +18,4 @@ public class EntidadNoEncontradaException extends NoSuchElementException {
         this.timestamp=Instant.now();
     }
 
-    public EntidadNoEncontradaException(String mensaje, String entidad, String campo, Object valor) {
-        super(mensaje);
-        this.entidad = entidad;
-        this.campo = campo;
-        this.valor = valor;
-        this.timestamp = Instant.now();
-    }
 }

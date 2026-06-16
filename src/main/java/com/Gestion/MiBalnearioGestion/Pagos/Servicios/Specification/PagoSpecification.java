@@ -1,8 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Specification;
 
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoEntity;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 
 import java.time.LocalDate;

@@ -1,15 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Pagos.DTOs;
 
-import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToOne;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.util.UUID;

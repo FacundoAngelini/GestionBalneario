@@ -31,13 +31,13 @@ public class PiletaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<PiletaDTO> obtenerPileta(@PathVariable UUID id){
         return ResponseEntity.ok(piletaServicio.obtenerPileta(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<List<PiletaDTO>> obtenerPiletas(@RequestParam (required = false) Boolean climatizada,
                                                           @RequestParam (required = false)Integer tamanioIgual,
                                                           @RequestParam (required = false)Integer TamanioMayor,

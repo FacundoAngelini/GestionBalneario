@@ -1,8 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.DTOs;
 
-import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.ETipoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.EEstadoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.ETipoPedido;
 import lombok.*;
 
 import java.time.LocalDate;

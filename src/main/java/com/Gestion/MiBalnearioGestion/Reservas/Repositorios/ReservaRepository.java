@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,6 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long>, J
     );
     @Query("SELECT r FROM ReservaEntity r WHERE r.estadoReserva = :estado AND r.fechaInicio <= :fechaLimite")
     List<ReservaEntity> findReservasExpiradas(@Param("estado") EReservaEstado estado, @Param("fechaLimite") LocalDate fechaLimite);
-
+    List<ReservaEntity> findByEstadoReservaAndFechaCreacionBefore(EReservaEstado estado, LocalDateTime limite);
 }
 

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 public class EmpleadoMapper {
     private final ModelMapper modelMapper;
 
-    // Entity → ResponseDTO (para respuestas)
     public EmpleadoResponseDTO convertToResponseDTO(EmpleadoEntity entity) {
         EmpleadoResponseDTO dto = modelMapper.map(entity, EmpleadoResponseDTO.class);
         if (entity.getUsuario() != null) {
@@ -22,13 +21,10 @@ public class EmpleadoMapper {
         return dto;
     }
 
-    // DTO → Entity (para crear)
     public EmpleadoEntity convertToEntity(EmpleadoDTO dto) {
         return modelMapper.map(dto, EmpleadoEntity.class);
-        // credencial no se mapea porque EmpleadoEntity no tiene ese campo
     }
 
-    // Para actualizar
     public void updateEntityFromDTO(EmpleadoUpdateDTO dto, EmpleadoEntity entity){
         entity.setNombre(dto.getNombre());
         entity.setApellido(dto.getApellido());

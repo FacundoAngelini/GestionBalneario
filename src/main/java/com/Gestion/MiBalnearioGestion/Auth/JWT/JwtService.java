@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
-    // Preguntar si debe ser variable de entorno
+
     @Value("${jwt.refresh-expiration}")
     private long refreshTokenExpiration;
 

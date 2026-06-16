@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Common.Email;
 
-import com.Gestion.MiBalnearioGestion.Auth.NewAccountRequest;
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.NewAccountRequest;
+import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
@@ -9,7 +9,6 @@ import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.DetallePedidoEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
@@ -168,10 +167,7 @@ public class EmailService {
         mailSender.send(mail);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────────
-// 📧 EMAIL 2: Cuando el pago se confirma (webhook de MP) → le avisás que
-//             el pedido entró a cocina
-// ─────────────────────────────────────────────────────────────────────────────
+
     public void confirmacionPagoPedido(PedidoLugarEntity pedido, TicketEntity ticket) {
         ClienteEntity cliente = pedido.getCliente();
 
@@ -210,15 +206,23 @@ public class EmailService {
 
         mailSender.send(mail);
     }
-    /**
-     * Con Empleado Request eventualmente
 
-    public void BienvenidaEmpleado (EmpleadoRequest empleado){
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("balnearioapiutn@gmail.com");
-        mailMessage.setTo(empleado.getEmail());
-        mailMessage.setSubject("Bienvenido al Equipo " + empleado.getNombre());
-        mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!);
-        mailSender.send(mailMessage);
-    }*/
+    // esto para el dia de mañana que tengamos el front
+    public void enviarResetContrasenia(String email, String nombreUsuario, String token) {
+        String link = "https://tu-frontend.com/reset-password?token=" + token;
+
+        SimpleMailMessage mensaje = new SimpleMailMessage();
+        mensaje.setTo(email);
+        mensaje.setSubject("Recuperación de contraseña — Balneario");
+        mensaje.setText(
+                "Hola " + nombreUsuario + ",\n\n" +
+                        "Recibimos una solicitud para restablecer tu contraseña.\n\n" +
+                        "Hacé clic en el siguiente enlace para crear una nueva (válido por 30 minutos):\n" +
+                        link + "\n\n" +
+                        "Si no solicitaste esto, ignorá este mensaje.\n\n" +
+                        "Balneario — Sistema de Gestión"
+        );
+
+        mailSender.send(mensaje);
+    }
 }

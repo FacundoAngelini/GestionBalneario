@@ -1,20 +1,22 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Servicios.Pago;
 
 import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.DatosInvalidoException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.*;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.*;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Mappers.PagoMapper;
 import com.Gestion.MiBalnearioGestion.Pagos.Mappers.PagoReservaMapper;
-import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
-import com.Gestion.MiBalnearioGestion.Pagos.Repository.iTicketRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Repository.IPagoRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Repository.ITicketRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoService;
 import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Specification.PagoSpecification;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoMesaEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
-import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iPedidoRepository;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.EEstadoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Repository.IPedidoRepository;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
@@ -41,12 +43,12 @@ public class PagoService implements IPagoService {
     @Value("${mp.accesstoken}")
     private String accessToken;
 
-    private final iPagoRepository pagoRepository;
-    private final iTicketRepository ticketRepository;
+    private final IPagoRepository pagoRepository;
+    private final ITicketRepository ticketRepository;
     private final ReservaRepository reservaRepository;
-    private final PagoReservaMapper pagoReservaMapper;
     private final EmailService emailService;
-    private final iPedidoRepository pedidoRepository;
+    private final IPedidoRepository pedidoRepository;
+    private final PagoMapper pagoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -83,8 +85,7 @@ public class PagoService implements IPagoService {
             UUID publicIdLocal = UUID.fromString(payment.getExternalReference());
 
             PagoEntity pagoGeneric = pagoRepository.findByPublicId(publicIdLocal)
-                    .orElseThrow(() -> new RuntimeException(
-                            "No existe el registro de pago local para ID: " + publicIdLocal));
+                    .orElseThrow(() -> new RuntimeException("No existe el registro de pago local para ID: " + publicIdLocal));
 
             if (pagoGeneric.getEestadoPago() == EestadoPago.PAGADO) {
                 return;
@@ -109,7 +110,6 @@ public class PagoService implements IPagoService {
 
 
                 if (pagoGeneric instanceof PagoReservaEntity pagoReserva) {
-                    // Alquiler del día (carpa o sombrilla) → confirma la reserva
                     ReservaEntity reserva = pagoReserva.getReserva();
                     reserva.setEstadoReserva(EReservaEstado.CONFIRMADA);
                     reserva.setReservado(true);
@@ -142,12 +142,10 @@ public class PagoService implements IPagoService {
     @Override
     public PagoReservaResponseDTO obtenerPagoPorReserva(UUID reservaPublicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
-                .orElseThrow(() -> new EntidadNoEncontradaException(
-                        "Reserva no encontrada", reservaPublicId.toString()));
+                .orElseThrow(() -> new EntidadNoEncontradaException("Reserva no encontrada", reservaPublicId.toString()));
 
         PagoEntity pago = pagoRepository.findByReservaPublicId(reservaPublicId)
-                .orElseThrow(() -> new EntidadNoEncontradaException(
-                        "No existe pago para la reserva", reservaPublicId.toString()));
+                .orElseThrow(() -> new EntidadNoEncontradaException("No existe pago para la reserva", reservaPublicId.toString()));
 
         return PagoReservaResponseDTO.builder()
                 .publicId(pago.getPublicId())
@@ -161,12 +159,12 @@ public class PagoService implements IPagoService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<PagoReservaResponseDTO> buscarPagosConFiltros(EestadoPago estado,
-                                                              MetodoPago metodo,
-                                                              Double montoMin,
-                                                              Double montoMax,
-                                                              LocalDate fechaDesde,
-                                                              LocalDate fechaHasta) {
+    public List<PagoResponseDTO> buscarPagosConFiltros(EestadoPago estado,
+                                                       MetodoPago metodo,
+                                                       Double montoMin,
+                                                       Double montoMax,
+                                                       LocalDate fechaDesde,
+                                                       LocalDate fechaHasta) {
         PredicateSpecification<PagoEntity> spec =
                 PredicateSpecification.allOf(
                         PagoSpecification.estadoIgual(estado),
@@ -179,19 +177,7 @@ public class PagoService implements IPagoService {
 
         return pagoRepository.findAll(spec)
                 .stream()
-                .filter(pago -> pago instanceof PagoReservaEntity)
-                .map(pago -> (PagoReservaEntity) pago)
-                .map(pagoReserva -> PagoReservaResponseDTO.builder()
-                        .publicId(pagoReserva.getPublicId())
-                        .reservaPublicId(pagoReserva.getReserva() != null
-                                ? pagoReserva.getReserva().getPublicId()
-                                : null)
-                        .monto(pagoReserva.getMonto())
-                        .estadoPago(pagoReserva.getEestadoPago())
-                        .fechaPago(pagoReserva.getFechaPago())
-                        .metodoPago(pagoReserva.getMetodoPago())
-                        .descuento(pagoReserva.getDescuento())
-                        .build())
+                .map(pagoMapper::toDTO)
                 .toList();
     }
 
@@ -199,14 +185,13 @@ public class PagoService implements IPagoService {
     @Override
     public void cancelarPagoYReserva(UUID reservaPublicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
-                .orElseThrow(() -> new EntidadNoEncontradaException(
-                        "No se puede cancelar. La reserva no existe: " + reservaPublicId, "ReservaEntity"));
+                .orElseThrow(() -> new EntidadNoEncontradaException("No se puede cancelar. La reserva no existe: " + reservaPublicId, "ReservaEntity"));
 
         if (reserva.getEstadoReserva() == EReservaEstado.CANCELADA) {
-            throw new IllegalStateException("La reserva ya se encuentra cancelada en el sistema.");
+            throw new DatosInvalidoException("La reserva ya se encuentra cancelada en el sistema.", "PedidoEntity");
         }
         if (reserva.getEstadoReserva() == EReservaEstado.RECHAZADA) {
-            throw new IllegalStateException("No se puede cancelar una reserva que ya fue RECHAZADA.");
+            throw new DatosInvalidoException("No se puede cancelar una reserva que ya fue RECHAZADA.", "PedidoEntity");
         }
 
         reserva.setEstadoReserva(EReservaEstado.CANCELADA);

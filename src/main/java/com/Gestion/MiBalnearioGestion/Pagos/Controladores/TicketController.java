@@ -22,7 +22,7 @@ public class TicketController {
 
 
     @GetMapping("/{publicId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO', 'CAJERO')")
     public ResponseEntity<TicketDTO> obtenerPorPublicId(@PathVariable UUID publicId) {
         return ResponseEntity.ok(ticketService.buscarPorPublicId(publicId));
     }

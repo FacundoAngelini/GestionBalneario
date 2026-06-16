@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Entity;
 
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

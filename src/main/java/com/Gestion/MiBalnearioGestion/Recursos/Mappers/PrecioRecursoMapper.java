@@ -29,7 +29,6 @@ public class PrecioRecursoMapper implements IMapper<PrecioRecursoEntity, PrecioR
         entity.setPrecio(dto.getPrecio());
         entity.setFechaVigencia(dto.getFechaVigencia());
         entity.setFechaCaducada(dto.getFechaCaducada());
-        // recurso lo resuelve el service con recursoPublicId
         return entity;
     }
 
@@ -37,6 +36,6 @@ public class PrecioRecursoMapper implements IMapper<PrecioRecursoEntity, PrecioR
         if (dto.getPrecio() > 0) entity.setPrecio(dto.getPrecio());
         if (dto.getFechaVigencia() != null) entity.setFechaVigencia(dto.getFechaVigencia());
         if (dto.getFechaCaducada() != null) entity.setFechaCaducada(dto.getFechaCaducada());
-        // recurso no se toca acá, lo maneja el service
+
     }
 }

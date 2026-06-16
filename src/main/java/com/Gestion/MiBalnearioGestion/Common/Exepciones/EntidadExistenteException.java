@@ -18,12 +18,4 @@ public class EntidadExistenteException extends EntityExistsException {
         this.valor=null;
         this.timestamp=Instant.now();
     }
-
-    public EntidadExistenteException(String mensaje, String entidad, String campo, Object valor, Instant timestamp) {
-        super(mensaje);
-        this.entidad = entidad;
-        this.campo = campo;
-        this.valor = valor;
-        this.timestamp = Instant.now();
-    }
 }

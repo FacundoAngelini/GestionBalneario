@@ -20,13 +20,13 @@ public class RecursoControlador {
     private final IRecursoServicio recursoServicio;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<RecursoDTO> BuscarRecursoPorID(@PathVariable UUID id){
         return ResponseEntity.ok(recursoServicio.buscarPorPublicId(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity <List<RecursoDTO>> BuscarTodos(@RequestParam (required = false) String nombreIgual,
                                                          @RequestParam (required = false)String nombreContiene,
                                                          @RequestParam (required = false) Boolean reservableVerdad){
@@ -64,8 +64,7 @@ public class RecursoControlador {
     @GetMapping("/disponibles")
     public ResponseEntity<List<RecursoDTO>> obtenerRecursosDisponibles(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin
-    ) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
         List<RecursoDTO> disponibles = recursoServicio.listarDisponiblesParaElCliente(fechaInicio, fechaFin);
         return ResponseEntity.ok(disponibles);
     }

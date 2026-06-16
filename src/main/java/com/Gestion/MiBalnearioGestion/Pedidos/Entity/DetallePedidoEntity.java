@@ -1,12 +1,10 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Entity;
 
-import com.Gestion.MiBalnearioGestion.Productos.ProductoEntity;
+import com.Gestion.MiBalnearioGestion.Productos.Entity.ProductoEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity

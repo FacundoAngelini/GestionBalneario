@@ -5,8 +5,8 @@ import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaExcep
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.TicketDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Mappers.TicketMapper;
-import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
-import com.Gestion.MiBalnearioGestion.Pagos.Repository.iTicketRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Repository.IPagoRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Repository.ITicketRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.ITicketService;
 import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Specification.TicketSpecification;
 
@@ -24,8 +24,8 @@ import java.util.UUID;
 public class TicketService implements ITicketService {
 
     private final TicketMapper ticketMapper;
-    private final iTicketRepository ticketRepository;
-    private final iPagoRepository pagoRepository;
+    private final ITicketRepository ticketRepository;
+    private final IPagoRepository pagoRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -62,18 +62,5 @@ public class TicketService implements ITicketService {
                 .toList();
     }
 
-    @Transactional
-    public TicketDTO generarTicket(TicketDTO dto) {
-        if (ticketRepository.existsByPublicId(dto.getPublicId())) {
-            throw new EntidadExistenteException("El ticket que intenta crear ya existe", dto.toString());
-        }
-        TicketEntity ticket = ticketMapper.convertToEntity(dto, TicketEntity.class);
-        return ticketMapper.convertToDTO(ticketRepository.save(ticket));
-    }
 
-    @Transactional
-    public TicketDTO enviarTicketXMail(TicketDTO dto) {
-        // Tu futura lógica de mensajería
-        return null;
-    }
 }

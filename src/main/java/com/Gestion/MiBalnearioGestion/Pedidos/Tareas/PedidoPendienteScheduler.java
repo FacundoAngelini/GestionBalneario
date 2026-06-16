@@ -1,8 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Tareas;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
-import com.Gestion.MiBalnearioGestion.Pedidos.Enum.EEstadoPedido;
-import com.Gestion.MiBalnearioGestion.Pedidos.Repository.iPedidoRepository;
+import com.Gestion.MiBalnearioGestion.Pedidos.Entity.Enum.EEstadoPedido;
+import com.Gestion.MiBalnearioGestion.Pedidos.Repository.IPedidoRepository;
+import com.Gestion.MiBalnearioGestion.Pedidos.Servicios.PedidoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PedidoPendienteScheduler {
 
-    private final iPedidoRepository pedidoRepository;
+    private final IPedidoRepository pedidoRepository;
+    private final PedidoService pedidoService;
 
     @Scheduled(fixedDelay = 60_000)
     @Transactional
@@ -24,16 +26,19 @@ public class PedidoPendienteScheduler {
         LocalDateTime limite = LocalDateTime.now().minusMinutes(5);
 
         List<PedidoEntity> vencidos = pedidoRepository
-                .findByEstadoPedidoAndFechaCreacionBefore(
-                        EEstadoPedido.PENDIENTE_PAGO, limite);
+                .findByEstadoPedidoAndFechaCreacionBefore(EEstadoPedido.PENDIENTE_PAGO, limite);
 
         if (vencidos.isEmpty()) return;
-        log.info("Cancelando {} pedido(s) vencidos.", vencidos.size());
-        for (PedidoEntity p : vencidos) {
-            p.setEstadoPedido(EEstadoPedido.CANCELADO);
-            log.info(" Pedido {} cancelado por falta de pago.", p.getPublicId());
-        }
 
-        pedidoRepository.saveAll(vencidos);
+        log.info("Cancelando de forma lógica {} pedido(s) vencidos.", vencidos.size());
+
+        for (PedidoEntity pedido : vencidos) {
+            try {
+                pedidoService.cancelarPedido(pedido.getPublicId());
+                log.info("  Pedido {} cancelado e invalidado en MP exitosamente.", pedido.getPublicId());
+            } catch (Exception e) {
+                log.error("Error al cancelar automáticamente el pedido {}: {}", pedido.getPublicId(), e.getMessage());
+            }
+        }
     }
 }

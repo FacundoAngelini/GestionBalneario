@@ -22,7 +22,7 @@ import java.util.UUID;
 public class TicketDTO {
 
     private UUID publicId;
-
+    @Builder.Default
     private LocalDateTime fechaTicket = LocalDateTime.now();
 
     @NotNull
@@ -32,4 +32,5 @@ public class TicketDTO {
    private UUID pagoPublicId;
 
     private  UUID empleadoPublicId;
+    private UUID pedidoPublicId;
 }

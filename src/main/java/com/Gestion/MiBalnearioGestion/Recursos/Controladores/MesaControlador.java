@@ -31,13 +31,13 @@ public class MesaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO', 'CAJERO')")
     public ResponseEntity<MesaDTO> obtenerMesaId(@PathVariable UUID id){
         return ResponseEntity.ok(mesaServcio.obtenerMesaId(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO', 'CAJERO')")
     public ResponseEntity<List<MesaDTO>> obtenerMesas(@RequestParam (required = false) Integer numeroIgual,
                                                       @RequestParam (required = false) Integer numeroMenor,
                                                       @RequestParam (required = false) Integer numeroMayor,

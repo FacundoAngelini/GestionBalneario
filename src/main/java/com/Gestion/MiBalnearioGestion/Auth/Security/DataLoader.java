@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Auth.Security;
 
-import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Repositorio.CredencialRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
 import com.Gestion.MiBalnearioGestion.Auth.Permisos.Permisos;
@@ -9,22 +9,23 @@ import com.Gestion.MiBalnearioGestion.Auth.Permisos.Repositorio.PermisosReposito
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
-import com.Gestion.MiBalnearioGestion.Clientes.ClienteEntity;
-import com.Gestion.MiBalnearioGestion.Clientes.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.Repository.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.DatosInvalidoException;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
-import com.Gestion.MiBalnearioGestion.Sector.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.Repositorio.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ConfgTemporadaRepository;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ConfiguracionTemporadaEntity;
-import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,7 +56,7 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // 1. PERMISOS Y ROLES DE SPRING SECURITY
+        //permisso y roles de spring
         if (rolesRepository.count() == 0) {
             PermisosEntity verReservas = permisosRepository.save(
                     new PermisosEntity(Permisos.RESERVAS_VER));
@@ -85,20 +86,19 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("Roles y permisos de seguridad cargados.");
         }
 
-        // 2. ROLES DE NEGOCIO (EtipoRol)
+        // roles del negocio
         if (empleadoRolRepository.count() == 0) {
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.GERENTE).build());
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.MOZO).build());
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.CAJERO).build());
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.CARPERO).build());
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.COCINERO).build());
-            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.GUARDAVIDAS).build());
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.REPARTIDOR).build());
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.ADMINISTRATIVO).build());
             System.out.println("Roles de negocio cargados.");
         }
 
-        // 3. SECTORES
+        // sectores
         SectorEntity sectorAdmin;
         SectorEntity sectorSalon;
         if (sectorRepository.count() == 0) {
@@ -118,7 +118,7 @@ public class DataLoader implements CommandLineRunner {
                             SectorEntity.builder().nombre("Salon").build()));
         }
 
-        // 4. ADMIN SUPREMO
+        // creacion de la cuenta de un admin supremo
         if (!credentialsRepository.existsByNombreUsuario("admin_supremo")) {
             UsuarioEntity usuarioAdmin = new UsuarioEntity();
             usuarioAdmin = usuarioRepository.save(usuarioAdmin);
@@ -144,16 +144,16 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("Admin supremo creado: admin_supremo / admin123");
         }
 
-        // 5. GERENTE DE PRUEBA
+        // hacemos un gerente de  prueba para que al probar sea mas facil
         if (!credentialsRepository.existsByNombreUsuario("gerente_prueba")) {
             UsuarioEntity usuarioGerente = new UsuarioEntity();
             usuarioGerente = usuarioRepository.save(usuarioGerente);
 
             RolesEntity rolGerenteDb = rolesRepository.findByRole(Roles.ROLE_GERENTE)
-                    .orElseThrow(() -> new RuntimeException("El rol GERENTE no existe"));
+                    .orElseThrow(() -> new DatosInvalidoException("El rol GERENTE no existe", "DataLoader"));
 
             RolEntity rolNegocioGerente = empleadoRolRepository.findByTipoRol(EtipoRol.GERENTE)
-                    .orElseThrow(() -> new RuntimeException("El rol de negocio GERENTE no existe"));
+                    .orElseThrow(() -> new DatosInvalidoException("El rol de negocio GERENTE no existe", "DataLoader"));
 
             CredencialEntity credencialPrevia = CredencialEntity.builder()
                     .nombreUsuario("gerente_prueba")
@@ -190,77 +190,14 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("Gerente de prueba creado: gerente_prueba / gerente123");
         }
 
-        // 6. CLIENTE DE PRUEBA
-        UUID clienteIdPrueba = UUID.fromString("11111111-1111-1111-1111-111111111111");
-        if (!clienteRepository.findByPublicId(clienteIdPrueba).isPresent()) {
-            UsuarioEntity usuarioCliente = new UsuarioEntity();
-            usuarioCliente = usuarioRepository.save(usuarioCliente);
 
-            RolesEntity rolClienteDb = rolesRepository.findByRole(Roles.ROLE_CLIENTE)
-                    .orElseThrow(() -> new RuntimeException("El rol CLIENTE no existe"));
-
-            CredencialEntity credencialPrevia = CredencialEntity.builder()
-                    .nombreUsuario("juan_cliente")
-                    .roles(Set.of(rolClienteDb))
-                    .build();
-
-            CredencialEntity credencialCliente = CredencialEntity.builder()
-                    .nombreUsuario("juan_cliente")
-                    .contrasenia(passwordEncoder.encode("juan123"))
-                    .enabled(true)
-                    .usuario(usuarioCliente)
-                    .roles(Set.of(rolClienteDb))
-                    .refreshToken(jwtService.generateRefreshToken(credencialPrevia))
-                    .build();
-
-            credentialsRepository.save(credencialCliente);
-
-            ClienteEntity clientePrueba = ClienteEntity.builder()
-                    .publicId(clienteIdPrueba)
-                    .nombre("Juan")
-                    .apellido("Perez")
-                    .dni(12345678)
-                    .email("juan.perez@example.com")
-                    .telefono("2235555555")
-                    .fechaAlta(LocalDate.now())
-                    .estado(true)
-                    .usuario(usuarioCliente)
-                    .build();
-
-            clienteRepository.save(clientePrueba);
-            System.out.println("Cliente de prueba creado: juan_cliente / juan123");
-        }
-
-        // 7. CONFIGURACIÓN DE TEMPORADA
+        // ya configuramos la temporada
         if (configTemporadaRepository.count() == 0) {
             configTemporadaRepository.save(ConfiguracionTemporadaEntity.builder()
                     .inicioTemporada(LocalDate.of(2026, 12, 1))
                     .fin_temporada(LocalDate.of(2027, 4, 15))
                     .build());
             System.out.println("Configuracion de temporada cargada.");
-        }
-
-        // 8. RECURSO DE PRUEBA
-        UUID carpaIdPrueba = UUID.fromString("22222222-2222-2222-2222-222222222222");
-        if (!recursoRepositorio.findByPublicId(carpaIdPrueba).isPresent()) {
-            RecursoEntity carpaPrueba = RecursoEntity.builder()
-                    .publicId(carpaIdPrueba)
-                    .nombre("Carpa Premium N° 10")
-                    .esReservable(true)
-                    .sector(sectorSalon)
-                    .precioRecurso(new ArrayList<>())
-                    .build();
-
-            PrecioRecursoEntity precioVigente = PrecioRecursoEntity.builder()
-                    .precio(2.0)
-                    .fechaVigencia(LocalDate.of(2026, 1, 1))
-                    .fechaCaducada(LocalDate.of(2026, 12, 31))
-                    .recurso(carpaPrueba)
-                    .build();
-
-            carpaPrueba.getPrecioRecurso().add(precioVigente);
-            recursoRepositorio.save(carpaPrueba);
-            System.out.println("Recurso de prueba cargado.");
         }
 
         System.out.println("Base de datos levantada con exito");

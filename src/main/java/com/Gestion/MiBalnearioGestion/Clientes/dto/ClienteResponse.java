@@ -1,7 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

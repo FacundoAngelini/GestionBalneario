@@ -33,12 +33,9 @@ public interface RecursoRepositorio extends JpaRepository<RecursoEntity, Long>, 
             "    SELECT DISTINCT rec.id FROM ReservaEntity res " +
             "    JOIN res.recursos rec " +
             "    WHERE res.estadoReserva IN :estadosConflictivos " +
-            "    AND (:fechaInicio <= res.fechaFin AND :fechaFin >= res.fechaInicio)" +
-            ")")
-    List<RecursoEntity> encontrarDisponiblesEnRango(
-            @Param("fechaInicio") LocalDate fechaInicio,
-            @Param("fechaFin") LocalDate fechaFin,
-            @Param("estadosConflictivos") List<EReservaEstado> estadosConflictivos
-    );
+            "    AND (:fechaInicio <= res.fechaFin AND :fechaFin >= res.fechaInicio)" + ")")
+    List<RecursoEntity> encontrarDisponiblesEnRango(@Param("fechaInicio") LocalDate fechaInicio,
+                                                    @Param("fechaFin") LocalDate fechaFin,
+                                                    @Param("estadosConflictivos") List<EReservaEstado> estadosConflictivos);
 }
 

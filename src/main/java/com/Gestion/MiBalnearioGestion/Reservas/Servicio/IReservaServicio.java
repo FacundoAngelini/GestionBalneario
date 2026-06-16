@@ -19,4 +19,6 @@ public interface IReservaServicio {
                                               LocalDate fechaDesde,
                                               LocalDate fechaHasta,
                                               UUID clientePublicId);
+    void cancelarReservaPorPersonal(UUID reservaPublicId);
+    void cancelarReservaPorExpiracion(UUID publicId);
 }

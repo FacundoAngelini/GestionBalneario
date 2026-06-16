@@ -6,16 +6,17 @@ import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio
 import com.Gestion.MiBalnearioGestion.Pagos.DTOs.PagoReservaResponseDTO;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Repository.iPagoRepository;
-import com.Gestion.MiBalnearioGestion.Pagos.Repository.iTicketRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Repository.IPagoRepository;
+import com.Gestion.MiBalnearioGestion.Pagos.Repository.ITicketRepository;
 import com.Gestion.MiBalnearioGestion.Pagos.Servicios.Interfaces.IPagoReservaService;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
 import com.Gestion.MiBalnearioGestion.Reservas.Servicio.ReservaServicio;
+import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaNoEncontradaException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PagoReservaService implements IPagoReservaService {
 
-    private final iPagoRepository pagoRepository;
+    private final IPagoRepository pagoRepository;
     private final ReservaRepository reservaRepository;
-    private final iTicketRepository ticketRepository;
+    private final ITicketRepository ticketRepository;
     private final EmpleadosRepositorio empleadoRepository;
     private final ReservaServicio reservaServicio;
 
@@ -37,7 +38,7 @@ public class PagoReservaService implements IPagoReservaService {
     @Override
     public PagoReservaResponseDTO procesarPagoEfectivoMostrador(ReservaDTO reservaDTO, UUID empleadoPublicId) {
         EmpleadoEntity empleadoCaja = empleadoRepository.findByPublicId(empleadoPublicId)
-                .orElseThrow(() -> new EntidadNoEncontradaException("Empleado no identificado en el sistema", "EmpleadoEntity"));
+                .orElseThrow(() -> new CuentaNoEncontradaException("Empleado no identificado en el sistema", "EmpleadoEntity"));
 
         ReservaEntity reserva = reservaServicio.crearReservaInicial(reservaDTO);
 

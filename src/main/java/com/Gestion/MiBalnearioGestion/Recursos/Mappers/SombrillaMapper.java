@@ -25,7 +25,7 @@ public class SombrillaMapper implements IMapper<SombrillaEntity, SombrillaDTO>
         if (entity.getSector() != null)
             dto.setSectorPublicId(entity.getSector().getPublicId());
         dto.setNumero(entity.getNumero());
-        dto.setTamanio(entity.getTamanio()); // ← mismo nombre
+        dto.setTamanio(entity.getTamanio());
         return dto;
     }
 
@@ -35,7 +35,7 @@ public class SombrillaMapper implements IMapper<SombrillaEntity, SombrillaDTO>
         entity.setNombre(dto.getNombre());
         entity.setEsReservable(dto.getEsReservable() != null && dto.getEsReservable());
         if (dto.getNumero() != null) entity.setNumero(dto.getNumero());
-        entity.setTamanio(dto.getTamanio()); // ← mismo nombre
+        entity.setTamanio(dto.getTamanio());
         return entity;
     }
 

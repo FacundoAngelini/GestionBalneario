@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Pagos.DTOs;
 
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
 import lombok.*;
 
 import java.time.LocalDate;

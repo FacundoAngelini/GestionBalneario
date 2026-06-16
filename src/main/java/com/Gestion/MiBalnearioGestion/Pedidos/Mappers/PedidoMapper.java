@@ -1,23 +1,15 @@
 package com.Gestion.MiBalnearioGestion.Pedidos.Mappers;
 
 import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapperDual;
-import com.Gestion.MiBalnearioGestion.Empleados.DTO.DireccionDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.DTO.RolDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.DireccionEntity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.DetallePedidoResponse;
 import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.PedidoRequest;
 import com.Gestion.MiBalnearioGestion.Pedidos.DTOs.PedidoResponse;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.DetallePedidoEntity;
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
-import com.Gestion.MiBalnearioGestion.Productos.ProductoDTO;
-import com.Gestion.MiBalnearioGestion.Productos.ProductoEntity;
-import com.Gestion.MiBalnearioGestion.Sector.SectorDTO;
-import com.Gestion.MiBalnearioGestion.Sector.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Productos.DTO.ProductoDTO;
+import com.Gestion.MiBalnearioGestion.Productos.Entity.ProductoEntity;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -38,7 +30,7 @@ public class PedidoMapper implements IMapperDual<PedidoEntity, PedidoRequest, Pe
 
     @Override
     public PedidoEntity convertToEntity(PedidoRequest dto, Class<PedidoEntity> entityClass) {
-        throw new UnsupportedOperationException("Las entities se construyen directamente en el service.");
+        throw new UnsupportedOperationException("Las entities se construyen directamente en el service."); //esto nunca deberia llegar, si llega es que hicimos algo mal
     }
 
     public void updateEntityFromDTO(PedidoRequest dto, PedidoEntity entity) {
