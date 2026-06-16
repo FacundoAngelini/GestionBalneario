@@ -111,10 +111,6 @@ Configurar las credenciales en:
 
 src/main/resources/application.yaml
 
-## Variables de entorno
-
-| Variable | Descripción |
-|-----------|-------------|
 
 ## Variables de Entorno
 
