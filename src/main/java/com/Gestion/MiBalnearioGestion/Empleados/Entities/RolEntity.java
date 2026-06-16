@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -28,6 +29,7 @@ public class RolEntity {
     private EtipoRol tipoRol;
 
     @OneToMany(mappedBy = "rol")
+    @JsonIgnoreProperties("rol")
     private List<EmpleadoEntity> empleados;
 
 

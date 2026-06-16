@@ -16,5 +16,5 @@ import lombok.experimental.SuperBuilder;
 public class CocheraDTO extends RecursoDTO{
     @NotNull
     @Min(1)
-    private int numero_cochera;
+    private Integer numeroCochera;
 }

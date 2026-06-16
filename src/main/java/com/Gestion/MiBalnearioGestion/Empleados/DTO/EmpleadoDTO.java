@@ -1,7 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
+import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.DTO.AuthRequest;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Sector.DTO.SectorDTO;
+import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,21 +24,20 @@ public class EmpleadoDTO {
     @NotBlank
     private String nombre;
 
-    @NotNull
     private UUID IDpublico;
 
     @NotBlank
     private String apellido;
 
     @NotNull
-    private int dni;
+    private Integer dni;
 
     @NotBlank
     @Email
     private String email;
 
     @NotNull
-    private double sueldo;
+    private Double sueldo;
 
     @NotBlank
     @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
@@ -48,15 +49,19 @@ public class EmpleadoDTO {
     private String rolSolicitado;
 
     @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
-    @NotNull
+    @NotBlank
     private String telefono;
 
     @Valid
     @NotNull(message = "La direccion no puede estar vacia")
-    private DireccionEntity direccion;
+    private DireccionDTO direccion;
 
     private UsuarioDTO usuario;
-    private RolEntity rol;
-    private SectorEntity sector;
+    private RolDTO rol;
+    private SectorDTO sector;
+
+    @Valid
+    @NotNull
+    private AuthRequest credencial;  //para mandar al usuario ya con la contraseña y nombreUsuario 
 
 }

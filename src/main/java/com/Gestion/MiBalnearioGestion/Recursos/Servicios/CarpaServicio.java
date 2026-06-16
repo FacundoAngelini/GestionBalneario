@@ -2,15 +2,14 @@ package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.Repositorio.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CarpaDTO;
-import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CarpaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.CarpaMapper;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.CarpaRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.ICarpaServicio;
-import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.CanchaSpecification;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.CarpaSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
@@ -26,14 +25,15 @@ public class CarpaServicio implements ICarpaServicio {
     private final CarpaRepositorio  carpaRepositorio;
     private final CarpaMapper  carpaMapper;
     private final SectorRepositorio sectorRepositorio;
+    private final RecursoRepositorio recursoRepositorio;
 
     @Transactional
     @Override
     public CarpaDTO crearCarpa(CarpaDTO carpa){
-        if(carpaRepositorio.findByPublicId(carpa.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe na carpa con este id", "CarpaEntity");
+        if(carpaRepositorio.findByNumero(carpa.getNumero()).isPresent()){
+            throw new EntidadExistenteException("Ya existe na carpa con este numero", "CarpaEntity");
         }
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(carpa.getPublicID())
+        SectorEntity sectorDb = sectorRepositorio.findByPublicId(carpa.getSectorPublicId())
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
         CarpaEntity carpaEntity = carpaMapper.convertToEntity(carpa, CarpaEntity.class);
@@ -50,13 +50,13 @@ public class CarpaServicio implements ICarpaServicio {
                 .findByPublicId(id)
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro la carpa con el id ingresado", "CarpaEntity"));
 
-        if(!carpaEntity.getSector().getPublicId().equals(carpa.getPublicID())){
+        if(!carpaEntity.getSector().getPublicId().equals(carpa.getSectorPublicId())){
             SectorEntity nuevoSector= sectorRepositorio.findByPublicId(carpa.getSectorPublicId())
                     .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
             carpaEntity.setSector(nuevoSector);
         }
 
-        carpaMapper.updateToEntityFromDTO(carpa,carpaEntity);
+        carpaMapper.updateEntityFromDTO(carpa,carpaEntity);
         return carpaMapper.convertToDTO(carpaEntity);
     }
 

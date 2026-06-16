@@ -1,36 +1,38 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.DTO.AuthRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 public class ClienteRequest {
 
-    @NotBlank(message = "Debe ingresar un nombre válido, entre 2-10 caracteres")
-    @Min(2)
-    @Max(10)
+    @NotBlank(message = "Debe ingresar un nombre válido")
+    @Size(min = 2, max = 50)
     private String nombre;
-    @NotBlank(message = "Debe ingresar un apellido válido, entre 2-10 caracteres")
-    @Min(2)
-    @Max(10)
-    private String apellido;
-    @NotNull
-    private int dni;
-    @NotBlank
-    @Email(regexp="[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message="El email ingresado tiene un formato invalido")
-    private String email;
-    @NotBlank
-    private String telefono;
-    @NotNull
-    private UsuarioDTO usuario;
 
+    @NotBlank(message = "Debe ingresar un apellido válido")
+    @Size(min = 2, max = 50)
+    private String apellido;
+
+    @NotNull
+    private Integer dni;
+
+    @NotBlank
+    @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
+            message = "El email ingresado tiene un formato inválido")
+    private String email;
+
+    @NotBlank
+    @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números")
+    private String telefono;
+
+    @Valid
+    @NotNull(message = "Las credenciales no pueden estar vacías")
+    private AuthRequest credencial;
 }

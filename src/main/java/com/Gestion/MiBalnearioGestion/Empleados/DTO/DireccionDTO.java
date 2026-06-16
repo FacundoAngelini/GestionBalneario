@@ -18,7 +18,7 @@ public class DireccionDTO {
 
     @NotNull(message = "El número es obligatorio")
     @PositiveOrZero(message = "El numero debe ser positivo o cero")
-    private int numero;
+    private Integer numero;
 
     @NotBlank(message = "La ciudad es obligatoria")
     private String ciudad;

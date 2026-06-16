@@ -39,8 +39,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws
             Exception {
-        http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/reservas/**").permitAll()
+                        .requestMatchers("/api/v1/pagos/**").permitAll()
+                        .requestMatchers("/api/v1/public/**").permitAll()
+                        .requestMatchers("/api/v1/productos/**").permitAll()
+                        .requestMatchers("/api/v1/pagos-reservas/**").authenticated()
+                        .requestMatchers("/api/v1/pedidos/**").permitAll()
+                        .requestMatchers("/api/v1/recursos/**").permitAll()
+                        .requestMatchers("/api/v1/public/webhooks/**").permitAll()
                         .anyRequest().authenticated())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -51,7 +59,7 @@ public class SecurityConfig {
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN); // Código 403
                             response.setContentType("application/json");
-                            response.getWriter().write("{\"error\": \"Acceso denegado. No tenés los permisos necesarios para este recurso.\", \"status\": 403}");
+                            response.getWriter().write("{\"error\": \"Acceso denegado. No tenes los permisos necesarios para este recurso.\", \"status\": 403}");
                             response.getWriter().flush();
                         })
                 )
