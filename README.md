@@ -140,7 +140,7 @@ Crear .env al nivel de src, para testing.
 
 ### Ejecutar
 
-mvn spring-boot:run
+docker-compose up --build
 
 
 ---
