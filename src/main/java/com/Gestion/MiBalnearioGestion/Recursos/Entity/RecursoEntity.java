@@ -1,7 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Entity;
 
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Reservas.ReservaEntity;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -37,13 +38,11 @@ public class RecursoEntity {
 
     @ManyToOne
     @JoinColumn(name="sector_id", nullable = false)
-    private SectorEntity sector; // aca quedaa la fk
-
+    private SectorEntity sector;
     @ManyToMany(mappedBy = "recursos")
-    private List<ReservaEntity> reservas=new ArrayList<>();
+    @JsonBackReference
+    private List<ReservaEntity> reservas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "recurso")
+    @OneToMany(mappedBy = "recurso", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PrecioRecursoEntity> precioRecurso = new ArrayList<>();
-
-
 }

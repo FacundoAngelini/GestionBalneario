@@ -1,9 +1,8 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Servicios;
 
-import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadNoEncontradaException;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Sector.Repositorio.SectorRepositorio;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.CanchaDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.CanchaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.ETipoCancha;
@@ -29,12 +28,8 @@ public class CanchaServicio implements ICanchaServicio {
     @Transactional
     @Override
     public CanchaDTO crearCancha(CanchaDTO canchaDTO){
-        if(canchaRepositorio.findByPublicId(canchaDTO.getPublicID()).isPresent()){
-            throw new EntidadExistenteException("Ya existe una cancha con esta id", "CanchaEntity");
-        }
-
-        SectorEntity sectorDb = sectorRepositorio.findByPublicId(canchaDTO.getPublicID())
-                .orElseThrow(() -> new EntidadExistenteException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
+        SectorEntity sectorDb = sectorRepositorio.findByPublicId(canchaDTO.getSectorPublicId())
+                .orElseThrow(() -> new EntidadNoEncontradaException("No se encontró el Sector con el UUID especificado", "SectorEntity"));
 
         CanchaEntity canchaEntity = canchaMapper.convertToEntity(canchaDTO, CanchaEntity.class);
         canchaEntity.setEsReservable(true);
@@ -60,13 +55,13 @@ public class CanchaServicio implements ICanchaServicio {
                 .orElseThrow(()->new EntidadNoEncontradaException("No se encontro una cancha con esta id", "CanchaEntity"));
 
 
-        if(!cancha.getSector().getPublicId().equals(canchaDTO.getPublicID())){
+        if(!cancha.getSector().getPublicId().equals(canchaDTO.getSectorPublicId())){
             SectorEntity nuevoSector= sectorRepositorio.findByPublicId(canchaDTO.getSectorPublicId())
                     .orElseThrow(()->new EntidadNoEncontradaException("No se encontro el sector", "SectorEntity"));
             cancha.setSector(nuevoSector);
         }
 
-        canchaMapper.updateToEntity(canchaDTO,cancha);
+        canchaMapper.updateEntityFromDTO(canchaDTO,cancha);
         return canchaMapper.convertToDTO(cancha);
     }
 
@@ -76,8 +71,7 @@ public class CanchaServicio implements ICanchaServicio {
                                        Integer capacidadIgual,
                                        Integer capacidadMenor,
                                        Integer capacidadMayor,
-                                       boolean iluminacion,
-                                       boolean noIluminacion){
+                                       Boolean iluminacion){
 
         PredicateSpecification<CanchaEntity> spec=
                 PredicateSpecification.allOf(
@@ -85,8 +79,7 @@ public class CanchaServicio implements ICanchaServicio {
                         CanchaSpecification.capacidadIgual(capacidadIgual),
                         CanchaSpecification.capacidadMenor(capacidadMenor),
                         CanchaSpecification.capacidadMayor(capacidadMayor),
-                        CanchaSpecification.iluminacion(iluminacion),
-                        CanchaSpecification.Noiluminacion(noIluminacion)
+                        CanchaSpecification.iluminacion(iluminacion)
                 );
 
         return canchaRepositorio.findAll(spec)

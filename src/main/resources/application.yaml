@@ -16,6 +16,34 @@ spring:
       hibernate:
         format_sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: balnearioapiutn@gmail.com
+    password: ${GMAIL_APP}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+mp:
+  accesstoken: ${MP_ACCESS_TOKEN}
+  webhook: "${MP_WEBHOOK_URL}/api/v1/public/webhooks/mercadopago"
+  backurl:
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
+  backurls:
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG

@@ -3,186 +3,244 @@ package com.Gestion.MiBalnearioGestion.Empleados.Servicio;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import org.springframework.data.jpa.domain.PredicateSpecification;
-
 public class EmpleadoSpecification {
 
-    public static PredicateSpecification<EmpleadoEntity> dniIgual(Integer dniIgual){
-        return(root,cb)-> dniIgual == null
+    public static PredicateSpecification<EmpleadoEntity> dniIgual(Integer dni){
+        return (root, cb) -> dni == null
                 ? cb.conjunction()
-                : cb.equal(root.get("dni"), dniIgual);
+                : cb.equal(root.get("dni"), dni);
     }
 
-    public static PredicateSpecification<EmpleadoEntity> dniContiene(Integer dniContiene){
-        return(root,cb)-> dniContiene == null
+
+    public static PredicateSpecification<EmpleadoEntity> dniContiene(Integer dni){
+        return (root, cb) -> dni == null
                 ? cb.conjunction()
-                : cb.like(root.get("dni"),"%"+ dniContiene + "%");
+                : cb.like(
+                root.get("dni").as(String.class),
+                "%" + dni + "%"
+        );
     }
 
 
 
-    public static PredicateSpecification<EmpleadoEntity> nombreIgual(String nombreIgual){
-        return(root,cb)-> nombreIgual == null || nombreIgual.isBlank()
+    public static PredicateSpecification<EmpleadoEntity> nombreIgual(String nombre){
+        return (root, cb) -> nombre == null || nombre.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.get("nombre"), nombreIgual);
+                : cb.equal(root.get("nombre"), nombre);
     }
 
-    public static PredicateSpecification<EmpleadoEntity> nombreContiene(String nombreContiene){
-        return(root,cb)-> nombreContiene == null || nombreContiene.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> nombreContiene(String nombre){
+        return (root, cb) -> nombre == null || nombre.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.get("nombre"),"%"+ nombreContiene + "%");
+                : cb.like(root.get("nombre"), "%" + nombre + "%");
     }
 
 
-    public static PredicateSpecification<EmpleadoEntity> apellidoIgual(String apellidoIgual){
-        return(root,cb)-> apellidoIgual == null || apellidoIgual.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> apellidoIgual(String apellido){
+        return (root, cb) -> apellido == null || apellido.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.get("apellido"), apellidoIgual);
+                : cb.equal(root.get("apellido"), apellido);
     }
 
-    public static PredicateSpecification<EmpleadoEntity> apellidoContiene(String apellidoContiene){
-        return(root,cb)-> apellidoContiene == null || apellidoContiene.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> apellidoContiene(String apellido){
+        return (root, cb) -> apellido == null || apellido.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.get("apellido"),"%"+ apellidoContiene + "%");
+                : cb.like(root.get("apellido"), "%" + apellido + "%");
     }
 
-    public static PredicateSpecification<EmpleadoEntity> telefonoIgual(String telefonoIgual){
-        return(root,cb)-> telefonoIgual == null
+
+
+    public static PredicateSpecification<EmpleadoEntity> telefonoIgual(String telefono){
+        return (root, cb) -> telefono == null
                 ? cb.conjunction()
-                : cb.equal(root.get("telefono"), telefonoIgual);
+                : cb.equal(root.get("telefono"), telefono);
     }
 
-    public static PredicateSpecification<EmpleadoEntity> telefonoContiene(String telefonoContiene){
-        return(root,cb)-> telefonoContiene == null
+
+    public static PredicateSpecification<EmpleadoEntity> telefonoContiene(String telefono){
+        return (root, cb) -> telefono == null
                 ? cb.conjunction()
-                : cb.like(root.get("telefono"),"%"+ telefonoContiene + "%");
+                : cb.like(root.get("telefono"), "%" + telefono + "%");
     }
 
-    public static PredicateSpecification<EmpleadoEntity> cuitIgual(String cuitIgual){
-        return(root,cb)-> cuitIgual == null || cuitIgual.isBlank()
+
+
+    public static PredicateSpecification<EmpleadoEntity> cuitIgual(String cuit){
+        return (root, cb) -> cuit == null || cuit.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.get("cuit"), cuitIgual);
+                : cb.equal(root.get("cuit"), cuit);
     }
 
-    public static PredicateSpecification<EmpleadoEntity> cuitContiene(String cuitContiene){
-        return(root,cb)-> cuitContiene == null || cuitContiene.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> cuitContiene(String cuit){
+        return (root, cb) -> cuit == null || cuit.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.get("cuit"),"%"+ cuitContiene + "%");
+                : cb.like(root.get("cuit"), "%" + cuit + "%");
     }
 
-    public static PredicateSpecification<EmpleadoEntity> sueldoIgual(Double sueldoIgual){
-        return(root,cb)-> sueldoIgual == null
+
+
+    public static PredicateSpecification<EmpleadoEntity> sueldoIgual(Double sueldo){
+        return (root, cb) -> sueldo == null
                 ? cb.conjunction()
-                : cb.equal(root.get("sueldo"), sueldoIgual);
+                : cb.equal(root.get("sueldo"), sueldo);
     }
 
-    public static PredicateSpecification<EmpleadoEntity> sueldoMenor(Double sueldoIgual){
-        return(root,cb)-> sueldoIgual == null
+
+    public static PredicateSpecification<EmpleadoEntity> sueldoMenor(Double sueldo){
+        return (root, cb) -> sueldo == null
                 ? cb.conjunction()
-                : cb.lessThan(root.get("sueldo"), sueldoIgual);
+                : cb.lessThan(root.get("sueldo"), sueldo);
     }
 
-    public static PredicateSpecification<EmpleadoEntity> sueldoMayor(Double sueldoMayor){
-        return(root,cb)-> sueldoMayor == null
+
+    public static PredicateSpecification<EmpleadoEntity> sueldoMayor(Double sueldo){
+        return (root, cb) -> sueldo == null
                 ? cb.conjunction()
-                : cb.greaterThan(root.get("sueldo"), sueldoMayor);
+                : cb.greaterThan(root.get("sueldo"), sueldo);
     }
 
 
-    public static PredicateSpecification<EmpleadoEntity> sectorIgual(String sectorIgual){
-        return(root,cb)-> sectorIgual == null || sectorIgual.isBlank()
+
+
+    // SECTOR
+
+    public static PredicateSpecification<EmpleadoEntity> sectorIgual(String sector){
+        return (root, cb) -> sector == null || sector.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.join("sector").get("sector"), sectorIgual);
+                : cb.equal(
+                root.join("sector").get("nombre"),
+                sector
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> sectorContiene(String sectorContiene){
-        return(root,cb)-> sectorContiene == null || sectorContiene.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> sectorContiene(String sector){
+        return (root, cb) -> sector == null || sector.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.join("sector").get("sector"),"%"+ sectorContiene + "%");
+                : cb.like(
+                root.join("sector").get("nombre"),
+                "%" + sector + "%"
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> rolIgual(String rolIgual){
-        return(root,cb)-> rolIgual == null || rolIgual.isBlank()
+
+
+
+    // ROL
+
+    public static PredicateSpecification<EmpleadoEntity> rolIgual(String rol){
+        return (root, cb) -> rol == null || rol.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.join("rol").get("rol"), rolIgual);
+                : cb.equal(
+                root.join("rol").get("tipoRol"),
+                rol
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> rolContiene(String rolContiene){
-        return(root,cb)-> rolContiene == null || rolContiene.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> rolContiene(String rol){
+        return (root, cb) -> rol == null || rol.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.get("rol"),"%"+ rolContiene + "%");
+                : cb.like(
+                root.join("rol")
+                        .get("tipoRol")
+                        .as(String.class),
+                "%" + rol + "%"
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> calleIgual(String calleIgual){
-        return(root,cb)-> calleIgual == null || calleIgual.isBlank()
+
+
+
+    // DIRECCION
+
+    public static PredicateSpecification<EmpleadoEntity> calleIgual(String calle){
+        return (root, cb) -> calle == null || calle.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.join("direccion").get("calle"), calleIgual);
+                : cb.equal(
+                root.join("direccion").get("calle"),
+                calle
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> calleContiene(String calleContiene){
-        return(root,cb)-> calleContiene == null || calleContiene.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> calleContiene(String calle){
+        return (root, cb) -> calle == null || calle.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.join("direccion").get("calle"),"%"+ calleContiene + "%");
+                : cb.like(
+                root.join("direccion").get("calle"),
+                "%" + calle + "%"
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> numeroIgual(Integer numeroIgual){
-        return(root,cb)-> numeroIgual == null
+
+    public static PredicateSpecification<EmpleadoEntity> numeroIgual(Integer numero){
+        return (root, cb) -> numero == null
                 ? cb.conjunction()
-                : cb.equal(root.join("direccion").get("numero"), numeroIgual);
+                : cb.equal(
+                root.join("direccion").get("numero"),
+                numero
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> numeroContiene(Integer numeroContiene){
-        return(root,cb)-> numeroContiene == null
+
+
+    public static PredicateSpecification<EmpleadoEntity> ciudadIgual(String ciudad){
+        return (root, cb) -> ciudad == null || ciudad.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.join("direccion").get("numero"),"%"+ numeroContiene + "%");
+                : cb.equal(
+                root.join("direccion").get("ciudad"),
+                ciudad
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> ciudadIgual(String ciudadIgual){
-        return(root,cb)-> ciudadIgual == null || ciudadIgual.isBlank()
+
+    public static PredicateSpecification<EmpleadoEntity> ciudadContiene(String ciudad){
+        return (root, cb) -> ciudad == null || ciudad.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.join("direccion").get("ciudad"), ciudadIgual);
+                : cb.like(
+                root.join("direccion").get("ciudad"),
+                "%" + ciudad + "%"
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> ciudadContiene(String ciudadContiene){
-        return(root,cb)-> ciudadContiene == null || ciudadContiene.isBlank()
+
+
+    public static PredicateSpecification<EmpleadoEntity> provinciaIgual(String provincia){
+        return (root, cb) -> provincia == null || provincia.isBlank()
                 ? cb.conjunction()
-                : cb.like(root.join("direccion").get("ciudad"),"%"+ ciudadContiene + "%");
+                : cb.equal(
+                root.join("direccion").get("provincia"),
+                provincia
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> provinciaIgual(String provinciaIgual){
-        return(root,cb)-> provinciaIgual == null || provinciaIgual.isBlank()
+
+
+    public static PredicateSpecification<EmpleadoEntity> provinciaContiene(String provincia){
+        return (root, cb) -> provincia == null || provincia.isBlank()
                 ? cb.conjunction()
-                : cb.equal(root.join("direccion").get("provincia"), provinciaIgual);
+                : cb.like(
+                root.join("direccion").get("provincia"),
+                "%" + provincia + "%"
+        );
     }
 
-    public static PredicateSpecification<EmpleadoEntity> provinciaContiene(String provinciaContiene){
-        return(root,cb)-> provinciaContiene == null || provinciaContiene.isBlank()
+
+
+    // ESTADO
+
+    public static PredicateSpecification<EmpleadoEntity> estadoIgual(EEstadoEmpleado estado){
+        return (root, cb) -> estado == null
                 ? cb.conjunction()
-                : cb.like(root.join("direccion").get("provincia"),"%"+ provinciaContiene + "%");
+                : cb.equal(
+                root.get("estadoEmpleado"),
+                estado
+        );
     }
-
-    public static PredicateSpecification<EmpleadoEntity> estadoIgual(EEstadoEmpleado estadoEmpleado){
-        return (root,cb)-> estadoEmpleado == null
-                ? cb.conjunction()
-                :cb.equal(root.get("estado"), estadoEmpleado);
-    }
-
-    public static PredicateSpecification<EmpleadoEntity> estadoActivo(EEstadoEmpleado estadoContiene){
-        return (root,cb)->cb.equal(root.get("ACTIVO"),estadoContiene);
-    }
-
-    public static PredicateSpecification<EmpleadoEntity> estadoInactivo(EEstadoEmpleado estadoContiene){
-        return (root,cb)->cb.equal(root.get("INACTIVO"),estadoContiene);
-    }
-
-
-
-
-
-
-
-
-
-
-
 
 }

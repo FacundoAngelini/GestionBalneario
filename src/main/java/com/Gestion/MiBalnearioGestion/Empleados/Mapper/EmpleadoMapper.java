@@ -1,30 +1,45 @@
 package com.Gestion.MiBalnearioGestion.Empleados.Mapper;
 
-import com.Gestion.MiBalnearioGestion.Common.Model.IMapper;
+import com.Gestion.MiBalnearioGestion.Common.Configuracion.IMapper;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoResponseDTO;
+import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoUpdateDTO;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 @Component
 @RequiredArgsConstructor
-public class EmpleadoMapper implements IMapper<EmpleadoEntity, EmpleadoDTO> {
+public class EmpleadoMapper {
     private final ModelMapper modelMapper;
 
-    @Override
-    public EmpleadoDTO convertToDTO(EmpleadoEntity empleadoMapeado) {
-        return modelMapper.map(empleadoMapeado, EmpleadoDTO.class);
+    public EmpleadoResponseDTO convertToResponseDTO(EmpleadoEntity entity) {
+        EmpleadoResponseDTO dto = modelMapper.map(entity, EmpleadoResponseDTO.class);
+        if (entity.getUsuario() != null) {
+            dto.setUsuarioPublicId(entity.getUsuario().getPublicId());
+        }
+        return dto;
     }
 
-    @Override //vienen de la interfazz y estan sobreescritos
-    public EmpleadoEntity convertToEntity(EmpleadoDTO empleado_A_DTO, Class<EmpleadoEntity> empleadoEntityClass) {
-        return modelMapper.map(empleado_A_DTO, EmpleadoEntity.class);
+    public EmpleadoEntity convertToEntity(EmpleadoDTO dto) {
+        return modelMapper.map(dto, EmpleadoEntity.class);
     }
 
-    // no lleva override ya que no esta en la interfaz imapper
-    public void updateEntityFromDTO(EmpleadoDTO dto, EmpleadoEntity entity) { //actualiza la entity con los datos del dto sin encesidad de crear una nueva y sin perder los datps de otros campos
-        modelMapper.map(dto, entity);
+    public void updateEntityFromDTO(EmpleadoUpdateDTO dto, EmpleadoEntity entity){
+        entity.setNombre(dto.getNombre());
+        entity.setApellido(dto.getApellido());
+        entity.setDni(dto.getDni());
+        entity.setEmail(dto.getEmail());
+        entity.setSueldo(dto.getSueldo());
+        entity.setCuit(dto.getCuit());
+        entity.setTelefono(dto.getTelefono());
+        entity.setEstadoEmpleado(dto.getEstado());
+
+        if(dto.getDireccion()!=null){
+            entity.getDireccion().setCalle(dto.getDireccion().getCalle());
+            entity.getDireccion().setNumero(dto.getDireccion().getNumero());
+            entity.getDireccion().setCiudad(dto.getDireccion().getCiudad());
+            entity.getDireccion().setProvincia(dto.getDireccion().getProvincia());
+        }
     }
 }

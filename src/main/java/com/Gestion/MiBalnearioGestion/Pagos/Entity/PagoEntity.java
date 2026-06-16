@@ -1,7 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Pagos.Entity;
 
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.EestadoPago;
-import com.Gestion.MiBalnearioGestion.Pagos.Enum.MetodoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.EestadoPago;
+import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -19,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder
 public class PagoEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,6 +47,5 @@ public class PagoEntity {
 
     @OneToOne(mappedBy = "pagoEntity")
     private TicketEntity ticket;
-
 
 }

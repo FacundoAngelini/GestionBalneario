@@ -1,6 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Auth.Security;
 
-import com.Gestion.MiBalnearioGestion.Auth.Credenciales.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Repositorio.CredencialRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
 import com.Gestion.MiBalnearioGestion.Auth.Permisos.Permisos;
@@ -9,20 +9,32 @@ import com.Gestion.MiBalnearioGestion.Auth.Permisos.Repositorio.PermisosReposito
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.Repository.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Common.Exepciones.DatosInvalidoException;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
+import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
+import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EtipoRol;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.RolEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.SectorEntity;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.RolRepositorio;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.SectorRepositorio;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioRepository;
+import com.Gestion.MiBalnearioGestion.Sector.Repositorio.SectorRepositorio;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
+import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ConfgTemporadaRepository;
+import com.Gestion.MiBalnearioGestion.Reservas.Entity.ConfiguracionTemporadaEntity;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -36,17 +48,20 @@ public class DataLoader implements CommandLineRunner {
     private final JwtService jwtService;
     private final RolRepositorio empleadoRolRepository;
     private final SectorRepositorio sectorRepository;
+    private final ClientesRepository clienteRepository;
+    private final RecursoRepositorio recursoRepositorio;
+    private final ConfgTemporadaRepository configTemporadaRepository;
+    private final EmpleadosRepositorio empleadosRepositorio;
 
     @Override
     public void run(String... args) throws Exception {
 
+        //permisso y roles de spring
         if (rolesRepository.count() == 0) {
-            PermisosEntity verReservas = permisosRepository.save(new PermisosEntity(Permisos.RESERVAS_VER));
-            PermisosEntity eliminarReservas = permisosRepository.save(new PermisosEntity(Permisos.RESERVAS_ELIMINAR));
-
-            RolesEntity rolMozo = new RolesEntity(Roles.ROLE_MOZO);
-            rolMozo.addPermit(verReservas);
-            rolesRepository.save(rolMozo);
+            PermisosEntity verReservas = permisosRepository.save(
+                    new PermisosEntity(Permisos.RESERVAS_VER));
+            PermisosEntity eliminarReservas = permisosRepository.save(
+                    new PermisosEntity(Permisos.RESERVAS_ELIMINAR));
 
             RolesEntity rolAdmin = new RolesEntity(Roles.ROLE_ADMIN);
             rolAdmin.addPermit(verReservas);
@@ -58,59 +73,133 @@ public class DataLoader implements CommandLineRunner {
             rolGerente.addPermit(eliminarReservas);
             rolesRepository.save(rolGerente);
 
+            RolesEntity rolMozo = new RolesEntity(Roles.ROLE_MOZO);
+            rolMozo.addPermit(verReservas);
+            rolesRepository.save(rolMozo);
+
             rolesRepository.save(new RolesEntity(Roles.ROLE_CLIENTE));
             rolesRepository.save(new RolesEntity(Roles.ROLE_CAJERO));
             rolesRepository.save(new RolesEntity(Roles.ROLE_EMPLEADO));
             rolesRepository.save(new RolesEntity(Roles.ROLE_REPARTIDOR));
             rolesRepository.save(new RolesEntity(Roles.ROLE_ADMINISTRACION));
 
-            System.out.println("Estructura de Seguridad (Auth) cargada con éxito");
+            System.out.println("Roles y permisos de seguridad cargados.");
         }
 
+        // roles del negocio
         if (empleadoRolRepository.count() == 0) {
-            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.GERENTE).build()); // ID 1
-            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.MOZO).build());    // ID 2
-            System.out.println("Roles de negocio para empleados inicializados");
+            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.GERENTE).build());
+            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.MOZO).build());
+            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.CAJERO).build());
+            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.CARPERO).build());
+            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.COCINERO).build());
+            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.REPARTIDOR).build());
+            empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.ADMINISTRATIVO).build());
+            System.out.println("Roles de negocio cargados.");
         }
 
+        // sectores
+        SectorEntity sectorAdmin;
+        SectorEntity sectorSalon;
         if (sectorRepository.count() == 0) {
-            sectorRepository.save(SectorEntity.builder().nombre("Administracion").build()); // ID 1
-            sectorRepository.save(SectorEntity.builder().nombre("Salon").build());          // ID 2
-            System.out.println("Sectores de negocio inicializados.");
+            sectorAdmin = sectorRepository.save(
+                    SectorEntity.builder().nombre("Administracion").build());
+            sectorSalon = sectorRepository.save(
+                    SectorEntity.builder().nombre("Salon").build());
+            sectorRepository.save(SectorEntity.builder().nombre("Cocina").build());
+            sectorRepository.save(SectorEntity.builder().nombre("Playa").build());
+            System.out.println("Sectores cargados.");
+        } else {
+            sectorAdmin = sectorRepository.findByNombreIgnoreCase("Administracion")
+                    .orElseGet(() -> sectorRepository.save(
+                            SectorEntity.builder().nombre("Administracion").build()));
+            sectorSalon = sectorRepository.findByNombreIgnoreCase("Salon")
+                    .orElseGet(() -> sectorRepository.save(
+                            SectorEntity.builder().nombre("Salon").build()));
         }
 
+        // creacion de la cuenta de un admin supremo
         if (!credentialsRepository.existsByNombreUsuario("admin_supremo")) {
             UsuarioEntity usuarioAdmin = new UsuarioEntity();
-            usuarioAdmin.setNombreUsuario("admin_supremo");
-            usuarioAdmin.setContrasenia(passwordEncoder.encode("admin123"));
             usuarioAdmin = usuarioRepository.save(usuarioAdmin);
 
             RolesEntity rolAdminDb = rolesRepository.findByRole(Roles.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Error: El rol ADMIN no existe"));
-
-            Set<RolesEntity> roles = new HashSet<>();
-            roles.add(rolAdminDb);
+                    .orElseThrow(() -> new RuntimeException("El rol ADMIN no existe"));
 
             CredencialEntity credencialPrevia = CredencialEntity.builder()
                     .nombreUsuario("admin_supremo")
-                    .roles(roles)
+                    .roles(Set.of(rolAdminDb))
                     .build();
-
-            String tokenInicial = jwtService.generateRefreshToken(credencialPrevia);
 
             CredencialEntity credencialAdmin = CredencialEntity.builder()
                     .nombreUsuario("admin_supremo")
-                    .contrasenia(usuarioAdmin.getContrasenia())
+                    .contrasenia(passwordEncoder.encode("admin123"))
                     .enabled(true)
                     .usuario(usuarioAdmin)
-                    .roles(roles)
-                    .refreshToken(tokenInicial)
+                    .roles(Set.of(rolAdminDb))
+                    .refreshToken(jwtService.generateRefreshToken(credencialPrevia))
                     .build();
 
             credentialsRepository.save(credencialAdmin);
-            System.out.println("Administrador supremo creado con éxito: admin_supremo");
+            System.out.println("Admin supremo creado: admin_supremo / admin123");
         }
 
-        System.out.println("Base de datos levantada con éxito");
+        // hacemos un gerente de  prueba para que al probar sea mas facil
+        if (!credentialsRepository.existsByNombreUsuario("gerente_prueba")) {
+            UsuarioEntity usuarioGerente = new UsuarioEntity();
+            usuarioGerente = usuarioRepository.save(usuarioGerente);
+
+            RolesEntity rolGerenteDb = rolesRepository.findByRole(Roles.ROLE_GERENTE)
+                    .orElseThrow(() -> new DatosInvalidoException("El rol GERENTE no existe", "DataLoader"));
+
+            RolEntity rolNegocioGerente = empleadoRolRepository.findByTipoRol(EtipoRol.GERENTE)
+                    .orElseThrow(() -> new DatosInvalidoException("El rol de negocio GERENTE no existe", "DataLoader"));
+
+            CredencialEntity credencialPrevia = CredencialEntity.builder()
+                    .nombreUsuario("gerente_prueba")
+                    .roles(Set.of(rolGerenteDb))
+                    .build();
+
+            CredencialEntity credencialGerente = CredencialEntity.builder()
+                    .nombreUsuario("gerente_prueba")
+                    .contrasenia(passwordEncoder.encode("gerente123"))
+                    .enabled(true)
+                    .usuario(usuarioGerente)
+                    .roles(Set.of(rolGerenteDb))
+                    .refreshToken(jwtService.generateRefreshToken(credencialPrevia))
+                    .build();
+
+            credentialsRepository.save(credencialGerente);
+
+            EmpleadoEntity gerentePrueba = EmpleadoEntity.builder()
+                    .nombre("Juan")
+                    .apellido("Gerente")
+                    .dni(99999999)
+                    .email("gerente@balneario.com")
+                    .sueldo(300000)
+                    .cuit("20999999990")
+                    .estadoEmpleado(EEstadoEmpleado.ACTIVO)
+                    .telefono("2235550001")
+                    .direccion(new DireccionEntity("San Martin", 100, "Mar del Plata", "Buenos Aires"))
+                    .sector(sectorAdmin)
+                    .rol(rolNegocioGerente)
+                    .usuario(usuarioGerente)
+                    .build();
+
+            empleadosRepositorio.save(gerentePrueba);
+            System.out.println("Gerente de prueba creado: gerente_prueba / gerente123");
+        }
+
+
+        // ya configuramos la temporada
+        if (configTemporadaRepository.count() == 0) {
+            configTemporadaRepository.save(ConfiguracionTemporadaEntity.builder()
+                    .inicioTemporada(LocalDate.of(2026, 12, 1))
+                    .fin_temporada(LocalDate.of(2027, 4, 15))
+                    .build());
+            System.out.println("Configuracion de temporada cargada.");
+        }
+
+        System.out.println("Base de datos levantada con exito");
     }
 }

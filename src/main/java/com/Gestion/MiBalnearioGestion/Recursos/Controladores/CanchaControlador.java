@@ -8,39 +8,43 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@RequestMapping("/recursos/canchas")
+@RequestMapping("/api/v1/recursos-canchas")
 @RestController
 public class CanchaControlador {
     private final ICanchaServicio canchaServicio;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CanchaDTO> crearCancha(@Valid @RequestBody CanchaDTO cancha) {
         return new ResponseEntity<>(canchaServicio.crearCancha(cancha),HttpStatus.CREATED);
     }
 
-    @PutMapping("/{publicId}")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CanchaDTO> actualizarCancha(@PathVariable UUID id, @Valid @RequestBody CanchaDTO cancha) {
         return ResponseEntity.ok(canchaServicio.actualizarCancha(id, cancha));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<CanchaDTO> obtenerCanchaId(@PathVariable UUID id) {
         return ResponseEntity.ok(canchaServicio.buscarPorId(id));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
     public ResponseEntity<List<CanchaDTO>> obtenerCanchas(ETipoCancha cancha,
                                                           Integer capacidadIgual,
                                                           Integer capacidadMenor,
                                                           Integer capacidadMayor,
-                                                          boolean iluminacion,
-                                                          boolean noIluminacion) {
-        return ResponseEntity.ok(canchaServicio.buscarTodas(cancha, capacidadIgual, capacidadMenor, capacidadMayor, iluminacion, noIluminacion));
+                                                          Boolean iluminacion) {
+        return ResponseEntity.ok(canchaServicio.buscarTodas(cancha, capacidadIgual, capacidadMenor, capacidadMayor, iluminacion));
     }
 }

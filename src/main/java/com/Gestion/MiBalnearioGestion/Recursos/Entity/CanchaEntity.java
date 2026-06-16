@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class CanchaEntity extends RecursoEntity {
-    @Enumerated(EnumType.STRING) // es mejor Sting y no oirdinal, ya que ordinal lo uarda como 0,1,2 y si luego lo camnio, se rompe todo
+    @Enumerated(EnumType.STRING)
     @Column(name="tipo_cancha", nullable = false)
     private ETipoCancha tipoCancha;
 

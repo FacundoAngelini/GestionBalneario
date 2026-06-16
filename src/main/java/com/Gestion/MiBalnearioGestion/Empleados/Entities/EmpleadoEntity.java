@@ -2,7 +2,8 @@ package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 
 import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
-import com.Gestion.MiBalnearioGestion.Usuarios.UsuarioEntity;
+import com.Gestion.MiBalnearioGestion.Sector.Entity.SectorEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;

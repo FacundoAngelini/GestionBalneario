@@ -6,7 +6,7 @@ public enum EtipoRol {
     MOZO,
     CAJERO,
     GERENTE,
-    GUARDAVIDAS,
     REPARTIDOR,
-    ADMINISTRATIVO
+    ADMINISTRATIVO,
+    EMPLEADO
 }

@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+hs_err_pid6568.log
+hs_err_pid21668.log
+replay_pid6568.log
+replay_pid21668.log
+
+
+### env Docker ###
+.env
