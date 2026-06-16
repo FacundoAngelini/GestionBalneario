@@ -25,6 +25,7 @@ import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.resources.payment.Payment;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PagoService implements IPagoService {
     @Value("${mp.accesstoken}")
     private String accessToken;
@@ -114,13 +116,25 @@ public class PagoService implements IPagoService {
                     reserva.setEstadoReserva(EReservaEstado.CONFIRMADA);
                     reserva.setReservado(true);
                     reservaRepository.save(reserva);
-                    emailService.confirmacionPagoReserva(pagoReserva, ticketGuardado);
+
+                    emailService.confirmacionPagoReserva(pagoReserva, ticketGuardado)
+                            .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", pagoReserva.getReserva().getCliente().getEmail()))
+                            .exceptionally(throwable -> {
+                                log.error("Fallo el envío del email de confirmación de pago a: {}", pagoReserva.getReserva().getCliente().getEmail(), throwable);
+                                return null;
+                            });
 
                 }  else if (pagoGeneric instanceof PagoPedidoLugarEntity pagoPedidoLugar) {
                 PedidoLugarEntity pedido = pagoPedidoLugar.getPedido();
                 pedido.setEstadoPedido(EEstadoPedido.CONFIRMADO);
                 pedidoRepository.save(pedido);
-                emailService.confirmacionPagoPedido(pedido, ticketGuardado);
+
+                    emailService.confirmacionPagoPedido(pedido, ticketGuardado)
+                            .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", pedido.getCliente().getEmail()))
+                            .exceptionally(throwable -> {
+                                log.error("Fallo el envío del email de confirmación de pago a: {}", pedido.getCliente().getEmail(), throwable);
+                                return null;
+                            });
 
                 } else if (pagoGeneric instanceof PagoPedidoMesaEntity pagoPedidoMesa) {
 

@@ -34,6 +34,7 @@ import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.SombrillaRepositorio
 
 import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaNoEncontradaException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PedidoService implements IPedidoService {
 
     private final IPedidoRepository pedidoRepository;
@@ -251,7 +253,13 @@ public class PedidoService implements IPedidoService {
         pago.setPreferenceIdMp(preferencia.preferenceId());
         pagoRepository.save(pago);
 
-        emailService.enviarLinkPagoPedido(pedido, pago, preferencia.initPoint());
+
+        emailService.enviarLinkPagoPedido(pedido, pago, preferencia.initPoint())
+                .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", cliente.getEmail()))
+                .exceptionally(throwable -> {
+                    log.error("Fallo el envío del email de confirmación de pago a: {}", cliente.getEmail(), throwable);
+                    return null;
+                });
 
         PedidoResponse response = pedidoMapper.convertToResponseDTO(pedido);
         response.setLinkPago(preferencia.initPoint());

@@ -123,7 +123,13 @@ public class ReservaServicio implements IReservaServicio{
         ipagoRepository.save(pagoGuardado);
 
         String urlMp = preferencia.initPoint();
-        emailService.confirmacionReserva(reserva, urlMp);
+
+        emailService.confirmacionReserva(reserva, urlMp)
+                .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", reserva.getCliente().getEmail()))
+                .exceptionally(throwable -> {
+                    log.error("Fallo el envío del email de confirmación de pago a: {}", reserva.getCliente().getEmail(), throwable);
+                    return null;
+                });
 
         return CheckoutResponseDTO.builder()
                 .reservaPublicId(reserva.getPublicId())
@@ -205,7 +211,13 @@ public class ReservaServicio implements IReservaServicio{
             }
         }
         reservaRepository.save(reserva);
-        emailService.cancelacionReserva(reserva);
+
+        emailService.cancelacionReserva(reserva)
+                .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", reserva.getCliente().getEmail()))
+                .exceptionally(throwable -> {
+                    log.error("Fallo el envío del email de confirmación de pago a: {}", reserva.getCliente().getEmail(), throwable);
+                    return null;
+                });
 
     }
 
@@ -242,7 +254,12 @@ public class ReservaServicio implements IReservaServicio{
                     reserva.getFechaCreacion()
             );
         }
-        emailService.cancelacionReserva(reserva);
+        emailService.cancelacionReserva(reserva)
+                .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", reserva.getCliente().getEmail()))
+                .exceptionally(throwable -> {
+                    log.error("Fallo el envío del email de confirmación de pago a: {}", reserva.getCliente().getEmail(), throwable);
+                    return null;
+                });
 
         if (pago != null) {
             ipagoRepository.delete(pago);

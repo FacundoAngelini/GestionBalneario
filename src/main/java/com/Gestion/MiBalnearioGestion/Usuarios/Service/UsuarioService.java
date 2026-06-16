@@ -11,6 +11,7 @@ import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaEncontradaExcepti
 import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaNoEncontradaException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UsuarioService implements IUsuarioService {
 
     private final CredencialRepositorio credencialRepositorio;
@@ -93,7 +95,12 @@ public class UsuarioService implements IUsuarioService {
                 .usado(false)
                 .build());
 
-        emailService.enviarResetContrasenia(email, nombreUsuario, token);
+        emailService.enviarResetContrasenia(email, nombreUsuario, token)
+                .thenRun(() -> log.info("Email de reset enviado exitosamente a: {}", email))
+                .exceptionally(throwable -> {
+                    log.error("Fallo el envío del email a: {}", email, throwable);
+                    return null;
+                });
     }
 
     @Transactional

@@ -28,6 +28,7 @@ import com.Gestion.MiBalnearioGestion.Usuarios.Repository.UsuarioRepository;
 import com.Gestion.MiBalnearioGestion.Usuarios.Service.UsuarioService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +43,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmpleadoService implements IEmpleadoService {
     private final EmpleadosRepositorio empleadosRepositorio;
     private final UsuarioRepository usuarioRepository;
@@ -97,7 +99,13 @@ public class EmpleadoService implements IEmpleadoService {
                 .build();
         nuevaCredencial.setRefreshToken(jwtService.generateRefreshToken(nuevaCredencial));
         credentialsRepository.save(nuevaCredencial);
-        emailService.BienvenidaEmpleado(dtoEmpleado);
+
+        emailService.BienvenidaEmpleado(dtoEmpleado)
+                .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", dtoEmpleado.getEmail()))
+                .exceptionally(throwable -> {
+                    log.error("Fallo el envío del email de confirmación de pago a: {}", dtoEmpleado.getEmail(), throwable);
+                    return null;
+                });
         EmpleadoEntity empleado = empleadoMapper.convertToEntity(dtoEmpleado);
         empleado.setUsuario(nuevoUsuario);
         empleado.setEstadoEmpleado(dtoEmpleado.getEstado());

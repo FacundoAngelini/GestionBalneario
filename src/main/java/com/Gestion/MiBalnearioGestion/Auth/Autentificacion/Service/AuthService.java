@@ -22,6 +22,7 @@ import com.Gestion.MiBalnearioGestion.Usuarios.Mapper.UsuarioMapper;
 import com.Gestion.MiBalnearioGestion.Usuarios.Repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,6 +35,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService implements IAuthService {
     private final CredencialRepositorio credentialsRepository;
     private final UsuarioRepository usuarioRepository;
@@ -111,7 +113,13 @@ public class AuthService implements IAuthService {
         usuarioRepository.save(nuevoUsuario);
         credentialsRepository.save(nuevaCredencial);
         clientesRepository.save(nuevoCliente);
-        emailService.BienvenidaClienteRegistro(request);
+
+        emailService.BienvenidaClienteRegistro(request)
+                .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", request.getEmail()))
+                .exceptionally(throwable -> {
+                    log.error("Fallo el envío del email de confirmación de pago a: {}", request.getEmail(), throwable);
+                    return null;
+                });
 
         return usuarioMapper.convertToDTO(nuevoUsuario);
     }

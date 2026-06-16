@@ -4,7 +4,6 @@ import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.NewAccountRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Empleados.DTO.EmpleadoDTO;
-import com.Gestion.MiBalnearioGestion.Empleados.Repositorio.EmpleadosRepositorio;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.TicketEntity;
@@ -13,216 +12,287 @@ import com.Gestion.MiBalnearioGestion.Pedidos.Entity.PedidoLugarEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    private final EmpleadosRepositorio empleadosRepositorio;
 
-    public void BienvenidaCliente (ClienteRequest cliente){
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("balnearioapiutn@gmail.com");
-        mailMessage.setTo(cliente.getEmail());
-        mailMessage.setSubject("Bienvenido al Balneario " + cliente.getNombre());
-        mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
-        mailSender.send(mailMessage);
+    @Async("emailExecutor")
+    public CompletableFuture<Void> BienvenidaCliente(ClienteRequest cliente) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setTo(cliente.getEmail());
+            mailMessage.setSubject("Bienvenido al Balneario " + cliente.getNombre());
+            mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
+            mailSender.send(mailMessage);
+            log.info("Email de bienvenida enviado a cliente: {}", cliente.getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de bienvenida a cliente: {}", cliente.getEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    public void BienvenidaClienteRegistro (NewAccountRequest cliente){
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("balnearioapiutn@gmail.com");
-        mailMessage.setTo(cliente.getEmail());
-        mailMessage.setSubject("Bienvenido al Balneario " + cliente.getNombre());
-        mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
-        mailSender.send(mailMessage);
+    @Async("emailExecutor")
+    public CompletableFuture<Void> BienvenidaClienteRegistro(NewAccountRequest cliente) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setTo(cliente.getEmail());
+            mailMessage.setSubject("Bienvenido al Balneario " + cliente.getNombre());
+            mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
+            mailSender.send(mailMessage);
+            log.info("Email de bienvenida enviado a cliente (registro): {}", cliente.getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de bienvenida a cliente (registro): {}", cliente.getEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    public void BienvenidaEmpleado (EmpleadoDTO empleadoDTO){
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("balnearioapiutn@gmail.com");
-        mailMessage.setTo(empleadoDTO.getEmail());
-        mailMessage.setSubject("Bienvenido al Equipo del Balneario " + empleadoDTO.getNombre());
-        mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
-        mailSender.send(mailMessage);
+    @Async("emailExecutor")
+    public CompletableFuture<Void> BienvenidaEmpleado(EmpleadoDTO empleadoDTO) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setTo(empleadoDTO.getEmail());
+            mailMessage.setSubject("Bienvenido al Equipo del Balneario " + empleadoDTO.getNombre());
+            mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
+            mailSender.send(mailMessage);
+            log.info("Email de bienvenida enviado a empleado: {}", empleadoDTO.getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de bienvenida a empleado: {}", empleadoDTO.getEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    public void cancelacionReserva(ReservaEntity reserva){
-
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("balnearioapiutn@gmail.com");
-        mailMessage.setTo(reserva.getCliente().getEmail());
-        mailMessage.setSubject("Reserva en Balneario de " + reserva.getCliente().getNombre());
-        mailMessage.setText("Hola! " + reserva.getCliente().getNombre() + " detalles de la reserva a cancelar: "
-                +"\n" + "Codigo de Reserva: " + reserva.getPublicId()
-                +"\n" + "Estado: " + reserva.getEstadoReserva().toString()
-                +"\n" + "Monto total: " +reserva.getMontoTotal()
-                +"\n" + "Duracion: Empieza el  " + reserva.getFechaInicio() + " y termina el " + reserva.getFechaFin()
-                +"\n" + "Por: " +reserva.getRecursos().stream().map(RecursoEntity::getNombre).toList().toString()
-                +"\n" + " Esta reserva fue CANCELADA correctamente");
-        mailSender.send(mailMessage);
+    @Async("emailExecutor")
+    public CompletableFuture<Void> cancelacionReserva(ReservaEntity reserva) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setTo(reserva.getCliente().getEmail());
+            mailMessage.setSubject("Reserva en Balneario de " + reserva.getCliente().getNombre());
+            mailMessage.setText("Hola! " + reserva.getCliente().getNombre() + " detalles de la reserva a cancelar: "
+                    + "\n" + "Codigo de Reserva: " + reserva.getPublicId()
+                    + "\n" + "Estado: " + reserva.getEstadoReserva().toString()
+                    + "\n" + "Monto total: $" + reserva.getMontoTotal()
+                    + "\n" + "Duracion: Empieza el " + reserva.getFechaInicio() + " y termina el " + reserva.getFechaFin()
+                    + "\n" + "Por: " + reserva.getRecursos().stream().map(RecursoEntity::getNombre).toList().toString()
+                    + "\n" + " Esta reserva fue CANCELADA correctamente");
+            mailSender.send(mailMessage);
+            log.info("Email de cancelación enviado a: {}", reserva.getCliente().getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de cancelación a: {}", reserva.getCliente().getEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    public void confirmacionReserva(ReservaEntity reserva, String urlMercadoPago) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("balnearioapiutn@gmail.com");
-        mailMessage.setTo(reserva.getCliente().getEmail());
-        mailMessage.setSubject("Reserva Pendiente - Balneario");
+    @Async("emailExecutor")
+    public CompletableFuture<Void> confirmacionReserva(ReservaEntity reserva, String urlMercadoPago) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setTo(reserva.getCliente().getEmail());
+            mailMessage.setSubject("Reserva Pendiente - Balneario");
 
-        mailMessage.setText("¡Hola, " + reserva.getCliente().getNombre() + "!\n\n"
-                + "Tu reserva se ha generado correctamente en nuestro sistema y se encuentra en estado PENDIENTE.\n"
-                + "IMPORTANTE: Tenés un límite de 15 minutos para completar el pago; de lo contrario, la reserva será cancelada automáticamente para liberar los recursos.\n\n"
-                + "=========================================\n"
-                + "          DETALLES DE LA RESERVA         \n"
-                + "=========================================\n"
-                + "Código de Reserva: " + reserva.getPublicId() + "\n"
-                + "Período: Desde el " + reserva.getFechaInicio() + " hasta el " + reserva.getFechaFin() + "\n"
-                + "Monto Total a Abonado: $" + reserva.getMontoTotal() + "\n"
-                + "Recursos seleccionados: " + reserva.getRecursos().stream().map(RecursoEntity::getNombre).toList().toString() + "\n\n"
-                + "=========================================\n"
-                + "          ENLACE DE PAGO (MERCADO PAGO)   \n"
-                + "=========================================\n"
-                + "Hacé clic en el siguiente enlace para abonar de forma segura:\n" + urlMercadoPago + "\n\n"
-                + "Muchas gracias por elegirnos.");
+            mailMessage.setText("¡Hola, " + reserva.getCliente().getNombre() + "!\n\n"
+                    + "Tu reserva se ha generado correctamente en nuestro sistema y se encuentra en estado PENDIENTE.\n"
+                    + "IMPORTANTE: Tenés un límite de 15 minutos para completar el pago; de lo contrario, la reserva será cancelada automáticamente para liberar los recursos.\n\n"
+                    + "=========================================\n"
+                    + "          DETALLES DE LA RESERVA         \n"
+                    + "=========================================\n"
+                    + "Código de Reserva: " + reserva.getPublicId() + "\n"
+                    + "Período: Desde el " + reserva.getFechaInicio() + " hasta el " + reserva.getFechaFin() + "\n"
+                    + "Monto Total a Abonado: $" + reserva.getMontoTotal() + "\n"
+                    + "Recursos seleccionados: " + reserva.getRecursos().stream().map(RecursoEntity::getNombre).toList().toString() + "\n\n"
+                    + "=========================================\n"
+                    + "          ENLACE DE PAGO (MERCADO PAGO)   \n"
+                    + "=========================================\n"
+                    + "Hacé clic en el siguiente enlace para abonar de forma segura:\n" + urlMercadoPago + "\n\n"
+                    + "Muchas gracias por elegirnos.");
 
-        mailSender.send(mailMessage);
+            mailSender.send(mailMessage);
+            log.info("Email de confirmación de reserva (pendiente) enviado a: {}", reserva.getCliente().getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de confirmación de reserva a: {}", reserva.getCliente().getEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
+    @Async("emailExecutor")
+    public CompletableFuture<Void> confirmacionPagoReserva(PagoReservaEntity pagoReserva, TicketEntity ticket) {
+        try {
+            ReservaEntity reserva = pagoReserva.getReserva();
+            var cliente = reserva.getCliente();
 
-    public void confirmacionPagoReserva(PagoReservaEntity pagoReserva, TicketEntity ticket) {
-        ReservaEntity reserva = pagoReserva.getReserva();
-        var cliente = reserva.getCliente();
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setTo(cliente.getEmail());
+            mailMessage.setSubject("¡Pago Confirmado! Tu reserva en Balneario está Lista");
 
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("balnearioapiutn@gmail.com");
-        mailMessage.setTo(cliente.getEmail());
-        mailMessage.setSubject("¡Pago Confirmado! Tu reserva en Balneario está Lista");
+            mailMessage.setText("¡Hola, " + cliente.getNombre() + "! Confirmamos que recibimos tu pago correctamente.\n\n"
+                    + "=========================================\n"
+                    + "           DETALLES DEL TICKET           \n"
+                    + "=========================================\n"
+                    + "ID de Pago/Ticket: " + ticket.getId() + "\n"
+                    + "Fecha de Pago: " + ticket.getFechaTicket() + "\n"
+                    + "Monto Abonado: $" + ticket.getTotal() + "\n\n"
+                    + "=========================================\n"
+                    + "         ESTADO DE TU RESERVA            \n"
+                    + "=========================================\n"
+                    + "Código de Reserva: " + reserva.getPublicId() + "\n"
+                    + "Estado Actual: " + reserva.getEstadoReserva().toString() + " (PAGADA)\n"
+                    + "Período: Desde el " + reserva.getFechaInicio() + " hasta el " + reserva.getFechaFin() + "\n"
+                    + "Recursos reservados: " + reserva.getRecursos().stream().map(RecursoEntity::getNombre).toList().toString() + "\n\n"
+                    + "¡Te esperamos para disfrutar del verano con todo listo!");
 
-        mailMessage.setText("¡Hola, " + cliente.getNombre() + "! Confirmamos que recibimos tu pago correctamente.\n\n"
-                + "=========================================\n"
-                + "           DETALLES DEL TICKET           \n"
-                + "=========================================\n"
-                + "ID de Pago/Ticket: " + ticket.getId() + "\n"
-                + "Fecha de Pago: " + ticket.getFechaTicket() + "\n"
-                + "Monto Abonado: $" + ticket.getTotal() + "\n\n"
-                + "=========================================\n"
-                + "         ESTADO DE TU RESERVA            \n"
-                + "=========================================\n"
-                + "Código de Reserva: " + reserva.getPublicId() + "\n"
-                + "Estado Actual: " + reserva.getEstadoReserva().toString() + " (PAGADA)\n"
-                + "Período: Desde el " + reserva.getFechaInicio() + " hasta el " + reserva.getFechaFin() + "\n"
-                + "Recursos reservados: " + reserva.getRecursos().stream().map(RecursoEntity::getNombre).toList().toString() + "\n\n"
-                + "¡Te esperamos para disfrutar del verano con todo listo!");
-
-        mailSender.send(mailMessage);
-    }
-    public void enviarLinkPagoPedido(PedidoLugarEntity pedido, PagoEntity pago, String linkPago) {
-        ClienteEntity cliente = pedido.getCliente();
-
-        // Arma el detalle de productos
-        String detalle = pedido.getDetallePedidos().stream()
-                .map(d -> "  - " + d.getProducto().getNombre()
-                        + " x" + d.getCantidad()
-                        + "  →  $" + d.getPrecio())
-                .collect(Collectors.joining("\n"));
-
-        double total = pedido.getDetallePedidos().stream()
-                .mapToDouble(DetallePedidoEntity::getPrecio)
-                .sum();
-
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setFrom("balnearioapiutn@gmail.com");
-        mail.setTo(cliente.getEmail());
-        mail.setSubject("Tu pedido en el Balneario está listo para pagar 🏖️");
-
-        mail.setText(
-                "¡Hola, " + cliente.getNombre() + "!\n\n"
-                        + "Recibimos tu pedido correctamente. Para que lo preparemos, completá el pago "
-                        + "usando el siguiente enlace antes de que expire.\n\n"
-                        + "=========================================\n"
-                        + "           DETALLE DEL PEDIDO            \n"
-                        + "=========================================\n"
-                        + "Código de Pedido : " + pedido.getPublicId() + "\n"
-                        + "Fecha            : " + pedido.getFechaPedido() + "\n"
-                        + "Tipo             : " + pedido.getTipoPedido() + "\n\n"
-                        + "Productos:\n"
-                        + detalle + "\n\n"
-                        + "─────────────────────────────────────────\n"
-                        + "TOTAL A PAGAR    : $" + total + "\n"
-                        + "─────────────────────────────────────────\n\n"
-                        + "=========================================\n"
-                        + "          ENLACE DE PAGO (MERCADO PAGO)  \n"
-                        + "=========================================\n"
-                        + linkPago + "\n\n"
-                        + "IMPORTANTE: Tenés 15 minutos para completar el pago o el pedido será cancelado automáticamente.\n\n"
-                        + "¡Muchas gracias por elegirnos!"
-        );
-
-        mailSender.send(mail);
+            mailSender.send(mailMessage);
+            log.info("Email de confirmación de pago de reserva enviado a: {}", cliente.getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de confirmación de pago de reserva", e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
+    @Async("emailExecutor")
+    public CompletableFuture<Void> enviarLinkPagoPedido(PedidoLugarEntity pedido, PagoEntity pago, String linkPago) {
+        try {
+            ClienteEntity cliente = pedido.getCliente();
 
-    public void confirmacionPagoPedido(PedidoLugarEntity pedido, TicketEntity ticket) {
-        ClienteEntity cliente = pedido.getCliente();
+            String detalle = pedido.getDetallePedidos().stream()
+                    .map(d -> "  - " + d.getProducto().getNombre()
+                            + " x" + d.getCantidad()
+                            + "  →  $" + d.getPrecio())
+                    .collect(Collectors.joining("\n"));
 
-        String detalle = pedido.getDetallePedidos().stream()
-                .map(d -> "  - " + d.getProducto().getNombre()
-                        + " x" + d.getCantidad()
-                        + "  →  $" + d.getPrecio())
-                .collect(Collectors.joining("\n"));
+            double total = pedido.getDetallePedidos().stream()
+                    .mapToDouble(DetallePedidoEntity::getPrecio)
+                    .sum();
 
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setFrom("balnearioapiutn@gmail.com");
-        mail.setTo(cliente.getEmail());
-        mail.setSubject("¡Pago confirmado! Tu pedido está en preparación 🍽️");
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setFrom("balnearioapiutn@gmail.com");
+            mail.setTo(cliente.getEmail());
+            mail.setSubject("Tu pedido en el Balneario está listo para pagar 🏖️");
 
-        mail.setText(
-                "¡Hola, " + cliente.getNombre() + "!\n\n"
-                        + "Confirmamos que recibimos tu pago y tu pedido ya está en preparación.\n\n"
-                        + "=========================================\n"
-                        + "           DETALLE DEL PEDIDO            \n"
-                        + "=========================================\n"
-                        + "Código de Pedido : " + pedido.getPublicId() + "\n"
-                        + "Fecha            : " + pedido.getFechaPedido() + "\n"
-                        + "Tipo             : " + pedido.getTipoPedido() + "\n\n"
-                        + "Productos:\n"
-                        + detalle + "\n\n"
-                        + "─────────────────────────────────────────\n"
-                        + "TOTAL ABONADO    : $" + ticket.getTotal() + "\n"
-                        + "─────────────────────────────────────────\n\n"
-                        + "=========================================\n"
-                        + "            COMPROBANTE DE PAGO          \n"
-                        + "=========================================\n"
-                        + "ID Ticket        : " + ticket.getPublicId() + "\n"
-                        + "Fecha de Pago    : " + ticket.getFechaTicket() + "\n\n"
-                        + "En breve un repartidor te llevará tu pedido. ¡Gracias por elegirnos! 🏖️"
-        );
+            mail.setText(
+                    "¡Hola, " + cliente.getNombre() + "!\n\n"
+                            + "Recibimos tu pedido correctamente. Para que lo preparemos, completá el pago "
+                            + "usando el siguiente enlace antes de que expire.\n\n"
+                            + "=========================================\n"
+                            + "           DETALLE DEL PEDIDO            \n"
+                            + "=========================================\n"
+                            + "Código de Pedido : " + pedido.getPublicId() + "\n"
+                            + "Fecha            : " + pedido.getFechaPedido() + "\n"
+                            + "Tipo             : " + pedido.getTipoPedido() + "\n\n"
+                            + "Productos:\n"
+                            + detalle + "\n\n"
+                            + "─────────────────────────────────────────\n"
+                            + "TOTAL A PAGAR    : $" + total + "\n"
+                            + "─────────────────────────────────────────\n\n"
+                            + "=========================================\n"
+                            + "          ENLACE DE PAGO (MERCADO PAGO)  \n"
+                            + "=========================================\n"
+                            + linkPago + "\n\n"
+                            + "IMPORTANTE: Tenés 15 minutos para completar el pago o el pedido será cancelado automáticamente.\n\n"
+                            + "¡Muchas gracias por elegirnos!"
+            );
 
-        mailSender.send(mail);
+            mailSender.send(mail);
+            log.info("Email de link de pago de pedido enviado a: {}", cliente.getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de link de pago de pedido", e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    // esto para el dia de mañana que tengamos el front
-    public void enviarResetContrasenia(String email, String nombreUsuario, String token) {
-        String link = "https://tu-frontend.com/reset-password?token=" + token;
+    @Async("emailExecutor")
+    public CompletableFuture<Void> confirmacionPagoPedido(PedidoLugarEntity pedido, TicketEntity ticket) {
+        try {
+            ClienteEntity cliente = pedido.getCliente();
 
-        SimpleMailMessage mensaje = new SimpleMailMessage();
-        mensaje.setTo(email);
-        mensaje.setSubject("Recuperación de contraseña — Balneario");
-        mensaje.setText(
-                "Hola " + nombreUsuario + ",\n\n" +
-                        "Recibimos una solicitud para restablecer tu contraseña.\n\n" +
-                        "Hacé clic en el siguiente enlace para crear una nueva (válido por 30 minutos):\n" +
-                        link + "\n\n" +
-                        "Si no solicitaste esto, ignorá este mensaje.\n\n" +
-                        "Balneario — Sistema de Gestión"
-        );
+            String detalle = pedido.getDetallePedidos().stream()
+                    .map(d -> "  - " + d.getProducto().getNombre()
+                            + " x" + d.getCantidad()
+                            + "  →  $" + d.getPrecio())
+                    .collect(Collectors.joining("\n"));
 
-        mailSender.send(mensaje);
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setFrom("balnearioapiutn@gmail.com");
+            mail.setTo(cliente.getEmail());
+            mail.setSubject("¡Pago confirmado! Tu pedido está en preparación 🍽️");
+
+            mail.setText(
+                    "¡Hola, " + cliente.getNombre() + "!\n\n"
+                            + "Confirmamos que recibimos tu pago y tu pedido ya está en preparación.\n\n"
+                            + "=========================================\n"
+                            + "           DETALLE DEL PEDIDO            \n"
+                            + "=========================================\n"
+                            + "Código de Pedido : " + pedido.getPublicId() + "\n"
+                            + "Fecha            : " + pedido.getFechaPedido() + "\n"
+                            + "Tipo             : " + pedido.getTipoPedido() + "\n\n"
+                            + "Productos:\n"
+                            + detalle + "\n\n"
+                            + "─────────────────────────────────────────\n"
+                            + "TOTAL ABONADO    : $" + ticket.getTotal() + "\n"
+                            + "─────────────────────────────────────────\n\n"
+                            + "=========================================\n"
+                            + "            COMPROBANTE DE PAGO          \n"
+                            + "=========================================\n"
+                            + "ID Ticket        : " + ticket.getPublicId() + "\n"
+                            + "Fecha de Pago    : " + ticket.getFechaTicket() + "\n\n"
+                            + "En breve un repartidor te llevará tu pedido. ¡Gracias por elegirnos! 🏖️"
+            );
+
+            mailSender.send(mail);
+            log.info("Email de confirmación de pago de pedido enviado a: {}", cliente.getEmail());
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de confirmación de pago de pedido", e);
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Async("emailExecutor")
+    public CompletableFuture<Void> enviarResetContrasenia(String email, String nombreUsuario, String token) {
+        try {
+            String link = "https://tu-frontend.com/reset-password?token=" + token;
+
+            SimpleMailMessage mensaje = new SimpleMailMessage();
+            mensaje.setTo(email);
+            mensaje.setSubject("Recuperación de contraseña — Balneario");
+            mensaje.setText(
+                    "Hola " + nombreUsuario + ",\n\n" +
+                            "Recibimos una solicitud para restablecer tu contraseña.\n\n" +
+                            "Hacé clic en el siguiente enlace para crear una nueva (válido por 30 minutos):\n" +
+                            link + "\n\n" +
+                            "Si no solicitaste esto, ignorá este mensaje.\n\n" +
+                            "Balneario — Sistema de Gestión"
+            );
+
+            mailSender.send(mensaje);
+            log.info("Email de reset de contraseña enviado a: {}", email);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error al enviar email de reset de contraseña a: {}", email, e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 }
