@@ -141,7 +141,7 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             credentialsRepository.save(credencialAdmin);
-            System.out.println("Admin supremo creado: admin_supremo / admin123");
+            System.out.println("Admin supremo creado: admin_supremo / admin12345");
         }
 
         // hacemos un gerente de  prueba para que al probar sea mas facil
@@ -162,7 +162,7 @@ public class DataLoader implements CommandLineRunner {
 
             CredencialEntity credencialGerente = CredencialEntity.builder()
                     .nombreUsuario("gerente_prueba")
-                    .contrasenia(passwordEncoder.encode("gerente123"))
+                    .contrasenia(passwordEncoder.encode("gerente1234"))
                     .enabled(true)
                     .usuario(usuarioGerente)
                     .roles(Set.of(rolGerenteDb))
