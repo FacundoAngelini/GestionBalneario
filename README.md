@@ -105,24 +105,6 @@ Entre las más relevantes se incluyen:
 
 ### Configuración
 
-Crear una base de datos:
-
--db_URL
--db_username
--db_password
-
-Gmail Contraseñas de aplicaciones (requiere verificacion de 2 pasos)
-
--gmail_pass formato: xxxx-xxxx-xxxx-xxxx (borrar espacios entre caracteres en .env)
-
-MercadoPago Developer Key
-
-MP_ACCESS_TOKEN
-
-Crear .env al nivel de src, para testing.
-
-[![application.yaml](https://img.shields.io/badge/.env-example-blue)](https://github.com/FacundoAngelini/GestionBalneario/blob/main/.envExample)
-
 Configurar las credenciales en:
 
 [![application.yaml](https://img.shields.io/badge/application-yaml-blue)](https://github.com/FacundoAngelini/GestionBalneario/blob/main/src/main/resources/application.yaml)
@@ -149,6 +131,11 @@ src/main/resources/application.yaml
 | MP_WEBHOOK_URL         | URL utilizada para recibir WebHooks de Mercado Pago durante las pruebas (Ngrok). |
 | MAIL_USERNAME          | Cuenta pública del balneario : balnearioapiutn@gmail.com                         |
 | GMAIL_APP              | Contraseña de aplicación generada por Gmail para SMTP.                           |
+
+
+Crear .env al nivel de src, para testing.
+
+[![application.yaml](https://img.shields.io/badge/.env-example-blue)](https://github.com/FacundoAngelini/GestionBalneario/blob/main/.envExample)
 
 
 ### Ejecutar
