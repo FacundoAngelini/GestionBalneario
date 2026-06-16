@@ -97,12 +97,6 @@ Entre las más relevantes se incluyen:
 ---
 ## Instalación y ejecución
 
-### Requisitos
-
-- Java 21
-- Maven 3.9+
-- MySQL 8+
-
 ### Configuración
 
 Configurar las credenciales en:
