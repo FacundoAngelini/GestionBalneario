@@ -148,6 +148,7 @@ Este proyecto fue desarrollado en el marco de la **Tecnicatura Universitaria en 
 Docentes: 
 - **Eduardo Mango**
 - **Lucrecia Bazán**
+- **Diego Maidana**
 
   
 Fecha de entrega: **16 de Junio, 2026**
