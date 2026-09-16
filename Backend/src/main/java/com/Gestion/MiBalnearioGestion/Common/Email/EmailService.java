@@ -32,7 +32,7 @@ public class EmailService {
     public CompletableFuture<Void> BienvenidaCliente(ClienteRequest cliente) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setFrom("facuangelinii@gmail.com");
             mailMessage.setTo(cliente.getEmail());
             mailMessage.setSubject("Bienvenido al Balneario " + cliente.getNombre());
             mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
@@ -49,7 +49,7 @@ public class EmailService {
     public CompletableFuture<Void> BienvenidaClienteRegistro(NewAccountRequest cliente) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setFrom("facuangelinii@gmail.com");
             mailMessage.setTo(cliente.getEmail());
             mailMessage.setSubject("Bienvenido al Balneario " + cliente.getNombre());
             mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
@@ -66,7 +66,7 @@ public class EmailService {
     public CompletableFuture<Void> BienvenidaEmpleado(EmpleadoDTO empleadoDTO) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setFrom("facuangelinii@gmail.com");
             mailMessage.setTo(empleadoDTO.getEmail());
             mailMessage.setSubject("Bienvenido al Equipo del Balneario " + empleadoDTO.getNombre());
             mailMessage.setText("Te damos la bienvenida y confirmamos la creación de tu cuenta!");
@@ -83,7 +83,7 @@ public class EmailService {
     public CompletableFuture<Void> cancelacionReserva(ReservaEntity reserva) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setFrom("facuangelinii@gmail.com");
             mailMessage.setTo(reserva.getCliente().getEmail());
             mailMessage.setSubject("Reserva en Balneario de " + reserva.getCliente().getNombre());
             mailMessage.setText("Hola! " + reserva.getCliente().getNombre() + " detalles de la reserva a cancelar: "
@@ -106,7 +106,7 @@ public class EmailService {
     public CompletableFuture<Void> confirmacionReserva(ReservaEntity reserva, String urlMercadoPago) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setFrom("facuangelinii@gmail.com");
             mailMessage.setTo(reserva.getCliente().getEmail());
             mailMessage.setSubject("Reserva Pendiente - Balneario");
 
@@ -142,7 +142,7 @@ public class EmailService {
             var cliente = reserva.getCliente();
 
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("balnearioapiutn@gmail.com");
+            mailMessage.setFrom("facuangelinii@gmail.com");
             mailMessage.setTo(cliente.getEmail());
             mailMessage.setSubject("¡Pago Confirmado! Tu reserva en Balneario está Lista");
 
@@ -187,7 +187,7 @@ public class EmailService {
                     .sum();
 
             SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setFrom("balnearioapiutn@gmail.com");
+            mail.setFrom("facuangelinii@gmail.com");
             mail.setTo(cliente.getEmail());
             mail.setSubject("Tu pedido en el Balneario está listo para pagar 🏖️");
 
@@ -235,7 +235,7 @@ public class EmailService {
                     .collect(Collectors.joining("\n"));
 
             SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setFrom("balnearioapiutn@gmail.com");
+            mail.setFrom("facuangelinii@gmail.com");
             mail.setTo(cliente.getEmail());
             mail.setSubject("¡Pago confirmado! Tu pedido está en preparación 🍽️");
 
