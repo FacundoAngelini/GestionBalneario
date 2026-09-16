@@ -1,0 +1,3769 @@
+{
+  "info": {
+    "_postman_id": "d1d92598-a0cf-4006-aa56-fece3ece5e44",
+    "name": "Balneario  endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53767458",
+    "_collection_link": "https://go.postman.co/collection/53767458-d1d92598-a0cf-4006-aa56-fece3ece5e44?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "crear Cliente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Facundo\",\r\n    \"apellido\": \"Angelini\",\r\n    \"dni\": 42789123,\r\n    \"email\": \"facuangelini@gmail.com\",\r\n    \"telefono\": \"2235987654\",\r\n    \"credencial\": {\r\n        \"nombreUsuario\": \"facu\",\r\n        \"contrasenia\": \"facu_123\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/clientes",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Cliente por id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/clientes/3af66e8d-0dd8-452f-b062-1979ea40ea6d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes",
+                "3af66e8d-0dd8-452f-b062-1979ea40ea6d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar todos los clientes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/clientes",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar clientes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Lucia\",\r\n    \"apellido\": \"Martinez\",\r\n    \"dni\": 42789125,\r\n    \"email\": \"lucia.martinez@gmail.com\",\r\n    \"telefono\": \"2235987654\",\r\n    \"credencial\": {\r\n        \"nombreUsuario\": \"luciam\",\r\n        \"contrasenia\": \"Lucia2026\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/clientes/3af66e8d-0dd8-452f-b062-1979ea40ea6d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes",
+                "3af66e8d-0dd8-452f-b062-1979ea40ea6d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar cliente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/clientes/3af66e8d-0dd8-452f-b062-1979ea40ea6d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes",
+                "3af66e8d-0dd8-452f-b062-1979ea40ea6d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "buscar con opcion de filtrado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/clientes?estadoIgual=false",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes"
+              ],
+              "query": [
+                {
+                  "key": "estadoIgual",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "cambiar nombre usuario",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenCliente}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nuevoNombreUsuario\" :\"facundoo\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/clientes/d8391783-ee1c-4044-8eba-9e94d53001e5/nombre-usuario",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes",
+                "d8391783-ee1c-4044-8eba-9e94d53001e5",
+                "nombre-usuario"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambio contraseña",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenCliente}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"contraseniaActual\": \"bruno123\" ,\r\n   \"nuevaContrasenia\":\"facu123\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/clientes/d8391783-ee1c-4044-8eba-9e94d53001e5/contrasenia",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes",
+                "d8391783-ee1c-4044-8eba-9e94d53001e5",
+                "contrasenia"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reactivar cuenta",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/clientes/3af66e8d-0dd8-452f-b062-1979ea40ea6d/reactivar",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "clientes",
+                "3af66e8d-0dd8-452f-b062-1979ea40ea6d",
+                "reactivar"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Empleado",
+      "item": [
+        {
+          "name": "crear empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"ramon\",\r\n  \"apellido\": \"garcia\",\r\n  \"dni\": 10475628,\r\n  \"email\": \"ramon45@gmail.com\",\r\n  \"sueldo\": 90000.0,\r\n  \"cuit\": \"20104756287\",\r\n  \"estado\": \"ACTIVO\",\r\n  \"rolSolicitado\": \"ROLE_REPARTIDOR\",\r\n  \"telefono\": \"223521457\",\r\n\r\n  \"direccion\": {\r\n    \"calle\": \"Av Colon\",\r\n    \"numero\": 1234,\r\n    \"ciudad\": \"Mar del Plata\",\r\n    \"provincia\": \"Buenos Aires\"\r\n  },\r\n\r\n  \"credencial\": {\r\n    \"nombreUsuario\": \"raamon\",\r\n    \"contrasenia\": \"ramon123\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/empleados",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "buscar por id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/empleados/e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados",
+                "e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "buscar todos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/empleados",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "actualizar empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"bruno\",\r\n  \"apellido\": \"ang\",\r\n  \"dni\": 201456987,\r\n  \"email\": \"brunoAng@gmail.com\",\r\n  \"sueldo\": 90000.0,\r\n  \"cuit\": \"20480292988\",\r\n  \"estado\": \"ACTIVO\",\r\n  \"telefono\": \"223521470\",\r\n\r\n  \"direccion\": {\r\n    \"calle\": \"Av Colon\",\r\n    \"numero\": 1234,\r\n    \"ciudad\": \"Mar del Plata\",\r\n    \"provincia\": \"Buenos Aires\"\r\n  }\r\n  \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/empleados/e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados",
+                "e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "borrar empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/empleados/e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados",
+                "e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambio Contraseña Empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenEmpleado}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"contraseniaActual\": \"123456\" ,\r\n   \"nuevaContrasenia\":\"facu123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/empleados/2dbe988c-6169-473f-a686-8405a6d44cbc/contrasenia",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados",
+                "2dbe988c-6169-473f-a686-8405a6d44cbc",
+                "contrasenia"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambio Nombre usuario Empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenEmpleado}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nuevoNombreUsuario\": \"facundo\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/empleados/2dbe988c-6169-473f-a686-8405a6d44cbc/nombre-usuario",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados",
+                "2dbe988c-6169-473f-a686-8405a6d44cbc",
+                "nombre-usuario"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar empleados con filtros",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/empleados?dniContiene=9",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados"
+              ],
+              "query": [
+                {
+                  "key": "dniContiene",
+                  "value": "9"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reactivar Empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/empleados/e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d/reactivar",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "empleados",
+                "e6ca59fc-6a8a-4d92-a511-d5e0de6fe23d",
+                "reactivar"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reserva",
+      "item": [
+        {
+          "name": "Prueba de reservas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenCliente}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"clientePublicId\": \"18ad865b-0020-4208-8cb5-17e2a5098d75\",\r\n  \"fechaInicio\": \"2026-12-05\",\r\n  \"fechaFin\": \"2026-12-07\",\r\n  \"recursosPublicIds\": [\r\n    \"c9a4a2fa-609f-42d2-a3f3-075c2b66f53f\"\r\n  ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/reservas/checkout-online",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "reservas",
+                "checkout-online"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mirar todas las reservas",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/reservas",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "reservas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mirar reserva Especifica",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenCliente}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/reservas/a0104e4d-b226-46b1-9950-9d0c665de8e7",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "reservas",
+                "a0104e4d-b226-46b1-9950-9d0c665de8e7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mirar todas con filtro",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/reservas?estado=CANCELADA",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "reservas"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "CANCELADA"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar Reserva",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"publicId\": \"a701ec64-b0a4-4779-aa40-7aae1ac5efa8\",\r\n    \"clientePublicId\": \"18ad865b-0020-4208-8cb5-17e2a5098d75\",\r\n    \"fechaInicio\": \"2026-12-02\",\r\n    \"fechaFin\": \"2026-12-07\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/reservas/cancelar",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "reservas",
+                "cancelar"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar Reserva paga",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/reservas/a701ec64-b0a4-4779-aa40-7aae1ac5efa8/cancelar-administrativo",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "reservas",
+                "a701ec64-b0a4-4779-aa40-7aae1ac5efa8",
+                "cancelar-administrativo"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "acordarse del barrer token"
+    },
+    {
+      "name": "Sector",
+      "item": [
+        {
+          "name": "crear",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\" : \"carpas\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/sectores",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "sectores"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mirar todos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/sectores",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "sectores"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/sectores/cf91de3b-465e-4353-a6a6-dce2ba66e927",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "sectores",
+                "cf91de3b-465e-4353-a6a6-dce2ba66e927"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\":\"Administracion suprema\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/sectores/cf91de3b-465e-4353-a6a6-dce2ba66e927",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "sectores",
+                "cf91de3b-465e-4353-a6a6-dce2ba66e927"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/sectores/cf91de3b-465e-4353-a6a6-dce2ba66e927",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "sectores",
+                "cf91de3b-465e-4353-a6a6-dce2ba66e927"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Metodos de autentificacion cliente",
+          "item": [
+            {
+              "name": "Registrarse",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombreUsuario\": \"eduardo\",\r\n    \"contrasenia\" : \"M@ngo2026\",\r\n    \"nombre\" : \"eduardo\",\r\n    \"apellido\" : \"mango\",\r\n    \"email\" : \"franciscocarne9@gmail.com\",\r\n    \"telefono\" : \"2235214847\",\r\n    \"dni\" : \"48029291\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/register",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n      \"nombreUsuario\": \"eduardo\",\r\n    \"contrasenia\" : \"M@ngo2026\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/login",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Refresh",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenCliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"refreshToken\": \"\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/refresh",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenCliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/logout",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Metodos de autentificacion admin",
+          "item": [
+            {
+              "name": "login",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombreUsuario\": \"admin_supremo\",\r\n    \"contrasenia\": \"@dmiN2026\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/login",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Refresh",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzUxMiJ9.eyJ0eXBlIjoicmVmcmVzaCIsInN1YiI6ImFkbWluX3N1cHJlbW8iLCJpYXQiOjE3ODE1NTAyNzIsImV4cCI6MTc4MjE1NTA3Mn0.MvPyZcjg3LTsF7NhdPYVvwvsteSUjmm1kOb9nksLR1pkMGZMgW-N5OL1m2Rlk4JqI14Jz8Htmndmrfl5y_PsFw\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/refresh",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/logout",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Metodos autentificacion gerente",
+          "item": [
+            {
+              "name": "login",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/login",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "refresh",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenGerente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/auth/refresh",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenGerente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/logout",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Metodos autentificacion empleado",
+          "item": [
+            {
+              "name": "logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenEmpleado}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/auth/logout",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "login",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombreUsuario\": \"raamon\",\r\n    \"contrasenia\": \"ramon123\"\r\n  }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/login",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "refresh",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenEmpleado}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"refreshToken\": \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/auth/refresh",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Solicitar contraseña",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombreUsuario\": \"facundo_ang\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/contrasenia-olvidada",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "contrasenia-olvidada"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resetear contraseña",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"token\": \"0e473fc3-cc4f-4f55-aef4-c23d6efbfcd6\",\r\n    \"nuevaContrasenia\": \"F@cu2026\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/resetear-contrasenia",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "resetear-contrasenia"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Recursos",
+      "item": [
+        {
+          "name": "Carpa",
+          "item": [
+            {
+              "name": "Crear carpa",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Carpa 100\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"5ed24fea-5e5f-41d4-91e5-a6cb824bde65\",\r\n  \"numero\": 20,\r\n  \"pasillo\": 4,\r\n  \"capacidad\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-carpas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-carpas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar Carpa",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Carpa 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n  \"numero\": 1,\r\n  \"pasillo\": 1,\r\n  \"capacidad\": 6\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-carpas/a4e34513-a49f-4c5b-a2c0-0e4296b0ba89",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-carpas",
+                    "a4e34513-a49f-4c5b-a2c0-0e4296b0ba89"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-carpas/d52f86c6-5d12-4ecb-a6d9-31740d59d04e",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-carpas",
+                    "d52f86c6-5d12-4ecb-a6d9-31740d59d04e"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar todos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-carpas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-carpas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Busqueda Filtro",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-carpas?numero=1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-carpas"
+                  ],
+                  "query": [
+                    {
+                      "key": "numero",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cancha",
+          "item": [
+            {
+              "name": "Crear cancha",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Cancha de Tenis 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n  \"tipoCancha\": \"TENIS\",\r\n  \"capacidad\": 4,\r\n  \"iluminacion\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-canchas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-canchas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar cancha",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Cancha de Tenis 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n  \"tipoCancha\": \"TENIS\",\r\n  \"capacidad\": 2,\r\n  \"iluminacion\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-canchas/d731a7e9-fc13-457f-a3dd-16db162b887b",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-canchas",
+                    "d731a7e9-fc13-457f-a3dd-16db162b887b"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-canchas/d731a7e9-fc13-457f-a3dd-16db162b887b",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-canchas",
+                    "d731a7e9-fc13-457f-a3dd-16db162b887b"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar todas",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-canchas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-canchas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar filtros",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-canchas?iluminacion=true",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-canchas"
+                  ],
+                  "query": [
+                    {
+                      "key": "iluminacion",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cochera",
+          "item": [
+            {
+              "name": "Crear cochera",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Cochera 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n  \"numeroCochera\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-cocheras",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-cocheras"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar cochera",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Cochera 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n  \"numeroCochera\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-cocheras/79fec155-d8dd-40d3-87bf-ecc85f58393a",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-cocheras",
+                    "79fec155-d8dd-40d3-87bf-ecc85f58393a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-cocheras/79fec155-d8dd-40d3-87bf-ecc85f58393a",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-cocheras",
+                    "79fec155-d8dd-40d3-87bf-ecc85f58393a"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Todos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-cocheras",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-cocheras"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Filtros",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-cocheras?cocheraIgual=1",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-cocheras"
+                  ],
+                  "query": [
+                    {
+                      "key": "cocheraIgual",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Mesa",
+          "item": [
+            {
+              "name": "Crear mesa",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Mesa 4\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"ff25933c-5e67-4eff-acf2-b5f13cab9524\",\r\n  \"numero\": 4,\r\n  \"capacidad\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-mesas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-mesas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar Mesa",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Mesa 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n  \"numero\": 1,\r\n  \"capacidad\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-mesas/f5fa2e9a-cf26-47eb-b0fa-5076a193aa07",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-mesas",
+                    "f5fa2e9a-cf26-47eb-b0fa-5076a193aa07"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Obtener id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-mesas/f5fa2e9a-cf26-47eb-b0fa-5076a193aa07",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-mesas",
+                    "f5fa2e9a-cf26-47eb-b0fa-5076a193aa07"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Todos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-mesas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-mesas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar filtro",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-mesas?capacidadIgual=4",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-mesas"
+                  ],
+                  "query": [
+                    {
+                      "key": "capacidadIgual",
+                      "value": "4"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Sombrilla",
+          "item": [
+            {
+              "name": "Crear  sombrilla",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Sombrilla 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"fa380d8e-9e9e-46cf-8b98-3a2c0ffdd8a5\",\r\n  \"numero\": 1,\r\n  \"tamanio\": \"GRANDE\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-sombrillas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-sombrillas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar sombrilla",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Sombrilla 1\",\r\n  \"esReservable\": true,\r\n  \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n  \"numero\": 2,\r\n  \"tamanio\": \"GRANDE\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-sombrillas/14165fce-e971-460d-b83c-7793e36afc27",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-sombrillas",
+                    "14165fce-e971-460d-b83c-7793e36afc27"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-sombrillas/6a97d41b-43e6-47f8-b7ca-186b71d305e8",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-sombrillas",
+                    "6a97d41b-43e6-47f8-b7ca-186b71d305e8"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar todos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-sombrillas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-sombrillas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar con filtro",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-sombrillas?numeroIgual=2",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-sombrillas"
+                  ],
+                  "query": [
+                    {
+                      "key": "numeroIgual",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Pileta",
+          "item": [
+            {
+              "name": "Crear Pileta",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n \"nombre\": \"Pileta Norte\",\r\n \"esReservable\": false,\r\n \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n \"esClimatizada\": true,\r\n \"tamanio\": 30\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-piletas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-piletas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar pileta",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n \"nombre\": \"Pileta Norte\",\r\n \"esReservable\": false,\r\n \"sectorPublicId\": \"b9557552-30d1-47e5-9644-8e686713177e\",\r\n \"esClimatizada\": true,\r\n \"tamanio\": 30\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-piletas/d5a2a9d0-f6bd-409a-9ef1-716b540a16cd",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-piletas",
+                    "d5a2a9d0-f6bd-409a-9ef1-716b540a16cd"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "buscar por id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-piletas/d5a2a9d0-f6bd-409a-9ef1-716b540a16cd",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-piletas",
+                    "d5a2a9d0-f6bd-409a-9ef1-716b540a16cd"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar todos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-piletas",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-piletas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar con filtro",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-piletas?tamanioMayor=20",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-piletas"
+                  ],
+                  "query": [
+                    {
+                      "key": "tamanioMayor",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Precio Recurso",
+          "item": [
+            {
+              "name": "Crear Precio",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"precio\": 18.0,\r\n  \"fechaVigencia\": \"2026-12-01\",\r\n  \"fechaCaducada\": \"2027-04-15\",\r\n  \"recursoPublicId\": \"c9a4a2fa-609f-42d2-a3f3-075c2b66f53f\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-precios",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-precios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar Precio",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"precio\": 10.0,\r\n  \"fechaVigencia\": \"2026-12-01\",\r\n  \"fechaCaducada\": \"2027-04-15\",\r\n  \"recursoPublicId\": \"8403cac7-62ba-4e9b-ad18-e195d2721ba1\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseURL}}/recursos-precios/b54a74ee-3e0b-426b-a387-6a29d76aa159",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-precios",
+                    "b54a74ee-3e0b-426b-a387-6a29d76aa159"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "buscar id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-precios/77457b6e-e735-47b3-8587-a8834197f410",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-precios",
+                    "77457b6e-e735-47b3-8587-a8834197f410"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar todos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-precios",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-precios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar con filtros",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{tokenAdmin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}/recursos-precios?precioIgual=10",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "recursos-precios"
+                  ],
+                  "query": [
+                    {
+                      "key": "precioIgual",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "mirar todos los recursos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/recursos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "recursos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "bucar con filtro",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/recursos?nombreContiene=d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "recursos"
+              ],
+              "query": [
+                {
+                  "key": "nombreContiene",
+                  "value": "d"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Descativar un recurso",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/recursos/14165fce-e971-460d-b83c-7793e36afc27",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "recursos",
+                "14165fce-e971-460d-b83c-7793e36afc27"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Desactivar todos los recursos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/recursos/desactivar-todos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "recursos",
+                "desactivar-todos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar un recruso",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/recursos/a4e34513-a49f-4c5b-a2c0-0e4296b0ba89",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "recursos",
+                "a4e34513-a49f-4c5b-a2c0-0e4296b0ba89"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar todos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/recursos/borrar-todos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "recursos",
+                "borrar-todos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mirar todos los recursos disponibles para reservar",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/recursos/disponibles?fechaInicio=2027-01-10&fechaFin=2027-01-17",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "recursos",
+                "disponibles"
+              ],
+              "query": [
+                {
+                  "key": "fechaInicio",
+                  "value": "2027-01-10"
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2027-01-17"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pagos",
+      "item": [
+        {
+          "name": "ver pagos filtrado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pagos?estado=PENDIENTE",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pagos"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "PENDIENTE"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ver pagos de una reserva",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pagos/26dd52dc-9497-44ce-b72d-c4c918f1f179/pagos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pagos",
+                "26dd52dc-9497-44ce-b72d-c4c918f1f179",
+                "pagos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "cancelar pago",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pagos-reservas/2385adba-f0f2-44cc-8c92-899d338dcc41/cancelar-pago",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pagos-reservas",
+                "2385adba-f0f2-44cc-8c92-899d338dcc41",
+                "cancelar-pago"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ver todos los pagos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pagos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pagos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "iniciar reserva y pago en efectivo",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"clientePublicId\": \"83a2cbda-1316-4c16-8b27-bbd7110a5ad1\",\r\n    \"fechaInicio\": \"2027-01-10\",\r\n    \"fechaFin\": \"2027-01-15\",\r\n    \"recursosPublicIds\": [\r\n        \"f78a8403-a7e5-4a62-ad29-f2475bef1716\"\r\n        \r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/pagos-reservas/efectivo/empleado/5757e86b-6436-4a81-8faf-21f364e58361",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pagos-reservas",
+                "efectivo",
+                "empleado",
+                "5757e86b-6436-4a81-8faf-21f364e58361"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pagar pedido de mesa",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"pedidoPublicId\": \"9954e6f4-c947-401d-9d43-4401587d94cc\",\r\n  \"empleadoPublicId\": \"7555e3eb-8783-4bc6-886d-4c29ff5ba0ef\",\r\n  \"metodoPago\": \"EFECTIVO\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/pagos/presencial",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pagos",
+                "presencial"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar pago de pedido",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pagos/pedido/2be2662f-1cdb-41ff-a39a-8e32765a8741",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pagos",
+                "pedido",
+                "2be2662f-1cdb-41ff-a39a-8e32765a8741"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "buscar id pago",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/tickets/pago/66c383fa-4c70-431f-9a4b-da6b5cb4c339",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "tickets",
+                "pago",
+                "66c383fa-4c70-431f-9a4b-da6b5cb4c339"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ticket",
+      "item": [
+        {
+          "name": "buscar por id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/tickets/3afe581a-e870-4964-bbb5-542f814c2c4d",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "tickets",
+                "3afe581a-e870-4964-bbb5-542f814c2c4d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "buscar todos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/tickets",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "tickets"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "buscar con filtrado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/tickets?fechaDesde=2026-01-01T08%3A30%3A00",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "tickets"
+              ],
+              "query": [
+                {
+                  "key": "fechaDesde",
+                  "value": "2026-01-01T08%3A30%3A00"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Producto",
+      "item": [
+        {
+          "name": "Crear Producto",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Carne\",\r\n    \"precio\": 5.00,\r\n    \"categoria\": \"BEBIDAS_FRIAS\",\r\n    \"productoDisponible\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/productos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Producto",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Licuado de Durazno 500ml\",\r\n    \"precio\": 6.00,\r\n    \"categoria\": \"BEBIDAS_FRIAS\",\r\n    \"productoDisponible\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/productos/f7f1f362-2a99-428c-967d-0fc61591a8cf",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos",
+                "f7f1f362-2a99-428c-967d-0fc61591a8cf"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dar de Baja un producto",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/productos/f03c73ed-4244-49d9-aa0d-6b543ae51660",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos",
+                "f03c73ed-4244-49d9-aa0d-6b543ae51660"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener todos los productos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/productos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar con filtro",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/productos?categoria=BEBIDAS_FRIAS",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos"
+              ],
+              "query": [
+                {
+                  "key": "categoria",
+                  "value": "BEBIDAS_FRIAS"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar por id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/productos/085041ff-3ea4-41a6-b824-1c360063dfd8",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos",
+                "085041ff-3ea4-41a6-b824-1c360063dfd8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar disponibes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenCliente}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/productos/disponibles",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos",
+                "disponibles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reactivar Producto",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/productos/4ea8157a-8158-4f58-bdf5-eeccc42db4b5/reactivar",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "productos",
+                "4ea8157a-8158-4f58-bdf5-eeccc42db4b5",
+                "reactivar"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pedidos",
+      "item": [
+        {
+          "name": "Pedidos en el restaurante",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"empleadoId\": \"7555e3eb-8783-4bc6-886d-4c29ff5ba0ef\",\r\n  \"clienteId\": \"18ad865b-0020-4208-8cb5-17e2a5098d75\",\r\n  \"recursoPublicId\": \"5a8dc7c5-970a-4ab6-b164-ff0fbb946913\", // El ID de la Mesa\r\n  \"tipoPedido\": \"MESA\",\r\n  \"pedidos\": [\r\n    { \r\n      \"productoId\": \"c0d92bf9-8604-4d20-b9fe-2a1fb512f788\", \r\n      \"cantidad\": 2 \r\n    }\r\n  \r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/pedidos/mesa",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "mesa"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pedir a carpa presencial",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"empleadoId\": \"3b737d22-53c0-463a-b152-a9901cc4aa17\",\r\n  \"clienteId\": \"cdb8b34a-42be-4ab2-b65f-bb18c445d219\",\r\n  \"recursoPublicId\": \"94a58995-f761-4c22-95b6-6bcdfc570e2d\", // El ID de la sombrilla o carpa\r\n  \"tipoPedido\": \"CARPA\",\r\n  \"metodoPago\": \"EFECTIVO\",\r\n  \"pedidos\": [\r\n    { \r\n      \"productoId\": \"3db42499-b681-42cb-8404-9eb851550bed\", \r\n      \"cantidad\": 1 \r\n    }\r\n  ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/pedidos/lugar/presencial",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "lugar",
+                "presencial"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pedido A carpa o sombrilla",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenCliente}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"clienteId\": \"18ad865b-0020-4208-8cb5-17e2a5098d75\",\r\n  \"recursoPublicId\": \"c9a4a2fa-609f-42d2-a3f3-075c2b66f53f\",\r\n  \"tipoPedido\": \"CARPA\",\r\n  \"pedidos\": [\r\n    { \"productoId\": \"c0d92bf9-8604-4d20-b9fe-2a1fb512f788\", \"cantidad\": 2 }\r\n  ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/pedidos/lugar/online",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "lugar",
+                "online"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar rpedido",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenCliente}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pedidos/d79fa88b-7108-4093-8388-86ba6da98c09/cancelar",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "d79fa88b-7108-4093-8388-86ba6da98c09",
+                "cancelar"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar detalle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pedidos/detalles/6af17f92-7342-43df-88ab-423f2a195bce",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "detalles",
+                "6af17f92-7342-43df-88ab-423f2a195bce"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "listar todos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pedidos",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "listar con filtro",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pedidos?tipo=CARPA",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "CARPA"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pedidos/aa36bcc8-4b14-42b1-94c6-9189049e2c23",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "aa36bcc8-4b14-42b1-94c6-9189049e2c23"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Agregar Detalle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": " {\r\n    \"cantidad\": 300,\r\n    \"productoId\" : \"2b2faceb-87fb-4cdc-8725-3e93eef03ed0\"\r\n }\r\n \r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/pedidos/9954e6f4-c947-401d-9d43-4401587d94cc/detalles",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "9954e6f4-c947-401d-9d43-4401587d94cc",
+                "detalles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar Pedido Pago",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/pedidos/d79fa88b-7108-4093-8388-86ba6da98c09/cancelar-pagado",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "pedidos",
+                "d79fa88b-7108-4093-8388-86ba6da98c09",
+                "cancelar-pagado"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
