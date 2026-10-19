@@ -1,0 +1,89 @@
+.card-premium {
+  background-color: var(--color-superficie);
+  padding: 2.5rem 2rem;
+  border-radius: var(--radio-medio);
+  box-shadow: var(--sombra-suave);
+  width: 100%;
+}
+
+.auth-title {
+  color: var(--color-primario);
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--color-texto-suave);
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--color-texto);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.85rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-chico);
+  font-family: var(--fuente-texto);
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-foco);
+  box-shadow: 0 0 0 3px rgba(43, 166, 160, 0.15); 
+}
+
+.btn-primary {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.alert-error {
+  background-color: var(--color-error-fondo);
+  color: var(--color-error);
+  padding: 0.85rem;
+  border-radius: var(--radio-chico);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--color-texto-suave);
+}
+
+.auth-footer a {
+  color: var(--color-acento);
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+.auth-footer a:hover {
+  color: var(--color-primario);
+}
+
+@media (min-width: 768px) {
+  .card-premium {
+    padding: 3rem 2.5rem;
+  }
+}

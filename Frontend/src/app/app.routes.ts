@@ -6,7 +6,7 @@ export const routes: Routes = [
 {
     path: ROUTE_SEGMENTS.auth,
     canActivate: [guestGuard],
-    loadChildren: () => import('./auth/auth.routes').then(m => m.authRoutes)
+    loadChildren: () => import('./auth/features/auth.routes').then(m => m.authRoutes)
   },
 
   //pantalla de error

@@ -2,7 +2,7 @@
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Component, inject, Inject, signal } from '@angular/core';
-import { AuthClient } from './auth-client';
+import { AuthClient } from '../data-access/auth-client';
 
 @Component({
   selector: 'app-registro',
