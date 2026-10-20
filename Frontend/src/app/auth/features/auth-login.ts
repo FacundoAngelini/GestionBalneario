@@ -17,15 +17,27 @@ export class Login {
   credenciales = { nombreUsuario: '', contrasenia: '' };
   errorMsg = signal<string>('');
   cargando = signal<boolean>(false);
-
   ingresar() {
-    this.cargando.set(true);
-    this.authService.login(this.credenciales).subscribe({
-      next: () => this.router.navigate(['/']),
-      error: () => {
-        this.errorMsg.set('Credenciales incorrectas');
-        this.cargando.set(false);
+  this.cargando.set(true);
+  this.authService.login(this.credenciales).subscribe({
+    next: () => {
+      const roles = this.authService.obtenerRolesUsuario();
+      
+    
+      if (roles.includes('ROLE_CLIENTE')) {
+        this.router.navigate(['/reservas']); 
+      } else if (roles.includes('ROLE_MOZO') || roles.includes('ROLE_COCINERO')) {
+        this.router.navigate(['/pedidos']);
+      } else if (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_GERENTE')) {
+        this.router.navigate(['/empleados']);
+      } else {
+        this.router.navigate(['/']); 
       }
-    });
-  }
+    },
+    error: () => {
+      this.errorMsg.set('Credenciales incorrectas');
+      this.cargando.set(false);
+    }
+  });
+}
 }
