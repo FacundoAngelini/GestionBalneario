@@ -1,1 +1,86 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-primario: #0B3C5D;
+  --color-primario-hover: #082C45;
+  --color-acento: #2BA6A0;
+  --color-arena: #D9A66B;
+
+  --color-fondo: #FAF7F2;
+  --color-superficie: #FFFFFF;
+  --color-borde: #E3DCD0;
+
+  --color-texto: #1B2A33;
+  --color-texto-suave: #5B6B75;
+  --color-texto-sobre-primario: #FFFFFF;
+
+  --color-error: #B3261E;
+  --color-error-fondo: #FDECEA;
+  --color-exito: #1E7A4C;
+  --color-exito-fondo: #E6F4EC;
+  --color-advertencia: #9A5B00;
+  --color-advertencia-fondo: #FFF4E0;
+  --color-info: #1F6FA8;
+  --color-info-fondo: #E8F2FA;
+
+  --color-requerido: var(--color-error);
+  --color-foco: #2BA6A0;
+
+  --fuente-titulos: 'Cormorant Garamond', Georgia, serif;
+  --fuente-texto: 'Manrope', system-ui, sans-serif;
+
+  --radio-chico: 8px;
+  --radio-medio: 12px;
+  --radio-grande: 20px;
+  --sombra-suave: 0 2px 12px rgba(11, 60, 93, 0.08);
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: clamp(1rem, 0.95rem + 0.25vh, 1.125rem);
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-texto);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fuente-titulos);
+}
+
+p, span, a, label {
+  font-family: var(--fuente-texto);
+}
+
+button {
+  background-color: var(--color-primario);
+  color: var(--color-texto-sobre-primario);
+  border: none;
+  border-radius: var(--radio-chico);
+  cursor: pointer;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--fuente-texto);
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--color-primario-hover);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97); 
+}
+
+button:disabled {
+  background-color: var(--color-borde);
+  color: var(--color-texto-suave);
+  cursor: not-allowed;
+}

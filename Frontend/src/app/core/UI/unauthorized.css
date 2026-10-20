@@ -1,0 +1,40 @@
+.unauthorized-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-fondo);
+  padding: 1.5rem;
+}
+
+.unauthorized-card {
+  background-color: var(--color-superficie);
+  padding: 3rem 2rem;
+  border-radius: var(--radio-medio);
+  box-shadow: var(--sombra-suave);
+  text-align: center;
+  max-width: 450px;
+  width: 100%;
+}
+
+.error-title {
+  color: var(--color-error);
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: var(--color-texto-suave);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-volver {
+  background-color: var(--color-primario);
+  color: var(--color-texto-sobre-primario);
+  width: 100%;
+}
+
+.btn-volver:hover {
+  background-color: var(--color-acento);
+}
