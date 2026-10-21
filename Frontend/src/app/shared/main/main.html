@@ -1,0 +1,26 @@
+<div class="app-grid-layout">
+  <header class="area-header">
+<!--     boton visible solo para celulares
+ -->    <button class="btn-hamburguesa" (click)="toggleMenu()">☰</button>
+    <app-header></app-header>
+  </header>
+  
+  <!-- recibe la clase abierto si es true -->
+  <aside class="area-aside" [class.abierto]="menuAbierto()">
+    <app-aside></app-aside>
+  </aside>
+  
+  <main class="area-main" (click)="menuAbierto.set(false)">
+    <!--al tocar main, se cierra menu -->
+    <router-outlet></router-outlet>
+  </main>
+  
+  <footer class="area-footer">
+    <app-footer></app-footer>
+  </footer>
+</div>
+
+<!-- caoa osucra para el clu cuando este abieerto -->
+@if (menuAbierto()) {
+  <div class="overlay" (click)="toggleMenu()"></div>
+}
