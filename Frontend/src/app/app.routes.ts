@@ -12,7 +12,7 @@ export const routes: Routes = [
   //pantalla de error
   {
     path: ROUTE_SEGMENTS.unauthorized,
-    loadComponent: () => import('./core/UI/unauthorized').then(m => m.unauthorized)
+    loadComponent: () => import('./core/UI/Unauthorized').then(m => m.unauthorized)
   },
    //temporla
   {
