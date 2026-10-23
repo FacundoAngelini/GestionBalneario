@@ -1,21 +1,26 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Service, signal } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { environment } from '../../core/environments/environment';
 import { AuthResponse, LoginRequest, RegistroClienteRequest } from './auth-model';
-import { tap } from 'rxjs';
+import { finalize, tap } from 'rxjs';
+import { extraerRoles, tokenVencido } from './jwt.utils';
+
+const TOKEN_KEY = 'jwt_token';
 
 @Service()
 export class AuthClient {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/auth`;
 
-  //para ver en que estado de sesion esta 
-  usuarioLogueado = signal<boolean>(this.hasToken());
+  private readonly token = signal<string | null>(this.leerTokenGuardado()); //la uncia fuente de la verdad
 
-  login(credentials: LoginRequest) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(res => this.setSession(res))
-    );
+  readonly usuarioLogueado = computed(() => this.token() !== null);
+  readonly roles = computed(() => extraerRoles(this.token()));
+
+  login(credenciales: LoginRequest) {
+    return this.http
+    .post<AuthResponse>(`${this.apiUrl}/login`, credenciales)
+    .pipe(tap(respuesta => this.guardarSesion(respuesta.token)));
   }
 
   registro(datos: RegistroClienteRequest) {
@@ -23,38 +28,29 @@ export class AuthClient {
   }
 
   logout() {
-    return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
-      tap(() => {
-        localStorage.removeItem('jwt_token');
-        this.usuarioLogueado.set(false);
-      })
+    return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
+        finalize(()=> this.limpiarSesion),
     );
   }
 
-  private setSession(authResult: AuthResponse) {
-    localStorage.setItem('jwt_token', authResult.token);
-    this.usuarioLogueado.set(true);
+  private guardarSesion(token: string) {
+    localStorage.setItem(TOKEN_KEY, token);
+    this.token.set(token);
   }
 
-  private hasToken(): boolean {
-    return !!localStorage.getItem('jwt_token');
+    private limpiarSesion() {
+    localStorage.removeItem(TOKEN_KEY);
+    this.token.set(null);
   }
 
-  obtenerRolesUsuario(): string[] {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) return [];
-
-    try {
-      // El JWT tiene 3 partes separadas por punto. El payload es la segunda [1].
-      const payloadBase64 = token.split('.')[1];
-      const payloadDecoded = JSON.parse(atob(payloadBase64));
-      
-      // Spring Security / JWT suele guardar los roles en un array
-      return payloadDecoded.roles || [];
-    } catch (error) {
-      console.error('Error decodificando token', error);
-      return [];
+  private leerTokenGuardado(): string | null {
+    const guardado = localStorage.getItem(TOKEN_KEY);
+    if (guardado && tokenVencido(guardado)) {
+      localStorage.removeItem(TOKEN_KEY);
+      return null;
     }
+    return guardado;
   }
 }
+
 
