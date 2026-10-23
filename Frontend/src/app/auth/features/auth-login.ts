@@ -2,24 +2,35 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthClient } from '../data-access/auth-client';
-import { form, FormField, FormRoot } from '@angular/forms/signals';
+import { form, FormField, FormRoot, disabled } from '@angular/forms/signals';
 import { LoginRequest } from '../data-access/auth-model';
 import { noBlanco } from '../../core/validators/validadores';
 import { firstValueFrom } from 'rxjs';
 import { ROUTE_SEGMENTS } from '../../core/constanst/route-segments.constants';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-login',
-  imports: [FormRoot, FormField, RouterLink],
+  imports: [FormRoot,
+    FormField,
+    RouterLink,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,],
   templateUrl: './auth-login.html',
-  styleUrl: './auth-login.css',
+  styleUrl: './auth-form.css',
 })
 export class Login {
   private readonly auth = inject(AuthClient);
   private readonly router = inject(Router);
 
   protected readonly errorMsg = signal('');
+  protected readonly verContrasenia = signal(false);
 
    private readonly loginModel = signal<LoginRequest>({ nombreUsuario: '', contrasenia: '' });
 
@@ -28,6 +39,8 @@ export class Login {
     (campos) => {
       noBlanco(campos.nombreUsuario, 'El usuario es obligatorio');
       noBlanco(campos.contrasenia, 'La contraseña es obligatoria');
+      // Mientras se envía, se bloquean todos los campos (el campo raíz "arrastra" a sus hijos).
+      disabled(campos, { when: ({ state }) => state.submitting() });
     },
     {
       submission: {

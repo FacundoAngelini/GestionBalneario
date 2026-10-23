@@ -3,28 +3,45 @@
   <p class="auth-subtitle">Ingresa a tu cuenta</p>
 
   @if (errorMsg()) {
-    <div class="alert-error">{{ errorMsg() }}</div>
+    <div class="alert-error" role="alert">{{ errorMsg() }}</div>
   }
 
-  <form [formRoot]="loginForm" class="auth-form">
-    <div class="form-group">
-      <label for="usuario">Usuario</label>
-      <input id="usuario" type="text" autocomplete="username" [formField]="loginForm.nombreUsuario" />
-      @if (loginForm.nombreUsuario().touched() && loginForm.nombreUsuario().invalid()) {
-        <span class="field-error">{{ loginForm.nombreUsuario().errors()[0].message }}</span>
-      }
-    </div>
+  <form [formRoot]="loginForm" class="auth-form" [attr.aria-busy]="loginForm().submitting()">
+    <mat-form-field appearance="outline">
+      <mat-label>Usuario</mat-label>
+      <input matInput type="text" autocomplete="username" [formField]="loginForm.nombreUsuario" />
+      <mat-error>{{ loginForm.nombreUsuario().errors().at(0)?.message }}</mat-error> <!-- muestra el error solo cuando el campo es inválido y fue tocado -->
+                                                  <!-- evalúa ese texto aunque Material lo tenga oculto -->
+    </mat-form-field>
 
-    <div class="form-group">
-      <label for="contrasenia">Contraseña</label>
-      <input id="contrasenia" type="password" autocomplete="current-password" [formField]="loginForm.contrasenia" />
-      @if (loginForm.contrasenia().touched() && loginForm.contrasenia().invalid()) {
-        <span class="field-error">{{ loginForm.contrasenia().errors()[0].message }}</span>
-      }
-    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Contraseña</mat-label>
+      <input
+        matInput
+        [type]="verContrasenia() ? 'text' : 'password'"
+        autocomplete="current-password"
+        [formField]="loginForm.contrasenia"
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        [disabled]="loginForm().submitting()"
+        [attr.aria-label]="verContrasenia() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        [attr.aria-pressed]="verContrasenia()"
+        (click)="verContrasenia.set(!verContrasenia())"
+      >
+        <mat-icon>{{ verContrasenia() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error>{{ loginForm.contrasenia().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
 
-    <button type="submit" class="btn-primary" [disabled]="loginForm().invalid() || loginForm().submitting()">
-      {{ loginForm().submitting() ? 'Ingresando...' : 'Entrar' }}
+    <button matButton="filled" type="submit" class="btn-submit">
+      @if (loginForm().submitting()) {
+        <mat-spinner diameter="22" aria-label="Ingresando" />
+      } @else {
+        Entrar
+      }
     </button>
   </form>
 
