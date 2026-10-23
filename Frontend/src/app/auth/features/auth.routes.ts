@@ -16,6 +16,7 @@ export const authRoutes: Routes = [
         path: 'registro',
         loadComponent: () => import('../features/auth-registro').then(m => m.Registro)
       }
+      
     ]
   }
 ];

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { ROUTE_SEGMENTS } from './core/constanst/route-segments.constants';
-import { guestGuard } from './auth/data-access/auth.guard';
+import { authGuard, guestGuard } from './auth/data-access/auth.guard';
 
 export const routes: Routes = [
 {
@@ -12,16 +12,27 @@ export const routes: Routes = [
   //pantalla de error
   {
     path: ROUTE_SEGMENTS.unauthorized,
-    loadComponent: () => import('./core/UI/unauthorized').then(m => m.unauthorized)
+    loadComponent: () => import('./core/UI/Unauthorized').then(m => m.unauthorized)
+  },
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () => import('./shared/main/main').then(m => m.Main),
+    children: [
+      {
+        path: ROUTE_SEGMENTS.inicio,
+        loadComponent: () => import('./core/UI/inicio/inicio').then(m => m.Inicio)
+      }
+    ]
   },
    //temporla
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: `${ROUTE_SEGMENTS.auth}/${ROUTE_SEGMENTS.login}`
+    redirectTo: ROUTE_SEGMENTS.inicio
   },
   {
     path: '**',
-    redirectTo: `${ROUTE_SEGMENTS.auth}/${ROUTE_SEGMENTS.login}`
+    redirectTo: ROUTE_SEGMENTS.inicio
   }
 ];
