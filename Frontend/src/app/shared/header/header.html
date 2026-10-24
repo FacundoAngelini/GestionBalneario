@@ -1,1 +1,13 @@
-<p>header works!</p>
+<span class="marca">ArenaDesk</span>
+
+<div class="sesion">
+  <div class="usuario">
+    <span class="usuario-nombre">{{ nombreUsuario() }}</span>
+    <span class="usuario-rol">{{ rol() }}</span>
+  </div>
+
+  <button matButton="outlined" type="button" class="btn-salir" aria-label="Cerrar sesión" (click)="cerrarSesion()">
+    <mat-icon>logout</mat-icon>
+    <span class="texto-salir">Cerrar sesión</span>
+  </button>
+</div>
