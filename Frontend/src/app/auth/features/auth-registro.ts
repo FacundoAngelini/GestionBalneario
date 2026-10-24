@@ -1,55 +1,155 @@
-
-import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject, signal } from '@angular/core';
+import {
+  disabled,
+  FieldTree,
+  form,
+  FormField,
+  FormRoot,
+  max,
+  maxLength,
+  min,
+  minLength,
+  pattern,
+  required,
+  TreeValidationResult,
+} from '@angular/forms/signals';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
-import { Component, inject, Inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { ROUTE_SEGMENTS } from '../../core/constanst/route-segments.constants';
+import { noBlanco } from '../../core/validators/validadores';
 import { AuthClient } from '../data-access/auth-client';
+
+// El DNI empieza en null (campo vacío). En RegistroClienteRequest es number.
+interface RegistroForm {
+  nombre: string;
+  apellido: string;
+  dni: number | null;
+  email: string;
+  telefono: string;
+  nombreUsuario: string;
+  contrasenia: string;
+}
 
 @Component({
   selector: 'app-registro',
-  standalone: true,
-  imports: [FormsModule, RouterLink],
-  template: `
-    <div class="auth-container" style="max-width: 400px; margin: 50px auto; text-align: center;">
-      <h2>Crear Cuenta Cliente</h2>
-      @if (errorMsg()) { <p style="color: red;">{{ errorMsg() }}</p> }
-      
-      <form (ngSubmit)="registrar()" style="display: flex; flex-direction: column; gap: 10px;">
-        <input type="text" [(ngModel)]="datos.nombre" name="nombre" placeholder="Nombre" required />
-        <input type="text" [(ngModel)]="datos.apellido" name="apellido" placeholder="Apellido" required />
-        <input type="number" [(ngModel)]="datos.dni" name="dni" placeholder="DNI" required />
-        <input type="email" [(ngModel)]="datos.email" name="email" placeholder="Email" required />
-        <input type="text" [(ngModel)]="datos.telefono" name="telefono" placeholder="Teléfono" required />
-        <hr>
-        <input type="text" [(ngModel)]="datos.nombreUsuario" name="usuario" placeholder="Nombre de Usuario" required />
-        <input type="password" [(ngModel)]="datos.contrasenia" name="pass" placeholder="Contraseña (ej. Clave123!)" required />
-        
-        <button type="submit" [disabled]="cargando()">Registrarme</button>
-      </form>
-      <p>¿Ya tienes cuenta? <a routerLink="/auth/login">Ingresa aquí</a></p>
-    </div>
-  `
+  imports: [
+    FormRoot,
+    FormField,
+    RouterLink,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
+  templateUrl: './auth-registro.html',
+  styleUrl: './auth-form.css',
 })
 export class Registro {
-  private authService = inject(AuthClient);
-  private router = inject(Router);
-  datos = {
-    nombreUsuario: '', contrasenia: '', nombre: '', apellido: '', email: '', telefono: '', dni: 0
-  };
-  
-  errorMsg = signal<string>('');
-  cargando = signal<boolean>(false);
+  private readonly auth = inject(AuthClient);
+  private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
-  registrar() {
-    this.cargando.set(true);
-    this.authService.registro(this.datos).subscribe({
-      next: () => {
-        alert('Cuenta creada con éxito. Ahora puedes iniciar sesión.');
-        this.router.navigate(['/auth/login']);
+  protected readonly errorMsg = signal('');
+  protected readonly verContrasenia = signal(false);
+
+  private readonly registroModel = signal<RegistroForm>({
+    nombre: '',
+    apellido: '',
+    dni: null,
+    email: '',
+    telefono: '',
+    nombreUsuario: '',
+    contrasenia: '',
+  });
+
+  protected readonly registroForm = form(
+    this.registroModel,
+    (campos) => {
+      // las reglas 
+      noBlanco(campos.nombre, 'El nombre es obligatorio');
+      noBlanco(campos.apellido, 'El apellido es obligatorio');
+
+      required(campos.dni, { message: 'El DNI es obligatorio' });
+      min(campos.dni, 1000000, { message: 'El DNI debe ser un número valido' });
+      max(campos.dni, 99999999, { message: 'El DNI es demasiado grande' });
+
+      noBlanco(campos.email, 'El email es obligatorio');
+      pattern(campos.email, /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/, {
+        message: 'Formato inválido: en minúsculas y con dominio de 2 o 3 letras (ej: nombre@correo.com)',
+      });
+
+      noBlanco(campos.telefono, 'El teléfono es obligatorio');
+      pattern(campos.telefono, /^[0-9]+$/, { message: 'El teléfono debe contener solo números' });
+
+      noBlanco(campos.nombreUsuario, 'El nombre de usuario es obligatorio');
+
+      noBlanco(campos.contrasenia, 'La contraseña es obligatoria');
+      minLength(campos.contrasenia, 8, { message: 'Debe tener al menos 8 caracteres' });
+      maxLength(campos.contrasenia, 20, { message: 'Debe tener como máximo 20 caracteres' });
+      pattern(campos.contrasenia, /[A-Z]/, { message: 'Debe incluir al menos una mayúscula' });
+      pattern(campos.contrasenia, /[a-z]/, { message: 'Debe incluir al menos una minúscula' });
+      pattern(campos.contrasenia, /\d/, { message: 'Debe incluir al menos un número' });
+      pattern(campos.contrasenia, /[@$!%*?&]/, { message: 'Debe incluir un símbolo: @ $ ! % * ? &' });
+      pattern(campos.contrasenia, /^[A-Za-z\d@$!%*?&]*$/, {
+        message: 'Solo se permiten letras, números y los símbolos @ $ ! % * ? &',
+      });
+
+      // Mientras se envía, se bloquean todos los campos
+      disabled(campos, { when: ({ state }) => state.submitting() });
+    },
+    {
+      submission: {
+        action: async (campos) => {
+          this.errorMsg.set('');
+          try {
+            const valores = campos().value();
+            await firstValueFrom(this.auth.registro({ ...valores, dni: Number(valores.dni) }));
+            this.snackBar.open('Cuenta creada. Ya podés iniciar sesión.', 'Cerrar', { duration: 6000 });
+            await this.router.navigateByUrl(`/${ROUTE_SEGMENTS.auth}/${ROUTE_SEGMENTS.login}`);
+            return undefined;
+          } catch (error) {
+            return this.manejarError(error, campos);
+          }
+        },
       },
-      error: (err) => {
-        this.errorMsg.set('Error al registrar. Verifica los datos.');
-        this.cargando.set(false);
-      }
-    });
+    },
+  );
+
+  // traduce las respuestas de error del backend a mensajes en el campo que corresponde
+  private manejarError(error: unknown, campos: FieldTree<RegistroForm>): TreeValidationResult {
+    if (!(error instanceof HttpErrorResponse)) {
+      this.errorMsg.set('Ocurrió un error inesperado. Intentá de nuevo');
+      return undefined;
+    }
+
+    const mensaje: string = error.error?.message ?? '';
+
+    if (error.status === 409 && mensaje.includes('DNI')) {
+      return [{ fieldTree: campos.dni, kind: 'servidor', message: 'Ya existe un cliente con ese DNI' }];
+    }
+    if (error.status === 409 && mensaje.toLowerCase().includes('email')) {
+      return [{ fieldTree: campos.email, kind: 'servidor', message: 'Ya existe un cliente con ese email' }];
+    }
+    if (error.status === 403 && mensaje.includes('nombre de usuario')) {
+      return [{ fieldTree: campos.nombreUsuario, kind: 'servidor', message: 'Ese nombre de usuario ya está en uso' }];
+    }
+    if (error.status === 403 && mensaje.includes('Acceso Restringido')) {
+      return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'No se pudo registrar: revisá que el teléfono no esté ya registrado' }];
+    }
+
+    this.errorMsg.set(
+      error.status === 0
+        ? 'No se pudo conectar con el servidor'
+        : error.status === 400
+          ? 'Revisá los datos ingresados'
+          : 'Ocurrió un error inesperado. Intentá de nuevo',
+    );
+    return undefined;
   }
 }
