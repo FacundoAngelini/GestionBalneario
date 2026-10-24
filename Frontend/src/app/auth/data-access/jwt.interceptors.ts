@@ -3,8 +3,6 @@ import { inject } from '@angular/core';
 import { environment } from '../../core/environments/environment';
 import { AuthClient } from './auth-client';
 
-// Endpoints públicos de auth: si reciben un token vencido, el backend responde 401
-// aunque no lo necesiten. /auth/logout NO está acá: sí necesita el token.
 const RUTAS_PUBLICAS = [
   '/auth/login',
   '/auth/register',

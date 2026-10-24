@@ -39,7 +39,6 @@ export class Login {
     (campos) => {
       noBlanco(campos.nombreUsuario, 'El usuario es obligatorio');
       noBlanco(campos.contrasenia, 'La contraseña es obligatoria');
-      // Mientras se envía, se bloquean todos los campos (el campo raíz "arrastra" a sus hijos).
       disabled(campos, { when: ({ state }) => state.submitting() });
     },
     {

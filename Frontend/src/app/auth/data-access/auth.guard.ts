@@ -19,11 +19,9 @@ export const roleGuard: CanActivateFn = (route) => {
   const authService = inject(AuthClient);
   const router = inject(Router);
   
-   // Si la ruta no define data.roles, la lista queda vacía y se deniega el acceso.
   const rolesPermitidos = (route.data?.['roles'] as string[] | undefined) ?? [];
   const rolesUsuario = authService.roles();
 
-  // Verifica si hay alguna coincidencia entre los roles del usuario y los permitidos
   const tienePermiso = rolesPermitidos.some(rol => rolesUsuario.includes(rol));
 
   if (tienePermiso) {

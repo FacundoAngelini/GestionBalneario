@@ -15,9 +15,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: unknown) => {
       const esDeAuth = req.url.startsWith(`${environment.apiUrl}/auth/`);
-
-      // 401 fuera de /auth y con sesión abierta: el token venció o dejó de ser válido.
-      // (Si ya no hay sesión, otro 401 simultáneo ya se ocupó: no repetimos el aviso.)
       if (error instanceof HttpErrorResponse && error.status === 401 && !esDeAuth && auth.usuarioLogueado()) {
         auth.limpiarSesion();
         snackBar.open('Tu sesión venció. Iniciá sesión de nuevo.', 'Cerrar', { duration: 6000 });
