@@ -10,6 +10,8 @@
   font-family: var(--fuente-titulos);
   font-size: 1.4rem;
   font-weight: 700;
+  color: inherit;
+  text-decoration: none;
 }
 
 .sesion {
@@ -34,11 +36,18 @@
   opacity: 0.85;
 }
 
-/* Material usa el color primario (azul) en el botón: sobre el header azul no se vería. */
-.btn-salir {
+/* Material usa el color primario (azul) en los botones: sobre el header azul no se verían. */
+.btn-header {
   --mat-button-outlined-label-text-color: var(--color-texto-sobre-primario);
   --mat-button-outlined-outline-color: var(--color-texto-sobre-primario);
   --mat-button-outlined-state-layer-color: var(--color-texto-sobre-primario);
+  --mat-button-text-label-text-color: var(--color-texto-sobre-primario);
+  --mat-button-text-state-layer-color: var(--color-texto-sobre-primario);
+}
+
+.btn-registro {
+  --mat-button-filled-container-color: var(--color-acento);
+  --mat-button-filled-label-text-color: var(--color-texto-sobre-primario);
 }
 
 .texto-salir {

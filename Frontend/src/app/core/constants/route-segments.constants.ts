@@ -3,9 +3,10 @@ export const ROUTE_SEGMENTS = {
   auth: 'auth',
   login: 'login',
   registro: 'registro',
-    // Zona privada (temporal)
-  inicio: 'inicio',
-  
+
+  // Zona privada (temporal)
+  panel: 'panel',
+
   // Vistas de estado
   unauthorized: 'no-autorizado'
 } as const;

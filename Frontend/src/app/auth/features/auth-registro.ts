@@ -21,7 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { ROUTE_SEGMENTS } from '../../core/constanst/route-segments.constants';
+import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
 import { noBlanco } from '../../core/validators/validadores';
 import { AuthClient } from '../data-access/auth-client';
 

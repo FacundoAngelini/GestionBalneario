@@ -13,6 +13,7 @@ export class AuthClient {
   private apiUrl = `${environment.apiUrl}/auth`;
 
   private readonly token = signal<string | null>(this.leerTokenGuardado()); //la uncia fuente de la verdad
+  readonly accessToken = this.token.asReadonly();
 
   readonly usuarioLogueado = computed(() => this.token() !== null);
   readonly roles = computed(() => extraerRoles(this.token()));
@@ -41,7 +42,7 @@ logout() {
     this.token.set(token);
   }
 
-    private limpiarSesion() {
+    limpiarSesion() {
     localStorage.removeItem(TOKEN_KEY);
     this.token.set(null);
   }
