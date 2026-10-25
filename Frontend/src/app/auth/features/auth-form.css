@@ -23,6 +23,7 @@
 .auth-form {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .auth-form mat-form-field {

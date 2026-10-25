@@ -3,7 +3,7 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { environment } from '../../core/environments/environment';
 import { AuthResponse, LoginRequest, RegistroClienteRequest } from './auth-model';
 import { finalize, tap } from 'rxjs';
-import { extraerRoles, tokenVencido } from './jwt.utils';
+import { extraerRoles, leerPayload, tokenVencido } from './jwt.utils';
 
 const TOKEN_KEY = 'jwt_token';
 
@@ -13,9 +13,14 @@ export class AuthClient {
   private apiUrl = `${environment.apiUrl}/auth`;
 
   private readonly token = signal<string | null>(this.leerTokenGuardado()); //la uncia fuente de la verdad
+  readonly accessToken = this.token.asReadonly();
 
   readonly usuarioLogueado = computed(() => this.token() !== null);
   readonly roles = computed(() => extraerRoles(this.token()));
+  readonly nombreUsuario = computed(() => {
+    const token = this.token();
+    return token ? (leerPayload(token)?.sub ?? '') : '';
+  });
 
   login(credenciales: LoginRequest) {
     return this.http
@@ -27,10 +32,9 @@ export class AuthClient {
     return this.http.post(`${this.apiUrl}/register`, datos);
   }
 
-  logout() {
-    return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
-        finalize(()=> this.limpiarSesion),
-    );
+logout() {
+    this.http.post<void>(`${this.apiUrl}/logout`, {}).subscribe({ error: () => {} });
+    this.limpiarSesion();
   }
 
   private guardarSesion(token: string) {
@@ -38,7 +42,7 @@ export class AuthClient {
     this.token.set(token);
   }
 
-    private limpiarSesion() {
+    limpiarSesion() {
     localStorage.removeItem(TOKEN_KEY);
     this.token.set(null);
   }

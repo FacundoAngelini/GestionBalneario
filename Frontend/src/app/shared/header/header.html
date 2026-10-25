@@ -1,1 +1,20 @@
-<p>header works!</p>
+<a class="marca" routerLink="/">ArenaDesk</a>
+
+<div class="sesion">
+  @if (logueado()) {
+    <div class="usuario">
+      <span class="usuario-nombre">{{ nombreUsuario() }}</span>
+      <span class="usuario-rol">{{ rol() }}</span>
+    </div>
+
+    <a matButton="text" class="btn-header" routerLink="/panel">Panel</a>
+
+    <button matButton="outlined" type="button" class="btn-header btn-salir" aria-label="Cerrar sesión" (click)="cerrarSesion()">
+      <mat-icon>logout</mat-icon>
+      <span class="texto-salir">Cerrar sesión</span>
+    </button>
+  } @else {
+    <a matButton="outlined" class="btn-header" routerLink="/auth/login">Ingresar</a>
+    <a matButton="filled" class="btn-registro" routerLink="/auth/registro">Registrarse</a>
+  }
+</div>

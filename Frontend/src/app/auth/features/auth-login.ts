@@ -6,7 +6,7 @@ import { form, FormField, FormRoot, disabled } from '@angular/forms/signals';
 import { LoginRequest } from '../data-access/auth-model';
 import { noBlanco } from '../../core/validators/validadores';
 import { firstValueFrom } from 'rxjs';
-import { ROUTE_SEGMENTS } from '../../core/constanst/route-segments.constants';
+import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,7 +39,6 @@ export class Login {
     (campos) => {
       noBlanco(campos.nombreUsuario, 'El usuario es obligatorio');
       noBlanco(campos.contrasenia, 'La contraseña es obligatoria');
-      // Mientras se envía, se bloquean todos los campos (el campo raíz "arrastra" a sus hijos).
       disabled(campos, { when: ({ state }) => state.submitting() });
     },
     {
@@ -48,7 +47,7 @@ export class Login {
           this.errorMsg.set('');
           try {
             await firstValueFrom(this.auth.login(campo().value()));
-            await this.router.navigateByUrl(`/${ROUTE_SEGMENTS.inicio}`);
+            await this.router.navigateByUrl(`/${ROUTE_SEGMENTS.panel}`);
           } catch (error) {
             this.errorMsg.set(this.mensajeDeError(error));
           }
