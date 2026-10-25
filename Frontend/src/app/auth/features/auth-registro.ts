@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   disabled,
   FieldTree,
@@ -13,6 +13,7 @@ import {
   pattern,
   required,
   TreeValidationResult,
+  validate,
 } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +25,8 @@ import { firstValueFrom } from 'rxjs';
 import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
 import { noBlanco } from '../../core/validators/validadores';
 import { AuthClient } from '../data-access/auth-client';
+import { MatSelectModule } from '@angular/material/select';
+import { buscarPais, PAISES } from '../../core/constants/paises.constants';
 
 // El DNI empieza en null (campo vacío). En RegistroClienteRequest es number.
 interface RegistroForm {
@@ -31,6 +34,7 @@ interface RegistroForm {
   apellido: string;
   dni: number | null;
   email: string;
+  pais: string;
   telefono: string;
   nombreUsuario: string;
   contrasenia: string;
@@ -46,6 +50,7 @@ interface RegistroForm {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
   ],
   templateUrl: './auth-registro.html',
   styleUrl: './auth-form.css',
@@ -57,16 +62,20 @@ export class Registro {
 
   protected readonly errorMsg = signal('');
   protected readonly verContrasenia = signal(false);
+  protected readonly paises = PAISES;
 
   private readonly registroModel = signal<RegistroForm>({
     nombre: '',
     apellido: '',
     dni: null,
     email: '',
+    pais: '54',
     telefono: '',
     nombreUsuario: '',
     contrasenia: '',
   });
+
+  protected readonly paisElegido = computed(() => buscarPais(this.registroModel().pais) ?? PAISES[0]);
 
   protected readonly registroForm = form(
     this.registroModel,
@@ -84,8 +93,16 @@ export class Registro {
         message: 'Formato inválido: en minúsculas y con dominio de 2 o 3 letras (ej: nombre@correo.com)',
       });
 
-      noBlanco(campos.telefono, 'El teléfono es obligatorio');
-      pattern(campos.telefono, /^[0-9]+$/, { message: 'El teléfono debe contener solo números' });
+            noBlanco(campos.telefono, 'El teléfono es obligatorio');
+      pattern(campos.telefono, /^[0-9]*$/, { message: 'Ingresá solo números, sin espacios, guiones ni el signo +' });
+      validate(campos.telefono, ({ value, valueOf }) => {
+        const numero = value();
+        const pais = PAISES.find((p) => p.prefijo === valueOf(campos.pais));
+        if (!pais || numero === '' || !/^[0-9]+$/.test(numero)) return undefined; // otras reglas ya lo cubren
+        if (numero.length >= pais.min && numero.length <= pais.max) return undefined;
+        const digitos = pais.min === pais.max ? `${pais.min} dígitos` : `entre ${pais.min} y ${pais.max} dígitos`;
+        return { kind: 'largo', message: `En ${pais.nombre} el teléfono tiene ${digitos} (${pais.ayuda}). Ej: ${pais.ejemplo}` };
+      });
 
       noBlanco(campos.nombreUsuario, 'El nombre de usuario es obligatorio');
 
@@ -108,8 +125,9 @@ export class Registro {
         action: async (campos) => {
           this.errorMsg.set('');
           try {
-            const valores = campos().value();
-            await firstValueFrom(this.auth.registro({ ...valores, dni: Number(valores.dni) }));
+            const { pais, telefono, ...resto } = campos().value();
+            await firstValueFrom(
+              this.auth.registro({ ...resto, telefono: pais + telefono, dni: Number(resto.dni) }),);
             this.snackBar.open('Cuenta creada. Ya podés iniciar sesión.', 'Cerrar', { duration: 6000 });
             await this.router.navigateByUrl(`/${ROUTE_SEGMENTS.auth}/${ROUTE_SEGMENTS.login}`);
             return undefined;
@@ -138,6 +156,9 @@ export class Registro {
     }
     if (error.status === 403 && mensaje.includes('nombre de usuario')) {
       return [{ fieldTree: campos.nombreUsuario, kind: 'servidor', message: 'Ese nombre de usuario ya está en uso' }];
+    }
+    if (error.status === 409 && /tel[eé]fono/i.test(mensaje)) {
+      return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'Ya existe un cliente con ese teléfono' }];
     }
     if (error.status === 403 && mensaje.includes('Acceso Restringido')) {
       return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'No se pudo registrar: revisá que el teléfono no esté ya registrado' }];
