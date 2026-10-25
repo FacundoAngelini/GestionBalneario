@@ -76,20 +76,6 @@ public class ClienteController {
         return new ResponseEntity<>(clienteService.crearCliente(clienteNuevo), HttpStatus.CREATED);
     }
 
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('CLIENTE')")
-    @Operation(summary = "Consultar perfil del cliente autenticado",
-              description = "Devuelve los datos del cliente asociado a la sesión actual. " + "No requiere enviar el UUID del cliente.")
-    @ApiResponses(value = { @ApiResponse( responseCode = "200", description = "Perfil recuperado con éxito"),
-    @ApiResponse(responseCode = "401", description = "Usuario no autenticado", content = @Content),
-    @ApiResponse(responseCode = "403", description = "El usuario no tiene el rol de cliente", content = @Content),
-    @ApiResponse(responseCode = "404", description = "No se encontró el perfil del cliente", content = @Content)
-    })
-    public ResponseEntity<ClienteResponse> obtenerMiPerfil(@Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok(
-                clienteService.buscarPerfilPorNombreUsuario(principal.getName()));
-    }
-
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElPropioCliente(#id)")
     @Operation(summary = "Actualizar perfil de cliente", description = "Modifica los datos personales y de contacto de un cliente existente. Accesible por la administración o por el propio usuario dueño del perfil.")

@@ -92,7 +92,7 @@ public class ClienteService implements IClienteService {
         credencialRepositorio.save(nuevaCredencial);
         ClienteEntity guardado = clienteRepository.save(nuevoCliente);
 
-         emailService.BienvenidaCliente(dto);
+        emailService.BienvenidaCliente(dto);
 
         return clienteMapper.convertToResponseDTO(guardado);
     }
@@ -118,7 +118,8 @@ public class ClienteService implements IClienteService {
                 .orElseThrow(() -> new CuentaNoEncontradaException("Cliente no encontrado: ", publicId.toString()));
 
         if (!cliente.getEmail().equals(dto.getEmail()) &&
-                clienteRepository.findByEmail(dto.getEmail()).isPresent()) throw new EntidadExistenteException("Ese email ya esta registrado", "ClienteEntity");
+                clienteRepository.findByEmail(dto.getEmail()).isPresent())
+            throw new EntidadExistenteException("Ese email ya esta registrado", "ClienteEntity");
 
         if (cliente.getDni() != dto.getDni() &&
                 clienteRepository.findByDni(dto.getDni()).isPresent())
@@ -143,8 +144,8 @@ public class ClienteService implements IClienteService {
     @Transactional(readOnly = true)
     @Override
     public List<ClienteResponse> listarTodos(
-            String nombreIgual,    String nombreContiene,
-            String apellidoIgual,  String apellidoContiene,
+            String nombreIgual, String nombreContiene,
+            String apellidoIgual, String apellidoContiene,
             Integer dniIgual,
             String emailContiene,
             String telefonoIgual,
@@ -152,14 +153,14 @@ public class ClienteService implements IClienteService {
 
         List<PredicateSpecification<ClienteEntity>> specs = new ArrayList<>();
 
-        if (nombreIgual != null)      specs.add(ClienteSpecification.nombreIgual(nombreIgual));
-        if (nombreContiene != null)   specs.add(ClienteSpecification.nombreContiene(nombreContiene));
-        if (apellidoIgual != null)    specs.add(ClienteSpecification.apellidoIgual(apellidoIgual));
+        if (nombreIgual != null) specs.add(ClienteSpecification.nombreIgual(nombreIgual));
+        if (nombreContiene != null) specs.add(ClienteSpecification.nombreContiene(nombreContiene));
+        if (apellidoIgual != null) specs.add(ClienteSpecification.apellidoIgual(apellidoIgual));
         if (apellidoContiene != null) specs.add(ClienteSpecification.apellidoContiene(apellidoContiene));
-        if (dniIgual != null)         specs.add(ClienteSpecification.dniIgual(dniIgual));
-        if (emailContiene != null)    specs.add(ClienteSpecification.emailContiene(emailContiene));
-        if (telefonoIgual != null)    specs.add(ClienteSpecification.telefonoIgual(telefonoIgual));
-        if (estadoIgual != null)      specs.add(ClienteSpecification.estadoIgual(estadoIgual));
+        if (dniIgual != null) specs.add(ClienteSpecification.dniIgual(dniIgual));
+        if (emailContiene != null) specs.add(ClienteSpecification.emailContiene(emailContiene));
+        if (telefonoIgual != null) specs.add(ClienteSpecification.telefonoIgual(telefonoIgual));
+        if (estadoIgual != null) specs.add(ClienteSpecification.estadoIgual(estadoIgual));
 
         if (specs.isEmpty()) {
             return clienteRepository.findAll()
@@ -217,21 +218,5 @@ public class ClienteService implements IClienteService {
                 request.contraseniaActual(),
                 request.nuevaContrasenia(),
                 passwordEncoder);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public ClienteResponse buscarPerfilPorNombreUsuario(
-            String nombreUsuario
-    ) {
-        return clienteRepository
-                .findByUsuario_Credencial_NombreUsuario(nombreUsuario)
-                .map(clienteMapper::convertToResponseDTO)
-                .orElseThrow(() ->
-                        new EntidadNoEncontradaException(
-                                "No se encontró el perfil del cliente para el usuario: ",
-                                nombreUsuario
-                        )
-                );
     }
 }

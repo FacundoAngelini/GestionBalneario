@@ -29,5 +29,4 @@ public interface IClienteService {
     void cambiarNombreUsuarioCliente(UUID publicId, CambioNombreUsuarioRequest request);
     void cambiarContraseniaCliente(UUID publicId, CambioContraseniaRequest request);
     ClienteResponse reactivarCliente(UUID publicId);
-    ClienteResponse buscarPerfilPorNombreUsuario(String nombreUsuario);
 }
