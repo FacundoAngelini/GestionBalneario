@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { ROUTE_SEGMENTS } from '../../core/constanst/route-segments.constants';
 import { ReservasLayout } from '../UI/reservas-layout/reservas-layout';
 
 export const reservasRoutes: Routes = [

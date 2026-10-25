@@ -47,6 +47,7 @@ export class ReservaForm {
         const res = await firstValueFrom(
           this.reservaService.checkoutOnline(formToReserva(this.reservaModel())),
         );
+        //CAMBIAR POR PAGO EN EFECTIVO
         window.location.href = res.urlMercadoPago;
       } catch (err: any) {
         this.errorMsg.set(

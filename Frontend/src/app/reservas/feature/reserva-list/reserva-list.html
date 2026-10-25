@@ -1,1 +1,57 @@
-<p>reserva-list works!</p>
+<section class="reservas-panel">
+  <header class="reservas-header">
+    <h2>Reservas confirmadas</h2>
+    <button type="button" (click)="cargarReservas()" [disabled]="cargando()">Actualizar</button>
+  </header>
+
+  @if (errorMsg()) {
+    <div class="alerta alerta-error">{{ errorMsg() }}</div>
+  }
+  @if (exitoMsg()) {
+    <div class="alerta alerta-exito">{{ exitoMsg() }}</div>
+  }
+
+  @if (cargando()) {
+    <p class="estado-vacio">Cargando reservas...</p>
+  } @else if (reservas().length === 0) {
+    <p class="estado-vacio">No hay reservas confirmadas.</p>
+  } @else {
+    <div class="tabla-contenedor">
+      <table class="tabla-reservas">
+        <thead>
+          <tr>
+            <th>Reserva</th>
+            <th>Cliente</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+            <th>Recursos</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of reservas(); track r.publicId) {
+            <tr>
+              <td class="id" [title]="r.publicId">{{ r.publicId?.slice(0, 8) }}</td>
+              <td class="id" [title]="r.clientePublicId">{{ r.clientePublicId.slice(0, 8) }}</td>
+              <td>{{ r.fechaInicio | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ r.fechaFin | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ r.recursosPublicIds.length }}</td>
+              <td><span class="badge badge-confirmada">{{ r.estadoReserva }}</span></td>
+              <td class="acciones">
+                <button
+                  type="button"
+                  class="btn-baja"
+                  (click)="darDeBaja(r)"
+                  [disabled]="cancelandoId() === r.publicId"
+                >
+                  {{ cancelandoId() === r.publicId ? 'Procesando...' : 'Dar de baja' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
