@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
 import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.DTO.AuthRequest;
+import com.Gestion.MiBalnearioGestion.Auth.Validaciones.Telefono;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -35,9 +36,9 @@ public class ClienteRequest {
             message = "El email ingresado tiene un formato inválido")
     private String email;
 
-    @Schema(description = "Número telefónico móvil o de contacto (Solo caracteres numéricos)", example = "2236987654")
+    @Schema(description = "Teléfono con código de país, solo dígitos (ej: 542236987654)", example = "542236987654")
     @NotBlank
-    @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números")
+    @Pattern(regexp = Telefono.REGEX, message = Telefono.MENSAJE)
     private String telefono;
 
     @Schema(description = "Credenciales de acceso iniciales (Nombre de usuario único y contraseña cifrada) requeridas para el login")

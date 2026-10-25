@@ -79,6 +79,9 @@ public class AuthService implements IAuthService {
         if (clientesRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new EntidadExistenteException("Ya existe un cliente con ese email", "ClienteEntity");
         }
+        if (clientesRepository.findByTelefono(request.getTelefono()).isPresent()) {
+            throw new EntidadExistenteException("Ya existe un cliente con ese teléfono", "ClienteEntity");
+        }
 
         UsuarioEntity nuevoUsuario = new UsuarioEntity();
 

@@ -57,6 +57,8 @@ public class ClienteService implements IClienteService {
             throw new EntidadExistenteException("Ya existe un cliente con ese DNI", "ClienteEntity");
         if (clienteRepository.findByEmail(dto.getEmail()).isPresent())
             throw new EntidadExistenteException("Ya existe un cliente con ese email", "ClienteEntity");
+        if (clienteRepository.findByTelefono(dto.getTelefono()).isPresent())
+            throw new EntidadExistenteException("Ya existe un cliente con ese teléfono", "ClienteEntity");
 
         UsuarioEntity nuevoUsuario = new UsuarioEntity();
 
@@ -121,6 +123,10 @@ public class ClienteService implements IClienteService {
         if (cliente.getDni() != dto.getDni() &&
                 clienteRepository.findByDni(dto.getDni()).isPresent())
             throw new EntidadExistenteException("Ese DNI ya esta registrado", "ClienteEntity");
+
+        if (!cliente.getTelefono().equals(dto.getTelefono()) &&
+                clienteRepository.findByTelefono(dto.getTelefono()).isPresent())
+            throw new EntidadExistenteException("Ese teléfono ya esta registrado", "ClienteEntity");
 
         clienteMapper.updateEntityFromDTO(dto, cliente);
         return clienteMapper.convertToResponseDTO(clienteRepository.save(cliente));
