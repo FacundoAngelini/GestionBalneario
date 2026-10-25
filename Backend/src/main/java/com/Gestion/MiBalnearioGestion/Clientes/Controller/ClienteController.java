@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 @RestController
@@ -73,6 +74,20 @@ public class ClienteController {
     })
     public ResponseEntity<ClienteResponse> crearCliente(@Valid @RequestBody ClienteRequest clienteNuevo) {
         return new ResponseEntity<>(clienteService.crearCliente(clienteNuevo), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('CLIENTE')")
+    @Operation(summary = "Consultar perfil del cliente autenticado",
+              description = "Devuelve los datos del cliente asociado a la sesión actual. " + "No requiere enviar el UUID del cliente.")
+    @ApiResponses(value = { @ApiResponse( responseCode = "200", description = "Perfil recuperado con éxito"),
+    @ApiResponse(responseCode = "401", description = "Usuario no autenticado", content = @Content),
+    @ApiResponse(responseCode = "403", description = "El usuario no tiene el rol de cliente", content = @Content),
+    @ApiResponse(responseCode = "404", description = "No se encontró el perfil del cliente", content = @Content)
+    })
+    public ResponseEntity<ClienteResponse> obtenerMiPerfil(@Parameter(hidden = true) Principal principal) {
+        return ResponseEntity.ok(
+                clienteService.buscarPerfilPorNombreUsuario(principal.getName()));
     }
 
     @PutMapping("/{id}")

@@ -218,4 +218,20 @@ public class ClienteService implements IClienteService {
                 request.nuevaContrasenia(),
                 passwordEncoder);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ClienteResponse buscarPerfilPorNombreUsuario(
+            String nombreUsuario
+    ) {
+        return clienteRepository
+                .findByUsuario_Credencial_NombreUsuario(nombreUsuario)
+                .map(clienteMapper::convertToResponseDTO)
+                .orElseThrow(() ->
+                        new EntidadNoEncontradaException(
+                                "No se encontró el perfil del cliente para el usuario: ",
+                                nombreUsuario
+                        )
+                );
+    }
 }
