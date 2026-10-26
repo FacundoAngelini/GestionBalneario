@@ -227,7 +227,7 @@ public class GlobalExcepcionHandler {
     }
 
     @ExceptionHandler(CuentaNoEncontradaException.class)
-    public ResponseEntity<ErrorResponse> handleCuentaNoEncontrada(CuentaEncontradaException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleCuentaNoEncontrada(CuentaNoEncontradaException ex, HttpServletRequest request){
         ErrorResponse error = new ErrorResponse(404, "Esta cuenta no se encuentra" + ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(404).body(error);
