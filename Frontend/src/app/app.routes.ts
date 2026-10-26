@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { ROUTE_SEGMENTS } from './core/constants/route-segments.constants';
-import { authGuard, guestGuard } from './auth/data-access/auth.guard';
+import { authGuard, guestGuard, roleGuard } from './auth/data-access/auth.guard';
 
 export const routes: Routes = [
   {
@@ -40,7 +40,12 @@ export const routes: Routes = [
       }
     ]
   },
-
+  {
+  path: ROUTE_SEGMENTS.perfil,
+  canActivate: [/* el mismo guard que usa /panel */],
+  loadComponent: () =>
+    import('./usuarios/feature/perfil/perfil').then((m) => m.Perfil),
+  },
   {
     path: '**',
     loadComponent: () => import('./core/UI/not-found/not-found').then(m => m.NotFound)
