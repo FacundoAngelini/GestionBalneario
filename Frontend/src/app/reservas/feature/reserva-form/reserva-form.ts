@@ -20,6 +20,7 @@ export class ReservaForm {
   private router = inject(Router);
 
   errorMsg = signal<string>('');
+  successMsg = signal<string>('');
 
   reservaModel = signal(reservaFormInicial());
   reservaForm = form(this.reservaModel, reservaSchema);
@@ -41,14 +42,14 @@ export class ReservaForm {
   enviar(event: Event) {
     event.preventDefault();
     this.errorMsg.set('');
+    this.successMsg.set('');
 
     submit(this.reservaForm, async () => {
       try {
-        const res = await firstValueFrom(
-          this.reservaService.checkoutOnline(formToReserva(this.reservaModel())),
+        await firstValueFrom(
+          this.reservaService.crearReservaInicial(formToReserva(this.reservaModel())),
         );
-        //CAMBIAR POR PAGO EN EFECTIVO
-        window.location.href = res.urlMercadoPago;
+        this.successMsg.set('Reserva creada correctamente');
       } catch (err: any) {
         this.errorMsg.set(
           err?.status === 409
