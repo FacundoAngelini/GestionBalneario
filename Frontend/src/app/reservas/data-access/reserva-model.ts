@@ -3,7 +3,7 @@ import { required, schema, validate } from '@angular/forms/signals';
 
 export type ReservaEstado = 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'FINALIZADA' | 'RECHAZADA';
 
-// Mirrors ReservaDTO.java. UUID -> string, LocalDate -> 'yyyy-MM-dd' string.
+
 export interface Reserva {
   publicId?: string;
   clientePublicId: string;
@@ -13,7 +13,7 @@ export interface Reserva {
   estadoReserva?: ReservaEstado;
 }
 
-// Mirrors CheckoutResponseDTO.java
+//para mp
 export interface CheckoutResponse {
   reservaPublicId: string;
   pagoPublicId: string;
@@ -22,7 +22,6 @@ export interface CheckoutResponse {
   mensaje: string;
 }
 
-// Mirrors CancelarReservaDTO.java
 export interface CancelarReserva {
   publicId?: string;
   clientePublicId: string;
@@ -30,7 +29,7 @@ export interface CancelarReserva {
   fechaFin: string;
 }
 
-// Query params of GET /reservas (all optional)
+
 export interface ReservaFiltros {
   estado?: ReservaEstado;
   fechaDesde?: string;
@@ -38,8 +37,6 @@ export interface ReservaFiltros {
   clientePublicId?: string;
 }
 
-// Signal form model: plain data, dates stay as 'yyyy-MM-dd' strings
-// so they bind directly to <input type="date"> and match the backend LocalDate.
 export interface ReservaFormModel {
   clientePublicId: string;
   fechaInicio: string;
