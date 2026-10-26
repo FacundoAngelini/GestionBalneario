@@ -169,7 +169,7 @@ public class GlobalExcepcionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(MethodArgumentNotValidException ex, HttpServletRequest  request) {
+    public ResponseEntity<ErrorResponse> handleBadRequest(MethodArgumentTypeMismatchException ex, HttpServletRequest  request) {
         ErrorResponse errorResponse= new ErrorResponse(400, "Error de parametro" + ex.getMessage());
         errorResponse.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
