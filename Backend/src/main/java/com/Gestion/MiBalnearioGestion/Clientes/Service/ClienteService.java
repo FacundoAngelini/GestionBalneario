@@ -11,6 +11,7 @@ import com.Gestion.MiBalnearioGestion.Clientes.Mapper.ClienteMapper;
 import com.Gestion.MiBalnearioGestion.Clientes.Repository.ClientesRepository;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteUpdateRequest;
 import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.DatosInvalidoException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
@@ -218,5 +219,57 @@ public class ClienteService implements IClienteService {
                 request.contraseniaActual(),
                 request.nuevaContrasenia(),
                 passwordEncoder);
+    }
+
+    @Transactional
+    @Override
+    public ClienteResponse actualizarMiPerfil(
+            String nombreUsuario,
+            ClienteUpdateRequest request
+    ) {
+        ClienteEntity cliente = clienteRepository
+                .findByUsuario_Credencial_NombreUsuario(nombreUsuario)
+                .orElseThrow(() ->
+                        new CuentaNoEncontradaException(
+                                "No existe un cliente asociado a la cuenta autenticada",
+                                "ClienteEntity"
+                        )
+                );
+
+        String nombre = request.nombre().trim();
+        String apellido = request.apellido().trim();
+        String email = request.email().trim();
+        String telefono = request.telefono().trim();
+
+        boolean cambiaEmail =
+                !cliente.getEmail().equalsIgnoreCase(email);
+
+        if (cambiaEmail
+                && clienteRepository.findByEmail(email).isPresent()) {
+            throw new EntidadExistenteException(
+                    "Ese email ya esta registrado",
+                    "ClienteEntity"
+            );
+        }
+
+        boolean cambiaTelefono =
+                !cliente.getTelefono().equals(telefono);
+
+        if (cambiaTelefono
+                && clienteRepository.findByTelefono(telefono).isPresent()) {
+            throw new EntidadExistenteException(
+                    "Ese telefono ya esta registrado",
+                    "ClienteEntity"
+            );
+        }
+
+        cliente.setNombre(nombre);
+        cliente.setApellido(apellido);
+        cliente.setEmail(email);
+        cliente.setTelefono(telefono);
+
+        ClienteEntity actualizado = clienteRepository.save(cliente);
+
+        return clienteMapper.convertToResponseDTO(actualizado);
     }
 }

@@ -5,6 +5,7 @@ import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioContraseniaRequest;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioNombreUsuarioRequest;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -77,7 +78,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE') or @securityService.esElPropioCliente(#id)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @Operation(summary = "Actualizar perfil de cliente", description = "Modifica los datos personales y de contacto de un cliente existente. Accesible por la administración o por el propio usuario dueño del perfil.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Perfil de cliente modificado con éxito"),
@@ -147,5 +148,22 @@ public class ClienteController {
             @Valid @RequestBody CambioContraseniaRequest request) {
         clienteService.cambiarContraseniaCliente(id, request);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/me")
+    @PreAuthorize("hasRole('CLIENTE')")
+    @Operation(
+            summary = "Actualizar el perfil del cliente autenticado",
+            description = "Permite modificar nombre, apellido, email y teléfono. No permite modificar el DNI ni las credenciales."
+    )
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Perfil actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Email o teléfono ya registrado", content = @Content)
+    })
+    public ResponseEntity<ClienteResponse> actualizarMiPerfil(@Parameter(hidden = true) Principal principal, @Valid @RequestBody ClienteUpdateRequest request)
+    {
+        return ResponseEntity.ok(clienteService.actualizarMiPerfil(principal.getName(), request));
     }
 }
