@@ -4,6 +4,7 @@ export const ROUTE_SEGMENTS = {
   registro: 'registro',
 
   panel: 'panel',
+  perfil: 'perfil',
 
   unauthorized: 'no-autorizado'
 } as const;
