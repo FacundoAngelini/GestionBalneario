@@ -31,6 +31,20 @@
   --radio-medio: 12px;
   --radio-grande: 20px;
   --sombra-suave: 0 2px 12px rgba(11, 60, 93, 0.08);
+  
+  /* angular material */
+  --mat-sys-primary: var(--color-primario);
+  --mat-sys-on-primary: var(--color-texto-sobre-primario);
+  --mat-sys-error: var(--color-error);
+  --mat-sys-surface: var(--color-superficie);
+  --mat-sys-on-surface: var(--color-texto);
+  --mat-sys-on-surface-variant: var(--color-texto-suave);
+  --mat-sys-outline: var(--color-texto-suave);
+  --mat-sys-outline-variant: var(--color-borde);
+
+  --mat-button-filled-container-shape: var(--radio-chico);
+  --mat-button-filled-container-height: 3rem;
+  --mat-form-field-outlined-container-shape: var(--radio-chico);
 }
 
 *,
@@ -59,7 +73,7 @@ p, span, a, label {
   font-family: var(--fuente-texto);
 }
 
-button {
+button:not([class*="mat-"]) {
   background-color: var(--color-primario);
   color: var(--color-texto-sobre-primario);
   border: none;
@@ -71,15 +85,15 @@ button {
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-button:hover:not(:disabled) {
+button:not([class*="mat-"]):hover:not(:disabled) {
   background-color: var(--color-primario-hover);
 }
 
-button:active:not(:disabled) {
-  transform: scale(0.97); 
+button:not([class*="mat-"]):active:not(:disabled) {
+  transform: scale(0.97);
 }
 
-button:disabled {
+button:not([class*="mat-"]):disabled {
   background-color: var(--color-borde);
   color: var(--color-texto-suave);
   cursor: not-allowed;

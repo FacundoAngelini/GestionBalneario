@@ -1,24 +1,47 @@
 <div class="card-premium">
   <h2 class="auth-title">ArenaDesk</h2>
   <p class="auth-subtitle">Ingresa a tu cuenta</p>
-  
+
   @if (errorMsg()) {
-    <div class="alert-error">{{ errorMsg() }}</div>
+    <div class="alert-error" role="alert">{{ errorMsg() }}</div>
   }
 
-  <form (ngSubmit)="ingresar()" class="auth-form">
-    <div class="form-group">
-      <label for="user">Usuario</label>
-      <input id="user" type="text" [(ngModel)]="credenciales.nombreUsuario" name="usuario" required />
-    </div>
+  <form [formRoot]="loginForm" class="auth-form" [attr.aria-busy]="loginForm().submitting()">
+    <mat-form-field>
+      <mat-label>Usuario</mat-label>
+      <input matInput type="text" autocomplete="username" [formField]="loginForm.nombreUsuario" />
+      <mat-error>{{ loginForm.nombreUsuario().errors().at(0)?.message }}</mat-error> <!-- muestra el error solo cuando el campo es inválido y fue tocado -->
+                                                  <!-- evalúa ese texto aunque Material lo tenga oculto -->
+    </mat-form-field>
 
-    <div class="form-group">
-      <label for="pass">Contraseña</label>
-      <input id="pass" type="password" [(ngModel)]="credenciales.contrasenia" name="pass" required />
-    </div>
+    <mat-form-field>
+      <mat-label>Contraseña</mat-label>
+      <input
+        matInput
+        [type]="verContrasenia() ? 'text' : 'password'"
+        autocomplete="current-password"
+        [formField]="loginForm.contrasenia"
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        [disabled]="loginForm().submitting()"
+        [attr.aria-label]="verContrasenia() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        [attr.aria-pressed]="verContrasenia()"
+        (click)="verContrasenia.set(!verContrasenia())"
+      >
+        <mat-icon>{{ verContrasenia() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error>{{ loginForm.contrasenia().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
 
-    <button type="submit" class="btn-primary" [disabled]="cargando()">
-      {{ cargando() ? 'Cargando...' : 'Entrar' }}
+    <button matButton="filled" type="submit" class="btn-submit">
+      @if (loginForm().submitting()) {
+        <mat-spinner diameter="22" aria-label="Ingresando" />
+      } @else {
+        Entrar
+      }
     </button>
   </form>
 

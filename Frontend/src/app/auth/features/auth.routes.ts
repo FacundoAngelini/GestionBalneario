@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { ROUTE_SEGMENTS } from '../../core/constanst/route-segments.constants';
 import { AuthLayout } from '../UI/auth-layout';
 
 export const authRoutes: Routes = [
@@ -16,6 +15,7 @@ export const authRoutes: Routes = [
         path: 'registro',
         loadComponent: () => import('../features/auth-registro').then(m => m.Registro)
       }
+      
     ]
   }
 ];

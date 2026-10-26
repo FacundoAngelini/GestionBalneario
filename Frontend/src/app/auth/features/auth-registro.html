@@ -1,0 +1,92 @@
+<div class="card-premium">
+  <h2 class="auth-title">Crear cuenta</h2>
+  <p class="auth-subtitle">Registrate como cliente</p>
+
+  @if (errorMsg()) {
+    <div class="alert-error" role="alert">{{ errorMsg() }}</div>
+  }
+
+  <form [formRoot]="registroForm" class="auth-form" [attr.aria-busy]="registroForm().submitting()">
+    <mat-form-field>
+      <mat-label>Nombre</mat-label>
+      <input matInput type="text" autocomplete="given-name" [formField]="registroForm.nombre" />
+      <mat-error>{{ registroForm.nombre().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Apellido</mat-label>
+      <input matInput type="text" autocomplete="family-name" [formField]="registroForm.apellido" />
+      <mat-error>{{ registroForm.apellido().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>DNI</mat-label>
+      <input matInput type="number" inputmode="numeric" [formField]="registroForm.dni" />
+      <mat-error>{{ registroForm.dni().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput type="email" autocomplete="email" [formField]="registroForm.email" />
+      <mat-error>{{ registroForm.email().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
+
+    <div class="fila-telefono">
+      <mat-form-field class="campo-pais">
+        <mat-label>País</mat-label>
+        <mat-select [formField]="registroForm.pais">
+          @for (p of paises; track p.prefijo) {
+            <mat-option [value]="p.prefijo">{{ p.nombre }} (+{{ p.prefijo }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="campo-telefono">
+        <mat-label>Teléfono</mat-label>
+        <span matTextPrefix>+{{ paisElegido().prefijo }}&nbsp;</span>
+        <input matInput type="tel" inputmode="numeric" autocomplete="tel-national" [formField]="registroForm.telefono" />
+        <mat-hint>{{ paisElegido().ayuda }}. Ej: {{ paisElegido().ejemplo }}</mat-hint>
+        <mat-error>{{ registroForm.telefono().errors().at(0)?.message }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field>
+      <mat-label>Nombre de usuario</mat-label>
+      <input matInput type="text" autocomplete="username" [formField]="registroForm.nombreUsuario" />
+      <mat-error>{{ registroForm.nombreUsuario().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Contraseña</mat-label>
+      <input
+        matInput
+        [type]="verContrasenia() ? 'text' : 'password'"
+        autocomplete="new-password"
+        [formField]="registroForm.contrasenia"
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        [disabled]="registroForm().submitting()"
+        [attr.aria-label]="verContrasenia() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        [attr.aria-pressed]="verContrasenia()"
+        (click)="verContrasenia.set(!verContrasenia())"
+      >
+        <mat-icon>{{ verContrasenia() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-hint>8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</mat-hint>
+      <mat-error>{{ registroForm.contrasenia().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
+
+    <button matButton="filled" type="submit" class="btn-submit">
+      @if (registroForm().submitting()) {
+        <mat-spinner diameter="22" aria-label="Creando cuenta" />
+      } @else {
+        Crear cuenta
+      }
+    </button>
+  </form>
+
+  <p class="auth-footer">¿Ya tienes cuenta? <a routerLink="/auth/login">Ingresa aquí</a></p>
+</div>

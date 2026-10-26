@@ -6,10 +6,9 @@ import { Footer } from '../footer/footer';
 
 @Component({
   selector: 'app-main-layout',
-  standalone: true,
   imports: [RouterOutlet, Header, Aside, Footer],
   templateUrl: './main.html',
-  styleUrls: ['./main.css']
+  styleUrl: './main.css'
 })
 export class Main {
   //controla para el celular
