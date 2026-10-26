@@ -11,6 +11,7 @@ import com.Gestion.MiBalnearioGestion.Clientes.Mapper.ClienteMapper;
 import com.Gestion.MiBalnearioGestion.Clientes.Repository.ClientesRepository;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteUpdateRequest;
 import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.DatosInvalidoException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
@@ -57,6 +58,8 @@ public class ClienteService implements IClienteService {
             throw new EntidadExistenteException("Ya existe un cliente con ese DNI", "ClienteEntity");
         if (clienteRepository.findByEmail(dto.getEmail()).isPresent())
             throw new EntidadExistenteException("Ya existe un cliente con ese email", "ClienteEntity");
+        if (clienteRepository.findByTelefono(dto.getTelefono()).isPresent())
+            throw new EntidadExistenteException("Ya existe un cliente con ese teléfono", "ClienteEntity");
 
         UsuarioEntity nuevoUsuario = new UsuarioEntity();
 
@@ -90,7 +93,7 @@ public class ClienteService implements IClienteService {
         credencialRepositorio.save(nuevaCredencial);
         ClienteEntity guardado = clienteRepository.save(nuevoCliente);
 
-         emailService.BienvenidaCliente(dto);
+        emailService.BienvenidaCliente(dto);
 
         return clienteMapper.convertToResponseDTO(guardado);
     }
@@ -116,11 +119,16 @@ public class ClienteService implements IClienteService {
                 .orElseThrow(() -> new CuentaNoEncontradaException("Cliente no encontrado: ", publicId.toString()));
 
         if (!cliente.getEmail().equals(dto.getEmail()) &&
-                clienteRepository.findByEmail(dto.getEmail()).isPresent()) throw new EntidadExistenteException("Ese email ya esta registrado", "ClienteEntity");
+                clienteRepository.findByEmail(dto.getEmail()).isPresent())
+            throw new EntidadExistenteException("Ese email ya esta registrado", "ClienteEntity");
 
         if (cliente.getDni() != dto.getDni() &&
                 clienteRepository.findByDni(dto.getDni()).isPresent())
             throw new EntidadExistenteException("Ese DNI ya esta registrado", "ClienteEntity");
+
+        if (!cliente.getTelefono().equals(dto.getTelefono()) &&
+                clienteRepository.findByTelefono(dto.getTelefono()).isPresent())
+            throw new EntidadExistenteException("Ese teléfono ya esta registrado", "ClienteEntity");
 
         clienteMapper.updateEntityFromDTO(dto, cliente);
         return clienteMapper.convertToResponseDTO(clienteRepository.save(cliente));
@@ -137,8 +145,8 @@ public class ClienteService implements IClienteService {
     @Transactional(readOnly = true)
     @Override
     public List<ClienteResponse> listarTodos(
-            String nombreIgual,    String nombreContiene,
-            String apellidoIgual,  String apellidoContiene,
+            String nombreIgual, String nombreContiene,
+            String apellidoIgual, String apellidoContiene,
             Integer dniIgual,
             String emailContiene,
             String telefonoIgual,
@@ -146,14 +154,14 @@ public class ClienteService implements IClienteService {
 
         List<PredicateSpecification<ClienteEntity>> specs = new ArrayList<>();
 
-        if (nombreIgual != null)      specs.add(ClienteSpecification.nombreIgual(nombreIgual));
-        if (nombreContiene != null)   specs.add(ClienteSpecification.nombreContiene(nombreContiene));
-        if (apellidoIgual != null)    specs.add(ClienteSpecification.apellidoIgual(apellidoIgual));
+        if (nombreIgual != null) specs.add(ClienteSpecification.nombreIgual(nombreIgual));
+        if (nombreContiene != null) specs.add(ClienteSpecification.nombreContiene(nombreContiene));
+        if (apellidoIgual != null) specs.add(ClienteSpecification.apellidoIgual(apellidoIgual));
         if (apellidoContiene != null) specs.add(ClienteSpecification.apellidoContiene(apellidoContiene));
-        if (dniIgual != null)         specs.add(ClienteSpecification.dniIgual(dniIgual));
-        if (emailContiene != null)    specs.add(ClienteSpecification.emailContiene(emailContiene));
-        if (telefonoIgual != null)    specs.add(ClienteSpecification.telefonoIgual(telefonoIgual));
-        if (estadoIgual != null)      specs.add(ClienteSpecification.estadoIgual(estadoIgual));
+        if (dniIgual != null) specs.add(ClienteSpecification.dniIgual(dniIgual));
+        if (emailContiene != null) specs.add(ClienteSpecification.emailContiene(emailContiene));
+        if (telefonoIgual != null) specs.add(ClienteSpecification.telefonoIgual(telefonoIgual));
+        if (estadoIgual != null) specs.add(ClienteSpecification.estadoIgual(estadoIgual));
 
         if (specs.isEmpty()) {
             return clienteRepository.findAll()
@@ -211,5 +219,57 @@ public class ClienteService implements IClienteService {
                 request.contraseniaActual(),
                 request.nuevaContrasenia(),
                 passwordEncoder);
+    }
+
+    @Transactional
+    @Override
+    public ClienteResponse actualizarMiPerfil(
+            String nombreUsuario,
+            ClienteUpdateRequest request
+    ) {
+        ClienteEntity cliente = clienteRepository
+                .findByUsuario_Credencial_NombreUsuario(nombreUsuario)
+                .orElseThrow(() ->
+                        new CuentaNoEncontradaException(
+                                "No existe un cliente asociado a la cuenta autenticada",
+                                "ClienteEntity"
+                        )
+                );
+
+        String nombre = request.nombre().trim();
+        String apellido = request.apellido().trim();
+        String email = request.email().trim();
+        String telefono = request.telefono().trim();
+
+        boolean cambiaEmail =
+                !cliente.getEmail().equalsIgnoreCase(email);
+
+        if (cambiaEmail
+                && clienteRepository.findByEmail(email).isPresent()) {
+            throw new EntidadExistenteException(
+                    "Ese email ya esta registrado",
+                    "ClienteEntity"
+            );
+        }
+
+        boolean cambiaTelefono =
+                !cliente.getTelefono().equals(telefono);
+
+        if (cambiaTelefono
+                && clienteRepository.findByTelefono(telefono).isPresent()) {
+            throw new EntidadExistenteException(
+                    "Ese telefono ya esta registrado",
+                    "ClienteEntity"
+            );
+        }
+
+        cliente.setNombre(nombre);
+        cliente.setApellido(apellido);
+        cliente.setEmail(email);
+        cliente.setTelefono(telefono);
+
+        ClienteEntity actualizado = clienteRepository.save(cliente);
+
+        return clienteMapper.convertToResponseDTO(actualizado);
     }
 }

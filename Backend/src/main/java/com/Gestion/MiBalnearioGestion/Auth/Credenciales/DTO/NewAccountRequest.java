@@ -1,10 +1,12 @@
 package com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO;
 
+import com.Gestion.MiBalnearioGestion.Auth.Validaciones.Telefono;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 @Data
 @AllArgsConstructor
@@ -41,9 +43,9 @@ public class NewAccountRequest {
     @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email ingresado tiene un formato inválido")
     private String email;
 
-    @Schema(description = "Número de teléfono de contacto (Solo dígitos)", example = "2236987654")
+    @Schema(description = "Teléfono con código de país, solo dígitos (ej: 542235123456)", example = "542235123456")
     @NotBlank(message = "El teléfono es obligatorio")
-    @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números")
+    @Pattern(regexp = Telefono.REGEX, message = Telefono.MENSAJE)
     private String telefono;
 
     @Schema(description = "Documento Nacional de Identidad", example = "38123456")
