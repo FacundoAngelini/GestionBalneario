@@ -62,9 +62,6 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
   background: rgba(0, 0, 0, 0.4);
   cursor: pointer;
   opacity: 0;

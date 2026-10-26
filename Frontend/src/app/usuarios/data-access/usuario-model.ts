@@ -61,3 +61,20 @@ export interface PerfilUsuario {
   cliente: PerfilCliente | null;
   empleado: PerfilEmpleado | null;
 }
+
+
+export interface ActualizarPerfilRequest {
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string;
+}
+
+export interface CambioContraseniaRequest {
+  contraseniaActual: string;
+  nuevaContrasenia: string;
+}
+
+export interface CambioNombreUsuarioRequest {
+  nuevoNombreUsuario: string;
+}

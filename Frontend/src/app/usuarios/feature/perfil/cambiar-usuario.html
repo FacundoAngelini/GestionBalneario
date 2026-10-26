@@ -1,0 +1,23 @@
+<form [formRoot]="formulario" class="perfil-form" [attr.aria-busy]="formulario().submitting()">
+  <p class="nota">Tu nombre de usuario actual es <strong>{{ usuarioActual() }}</strong>.</p>
+
+  <mat-form-field>
+    <mat-label>Nuevo nombre de usuario</mat-label>
+    <input matInput type="text" autocomplete="username" [formField]="formulario.nuevoNombreUsuario" />
+    <mat-hint>Después del cambio vas a tener que volver a iniciar sesión</mat-hint>
+    <mat-error>{{ formulario.nuevoNombreUsuario().errors().at(0)?.message }}</mat-error>
+  </mat-form-field>
+
+  <div class="form-acciones">
+    <button matButton="outlined" type="button" [disabled]="formulario().submitting()" (click)="cancelado.emit()">
+      Cancelar
+    </button>
+    <button matButton="filled" type="submit">
+      @if (formulario().submitting()) {
+        <mat-spinner diameter="22" aria-label="Cambiando nombre de usuario" />
+      } @else {
+        Cambiar usuario
+      }
+    </button>
+  </div>
+</form>
