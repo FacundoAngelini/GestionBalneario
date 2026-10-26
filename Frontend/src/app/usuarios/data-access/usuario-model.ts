@@ -11,6 +11,7 @@ export const ETIQUETA_TIPO_PERFIL: Record<TipoPerfilUsuario, string> = {
   CUENTA: 'Cuenta',
 };
 
+
 export interface PerfilCliente {
   publicId: string;
   nombre: string;

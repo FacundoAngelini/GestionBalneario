@@ -4,6 +4,7 @@ import { inject, Service } from '@angular/core';
 import { environment } from '../../core/environments/environment';
 import { PerfilUsuario } from './usuario-model';
 
+
 @Service()
 export class UsuarioClient {
   private readonly http = inject(HttpClient);

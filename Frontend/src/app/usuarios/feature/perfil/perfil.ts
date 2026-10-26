@@ -9,6 +9,8 @@ import { ETIQUETA_TIPO_PERFIL } from '../../data-access/usuario-model';
 
 const ETIQUETAS_ROL: Record<string, string> = ETIQUETA_ROL;
 
+
+
 @Component({
   selector: 'app-perfil',
   imports: [DatePipe, MatButtonModule],
