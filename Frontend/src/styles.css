@@ -45,6 +45,11 @@
   --mat-button-filled-container-shape: var(--radio-chico);
   --mat-button-filled-container-height: 3rem;
   --mat-form-field-outlined-container-shape: var(--radio-chico);
+
+  --altura-header: 4rem;
+  --z-overlay: 14;
+  --z-aside: 15;
+  --z-header: 20;
 }
 
 *,
@@ -97,4 +102,10 @@ button:not([class*="mat-"]):disabled {
   background-color: var(--color-borde);
   color: var(--color-texto-suave);
   cursor: not-allowed;
+}
+
+.form-acciones > button,
+.acciones > button {
+  min-width: 8.5rem;
+  height: 2.5rem;
 }

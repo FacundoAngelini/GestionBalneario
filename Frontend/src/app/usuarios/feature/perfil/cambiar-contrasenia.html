@@ -1,0 +1,59 @@
+<form [formRoot]="formulario" class="perfil-form" [attr.aria-busy]="formulario().submitting()">
+  <mat-form-field>
+    <mat-label>Contraseña actual</mat-label>
+    <input
+      matInput
+      [type]="verContrasenias() ? 'text' : 'password'"
+      autocomplete="current-password"
+      [formField]="formulario.contraseniaActual"
+    />
+    <mat-error>{{ formulario.contraseniaActual().errors().at(0)?.message }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Nueva contraseña</mat-label>
+    <input
+      matInput
+      [type]="verContrasenias() ? 'text' : 'password'"
+      autocomplete="new-password"
+      [formField]="formulario.nuevaContrasenia"
+    />
+    <button
+      matIconButton
+      matSuffix
+      type="button"
+      [disabled]="formulario().submitting()"
+      [attr.aria-label]="verContrasenias() ? 'Ocultar contraseñas' : 'Mostrar contraseñas'"
+      [attr.aria-pressed]="verContrasenias()"
+      (click)="verContrasenias.set(!verContrasenias())"
+    >
+      <mat-icon>{{ verContrasenias() ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
+    <mat-hint>8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</mat-hint>
+    <mat-error>{{ formulario.nuevaContrasenia().errors().at(0)?.message }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Repetir nueva contraseña</mat-label>
+    <input
+      matInput
+      [type]="verContrasenias() ? 'text' : 'password'"
+      autocomplete="new-password"
+      [formField]="formulario.confirmacion"
+    />
+    <mat-error>{{ formulario.confirmacion().errors().at(0)?.message }}</mat-error>
+  </mat-form-field>
+
+  <div class="form-acciones">
+    <button matButton="outlined" type="button" [disabled]="formulario().submitting()" (click)="cancelada.emit()">
+      Cancelar
+    </button>
+    <button matButton="filled" type="submit">
+      @if (formulario().submitting()) {
+        <mat-spinner diameter="22" aria-label="Guardando contraseña" />
+      } @else {
+        Cambiar contraseña
+      }
+    </button>
+  </div>
+</form>
