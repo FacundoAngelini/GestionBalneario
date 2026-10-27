@@ -7,6 +7,7 @@ import com.Gestion.MiBalnearioGestion.Reservas.DTO.CancelarReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.CheckoutResponseDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
+import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Servicio.IReservaServicio;
 import com.Gestion.MiBalnearioGestion.Reservas.Servicio.ReservaServicio;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +35,21 @@ import java.util.UUID;
 public class ReservaController {
 
     private final IReservaServicio reservaServicio;
+
+    @PostMapping
+    @Operation(summary = "Crear una reserva inicial",
+            description = "Registra una reserva pendiente sin generar un pago online.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Reserva creada con éxito"),
+            @ApiResponse(responseCode = "400", description = "Datos de la reserva inválidos", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflicto - Los recursos ya se encuentran reservados para las fechas seleccionadas", content = @Content)
+    })
+    public ResponseEntity<ReservaDTO> crearReservaInicial(@Valid @RequestBody ReservaDTO dto) {
+        ReservaEntity reserva = reservaServicio.crearReservaInicial(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservaServicio.buscarPorPublicId(reserva.getPublicId()));
+    }
+
     @PostMapping("/checkout-online")
     @Operation(summary = "Procesar checkout online de una reserva",
             description = "Registra una reserva de forma preliminar y genera la pasarela de pago correspondiente (Mercado Pago).")

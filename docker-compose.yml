@@ -10,7 +10,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -22,7 +22,7 @@ services:
 
   backend:
     build:
-      context: .
+      context: ./Backend
       dockerfile: Dockerfile
     container_name: balneario_backend
     restart: always
@@ -45,6 +45,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: balneario_frontend
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
 
 volumes:
   mysql_data:
