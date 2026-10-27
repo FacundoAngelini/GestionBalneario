@@ -9,12 +9,97 @@
 
     <a matButton="text" class="btn-header" routerLink="/panel">Panel</a>
 
-    <button matButton="outlined" type="button" class="btn-header btn-salir" aria-label="Cerrar sesión" (click)="cerrarSesion()">
+    <button
+      #botonPerfil
+      matIconButton
+      type="button"
+      class="btn-perfil"
+      aria-label="Abrir menú de usuario"
+      aria-controls="menu-perfil"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="menuPerfilAbierto()"
+      (click)="alternarMenuPerfil()"
+    >
+      <mat-icon>person</mat-icon>
+    </button>
+
+    <button
+      matButton="outlined"
+      type="button"
+      class="btn-header btn-salir"
+      aria-label="Cerrar sesión"
+      (click)="cerrarSesion()"
+    >
       <mat-icon>logout</mat-icon>
       <span class="texto-salir">Cerrar sesión</span>
     </button>
   } @else {
-    <a matButton="outlined" class="btn-header" routerLink="/auth/login">Ingresar</a>
-    <a matButton="filled" class="btn-registro" routerLink="/auth/registro">Registrarse</a>
+    <a matButton="outlined" class="btn-header" routerLink="/auth/login">
+      Ingresar
+    </a>
+
+    <a matButton="filled" class="btn-registro" routerLink="/auth/registro">
+      Registrarse
+    </a>
   }
 </div>
+
+@if (logueado()) {
+<div
+    class="perfil-overlay"
+    aria-hidden="true"
+    [class.visible]="menuPerfilAbierto()"
+    (click)="cerrarMenuPerfil()"
+  ></div>
+
+  <div
+    id="menu-perfil"
+    class="perfil-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="menu-perfil-titulo"
+    [class.abierto]="menuPerfilAbierto()"
+    [attr.inert]="menuPerfilAbierto() ? null : ''"
+    [cdkTrapFocus]="menuPerfilAbierto()"
+  >
+    <div class="perfil-panel-cabecera">
+      <div class="perfil-panel-identidad">
+        <div class="perfil-avatar" aria-hidden="true">
+          <mat-icon>person</mat-icon>
+        </div>
+
+        <div class="perfil-panel-texto">
+          <h2 id="menu-perfil-titulo">Mi cuenta</h2>
+          <p>{{ nombreUsuario() }}</p>
+        </div>
+      </div>
+
+      <button
+        #botonCerrarPanel
+        matIconButton
+        type="button"
+        aria-label="Cerrar panel"
+        (click)="cerrarMenuPerfil()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <nav class="perfil-panel-contenido" aria-label="Opciones de usuario">
+      <p class="perfil-panel-etiqueta">Cuenta</p>
+
+      <a
+        matButton="text"
+        class="opcion-perfil"
+        routerLink="/perfil"
+        (click)="cerrarMenuPerfil(false)"
+      >
+        <mat-icon>account_circle</mat-icon>
+        <span>Ver perfil</span>
+        <mat-icon class="icono-final">chevron_right</mat-icon>
+      </a>
+
+      <!-- Futuro: Mis reservas, etc. -->
+    </nav>
+  </div>
+}
