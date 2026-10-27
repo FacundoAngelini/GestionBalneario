@@ -4,8 +4,21 @@
   @if (errorMsg()) {
     <div class="alert-error">{{ errorMsg() }}</div>
   }
+  @if (successMsg()) {
+    <div class="alert-success" role="status">{{ successMsg() }}</div>
+  }
 
   <form (submit)="enviar($event)" novalidate class="auth-form">
+
+    <div class="form-group">
+      <label for="cliente">Cliente (UUID)</label>
+      <input id="cliente" type="text" [formField]="reservaForm.clientePublicId" />
+      @if (reservaForm.clientePublicId().touched()) {
+        @for (e of reservaForm.clientePublicId().errors(); track e.kind) {
+          <small class="field-error">{{ e.message }}</small>
+        }
+      }
+    </div>
 
     <div class="form-group">
       <label for="inicio">Fecha de inicio</label>
@@ -42,7 +55,7 @@
     </div>
 
     <button type="submit" class="btn-primary" [disabled]="reservaForm().submitting()">
-      {{ reservaForm().submitting() ? 'Procesando...' : 'Reservar y pagar' }}
+      {{ reservaForm().submitting() ? 'Procesando...' : 'Crear reserva' }}
     </button>
     <button type="button" class="btn-secondary" (click)="cancelar()">Cancelar</button>
   </form>

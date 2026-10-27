@@ -4,6 +4,7 @@ import { required, schema, validate } from '@angular/forms/signals';
 export type ReservaEstado = 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'FINALIZADA' | 'RECHAZADA';
 
 // Mirrors ReservaDTO.java. UUID -> string, LocalDate -> 'yyyy-MM-dd' string.
+
 export interface Reserva {
   publicId?: string;
   clientePublicId: string;
@@ -14,6 +15,7 @@ export interface Reserva {
 }
 
 // Mirrors CheckoutResponseDTO.java
+//para mp
 export interface CheckoutResponse {
   reservaPublicId: string;
   pagoPublicId: string;
@@ -31,6 +33,7 @@ export interface CancelarReserva {
 }
 
 // Query params of GET /reservas (all optional)
+
 export interface ReservaFiltros {
   estado?: ReservaEstado;
   fechaDesde?: string;

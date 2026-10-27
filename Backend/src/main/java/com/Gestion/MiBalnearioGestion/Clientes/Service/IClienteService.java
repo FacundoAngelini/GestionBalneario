@@ -4,6 +4,7 @@ import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioContraseniaRequest;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioNombreUsuarioRequest;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteUpdateRequest;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,4 +30,5 @@ public interface IClienteService {
     void cambiarNombreUsuarioCliente(UUID publicId, CambioNombreUsuarioRequest request);
     void cambiarContraseniaCliente(UUID publicId, CambioContraseniaRequest request);
     ClienteResponse reactivarCliente(UUID publicId);
+    ClienteResponse actualizarMiPerfil(String nombreUsuario, ClienteUpdateRequest request);
 }

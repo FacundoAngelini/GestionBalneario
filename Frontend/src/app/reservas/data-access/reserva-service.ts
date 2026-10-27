@@ -14,6 +14,10 @@ export class ReservaService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/reservas`;
 
+  crearReservaInicial(reserva: Reserva): Observable<Reserva> {
+    return this.http.post<Reserva>(this.apiUrl, reserva);
+  }
+
   checkoutOnline(reserva: Reserva): Observable<CheckoutResponse> {
     return this.http.post<CheckoutResponse>(`${this.apiUrl}/checkout-online`, reserva);
   }
