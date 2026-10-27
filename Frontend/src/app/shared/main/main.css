@@ -1,11 +1,12 @@
 .app-grid-layout {
   display: grid;
   min-height: 100vh;
+  min-height: 100dvh;
   grid-template-areas:
     "header"
     "main"
     "footer";
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto 1fr auto;
   background-color: var(--color-fondo);
 }
@@ -16,11 +17,12 @@
   color: var(--color-texto-sobre-primario);
   display: flex;
   align-items: center;
-  padding: 1rem;
-  gap: 1rem;
+  height: var(--altura-header);
+  padding: 0 0.75rem;
+  gap: 0.5rem;
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-header);
 }
 
 .btn-hamburguesa {
@@ -52,10 +54,10 @@
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
+  height: calc(100dvh - var(--altura-header));
   width: 250px;
   background-color: var(--color-superficie);
-  z-index: 30;
+  z-index: var(--z-aside);
   box-shadow: var(--sombra-suave);
   transform: translateX(-100%); 
   transition: transform 0.3s ease;
@@ -67,9 +69,9 @@
 
 .overlay {
   position: fixed;
-  inset: 0;
+  inset: var(--altura-header) 0 0 0;
   background: rgba(0,0,0,0.5);
-  z-index: 25;
+  z-index: var(--z-overlay);
 }
 
 @media (min-width: 768px) {
@@ -78,7 +80,7 @@
       "header header"
       "aside main"
       "footer footer";
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 250px minmax(0, 1fr);
   }
 
   .btn-hamburguesa {
@@ -86,11 +88,11 @@
   }
 
   .area-aside {
-    position: static; 
-    transform: translateX(0); /* Siempre visible */
-    height: auto;
-    border-right: 1px solid var(--color-borde);
-    box-shadow: none;
+    position: sticky;
+    top: var(--altura-header);
+    height: calc(100dvh - var(--altura-header));
+    overflow-y: auto;
+    transform: none;
   }
 
   .overlay {
