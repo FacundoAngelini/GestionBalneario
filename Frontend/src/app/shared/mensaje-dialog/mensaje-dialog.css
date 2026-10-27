@@ -1,0 +1,49 @@
+.dialogo-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem 0 1.5rem;
+}
+
+.dialogo-cabecera h2 {
+  padding: 0;
+  font-size: 1.4rem;
+}
+
+.dialogo-cabecera h2::before {
+  display: none;
+}
+
+.dialogo-icono {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  font-size: 2rem;
+  color: var(--color-info);
+}
+
+[data-tipo='exito'] .dialogo-icono {
+  color: var(--color-exito);
+}
+
+[data-tipo='error'] .dialogo-icono {
+  color: var(--color-error);
+}
+
+[data-tipo='advertencia'] .dialogo-icono {
+  color: var(--color-advertencia);
+}
+
+[data-tipo='confirmacion'] .dialogo-icono {
+  color: var(--color-primario);
+}
+
+p {
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+mat-dialog-actions {
+  gap: 0.5rem;
+  padding: 0 1.5rem 1rem;
+}

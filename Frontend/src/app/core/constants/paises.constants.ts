@@ -17,3 +17,13 @@ export const PAISES: Pais[] = [
 ];
 
 export const buscarPais = (prefijo: string): Pais | undefined => PAISES.find((p) => p.prefijo === prefijo);
+
+export const separarTelefono = (completo: string): { pais: string; numero: string } => {
+  const pais = PAISES.find((p) => {
+    const largoLocal = completo.length - p.prefijo.length;
+    return completo.startsWith(p.prefijo) && largoLocal >= p.min && largoLocal <= p.max;
+  });
+  return pais
+    ? { pais: pais.prefijo, numero: completo.slice(pais.prefijo.length) }
+    : { pais: PAISES[0].prefijo, numero: completo };
+};

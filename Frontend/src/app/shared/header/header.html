@@ -45,15 +45,12 @@
 </div>
 
 @if (logueado()) {
-  <button
-    type="button"
+<div
     class="perfil-overlay"
+    aria-hidden="true"
     [class.visible]="menuPerfilAbierto()"
-    [attr.inert]="menuPerfilAbierto() ? null : ''"
-    aria-label="Cerrar menú de usuario"
-    tabindex="-1"
     (click)="cerrarMenuPerfil()"
-  ></button>
+  ></div>
 
   <div
     id="menu-perfil"

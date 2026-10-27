@@ -33,18 +33,16 @@ export const routes: Routes = [
     path: '',
     canActivate: [authGuard],
     loadComponent: () => import('./shared/main/main').then(m => m.Main),
-    children: [
+     children: [
       {
         path: ROUTE_SEGMENTS.panel,
         loadComponent: () => import('./core/UI/panel/panel').then(m => m.Panel)
+      },
+      {
+        path: ROUTE_SEGMENTS.perfil,
+        loadComponent: () => import('./usuarios/feature/perfil/perfil').then(m => m.Perfil)
       }
     ]
-  },
-  {
-  path: ROUTE_SEGMENTS.perfil,
-  canActivate: [/* el mismo guard que usa /panel */],
-  loadComponent: () =>
-    import('./usuarios/feature/perfil/perfil').then((m) => m.Perfil),
   },
   {
     path: '**',
