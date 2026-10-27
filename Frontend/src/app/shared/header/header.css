@@ -177,6 +177,18 @@
   }
 }
 
+@media (max-width: 480px) {
+  :host { gap: 0.5rem; min-width: 0; }
+  .marca { font-size: 1.2rem; }
+  .sesion { gap: 0.25rem; }
+  .btn-header,
+  .btn-registro {
+    --mat-button-outlined-horizontal-padding: 12px;
+    --mat-button-filled-horizontal-padding: 12px;
+    --mat-button-text-horizontal-padding: 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .perfil-overlay,
   .perfil-panel {

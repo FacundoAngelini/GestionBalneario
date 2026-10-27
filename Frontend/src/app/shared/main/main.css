@@ -48,11 +48,13 @@
   background-color: var(--color-primario-hover);
   padding: 1rem;
   text-align: center;
+    position: relative;
+  z-index: calc(var(--z-aside) + 1);
 }
 
 .area-aside {
   position: fixed;
-  top: 0;
+  top: var(--altura-header);
   left: 0;
   height: calc(100dvh - var(--altura-header));
   width: 250px;
@@ -88,14 +90,24 @@
   }
 
   .area-aside {
+    grid-area: aside;          
     position: sticky;
     top: var(--altura-header);
-    height: calc(100dvh - var(--altura-header));
+    align-self: start;         /* no se estira más allá de su celda */
+    height: auto;
+    max-height: calc(100dvh - var(--altura-header));
+    min-height: 100%;          /* ocupa toda la columna, sin pasarse */
     overflow-y: auto;
     transform: none;
+    align-self: start;
+    max-height: calc(100dvh - var(--altura-header));
+  }
+
+  .area-main {
+    min-height: calc(100dvh - var(--altura-header));
   }
 
   .overlay {
-    display: none; 
+    display: none;
   }
 }

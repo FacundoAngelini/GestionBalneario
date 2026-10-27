@@ -103,3 +103,9 @@ button:not([class*="mat-"]):disabled {
   color: var(--color-texto-suave);
   cursor: not-allowed;
 }
+
+.form-acciones > button,
+.acciones > button {
+  min-width: 8.5rem;
+  height: 2.5rem;
+}
