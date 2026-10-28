@@ -14,8 +14,16 @@ export class ReservaService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/reservas`;
 
-  crearReservaInicial(reserva: Reserva): Observable<Reserva> {
-    return this.http.post<Reserva>(this.apiUrl, reserva);
+ reservar(reserva: Reserva): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.apiUrl}/sin-pago`, reserva);
+  }
+
+  confirmar(id: string): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.apiUrl}/${id}/confirmar`, {});
+  }
+
+  rechazar(id: string): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.apiUrl}/${id}/rechazar`, {});
   }
 
   checkoutOnline(reserva: Reserva): Observable<CheckoutResponse> {

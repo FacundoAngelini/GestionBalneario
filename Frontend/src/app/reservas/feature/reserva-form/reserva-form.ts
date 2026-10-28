@@ -46,8 +46,9 @@ export class ReservaForm {
 
     submit(this.reservaForm, async () => {
       try {
+        // Llamada directa al método reservar del ReservaService
         await firstValueFrom(
-          this.reservaService.crearReservaInicial(formToReserva(this.reservaModel())),
+          this.reservaService.reservar(formToReserva(this.reservaModel())),
         );
         this.successMsg.set('Reserva creada correctamente');
       } catch (err: any) {

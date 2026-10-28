@@ -1,5 +1,6 @@
 
 import { required, schema, validate } from '@angular/forms/signals';
+import { Modalidad } from '../../recursos/data-access/recurso-model';
 
 export type ReservaEstado = 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'FINALIZADA' | 'RECHAZADA';
 
@@ -8,6 +9,8 @@ export type ReservaEstado = 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'FINALIZA
 export interface Reserva {
   publicId?: string;
   clientePublicId: string;
+  modalidad: Modalidad;
+  montoTotal?: number;
   fechaInicio: string;
   fechaFin: string;
   recursosPublicIds: string[];
@@ -45,6 +48,7 @@ export interface ReservaFiltros {
 // so they bind directly to <input type="date"> and match the backend LocalDate.
 export interface ReservaFormModel {
   clientePublicId: string;
+  modalidad: Modalidad;
   fechaInicio: string;
   fechaFin: string;
   recursosPublicIds: string[];
@@ -52,6 +56,7 @@ export interface ReservaFormModel {
 
 export const reservaFormInicial = (): ReservaFormModel => ({
   clientePublicId: '',
+  modalidad: 'DIA',
   fechaInicio: '',
   fechaFin: '',
   recursosPublicIds: [],
