@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Controladores;
 
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoCatalogoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.IRecursoServicio;
 import io.swagger.v3.oas.annotations.Operation;
@@ -127,5 +128,14 @@ public class RecursoControlador {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
         List<RecursoDTO> disponibles = recursoServicio.listarDisponiblesParaElCliente(fechaInicio, fechaFin);
         return ResponseEntity.ok(disponibles);
+    }
+
+    @GetMapping("/catalogo")
+    @Operation(summary = "Catálogo público de carpas, sombrillas y cocheras libres en un rango")
+    public ResponseEntity<List<RecursoCatalogoDTO>> catalogo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(required = false) String tipo) {
+        return ResponseEntity.ok(recursoServicio.listarCatalogo(fechaInicio, fechaFin, tipo));
     }
 }

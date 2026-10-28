@@ -21,7 +21,7 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long>, J
     @Query("SELECT COUNT(r) > 0 FROM ReservaEntity r JOIN r.recursos rec " +
             "WHERE rec.publicId = :recursoId " +
             "AND r.estadoReserva IN :estados " +
-            "AND (:fechaInicio < r.fechaFin AND :fechaFin > r.fechaInicio)")
+            "AND (:fechaInicio <= r.fechaFin AND :fechaFin >= r.fechaInicio)")
     boolean isRecursoOcupadoEnFechas(
             @Param("recursoId") UUID recursoId,
             @Param("fechaInicio") LocalDate fechaInicio,
@@ -31,5 +31,15 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long>, J
     @Query("SELECT r FROM ReservaEntity r WHERE r.estadoReserva = :estado AND r.fechaInicio <= :fechaLimite")
     List<ReservaEntity> findReservasExpiradas(@Param("estado") EReservaEstado estado, @Param("fechaLimite") LocalDate fechaLimite);
     List<ReservaEntity> findByEstadoReservaAndFechaCreacionBefore(EReservaEstado estado, LocalDateTime limite);
+    @Query("SELECT COUNT(r) > 0 FROM ReservaEntity r JOIN r.recursos rec " +
+            "WHERE r.cliente.publicId = :clienteId " +
+            "AND r.estadoReserva IN :estados " +
+            "AND TYPE(rec) IN (CarpaEntity, SombrillaEntity) " +
+            "AND r.fechaInicio <= :inicio AND r.fechaFin >= :fin")
+    boolean clienteTieneAlojamientoQueCubre(
+            @Param("clienteId") UUID clienteId,
+            @Param("inicio") LocalDate inicio,
+            @Param("fin") LocalDate fin,
+            @Param("estados") List<EReservaEstado> estados);
 }
 

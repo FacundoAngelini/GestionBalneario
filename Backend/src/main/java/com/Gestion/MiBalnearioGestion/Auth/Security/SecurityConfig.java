@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/pedidos/**").permitAll()
                         .requestMatchers("/api/v1/recursos/**").permitAll()
                         .requestMatchers("/api/v1/public/webhooks/**").permitAll()
+                        .requestMatchers("/api/v1/temporada").permitAll()
                         .anyRequest().authenticated())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

@@ -15,6 +15,7 @@ public class PrecioRecursoMapper implements IMapper<PrecioRecursoEntity, PrecioR
     public PrecioRecursoDTO convertToDTO(PrecioRecursoEntity entity) {
         PrecioRecursoDTO dto = new PrecioRecursoDTO();
         dto.setPublicId(entity.getPublicId());
+        dto.setModalidad(entity.getModalidad());
         dto.setPrecio(entity.getPrecio());
         dto.setFechaVigencia(entity.getFechaVigencia());
         dto.setFechaCaducada(entity.getFechaCaducada());
@@ -26,6 +27,7 @@ public class PrecioRecursoMapper implements IMapper<PrecioRecursoEntity, PrecioR
     @Override
     public PrecioRecursoEntity convertToEntity(PrecioRecursoDTO dto, Class<PrecioRecursoEntity> clase) {
         PrecioRecursoEntity entity = new PrecioRecursoEntity();
+        entity.setModalidad(dto.getModalidad());
         entity.setPrecio(dto.getPrecio());
         entity.setFechaVigencia(dto.getFechaVigencia());
         entity.setFechaCaducada(dto.getFechaCaducada());

@@ -21,4 +21,7 @@ public interface IReservaServicio {
                                               UUID clientePublicId);
     void cancelarReservaPorPersonal(UUID reservaPublicId);
     void cancelarReservaPorExpiracion(UUID publicId);
+    ReservaDTO reservarSinPago(ReservaDTO dto);
+    ReservaDTO confirmarReserva(UUID reservaPublicId);
+    ReservaDTO rechazarReserva(UUID reservaPublicId);
 }

@@ -82,7 +82,7 @@ public class ReservaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or (#clientePublicId != null and @securityService.esElPropioCliente(#clientePublicId))")
     @Operation(summary = "Listar y filtrar reservas",
             description = "Obtiene una lista de reservas que pueden filtrarse de manera opcional por estado, rango de fechas y cliente. Requiere rol ADMIN, ADMINISTRADOR o GERENTE.")
     @ApiResponses(value = {
@@ -106,7 +106,7 @@ public class ReservaController {
 
 
     @PutMapping("/cancelar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO') or @securityService.esElPropioCliente(#dto.clientePublicId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esElPropioCliente(#dto.clientePublicId)")
     @Operation(summary = "Cancelar una reserva (Usuario/Cliente)",
             description = "Solicita la cancelación de una reserva validando políticas de anticipación. Puede ser invocado por personal interno o por el propio cliente.")
     @ApiResponses(value = {
@@ -122,7 +122,7 @@ public class ReservaController {
 
 
     @PutMapping("/{id}/cancelar-administrativo")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Cancelar una reserva por la vía administrativa",
             description = "Fuerza la cancelación de una reserva por parte del personal del sistema, omitiendo ciertas restricciones aplicadas al cliente.")
     @ApiResponses(value = {
@@ -135,5 +135,26 @@ public class ReservaController {
             @PathVariable UUID id) {
         reservaServicio.cancelarReservaPorPersonal(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/sin-pago")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esElPropioCliente(#dto.clientePublicId)")
+    @Operation(summary = "Reservar sin pago online", description = "Crea una reserva PENDIENTE de confirmación manual por el personal.")
+    public ResponseEntity<ReservaDTO> reservarSinPago(@Valid @RequestBody ReservaDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservaServicio.reservarSinPago(dto));
+    }
+
+    @PutMapping("/{id}/confirmar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    @Operation(summary = "Confirmar una reserva pendiente")
+    public ResponseEntity<ReservaDTO> confirmar(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservaServicio.confirmarReserva(id));
+    }
+
+    @PutMapping("/{id}/rechazar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    @Operation(summary = "Rechazar una reserva pendiente")
+    public ResponseEntity<ReservaDTO> rechazar(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservaServicio.rechazarReserva(id));
     }
 }

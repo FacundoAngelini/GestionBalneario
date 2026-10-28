@@ -40,8 +40,8 @@ public class PrecioRecursoServicio implements IPrecioRecursoServicio {
         LocalDate fin = (dto.getFechaCaducada() != null) ? dto.getFechaCaducada() : LocalDate.of(2099, 12, 31); // Por si es vigencia indefinida
 
         boolean seSolapa = precioRecursoRepositorio
-                .existsByRecurso_PublicIdAndFechaVigenciaLessThanEqualAndFechaCaducadaGreaterThanEqual(
-                        dto.getRecursoPublicId(), fin, dto.getFechaVigencia()
+                .existsByRecurso_PublicIdAndModalidadAndFechaVigenciaLessThanEqualAndFechaCaducadaGreaterThanEqual(
+                        dto.getRecursoPublicId(), dto.getModalidad(), fin, dto.getFechaVigencia()
                 );
 
         if (seSolapa) {

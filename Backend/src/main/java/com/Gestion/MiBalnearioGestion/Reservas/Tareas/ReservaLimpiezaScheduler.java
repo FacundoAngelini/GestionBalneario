@@ -23,16 +23,25 @@ public class ReservaLimpiezaScheduler {
     @Scheduled(fixedDelay = 60000)
     @Transactional
     public void limpiarReservasExpiradas() {
+        // 1. Buscamos TODAS las reservas pendientes que tengan más de 15 minutos
         LocalDateTime limiteTolerancia = LocalDateTime.now().minusMinutes(15);
         List<ReservaEntity> expiradas = reservaRepositorio
                 .findByEstadoReservaAndFechaCreacionBefore(EReservaEstado.PENDIENTE, limiteTolerancia);
 
         if (!expiradas.isEmpty()) {
-            System.out.println("Limpieza automatica: Cancelando " + expiradas.size() + " reservas por superar los 15 minutos de tolerancia sin pagar");
-
             for (ReservaEntity reserva : expiradas) {
+
+                boolean esManual = reserva.getPagosReservaaa() == null;
+
+                // 2. REGLA DE 48 HS PARA RESERVAS MANUALES
+                if (esManual && reserva.getFechaCreacion().isAfter(LocalDateTime.now().minusHours(48))) {
+                    continue; // Todavía está en el periodo de gracia de 48hs. Se saltea.
+                }
+
+                // 3. REGLA DE 15 MIN (Mercado Pago) o MANUAL VENCIDA (> 48hs)
                 try {
                     reservaServicio.cancelarReservaPorExpiracion(reserva.getPublicId());
+                    System.out.println("Limpieza automática: Reserva " + reserva.getPublicId() + " CANCELADA por vencimiento.");
                 } catch (Exception e) {
                     System.err.println("Error al procesar la expiración de la reserva " + reserva.getPublicId() + ": " + e.getMessage());
                 }

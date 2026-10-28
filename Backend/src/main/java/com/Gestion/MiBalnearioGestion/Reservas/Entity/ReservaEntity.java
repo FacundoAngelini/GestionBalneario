@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Reservas.Entity;
 import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Pagos.Entity.PagoReservaEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
+import com.Gestion.MiBalnearioGestion.Recursos.Enum.EModalidad;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -54,6 +55,10 @@ public class ReservaEntity {
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "modalidad", nullable = false, columnDefinition = "varchar(20) default 'DIA'")
+    private EModalidad modalidad;
 
     @ManyToOne
     @JoinColumn(name="cliente_id", nullable = false)
