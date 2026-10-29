@@ -5,7 +5,6 @@
   </header>
 
   <form class="page__form" (submit)="guardar($event)" novalidate>
-
     <section class="card">
       <h2>Recurso</h2>
       <div class="form-grid">
@@ -20,91 +19,147 @@
 
         <div class="field">
           <label class="field__label" for="sector">Sector</label>
-          <select id="sector" class="field__control" [formField]="f.sectorPublicId"
-        [attr.aria-invalid]="!!errores().sector && f.sectorPublicId().touched()">
-  <option value="">Elegí un sector</option>
-  @for (s of sectores(); track s.publicId) {
-    <option [value]="s.publicId">{{ s.nombre }}</option>
-  }
-</select>
-@if (errores().sector && f.sectorPublicId().touched()) {
-  <p class="field__error">{{ errores().sector }}</p>
-}
+          <select
+            id="sector"
+            class="field__control"
+            [formField]="f.sectorPublicId"
+            [attr.aria-invalid]="!!errores().sector && f.sectorPublicId().touched()"
+          >
+            <option value="">Elegí un sector</option>
+            @for (s of sectores(); track s.publicId) {
+              <option [value]="s.publicId">{{ s.nombre }}</option>
+            }
+          </select>
+          @if (errores().sector && f.sectorPublicId().touched()) {
+            <p class="field__error">{{ errores().sector }}</p>
+          }
         </div>
 
         @if (modelo().tipo === 'CARPA') {
           <div class="field">
-  <label class="field__label" for="pasillo">Pasillo (1 a {{ maxPasillo }})</label>
-  <input id="pasillo" type="number" inputmode="numeric" class="field__control"
-         [formField]="f.pasillo" [attr.aria-invalid]="!!errores().pasillo">
-  @if (errores().pasillo) {
-    <p class="field__error">{{ errores().pasillo }}</p>
-  }
-</div>
+            <label class="field__label" for="pasillo"> Pasillo (1 a {{ maxPasillo }}) </label>
+
+            <input
+              id="pasillo"
+              type="number"
+              inputmode="numeric"
+              class="field__control"
+              [formField]="f.pasillo"
+              [attr.aria-invalid]="!!errores().pasillo"
+            />
+
+            @if (errores().pasillo) {
+              <p class="field__error">{{ errores().pasillo }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="capacidad">
+              Capacidad ({{ minCapacidad }} a {{ maxCapacidad }} personas)
+            </label>
+
+            <input
+              id="capacidad"
+              type="number"
+              inputmode="numeric"
+              class="field__control"
+              [formField]="f.capacidad"
+              [attr.aria-invalid]="!!errores().capacidad"
+            />
+
+            @if (errores().capacidad) {
+              <p class="field__error">{{ errores().capacidad }}</p>
+            }
+          </div>
         }
-<div class="field">
-  <label class="field__label" for="capacidad">Capacidad ({{ minCapacidad }} a {{ maxCapacidad }} personas)</label>
-  <input id="capacidad" type="number" inputmode="numeric" class="field__control"
-         [formField]="f.capacidad" [attr.aria-invalid]="!!errores().capacidad">
-  @if (errores().capacidad) {
-    <p class="field__error">{{ errores().capacidad }}</p>
-  }
-</div>
 
         @if (modelo().tipo === 'SOMBRILLA') {
           <div class="field">
             <label class="field__label" for="tamanio">Tamaño</label>
+
             <select id="tamanio" class="field__control" [formField]="f.tamanio">
               <option value="CHICO">Chico</option>
               <option value="MEDIANO">Mediano</option>
               <option value="GRANDE">Grande</option>
             </select>
           </div>
+
+          <div class="field">
+            <label class="field__label" for="capacidadSombrilla"> Capacidad </label>
+
+            <input
+              id="capacidadSombrilla"
+              type="text"
+              class="field__control"
+              [value]="capacidadSombrilla()"
+              readonly
+              aria-readonly="true"
+            />
+          </div>
         }
       </div>
 
-    <p class="field__hint nota">
-      Máximo {{ maxPorLote }} recursos por {{ modelo().tipo === 'CARPA' ? 'pasillo' : 'sector' }} en cada carga.
-    </p>
+      <p class="field__hint nota">
+        Máximo {{ maxPorLote }} recursos por
+        {{ modelo().tipo === 'CARPA' ? 'pasillo' : 'sector' }} en cada carga.
+      </p>
     </section>
 
     <section class="card">
-  <h2>Numeración</h2>
-  <div class="form-grid">
-    <div class="field campo-ancho">
-      <label class="field__label" for="prefijo">Nombre base</label>
-      <input id="prefijo" type="text" autocomplete="off" class="field__control"
-             [formField]="f.prefijoNombre" [attr.aria-invalid]="!!errores().nombre">
-      <p class="field__hint">{{ modelo().prefijoNombre.length }}/{{ maxNombre }} caracteres</p>
-      @if (errores().nombre) {
-        <p class="field__error">{{ errores().nombre }}</p>
-      }
-    </div>
-    <div class="field">
-      <label class="field__label" for="desde">Desde el número</label>
-      <input id="desde" type="number" inputmode="numeric" class="field__control"
-             [formField]="f.numeroDesde" [attr.aria-invalid]="!!errores().desde">
-      @if (errores().desde) {
-        <p class="field__error">{{ errores().desde }}</p>
-      }
-    </div>
-    <div class="field">
-      <label class="field__label" for="hasta">Hasta el número</label>
-      <input id="hasta" type="number" inputmode="numeric" class="field__control"
-             [formField]="f.numeroHasta" [attr.aria-invalid]="!!errores().hasta">
-      @if (errores().hasta) {
-        <p class="field__error">{{ errores().hasta }}</p>
-      }
-    </div>
-  </div>
+      <h2>Numeración</h2>
+      <div class="form-grid">
+        <div class="field campo-ancho">
+          <label class="field__label" for="prefijo">Nombre base</label>
+          <input
+            id="prefijo"
+            type="text"
+            autocomplete="off"
+            class="field__control"
+            [formField]="f.prefijoNombre"
+            [attr.aria-invalid]="!!errores().nombre"
+          />
+          <p class="field__hint">{{ modelo().prefijoNombre.length }}/{{ maxNombre }} caracteres</p>
+          @if (errores().nombre) {
+            <p class="field__error">{{ errores().nombre }}</p>
+          }
+        </div>
+        <div class="field">
+          <label class="field__label" for="desde">Desde el número</label>
+          <input
+            id="desde"
+            type="number"
+            inputmode="numeric"
+            class="field__control"
+            [formField]="f.numeroDesde"
+            [attr.aria-invalid]="!!errores().desde"
+          />
+          @if (errores().desde) {
+            <p class="field__error">{{ errores().desde }}</p>
+          }
+        </div>
+        <div class="field">
+          <label class="field__label" for="hasta">Hasta el número</label>
+          <input
+            id="hasta"
+            type="number"
+            inputmode="numeric"
+            class="field__control"
+            [formField]="f.numeroHasta"
+            [attr.aria-invalid]="!!errores().hasta"
+          />
+          @if (errores().hasta) {
+            <p class="field__error">{{ errores().hasta }}</p>
+          }
+        </div>
+      </div>
 
-  @if (!errores().desde && !errores().hasta) {
-    <p class="resumen">
-      Se crearán <strong>{{ cantidad() }}</strong> recursos:
-      {{ modelo().prefijoNombre }} {{ modelo().numeroDesde }} … {{ modelo().prefijoNombre }} {{ modelo().numeroHasta }}
-    </p>
-  }
-</section>
+      @if (!errores().desde && !errores().hasta) {
+        <p class="resumen">
+          Se crearán <strong>{{ cantidad() }}</strong> recursos: {{ modelo().prefijoNombre }}
+          {{ modelo().numeroDesde }} … {{ modelo().prefijoNombre }} {{ modelo().numeroHasta }}
+        </p>
+      }
+    </section>
 
     <section class="card">
       <h2>Fechas y precios</h2>
@@ -114,53 +169,73 @@
 
       <div class="form-grid nota">
         <div class="field">
-  <label class="field__label" for="vigencia">Vigente desde</label>
-  <input id="vigencia" class="field__control control-fecha" readonly
-         placeholder="dd/mm/aaaa"
-         [matDatepicker]="calendarioDesde" [value]="fechaDesde()" [min]="hoy"
-         (dateChange)="elegirFecha('fechaVigencia', $event.value)"
-         (click)="calendarioDesde.open()"
-         [attr.aria-invalid]="!!errores().fechaDesde">
-  <mat-datepicker #calendarioDesde panelClass="calendario-brisa" [touchUi]="esMovil" />
-  @if (errores().fechaDesde) {
-    <p class="field__error">{{ errores().fechaDesde }}</p>
-  }
-</div>
-<div class="field">
-  <label class="field__label" for="caducidad">Vigente hasta</label>
-  <input id="caducidad" class="field__control control-fecha" readonly
-         placeholder="dd/mm/aaaa"
-         [matDatepicker]="calendarioHasta" [value]="fechaHasta()" [min]="fechaDesde() ?? hoy"
-         (dateChange)="elegirFecha('fechaCaducada', $event.value)"
-         (click)="calendarioHasta.open()"
-         [attr.aria-invalid]="!!errores().fechaHasta">
-  <mat-datepicker #calendarioHasta panelClass="calendario-brisa" [touchUi]="esMovil" />
-  @if (errores().fechaHasta) {
-    <p class="field__error">{{ errores().fechaHasta }}</p>
-  }
-</div>
+          <label class="field__label" for="vigencia">Vigente desde</label>
+          <input
+            id="vigencia"
+            class="field__control control-fecha"
+            readonly
+            placeholder="dd/mm/aaaa"
+            [matDatepicker]="calendarioDesde"
+            [value]="fechaDesde()"
+            [min]="hoy"
+            (dateChange)="elegirFecha('fechaVigencia', $event.value)"
+            (click)="calendarioDesde.open()"
+            [attr.aria-invalid]="!!errores().fechaDesde"
+          />
+          <mat-datepicker #calendarioDesde panelClass="calendario-brisa" [touchUi]="esMovil" />
+          @if (errores().fechaDesde) {
+            <p class="field__error">{{ errores().fechaDesde }}</p>
+          }
+        </div>
+        <div class="field">
+          <label class="field__label" for="caducidad">Vigente hasta</label>
+          <input
+            id="caducidad"
+            class="field__control control-fecha"
+            readonly
+            placeholder="dd/mm/aaaa"
+            [matDatepicker]="calendarioHasta"
+            [value]="fechaHasta()"
+            [min]="fechaDesde() ?? hoy"
+            (dateChange)="elegirFecha('fechaCaducada', $event.value)"
+            (click)="calendarioHasta.open()"
+            [attr.aria-invalid]="!!errores().fechaHasta"
+          />
+          <mat-datepicker #calendarioHasta panelClass="calendario-brisa" [touchUi]="esMovil" />
+          @if (errores().fechaHasta) {
+            <p class="field__error">{{ errores().fechaHasta }}</p>
+          }
+        </div>
       </div>
-
 
       <div class="form-grid precios nota">
         @for (p of camposPrecio; track p.id) {
-         <div class="field">
-  <label class="field__label" [for]="p.id">{{ etiquetaModalidad[p.modalidad] }} ($)</label>
-  <input [id]="p.id" type="text" inputmode="decimal" autocomplete="off" placeholder="Se calcula"
-       class="field__control" [value]="textosPrecio()[p.error]"
-       (input)="cambiarPrecio(p.error, $event)"
-       [attr.aria-invalid]="!!errores()[p.error]">
-  @if (errores()[p.error]) {
-    <p class="field__error">{{ errores()[p.error] }}</p>
-  }
-</div>
+          <div class="field">
+            <label class="field__label" [for]="p.id"
+              >{{ etiquetaModalidad[p.modalidad] }} ($)</label
+            >
+            <input
+              [id]="p.id"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              placeholder="Se calcula"
+              class="field__control"
+              [value]="textosPrecio()[p.error]"
+              (input)="cambiarPrecio(p.error, $event)"
+              [attr.aria-invalid]="!!errores()[p.error]"
+            />
+            @if (errores()[p.error]) {
+              <p class="field__error">{{ errores()[p.error] }}</p>
+            }
+          </div>
         }
       </div>
 
       <p class="field__hint nota">
         Cargá al menos un precio. Si dejás una modalidad vacía, se calcula (prorrateo) desde la
-        siguiente más larga que cargaste: día = quincena ÷ 15, quincena = mes ÷ 2 y
-        mes = temporada ÷ meses del rango. Si no hay una más larga cargada, esa modalidad no se ofrece.
+        siguiente más larga que cargaste: día = quincena ÷ 15, quincena = mes ÷ 2 y mes = temporada
+        ÷ meses del rango. Si no hay una más larga cargada, esa modalidad no se ofrece.
       </p>
 
       @if (preciosCalculados().length > 0) {
@@ -175,17 +250,21 @@
       }
 
       @if (sinPrecios()) {
-      <p class="field__hint nota">Cargá al menos un precio mayor a 0.</p>
-    }
+        <p class="field__hint nota">Cargá al menos un precio mayor a 0.</p>
+      }
     </section>
 
     <div class="acciones">
-     @if (!listo() && !enviando()) {
-    <p class="field__hint acciones__ayuda">Completá los campos marcados para poder crear.</p>
-   }
-  <button type="submit" class="btn btn--primary" [disabled]="!listo() || enviando()">
-    @if (enviando()) { Creando… } @else { Crear {{ cantidad() }} recursos }
-  </button>
-</div>
+      @if (!listo() && !enviando()) {
+        <p class="field__hint acciones__ayuda">Completá los campos marcados para poder crear.</p>
+      }
+      <button type="submit" class="btn btn--primary" [disabled]="!listo() || enviando()">
+        @if (enviando()) {
+          Creando…
+        } @else {
+          Crear {{ cantidad() }} recursos
+        }
+      </button>
+    </div>
   </form>
 </main>

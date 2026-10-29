@@ -99,6 +99,16 @@ export class CargaMasiva {
   protected readonly maxCapacidad = MAX_CAPACIDAD;
   protected readonly maxNombre = MAX_NOMBRE;
 
+  protected readonly capacidadSombrilla = computed(() => {
+  const capacidades: Record<TamanioSombrilla, string> = {
+    CHICO: '2 personas',
+    MEDIANO: '3–4 personas',
+    GRANDE: '5–6 personas',
+  };
+
+  return capacidades[this.modelo().tamanio];
+});
+
   // En celular el calendario se abre como ventana modal (touchUi); en pantallas grandes, como desplegable.
   protected readonly esMovil =
     typeof window !== 'undefined' && window.matchMedia('(max-width: 40rem)').matches;
