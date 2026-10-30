@@ -47,4 +47,13 @@ public class ReservaDTO {
 
     @Schema(description = "Estado actual en el que se encuentra la reserva", implementation = EReservaEstado.class)
     private EReservaEstado estadoReserva;
+
+    @Schema(description = "Nombre y tipo de los recursos de la reserva (solo lectura)")
+    private List<RecursoResumenDTO> recursosDetalle;
+
+    @Schema(description = "Nombre y apellido del cliente (solo lectura)", example = "Mariana Gómez")
+    private String clienteNombre;
+
+    @Schema(description = "DNI del cliente (solo lectura)", example = "38123456")
+    private Integer clienteDni;
 }

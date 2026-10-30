@@ -29,6 +29,8 @@ import org.hibernate.Hibernate;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.Gestion.MiBalnearioGestion.Reservas.DTO.RecursoResumenDTO;
+import com.Gestion.MiBalnearioGestion.Recursos.Enum.ETipoRecurso;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -158,7 +160,7 @@ public class ReservaServicio implements IReservaServicio{
     public ReservaDTO buscarPorPublicId(UUID publicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new ReservaException("La reserva especificada no existe.", publicId.toString()));
-        return reservaMapper.convertToDTO(reserva);
+        return aDTO(reserva);
     }
 
 
@@ -176,7 +178,7 @@ public class ReservaServicio implements IReservaServicio{
                         ReservaSpecification.clientePublicIdIgual(clientePublicId)
                 );
         return reservaRepository.findAll(spec).stream()
-                .map(reservaMapper::convertToDTO)
+                .map(this::aDTO)
                 .toList();
     }
 
@@ -300,7 +302,7 @@ public class ReservaServicio implements IReservaServicio{
     public List<ReservaDTO> listarCocherasDependientes(UUID reservaPublicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
                 .orElseThrow(() -> new EntidadNoEncontradaException("La reserva no existe", reservaPublicId.toString()));
-        return cocherasQueQuedanSinAlojamiento(reserva).stream().map(reservaMapper::convertToDTO).toList();
+        return cocherasQueQuedanSinAlojamiento(reserva).stream().map(this::aDTO).toList();
     }
 
     /** Reservas que SOLO tienen cochera y quedarían sin carpa/sombrilla que las cubra si se cancela 'reserva'. */
@@ -323,6 +325,26 @@ public class ReservaServicio implements IReservaServicio{
     private boolean esCarpaOSombrilla(RecursoEntity r) {
         Object real = Hibernate.unproxy(r);
         return real instanceof CarpaEntity || real instanceof SombrillaEntity;
+    }
+
+    /** Convierte la reserva a DTO y le suma los nombres de los recursos y los datos del cliente. */
+    private ReservaDTO aDTO(ReservaEntity reserva) {
+        ReservaDTO dto = reservaMapper.convertToDTO(reserva);
+        dto.setRecursosDetalle(reserva.getRecursos().stream()
+                .map(r -> new RecursoResumenDTO(r.getPublicId(), r.getNombre(), tipoDe(r)))
+                .toList());
+        ClienteEntity cliente = reserva.getCliente();
+        dto.setClienteNombre(cliente.getNombre() + " " + cliente.getApellido());
+        dto.setClienteDni(cliente.getDni());
+        return dto;
+    }
+
+    private ETipoRecurso tipoDe(RecursoEntity recurso) {
+        Object real = Hibernate.unproxy(recurso);
+        if (real instanceof CarpaEntity) return ETipoRecurso.CARPA;
+        if (real instanceof SombrillaEntity) return ETipoRecurso.SOMBRILLA;
+        if (real instanceof CocheraEntity) return ETipoRecurso.COCHERA;
+        return null; // mesa, pileta: no se reservan desde el catálogo
     }
 
     /** Bloquea la cancelación si deja cocheras sueltas, salvo que se confirme cancelarlas también. */
@@ -402,7 +424,7 @@ public class ReservaServicio implements IReservaServicio{
     @Transactional
     @Override
     public ReservaDTO reservarSinPago(ReservaDTO dto) {
-        return reservaMapper.convertToDTO(this.crearReservaInicial(dto));
+        return aDTO(this.crearReservaInicial(dto));
     }
 
     @Transactional
@@ -411,7 +433,7 @@ public class ReservaServicio implements IReservaServicio{
         ReservaEntity reserva = buscarPendiente(reservaPublicId);
         reserva.setEstadoReserva(EReservaEstado.CONFIRMADA);
         reserva.setReservado(true);
-        return reservaMapper.convertToDTO(reservaRepository.save(reserva));
+        return aDTO(reservaRepository.save(reserva));
     }
 
     @Transactional
@@ -420,7 +442,7 @@ public class ReservaServicio implements IReservaServicio{
         ReservaEntity reserva = buscarPendiente(reservaPublicId);
         reserva.setEstadoReserva(EReservaEstado.RECHAZADA);
         reserva.setReservado(false);
-        return reservaMapper.convertToDTO(reservaRepository.save(reserva));
+        return aDTO(reservaRepository.save(reserva));
     }
 
     private ReservaEntity buscarPendiente(UUID publicId) {
