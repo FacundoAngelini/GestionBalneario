@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,4 +57,7 @@ public class ReservaDTO {
 
     @Schema(description = "DNI del cliente (solo lectura)", example = "38123456")
     private Integer clienteDni;
+
+    @Schema(description = "Fecha y hora en que se creó la solicitud (solo lectura)")
+    private LocalDateTime fechaCreacion;
 }
