@@ -98,8 +98,7 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(ReservaException.class)
     public ResponseEntity<ErrorResponse> ReservaExceptionHandler(ReservaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Error en la reserva" + ex.getMessage());
-        error.setPath(request.getRequestURI());
+        ErrorResponse error = new ErrorResponse(400, "Error en la reserva: " + ex.getMessage());        error.setPath(request.getRequestURI());
         return ResponseEntity.status(400).body(error);
     }
 
