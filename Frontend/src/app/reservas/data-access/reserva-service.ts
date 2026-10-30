@@ -7,6 +7,7 @@ import {
   CheckoutResponse,
   Reserva,
   ReservaFiltros,
+  ReservaRequest,
 } from './reserva-model';
 
 @Service()
@@ -14,7 +15,7 @@ export class ReservaService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/reservas`;
 
- reservar(reserva: Reserva): Observable<Reserva> {
+ reservar(reserva: ReservaRequest): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.apiUrl}/sin-pago`, reserva);
   }
 
@@ -26,7 +27,7 @@ export class ReservaService {
     return this.http.put<Reserva>(`${this.apiUrl}/${id}/rechazar`, {});
   }
 
-  checkoutOnline(reserva: Reserva): Observable<CheckoutResponse> {
+  checkoutOnline(reserva: ReservaRequest): Observable<CheckoutResponse> {
     return this.http.post<CheckoutResponse>(`${this.apiUrl}/checkout-online`, reserva);
   }
 
@@ -48,5 +49,9 @@ export class ReservaService {
 
   cancelarAdministrativo(id: string): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/cancelar-administrativo`, {});
+  }
+
+   reservarSinPago(pedido: ReservaRequest) {
+    return this.http.post<Reserva>(`${this.apiUrl}/sin-pago`, pedido);
   }
 }

@@ -1,0 +1,97 @@
+/* Mobile first: lo de abajo es para celular; el @media acomoda los botones en pantallas más anchas. */
+
+.solicitud,
+.solicitud__form {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.solicitud {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
+.solicitud :is(h1, h2, h3) {
+  margin-bottom: var(--espacio-2);
+}
+
+.seccion {
+  display: grid;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+}
+
+.destacado {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.lista-recursos {
+  display: grid;
+  gap: var(--espacio-2);
+  list-style: none;
+}
+
+.lista-recursos li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  overflow-wrap: anywhere;
+}
+
+.pasos {
+  display: grid;
+  gap: var(--espacio-2);
+  padding-left: var(--espacio-5);
+}
+
+/* Datos de cada reserva creada: etiqueta a la izquierda, valor a la derecha */
+.datos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--espacio-2) var(--espacio-4);
+}
+
+.datos dt {
+  color: var(--color-texto-suave);
+}
+
+.datos dd {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.datos .codigo {
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.exito {
+  padding: var(--espacio-4);
+  border-color: var(--color-exito);
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
+
+/* Botones: apilados en celular (el principal queda abajo, al alcance del pulgar) */
+.acciones-solicitud {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.acciones-solicitud .btn {
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .acciones-solicitud {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .acciones-solicitud .btn {
+    width: auto;
+  }
+}

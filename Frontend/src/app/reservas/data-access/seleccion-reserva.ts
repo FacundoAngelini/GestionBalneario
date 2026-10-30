@@ -1,5 +1,5 @@
 import { computed, Service, signal } from '@angular/core';
-import { RecursoCatalogo } from '../../recursos/data-access/recurso-model';
+import { Modalidad, RecursoCatalogo } from '../../recursos/data-access/recurso-model';
 
 export interface Periodo {
   fechaInicio: string;
@@ -8,10 +8,9 @@ export interface Periodo {
 
 @Service()
 export class SeleccionReserva {
-  /** fechas que el usuario esta escribiendo en el buscador (se conservan al ir al login y volver). */
-  readonly busqueda = signal<Periodo>({ fechaInicio: '', fechaFin: '' });
-
+readonly busqueda = signal<Busqueda>({ fechaInicio: '', fechaFin: '', modalidad: 'DIA' });
   /** fechas de la ultima búsqueda hecha: a ellas pertenece lo que se eligió. */
+  
   readonly periodo = signal<Periodo | null>(null);
 
   readonly elegidos = signal<RecursoCatalogo[]>([]);
@@ -20,6 +19,7 @@ export class SeleccionReserva {
   readonly alojamientos = computed(() => this.elegidos().filter((r) => r.tipo !== 'COCHERA'));
   readonly cocheras = computed(() => this.elegidos().filter((r) => r.tipo === 'COCHERA'));
 
+  
   // Regla del negocio: una cochera solo se reserva junto con una carpa o una sombrilla
   readonly cocheraSinAlojamiento = computed(
     () => this.cocheras().length > 0 && this.alojamientos().length === 0,
@@ -40,6 +40,16 @@ export class SeleccionReserva {
     this.elegidos.update((lista) => lista.filter((r) => r.publicId !== publicId));
   }
 
+    vaciar(): void {
+    this.elegidos.set([]);
+  }
+    /** Tras enviar la solicitud: se empieza de cero */
+  limpiar(): void {
+    this.elegidos.set([]);
+    this.periodo.set(null);
+    this.busqueda.set({ fechaInicio: '', fechaFin: '', modalidad: 'DIA' });
+  }
+
   /**
    * Tras una búsqueda nueva: guarda las fechas y conserva solo los recursos elegidos que
    * siguen libres. Se reemplazan por los datos frescos (precios incluidos).
@@ -53,4 +63,8 @@ export class SeleccionReserva {
     this.elegidos.set(siguen);
     return perdidos;
   }
+  
+}
+export interface Busqueda extends Periodo {
+  modalidad: Modalidad;
 }

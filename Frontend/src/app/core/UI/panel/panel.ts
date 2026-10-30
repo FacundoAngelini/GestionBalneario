@@ -1,9 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { AuthClient } from '../../../auth/data-access/auth-client';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
-  imports: [],
+  imports: [RouterLink],
   selector: 'app-panel',
   styleUrl: './panel.css',
   templateUrl: './panel.html',

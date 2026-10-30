@@ -1,0 +1,126 @@
+<section class="solicitud">
+  <header>
+    <h1>Confirmar solicitud</h1>
+    @if (!resultado()) {
+      <p class="field__hint">Revisá lo que elegiste antes de enviarlo.</p>
+    }
+  </header>
+
+  @if (resultado(); as r) {
+    <div class="card exito" role="status">
+      <h2>{{ r.noCreadas ? 'Solicitud enviada parcialmente' : '¡Solicitud enviada!' }}</h2>
+      <p>
+        Quedó pendiente de confirmación. El personal la revisa dentro de las
+        {{ horasConfirmar }} horas; si no se confirma en ese plazo, vence y los recursos se liberan.
+      </p>
+    </div>
+
+    @for (item of r.creadas; track item.reserva.publicId) {
+      <article class="card seccion">
+        <h3>{{ item.nombres }}</h3>
+        <dl class="datos">
+          <dt>Período</dt>
+          <dd>{{ formatoRango(item.reserva.fechaInicio, item.reserva.fechaFin) }}</dd>
+          <dt>Modalidad</dt>
+          <dd>{{ etiquetaModalidad[item.reserva.modalidad] }}</dd>
+          @if (item.reserva.montoTotal != null) {
+            <dt>Total</dt>
+            <dd>{{ formatoPrecio(item.reserva.montoTotal) }}</dd>
+          }
+          <dt>Estado</dt>
+          <dd>{{ etiquetaEstado[item.reserva.estadoReserva] }}</dd>
+          <dt>Código</dt>
+          <dd class="codigo">{{ item.reserva.publicId }}</dd>
+        </dl>
+      </article>
+    }
+
+    @if (r.noCreadas) {
+      <div class="card seccion" role="alert">
+        <h3>No se pudo solicitar</h3>
+        <p><strong>{{ r.noCreadas }}</strong></p>
+        <p class="field__error">{{ r.motivo }}</p>
+        <p class="field__hint">Podés intentarlo de nuevo desde el catálogo.</p>
+      </div>
+    }
+
+    <div class="acciones-solicitud">
+      <a class="btn btn--secundario" routerLink="/catalogo">Seguir mirando el catálogo</a>
+      <a class="btn btn--primary" routerLink="/panel">Ir al panel</a>
+    </div>
+  } @else {
+    <form class="solicitud__form" (submit)="confirmar($event)" novalidate>
+      <section class="card seccion">
+        <h2>Tu estadía</h2>
+        <p class="destacado">{{ periodoTexto() }}</p>
+      </section>
+
+      <section class="card seccion">
+        <h2>Recursos elegidos</h2>
+        <ul class="lista-recursos">
+          @for (r of seleccion.elegidos(); track r.publicId) {
+            <li>
+              <span>
+                {{ r.nombre }}
+                <span class="field__hint">· {{ r.sectorNombre }}</span>
+              </span>
+              <span class="etiqueta">{{ etiquetaTipo[r.tipo] }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="card seccion">
+        <h2>Modalidad de alquiler</h2>
+        <div class="field">
+          <label class="field__label" for="modalidad">Elegí cómo querés alquilar</label>
+          <select id="modalidad" class="field__control" [formField]="f.modalidad">
+            <option value="">Elegí una modalidad</option>
+            @for (o of opciones(); track o.modalidad) {
+              <option [value]="o.modalidad">
+                {{ etiquetaModalidad[o.modalidad] }} · {{ formatoPrecio(o.precio) }}
+              </option>
+            }
+          </select>
+          @if (sinModalidades()) {
+            <p class="field__error" role="alert">
+              Los recursos que elegiste no comparten una modalidad de alquiler. Volvé al catálogo y quitá alguno.
+            </p>
+          } @else if (precioElegido() !== null) {
+            <p class="field__hint">
+              Precio de la modalidad para todo lo elegido. El total final lo calcula el sistema al enviar.
+            </p>
+          }
+        </div>
+      </section>
+
+      <section class="card seccion">
+        <h2>Qué pasa después</h2>
+        <ol class="pasos">
+          <li>Tu solicitud queda <strong>pendiente</strong>. No genera ningún cobro online.</li>
+          <li>
+            El personal la confirma dentro de las {{ horasConfirmar }} horas. Si no se confirma en ese
+            plazo, vence y los recursos se liberan.
+          </li>
+          <li>Podés cancelarla hasta {{ horasCancelar }} horas antes de la entrada.</li>
+        </ol>
+      </section>
+
+      @if (sinIdCliente()) {
+        <p class="field__error" role="alert">
+          No pudimos identificar tu cuenta. Cerrá sesión y volvé a ingresar.
+        </p>
+      }
+      @if (errorEnvio()) {
+        <p class="field__error" role="alert">{{ errorEnvio() }}</p>
+      }
+
+      <div class="acciones-solicitud">
+        <a class="btn btn--secundario" routerLink="/catalogo">Volver al catálogo</a>
+        <button type="submit" class="btn btn--primary" [disabled]="!puedeEnviar()">
+          @if (enviando()) { Enviando… } @else { Enviar solicitud }
+        </button>
+      </div>
+    </form>
+  }
+</section>

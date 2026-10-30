@@ -46,6 +46,10 @@
     <button type="submit" class="btn btn--primary" [disabled]="!valido() || cargando()">
       @if (cargando()) { Buscando… } @else { Ver disponibilidad }
     </button>
+
+        @if (!valido() && faltante()) {
+      <p class="field__hint">{{ faltante() }}</p>
+    }
   </form>
 
   @if (errorCarga()) {
@@ -133,6 +137,9 @@
             </li>
           }
         </ul>
+                <button type="button" class="btn btn--secundario" (click)="seleccion.vaciar()">
+          Quitar todos
+        </button>
       </details>
 
       @if (seleccion.cocheraSinAlojamiento()) {

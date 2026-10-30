@@ -167,6 +167,13 @@ export class Catalogo {
     return !!fechaInicio && !!fechaFin && !this.errores().entrada && !this.errores().salida;
   });
 
+  protected readonly faltante = computed(() => {
+    const { fechaInicio, fechaFin, modalidad } = this.seleccion.busqueda();
+    if (!fechaInicio) return 'Elegí la fecha de entrada para ver la disponibilidad.';
+    if (modalidad === 'DIA' && !fechaFin) return 'Elegí la fecha de salida para ver la disponibilidad.';
+    return '';
+  });
+
   // ---- Resultados ----
   protected readonly cantidades = computed(() => {
     const cuenta: Record<FiltroTipo, number> = { TODOS: 0, CARPA: 0, SOMBRILLA: 0, COCHERA: 0 };

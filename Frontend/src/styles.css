@@ -285,3 +285,13 @@ a.btn {
   cursor: not-allowed;
   filter: grayscale(0.4);
 }
+
+.etiqueta {
+  flex-shrink: 0;
+  padding: 0.15rem var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: var(--color-info-fondo);
+  color: var(--color-info);
+  font-size: 0.8rem;
+  font-weight: 700;
+}

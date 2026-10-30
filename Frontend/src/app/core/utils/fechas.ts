@@ -44,3 +44,6 @@ export function calcularFechaFin(
     case 'TEMPORADA': return finTemporadaIso;
   }
 }
+
+export const formatoRango = (inicio: string, fin: string): string =>
+  inicio === fin ? formatoFecha(inicio) : `${formatoFecha(inicio)} al ${formatoFecha(fin)}`;

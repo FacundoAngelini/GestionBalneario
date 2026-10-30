@@ -50,6 +50,10 @@ export const routes: Routes = [
       {
         path: ROUTE_SEGMENTS.recursos,
         loadChildren: () => import('./recursos/recursos.routes').then(m => m.recursosRoutes)
+      },
+      {
+        path: ROUTE_SEGMENTS.reservas,
+        loadChildren: () => import('./reservas/feature/reservas-routes').then((m) => m.reservasRoutes)
       }
     ]
   },
