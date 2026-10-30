@@ -9,8 +9,12 @@
           ariaCurrentWhenActive="page"
           (click)="navegar.emit()"
         >
+          @let n = item.insignia ? item.insignia() : 0;
           <mat-icon aria-hidden="true">{{ item.icono }}</mat-icon>
           <span>{{ item.etiqueta }}</span>
+          @if (n > 0) {
+            <span class="menu-insignia" [attr.aria-label]="n + ' pendientes'">{{ n }}</span>
+          }
         </a>
       </li>
     }

@@ -3,13 +3,21 @@
 <div class="sesion">
     <a matButton="text" class="btn-header" routerLink="/catalogo" [attr.aria-label]="etiquetaCatalogo()">
     <mat-icon>beach_access</mat-icon>
-    <span class="texto-catalogo">{{ etiquetaCatalogo() }}</span>
+    <span class="texto-boton">{{ etiquetaCatalogo() }}</span>
   </a>
   @if (logueado()) {
     <div class="usuario">
       <span class="usuario-nombre">{{ nombreUsuario() }}</span>
       <span class="usuario-rol">{{ rol() }}</span>
     </div>
+
+        @if (esPersonal()) {
+      <a matButton="text" class="btn-header" routerLink="/reservas/gestion"
+         [attr.aria-label]="'Reservas pendientes: ' + pendientes()">
+        <mat-icon>pending_actions</mat-icon>
+        <span class="texto-boton">Pendientes&nbsp;</span><span>({{ pendientes() }})</span>
+      </a>
+    }
 
     <a matButton="text" class="btn-header" routerLink="/panel">Panel</a>
 

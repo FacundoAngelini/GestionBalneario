@@ -35,7 +35,7 @@
         }
       </div>
     } @else {
-      <ul class="lista">
+      <ul class="lista-reservas">
         @for (r of visibles(); track r.publicId) {
           @let enConfirmacion = cancelacion()?.reserva?.publicId === r.publicId;
           <li class="card reserva">

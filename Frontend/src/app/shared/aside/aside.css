@@ -35,3 +35,21 @@
   background: var(--color-primario);
   color: var(--color-texto-sobre-primario);
 }
+
+.menu-insignia {
+  min-width: 1.5rem;
+  margin-left: auto;
+  padding: 0 var(--espacio-2);
+  border-radius: 999px;
+  background: var(--color-error);
+  color: var(--color-texto-sobre-primario);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* En el item activo el fondo ya es oscuro: se invierten los colores */
+.menu-link.activo .menu-insignia {
+  background: var(--color-texto-sobre-primario);
+  color: var(--color-primario);
+}

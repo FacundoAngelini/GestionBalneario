@@ -3,8 +3,7 @@ import { ReservasLayout } from '../UI/reservas-layout/reservas-layout';
 import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
 import { roleGuard } from '../../auth/data-access/auth.guard';
 import { seleccionGuard } from '../data-access/seleccion.guard';
-import { ROLES } from '../../auth/data-access/roles.constants';
-; // Verificar si la ruta relativa coincide en tu proyecto
+import { ROLES, ROLES_PERSONAL } from '../../auth/data-access/roles.constants';
 
 export const reservasRoutes: Routes = [
   {
@@ -20,5 +19,12 @@ export const reservasRoutes: Routes = [
     data: { roles: [ROLES.CLIENTE] },
     loadComponent: () =>
       import('./mis-reservas/mis-reservas').then((m) => m.MisReservas),
+  },
+  {
+    path: ROUTE_SEGMENTS.gestionReservas,
+    canActivate: [roleGuard],
+    data: { roles: ROLES_PERSONAL },
+    loadComponent: () =>
+      import('./gestion-reservas/gestion-reservas').then((m) => m.GestionReservas),
   },
 ];

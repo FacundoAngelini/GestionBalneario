@@ -14,6 +14,17 @@
     </div>
   }
 
+    @if (esPersonal()) {
+    <div class="card">
+      <h2>Reservas por confirmar</h2>
+      <p>Solicitudes pendientes: <strong>{{ pendientes() }}</strong></p>
+      <div class="acciones-panel">
+        <a class="btn btn--primary" routerLink="/reservas/gestion">Gestionar reservas</a>
+        <a class="btn btn--secundario" routerLink="/recursos">Inventario</a>
+      </div>
+    </div>
+  }
+
   @if (sinFunciones()) {
     <div class="card" role="status">
       <h2>Tu perfil todavía no tiene funciones</h2>

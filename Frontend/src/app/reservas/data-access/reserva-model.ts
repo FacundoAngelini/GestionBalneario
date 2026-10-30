@@ -71,6 +71,7 @@ export interface Reserva {
   recursosDetalle: RecursoResumen[];
   clienteNombre: string;
   clienteDni: number;
+  fechaCreacion?: string | null;
 }
 
 // Plazos del negocio (el backend aplica los mismos)

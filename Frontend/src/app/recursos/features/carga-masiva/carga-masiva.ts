@@ -1,6 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { errorEntero, esNumero } from '../../../core/utils/validaciones';
+import { MAX_CAPACIDAD, MAX_NUMERO, MAX_PASILLO, MIN_CAPACIDAD } from '../../data-access/limites-recursos';
 import { form, FormField } from '@angular/forms/signals';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { aIso, desdeIso } from '../../../core/utils/fechas';
@@ -22,11 +24,7 @@ import { RecursoService } from '../../data-access/recurso-service';
 
 // Límites de negocio (el backend tiene que aplicar los mismos)
 const MAX_POR_LOTE = 200;
-const MAX_PASILLO = 20;
-const MIN_CAPACIDAD = 2;
-const MAX_CAPACIDAD = 8;
 const MAX_NOMBRE = 25;
-const MAX_NUMERO = 10_000;
 
 // Cuánto vale cada modalidad respecto de la inmediata superior.
 // MES depende de la cantidad de meses del rango de fechas (se calcula aparte).
@@ -41,24 +39,12 @@ interface PrecioFinal {
   calculado: boolean;
 }
 type ClavePrecio = 'precioDia' | 'precioQuincena' | 'precioMes' | 'precioTemporada';
-const esNumero = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 const esPrecioCargado = (n: unknown): n is number => esNumero(n) && n > 0;
 const redondear = (n: number): number => Math.round(n * 100) / 100;
   const hoyIso = aIso(new Date());
 
 
 // Valida un entero dentro de un rango; devuelve el mensaje de error o null si está bien
-const errorEntero = (
-  valor: unknown,
-  min: number,
-  max: number,
-  mensajeFuera: string,
-  mensajeVacio: string,
-): string | null => {
-  if (!esNumero(valor)) return mensajeVacio;
-  if (!Number.isInteger(valor)) return 'Ingresá un número entero';
-  return valor < min || valor > max ? mensajeFuera : null;
-};
 
 const errorPrecio = (valor: number | null): string | null =>
   esNumero(valor) && valor < 0 ? 'No puede ser negativo' : null;

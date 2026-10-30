@@ -1,0 +1,92 @@
+
+.inventario {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
+.inventario :is(h1, h2, h3) {
+  margin-bottom: var(--espacio-2);
+}
+
+.inventario__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+/* Tantas columnas como entren (mínimo 12rem): 1 en celular, 3 en pantallas anchas */
+.filtros-inventario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+.lista-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--espacio-4);
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+}
+
+/* Un recurso desactivado se ve apagado y con borde punteado */
+.item--inactivo {
+  border-style: dashed;
+  opacity: 0.8;
+}
+
+.item__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+
+.item__nombre {
+  margin: 0;
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+/* Formulario de edición dentro de la tarjeta */
+.item__form {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.item__campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--espacio-4);
+}
+
+.campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+}
+
+.casilla input {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  accent-color: var(--color-primario);
+}

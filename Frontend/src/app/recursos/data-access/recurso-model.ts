@@ -50,3 +50,39 @@ export interface RecursoLoteRequest {
 export interface RecursoLoteResponse { creados: number; }
 export interface Sector { publicId: string; nombre: string; }
 export interface Temporada { inicioTemporada: string; finTemporada: string; }
+
+export const ETIQUETA_TIPO_PLURAL: Record<TipoRecurso, string> = {
+  CARPA: 'Carpas',
+  SOMBRILLA: 'Sombrillas',
+  COCHERA: 'Cocheras',
+};
+
+export const ETIQUETA_TAMANIO: Record<TamanioSombrilla, string> = {
+  CHICO: 'Chico',
+  MEDIANO: 'Mediano',
+  GRANDE: 'Grande',
+};
+
+// Un recurso tal como se ve en el inventario (los tres tipos, normalizados)
+export interface RecursoInventario {
+  publicId: string;
+  tipo: TipoRecurso;
+  nombre: string;
+  esReservable: boolean;
+  sectorPublicId: string;
+  numero: number;
+  pasillo: number | null; // solo carpas
+  capacidad: number | null; // solo carpas
+  tamanio: TamanioSombrilla | null; // solo sombrillas
+}
+
+// Lo que el administrador puede editar de un recurso
+export interface DatosRecurso {
+  nombre: string;
+  esReservable: boolean;
+  sectorPublicId: string;
+  numero: number;
+  pasillo: number;
+  capacidad: number;
+  tamanio: TamanioSombrilla;
+}

@@ -174,7 +174,7 @@
   }
 
   .texto-salir,
-  .texto-catalogo {
+   .texto-boton{
     display: inline;
   }
 }

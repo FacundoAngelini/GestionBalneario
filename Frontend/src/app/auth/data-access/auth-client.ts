@@ -29,6 +29,7 @@ export class AuthClient {
   readonly etiquetaRol = computed(() => ETIQUETA_ROL[this.roles()[0]] ?? '');
   readonly esCliente = computed(() => this.roles().includes(ROLES.CLIENTE));
   readonly esPersonal = computed(() => this.tieneAlgunRol(ROLES_RESUELVEN_RESERVAS));
+  readonly esAdmin = computed(() => this.roles().includes(ROLES.ADMIN));
 
   tieneAlgunRol(grupo: readonly string[]): boolean {
     return this.roles().some((rol) => grupo.includes(rol));
