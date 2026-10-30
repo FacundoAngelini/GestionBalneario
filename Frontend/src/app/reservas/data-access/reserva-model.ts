@@ -2,6 +2,27 @@
 import { required, schema, validate } from '@angular/forms/signals';
 import { Modalidad, TipoRecurso } from '../../recursos/data-access/recurso-model';
 
+export const ESTADOS_ACTIVOS: ReservaEstado[] = ['PENDIENTE', 'CONFIRMADA'];
+
+// Clase de color de cada estado (definidas en styles.css)
+export const CLASE_ESTADO: Record<ReservaEstado, string> = {
+  PENDIENTE: 'estado--pendiente',
+  CONFIRMADA: 'estado--confirmada',
+  FINALIZADA: 'estado--finalizada',
+  CANCELADA: 'estado--cerrada',
+  RECHAZADA: 'estado--cerrada',
+  VENCIDA: 'estado--cerrada',
+};
+
+// Lo que se envía a PUT /reservas/cancelar
+export interface CancelarReservaRequest {
+  publicId: string;
+  clientePublicId: string;
+  fechaInicio: string;
+  fechaFin: string;
+  cancelarCocherasAsociadas: boolean;
+}
+
 export type ReservaEstado =
   | 'PENDIENTE'
   | 'CONFIRMADA'
@@ -122,3 +143,4 @@ export const reservaSchema = schema<ReservaFormModel>((path) => {
 export function formToReserva(value: ReservaFormModel): ReservaRequest {
   return { ...value };
 }
+

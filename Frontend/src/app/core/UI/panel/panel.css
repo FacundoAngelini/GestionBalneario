@@ -15,3 +15,16 @@
   gap: var(--espacio-3);
   justify-items: start;
 }
+
+.acciones-panel {
+  display: grid;
+  gap: var(--espacio-2);
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .acciones-panel {
+    display: flex;
+    width: auto;
+  }
+}

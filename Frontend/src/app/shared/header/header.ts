@@ -31,6 +31,7 @@ export class Header {
   protected readonly logueado = this.auth.usuarioLogueado;
   protected readonly nombreUsuario = this.auth.nombreUsuario;
   protected readonly rol = this.auth.etiquetaRol;
+  protected readonly esCliente = this.auth.esCliente;
     protected readonly etiquetaCatalogo = computed(() =>
     this.auth.esCliente() ? 'Reservar' : 'Ver recursos',
   );

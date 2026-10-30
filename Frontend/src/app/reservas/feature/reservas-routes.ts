@@ -14,4 +14,11 @@ export const reservasRoutes: Routes = [
     loadComponent: () =>
       import('./confirmar-solicitud/confirmar-solicitud').then((m) => m.ConfirmarSolicitud),
   },
+  {
+    path: ROUTE_SEGMENTS.misReservas,
+    canActivate: [roleGuard],
+    data: { roles: [ROLES.CLIENTE] },
+    loadComponent: () =>
+      import('./mis-reservas/mis-reservas').then((m) => m.MisReservas),
+  },
 ];

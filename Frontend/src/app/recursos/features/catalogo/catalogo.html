@@ -9,7 +9,17 @@
   <form class="card busqueda" (submit)="enviar($event)" novalidate>
     <h2>¿Cuándo querés venir?</h2>
 
-    <div class="busqueda__fechas">
+    <div class="busqueda__campos">
+      <div class="field">
+        <label class="field__label" for="modalidad">Modalidad</label>
+        <select id="modalidad" class="field__control" [formField]="f.modalidad">
+          @for (m of modalidades; track m) {
+            <option [value]="m">{{ etiquetaModalidad[m] }}</option>
+          }
+        </select>
+        <p class="field__hint">{{ ayudaModalidad() }}</p>
+      </div>
+
       <div class="field">
         <label class="field__label" for="entrada">Entrada</label>
         <input id="entrada" class="field__control control-fecha" readonly
@@ -26,30 +36,32 @@
         }
       </div>
 
-      <div class="field">
-        <label class="field__label" for="salida">Salida</label>
-        <input id="salida" class="field__control control-fecha" readonly
-               placeholder="dd/mm/aaaa"
-               [matDatepicker]="calendarioSalida" [value]="fechaSalida()"
-               [min]="fechaEntrada() ?? minEntrada()" [max]="maxFecha()"
-               (dateChange)="elegirFecha('fechaFin', $event.value)"
-               (click)="calendarioSalida.open()"
-               (keydown.enter)="$event.preventDefault(); calendarioSalida.open()"
-               [attr.aria-invalid]="!!errores().salida">
-        <mat-datepicker #calendarioSalida panelClass="calendario-brisa" [touchUi]="esMovil" />
-        @if (errores().salida) {
-          <p class="field__error">{{ errores().salida }}</p>
-        }
-      </div>
+      @if (modalidadDia()) {
+        <div class="field">
+          <label class="field__label" for="salida">Salida</label>
+          <input id="salida" class="field__control control-fecha" readonly
+                 placeholder="dd/mm/aaaa"
+                 [matDatepicker]="calendarioSalida" [value]="fechaSalida()"
+                 [min]="fechaEntrada() ?? minEntrada()" [max]="maxFecha()"
+                 (dateChange)="elegirFecha('fechaFin', $event.value)"
+                 (click)="calendarioSalida.open()"
+                 (keydown.enter)="$event.preventDefault(); calendarioSalida.open()"
+                 [attr.aria-invalid]="!!errores().salida">
+          <mat-datepicker #calendarioSalida panelClass="calendario-brisa" [touchUi]="esMovil" />
+          @if (errores().salida) {
+            <p class="field__error">{{ errores().salida }}</p>
+          }
+        </div>
+      }
     </div>
+
+    @if (periodoPrevio()) {
+      <p class="periodo-previo">Tu reserva: <strong>{{ periodoPrevio() }}</strong></p>
+    }
 
     <button type="submit" class="btn btn--primary" [disabled]="!valido() || cargando()">
       @if (cargando()) { Buscando… } @else { Ver disponibilidad }
     </button>
-
-        @if (!valido() && faltante()) {
-      <p class="field__hint">{{ faltante() }}</p>
-    }
   </form>
 
   @if (errorCarga()) {
@@ -59,7 +71,6 @@
   @if (resultados(); as lista) {
     <section class="resultados" aria-labelledby="titulo-resultados">
       <h2 id="titulo-resultados">Disponible: {{ periodoTexto() }}</h2>
-
       @if (!puedeElegir()) {
         <p class="aviso" role="note">
           Estás viendo el catálogo como {{ rol() }}. Las reservas las realizan los clientes.
@@ -75,6 +86,13 @@
           </button>
         }
       </div>
+
+      @if (sinTarifa() > 0) {
+        <p class="field__hint">
+          Hay {{ sinTarifa() }} {{ sinTarifa() === 1 ? 'recurso' : 'recursos' }} libres que no se muestran
+          porque no tienen tarifa cargada para esta modalidad.
+        </p>
+      }
 
       @if (lista.length === 0) {
         <p class="card" role="status">No hay recursos disponibles para esas fechas. Probá con otras.</p>
@@ -92,16 +110,10 @@
 
               <p class="field__hint">{{ t.recurso.sectorNombre }} · {{ t.detalle }}</p>
 
-              @if (t.precios.length > 0) {
-                <dl class="precios">
-                  @for (p of t.precios; track p.modalidad) {
-                    <div>
-                      <dt>{{ etiquetaModalidad[p.modalidad] }}</dt>
-                      <dd>{{ formatoPrecio(p.precio) }}</dd>
-                    </div>
-                  }
-                </dl>
-              }
+              <div class="recurso__precio">
+                <span class="recurso__total">{{ formatoPrecio(t.total) }}</span>
+                <span class="field__hint">{{ t.detallePrecio }}</span>
+              </div>
 
               @if (puedeElegir()) {
                 <button type="button" class="btn"
@@ -126,7 +138,7 @@
   @if (puedeElegir() && seleccion.elegidos().length > 0) {
     <div class="seleccion" role="region" aria-label="Recursos elegidos">
       <details>
-        <summary>{{ cantidadTexto() }} · {{ periodoTexto() }}</summary>
+        <summary>{{ cantidadTexto() }} · {{ formatoPrecio(seleccion.total()) }}</summary>
         <ul class="seleccion__lista">
           @for (r of seleccion.elegidos(); track r.publicId) {
             <li>
@@ -137,7 +149,7 @@
             </li>
           }
         </ul>
-                <button type="button" class="btn btn--secundario" (click)="seleccion.vaciar()">
+        <button type="button" class="btn btn--secundario" (click)="seleccion.vaciar()">
           Quitar todos
         </button>
       </details>

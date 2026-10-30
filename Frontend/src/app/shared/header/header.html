@@ -103,7 +103,18 @@
         <mat-icon class="icono-final">chevron_right</mat-icon>
       </a>
 
-      <!-- Futuro: Mis reservas, etc. -->
+            @if (esCliente()) {
+        <a
+          matButton="text"
+          class="opcion-perfil"
+          routerLink="/reservas/mis-reservas"
+          (click)="cerrarMenuPerfil(false)"
+        >
+          <mat-icon>event_available</mat-icon>
+          <span>Mis reservas</span>
+          <mat-icon class="icono-final">chevron_right</mat-icon>
+        </a>
+      }
     </nav>
   </div>
 }

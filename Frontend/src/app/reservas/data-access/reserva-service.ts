@@ -1,57 +1,27 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
 import { environment } from '../../core/environments/environment';
-import {
-  CancelarReserva,
-  CheckoutResponse,
-  Reserva,
-  ReservaFiltros,
-  ReservaRequest,
-} from './reserva-model';
+import { CancelarReservaRequest, Reserva, ReservaRequest } from './reserva-model';
 
 @Service()
 export class ReservaService {
-  private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/reservas`;
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/reservas`;
 
- reservar(reserva: ReservaRequest): Observable<Reserva> {
-    return this.http.post<Reserva>(`${this.apiUrl}/sin-pago`, reserva);
+  reservarSinPago(pedido: ReservaRequest) {
+    return this.http.post<Reserva>(`${this.apiUrl}/sin-pago`, pedido);
   }
 
-  confirmar(id: string): Observable<Reserva> {
-    return this.http.put<Reserva>(`${this.apiUrl}/${id}/confirmar`, {});
-  }
-
-  rechazar(id: string): Observable<Reserva> {
-    return this.http.put<Reserva>(`${this.apiUrl}/${id}/rechazar`, {});
-  }
-
-  checkoutOnline(reserva: ReservaRequest): Observable<CheckoutResponse> {
-    return this.http.post<CheckoutResponse>(`${this.apiUrl}/checkout-online`, reserva);
-  }
-
-  obtenerPorId(id: string): Observable<Reserva> {
-    return this.http.get<Reserva>(`${this.apiUrl}/${id}`);
-  }
-
-  listar(filtros: ReservaFiltros = {}): Observable<Reserva[]> {
-    let params = new HttpParams();
-    for (const [key, value] of Object.entries(filtros)) {
-      if (value) params = params.set(key, value);
-    }
+  misReservas(clientePublicId: string) {
+    const params = new HttpParams().set('clientePublicId', clientePublicId);
     return this.http.get<Reserva[]>(this.apiUrl, { params });
   }
 
-  cancelar(dto: CancelarReserva): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/cancelar`, dto);
+  cocherasDependientes(reservaPublicId: string) {
+    return this.http.get<Reserva[]>(`${this.apiUrl}/${reservaPublicId}/cocheras-dependientes`);
   }
 
-  cancelarAdministrativo(id: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}/cancelar-administrativo`, {});
-  }
-
-   reservarSinPago(pedido: ReservaRequest) {
-    return this.http.post<Reserva>(`${this.apiUrl}/sin-pago`, pedido);
+  cancelar(pedido: CancelarReservaRequest) {
+    return this.http.put<void>(`${this.apiUrl}/cancelar`, pedido);
   }
 }

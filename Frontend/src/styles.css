@@ -295,3 +295,33 @@ a.btn {
   font-size: 0.8rem;
   font-weight: 700;
 }
+
+/* Estado de una reserva (Mis reservas y Gestión) */
+.estado {
+  display: inline-block;
+  padding: 0.15rem var(--espacio-3);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.estado--pendiente {
+  background: var(--color-advertencia-fondo);
+  color: var(--color-advertencia);
+}
+
+.estado--confirmada {
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
+
+.estado--finalizada {
+  background: var(--color-info-fondo);
+  color: var(--color-info);
+}
+
+/* Cancelada, rechazada o vencida */
+.estado--cerrada {
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}

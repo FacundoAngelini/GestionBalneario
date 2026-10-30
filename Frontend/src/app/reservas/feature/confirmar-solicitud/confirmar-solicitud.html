@@ -47,61 +47,37 @@
 
     <div class="acciones-solicitud">
       <a class="btn btn--secundario" routerLink="/catalogo">Seguir mirando el catálogo</a>
-      <a class="btn btn--primary" routerLink="/panel">Ir al panel</a>
+      <a class="btn btn--primary" routerLink="/reservas/mis-reservas">Ver mis reservas</a>
     </div>
   } @else {
     <form class="solicitud__form" (submit)="confirmar($event)" novalidate>
-        <section class="card seccion">
-        <h2>Fechas buscadas</h2>
-        <p class="destacado">{{ periodoTexto() }}</p>
-        <p class="field__hint">
-          Según la modalidad, la reserva puede durar más o menos que estas fechas. Lo ves abajo.
-        </p>
+      <section class="card seccion">
+        <h2>Tu estadía</h2>
+        <dl class="datos">
+          <dt>Modalidad</dt>
+          <dd>{{ modalidadTexto() }}</dd>
+          <dt>Período</dt>
+          <dd>{{ periodoTexto() }}</dd>
+        </dl>
       </section>
 
       <section class="card seccion">
         <h2>Recursos elegidos</h2>
         <ul class="lista-recursos">
-          @for (r of seleccion.elegidos(); track r.publicId) {
+          @for (l of lineas(); track l.recurso.publicId) {
             <li>
               <span>
-                {{ r.nombre }}
-                <span class="field__hint">· {{ r.sectorNombre }}</span>
+                {{ l.recurso.nombre }}
+                <span class="field__hint">· {{ etiquetaTipo[l.recurso.tipo] }} · {{ l.recurso.sectorNombre }}</span>
               </span>
-              <span class="etiqueta">{{ etiquetaTipo[r.tipo] }}</span>
+              <strong>{{ formatoPrecio(l.total) }}</strong>
             </li>
           }
         </ul>
-      </section>
-
-    <section class="card seccion">
-        <h2>Modalidad de alquiler</h2>
-        <div class="field">
-          <label class="field__label" for="modalidad">Elegí cómo querés alquilar</label>
-          <select id="modalidad" class="field__control" [formField]="f.modalidad">
-            <option value="">Elegí una modalidad</option>
-            @for (o of opciones(); track o.modalidad) {
-              <option [value]="o.modalidad">
-                {{ etiquetaModalidad[o.modalidad] }} · {{ formatoPrecio(o.total) }}
-              </option>
-            }
-          </select>
-          @if (sinModalidades()) {
-            <p class="field__error" role="alert">
-              Con esos recursos y esa fecha de entrada no hay modalidades disponibles (falta un precio
-              cargado o el período se sale de la temporada). Volvé al catálogo y probá con otras fechas.
-            </p>
-          }
-        </div>
-
-        @if (opcionActiva(); as o) {
-          <dl class="datos">
-            <dt>Período</dt>
-            <dd>{{ formatoRango(fechaInicio(), o.fechaFin) }} ({{ o.dias }} {{ o.dias === 1 ? 'día' : 'días' }})</dd>
-            <dt>Total</dt>
-            <dd>{{ formatoPrecio(o.total) }}</dd>
-          </dl>
-        }
+        <p class="total">
+          <span>Total</span>
+          <strong>{{ formatoPrecio(seleccion.total()) }}</strong>
+        </p>
       </section>
 
       <section class="card seccion">

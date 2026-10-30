@@ -50,3 +50,21 @@ export const precioVigente = (
   recurso.precios?.find(
     (p) => p.modalidad === modalidad && p.fechaVigencia <= inicio && inicio <= p.fechaCaducada,
   )?.precio ?? null;
+
+  /** Total de un recurso en el periodo (misma regla que ReservaServicio: solo por dia (multiplica por los dias). */
+export function totalRecurso(
+  recurso: RecursoCatalogo,
+  modalidad: Modalidad,
+  inicio: string,
+  dias: number,
+): number | null {
+  const precio = precioVigente(recurso, modalidad, inicio);
+  if (precio === null) return null;
+  return modalidad === 'DIA' ? precio * dias : precio;
+}
+
+/**El cliente cancela hasta N horas antes de las 00:00 del primer día. */
+export const plazoDeCancelacionVigente = (fechaInicio: string, horas: number): boolean => {
+  const inicio = desdeIso(fechaInicio);
+  return !!inicio && Date.now() <= inicio.getTime() - horas * 3_600_000;
+};
