@@ -46,7 +46,7 @@ public class ReservaPagoController {
     }
 
     @PutMapping("/{reservaPublicId}/cancelar-pago")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Anular pago y cancelar reserva", description = "Operación destructiva de auditoría. Cancela la reserva de alquiler activa y revierte/anula el estado del pago asociado en el módulo contable.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Pago y reserva anulados con éxito (Sin contenido)", content = @Content),

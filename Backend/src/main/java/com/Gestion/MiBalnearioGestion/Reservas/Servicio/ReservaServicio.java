@@ -25,6 +25,7 @@ import com.Gestion.MiBalnearioGestion.Reservas.Repositorios.ReservaRepository;
 import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaNoEncontradaException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +50,10 @@ public class ReservaServicio implements IReservaServicio{
     private final TemporadaValidator temporadaValidator;
     private final EmailService emailService;
     private final IPagoRepository pagoRepository;
+    /** Anticipación mínima para que un cliente cancele (se cuenta desde las 00:00 del primer día). */
+    private static final long HORAS_ANTICIPACION_CANCELACION = 48;
+    private static final List<EReservaEstado> ESTADOS_ACTIVOS =
+            List.of(EReservaEstado.PENDIENTE, EReservaEstado.CONFIRMADA);
 
     @Transactional
     @Override
@@ -192,7 +197,8 @@ public class ReservaServicio implements IReservaServicio{
                 log.error("Fallo al invalidar preferencia en MercadoPago", e);
             }
         }
-        reserva.setEstadoReserva(EReservaEstado.CANCELADA);
+        // Sin pago online = reserva manual que nadie confirmó a tiempo: se muestra como VENCIDA.
+        reserva.setEstadoReserva(pago == null ? EReservaEstado.VENCIDA : EReservaEstado.CANCELADA);
         reserva.setReservado(false);
         if (pago != null) {
             pago.setEestadoPago(EestadoPago.RECHAZADO); // o CANCELADO si tienes ese Enum
@@ -204,14 +210,15 @@ public class ReservaServicio implements IReservaServicio{
 
     @Transactional
     @Override
-    public void cancelarReservaPorPersonal(UUID reservaPublicId) {
+    public void cancelarReservaPorPersonal(UUID reservaPublicId, boolean cancelarCocherasAsociadas) {
         ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se puede cancelar. La reserva no existe" +
                         reservaPublicId.toString(),"ReservaEntity"));
 
-        if (reserva.getEstadoReserva() == EReservaEstado.CANCELADA) {
-            throw new DatosInvalidoException("La reserva ya se encuentra cancelada", "ReservaEntity");
+        if (!ESTADOS_ACTIVOS.contains(reserva.getEstadoReserva())) {throw new DatosInvalidoException("Solo se pueden cancelar reservas pendientes o confirmadas. Estado actual: "
+                + reserva.getEstadoReserva(), "ReservaEntity");
         }
+        resolverCocherasDependientes(reserva, cancelarCocherasAsociadas);
         reserva.setEstadoReserva(EReservaEstado.CANCELADA);
         reserva.setReservado(false);
 
@@ -247,8 +254,9 @@ public class ReservaServicio implements IReservaServicio{
             throw new DatosInvalidoException("Acceso denegado. Esta reserva no pertenece al cliente informado", "ReservaEntity");
         }
 
-        if (reserva.getEstadoReserva() == EReservaEstado.CANCELADA) {
-            throw new DatosInvalidoException("La reserva ya se encuentra cancelada","ReservaEntity");
+        if (!ESTADOS_ACTIVOS.contains(reserva.getEstadoReserva())) {
+            throw new DatosInvalidoException("Solo se pueden cancelar reservas pendientes o confirmadas. Estado actual: "
+                    + reserva.getEstadoReserva(), "ReservaEntity");
         }
 
         if (reserva.getPagosReservaaa() != null &&
@@ -257,10 +265,18 @@ public class ReservaServicio implements IReservaServicio{
         }
 
         LocalDateTime ahora = LocalDateTime.now();
-        LocalDateTime limiteCancelacion = reserva.getFechaInicio().atStartOfDay().minusHours(24);
+        LocalDateTime limiteCancelacion = reserva.getFechaInicio().atStartOfDay().minusHours(HORAS_ANTICIPACION_CANCELACION);
+
+        // 1. Validar plazo de anticipación
         if (ahora.isAfter(limiteCancelacion)) {
-            throw new DatosInvalidoException("Plazo vencido. Las cancelaciones deben hacerse con al menos 24 horas de anticipación", "ReservaEntity");
+            throw new DatosInvalidoException("Plazo vencido. Las cancelaciones deben hacerse con al menos "
+                    + HORAS_ANTICIPACION_CANCELACION + " horas de anticipación", "ReservaEntity");
         }
+
+        // 2. Antes de tocar nada (y antes de avisar a Mercado Pago): resolver cocheras
+        resolverCocherasDependientes(reserva, Boolean.TRUE.equals(dto.getCancelarCocherasAsociadas()));
+
+        // 3. Invalidar preferencia en Mercado Pago si existe
         PagoReservaEntity pago = reserva.getPagosReservaaa();
         if (pago != null && pago.getPreferenceIdMp() != null) {
             mercadoPagoService.invalidarPreferenciaPago(
@@ -268,6 +284,8 @@ public class ReservaServicio implements IReservaServicio{
                     reserva.getFechaCreacion()
             );
         }
+
+        // 4. Notificar por email
         emailService.cancelacionReserva(reserva)
                 .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", reserva.getCliente().getEmail()))
                 .exceptionally(throwable -> {
@@ -275,10 +293,64 @@ public class ReservaServicio implements IReservaServicio{
                     return null;
                 });
 
-        if (pago != null) {
-            ipagoRepository.delete(pago);
+        // 5. Se conserva el historial: la reserva queda CANCELADA en vez de borrarse
+        marcarCancelada(reserva);
+    }@Transactional(readOnly = true)
+    @Override
+    public List<ReservaDTO> listarCocherasDependientes(UUID reservaPublicId) {
+        ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
+                .orElseThrow(() -> new EntidadNoEncontradaException("La reserva no existe", reservaPublicId.toString()));
+        return cocherasQueQuedanSinAlojamiento(reserva).stream().map(reservaMapper::convertToDTO).toList();
+    }
+
+    /** Reservas que SOLO tienen cochera y quedarían sin carpa/sombrilla que las cubra si se cancela 'reserva'. */
+    private List<ReservaEntity> cocherasQueQuedanSinAlojamiento(ReservaEntity reserva) {
+        boolean daAlojamiento = reserva.getRecursos().stream().anyMatch(this::esCarpaOSombrilla);
+        if (!daAlojamiento) return List.of();
+
+        UUID clienteId = reserva.getCliente().getPublicId();
+        return reservaRepository.cocherasDelClienteEnRango(
+                        clienteId, reserva.getFechaInicio(), reserva.getFechaFin(), ESTADOS_ACTIVOS, reserva.getPublicId())
+                .stream()
+                // Una cochera que viaja junto a su propia carpa no depende de esta reserva.
+                .filter(c -> c.getRecursos().stream().allMatch(r -> Hibernate.unproxy(r) instanceof CocheraEntity))
+                // Y solo cuenta si ninguna OTRA carpa/sombrilla activa la sigue cubriendo.
+                .filter(c -> !reservaRepository.clienteTieneAlojamientoQueCubreExcluyendo(
+                        clienteId, c.getFechaInicio(), c.getFechaFin(), ESTADOS_ACTIVOS, reserva.getPublicId()))
+                .toList();
+    }
+
+    private boolean esCarpaOSombrilla(RecursoEntity r) {
+        Object real = Hibernate.unproxy(r);
+        return real instanceof CarpaEntity || real instanceof SombrillaEntity;
+    }
+
+    /** Bloquea la cancelación si deja cocheras sueltas, salvo que se confirme cancelarlas también. */
+    private void resolverCocherasDependientes(ReservaEntity reserva, boolean cancelarTambien) {
+        List<ReservaEntity> dependientes = cocherasQueQuedanSinAlojamiento(reserva);
+        if (dependientes.isEmpty()) return;
+
+        if (!cancelarTambien) {
+            throw new ReservaException("Hay una cochera reservada dentro de estas fechas que quedaría sin carpa ni sombrilla. "
+                    + "Para continuar hay que confirmar que también se cancele la cochera", reserva.getPublicId().toString());
         }
-        reservaRepository.delete(reserva);
+        for (ReservaEntity cochera : dependientes) {
+            if (cochera.getPagosReservaaa() != null && cochera.getPagosReservaaa().getEestadoPago() == EestadoPago.PAGADO) {
+                throw new DatosInvalidoException("La cochera asociada ya está paga. Contactá al administrador para cancelarla", "ReservaEntity");
+            }
+            marcarCancelada(cochera);
+        }
+    }
+
+    private void marcarCancelada(ReservaEntity reserva) {
+        reserva.setEstadoReserva(EReservaEstado.CANCELADA);
+        reserva.setReservado(false);
+        PagoReservaEntity pago = reserva.getPagosReservaaa();
+        if (pago != null) {
+            pago.setEestadoPago(EestadoPago.RECHAZADO);
+            ipagoRepository.save(pago);
+        }
+        reservaRepository.save(reserva);
     }
 
 

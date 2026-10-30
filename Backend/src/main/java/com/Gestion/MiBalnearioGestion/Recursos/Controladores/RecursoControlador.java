@@ -29,7 +29,7 @@ public class RecursoControlador {
     private final IRecursoServicio recursoServicio;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Buscar recurso base por ID", description = "Recupera los datos comunes de cualquier tipo de recurso utilizando su UUID público.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Recurso encontrado con éxito"),
@@ -44,7 +44,7 @@ public class RecursoControlador {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar todos los recursos", description = "Obtiene una lista polimórfica o genérica de recursos aplicando filtros por coincidencia exacta o parcial de nombre, y estado de reserva.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de recursos obtenido con éxito"),
