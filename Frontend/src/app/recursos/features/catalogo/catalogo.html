@@ -1,0 +1,150 @@
+<section class="catalogo">
+  <header>
+    <h1>Catálogo de recursos</h1>
+    @if (temporadaTexto()) {
+      <p class="field__hint">{{ temporadaTexto() }}</p>
+    }
+  </header>
+
+  <form class="card busqueda" (submit)="enviar($event)" novalidate>
+    <h2>¿Cuándo querés venir?</h2>
+
+    <div class="busqueda__fechas">
+      <div class="field">
+        <label class="field__label" for="entrada">Entrada</label>
+        <input id="entrada" class="field__control control-fecha" readonly
+               placeholder="dd/mm/aaaa"
+               [matDatepicker]="calendarioEntrada" [value]="fechaEntrada()"
+               [min]="minEntrada()" [max]="maxFecha()"
+               (dateChange)="elegirFecha('fechaInicio', $event.value)"
+               (click)="calendarioEntrada.open()"
+               (keydown.enter)="$event.preventDefault(); calendarioEntrada.open()"
+               [attr.aria-invalid]="!!errores().entrada">
+        <mat-datepicker #calendarioEntrada panelClass="calendario-brisa" [touchUi]="esMovil" />
+        @if (errores().entrada) {
+          <p class="field__error">{{ errores().entrada }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="salida">Salida</label>
+        <input id="salida" class="field__control control-fecha" readonly
+               placeholder="dd/mm/aaaa"
+               [matDatepicker]="calendarioSalida" [value]="fechaSalida()"
+               [min]="fechaEntrada() ?? minEntrada()" [max]="maxFecha()"
+               (dateChange)="elegirFecha('fechaFin', $event.value)"
+               (click)="calendarioSalida.open()"
+               (keydown.enter)="$event.preventDefault(); calendarioSalida.open()"
+               [attr.aria-invalid]="!!errores().salida">
+        <mat-datepicker #calendarioSalida panelClass="calendario-brisa" [touchUi]="esMovil" />
+        @if (errores().salida) {
+          <p class="field__error">{{ errores().salida }}</p>
+        }
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary" [disabled]="!valido() || cargando()">
+      @if (cargando()) { Buscando… } @else { Ver disponibilidad }
+    </button>
+  </form>
+
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+  }
+
+  @if (resultados(); as lista) {
+    <section class="resultados" aria-labelledby="titulo-resultados">
+      <h2 id="titulo-resultados">Disponible: {{ periodoTexto() }}</h2>
+
+      @if (!puedeElegir()) {
+        <p class="aviso" role="note">
+          Estás viendo el catálogo como {{ rol() }}. Las reservas las realizan los clientes.
+        </p>
+      }
+
+      <div class="filtros" role="group" aria-label="Filtrar por tipo de recurso">
+        @for (filtro of filtros; track filtro) {
+          <button type="button" class="chip"
+                  [attr.aria-pressed]="filtroTipo() === filtro"
+                  (click)="elegirFiltro(filtro)">
+            {{ etiquetaFiltro[filtro] }} ({{ cantidades()[filtro] }})
+          </button>
+        }
+      </div>
+
+      @if (lista.length === 0) {
+        <p class="card" role="status">No hay recursos disponibles para esas fechas. Probá con otras.</p>
+      } @else if (tarjetas().length === 0) {
+        <p class="card" role="status">No hay recursos de ese tipo para esas fechas.</p>
+      } @else {
+        <ul class="lista">
+          @for (t of tarjetas(); track t.recurso.publicId) {
+            @let elegido = seleccion.idsElegidos().has(t.recurso.publicId);
+            <li class="card recurso" [class.recurso--elegido]="elegido">
+              <div class="recurso__cabecera">
+                <h3 class="recurso__nombre">{{ t.recurso.nombre }}</h3>
+                <span class="etiqueta">{{ etiquetaTipo[t.recurso.tipo] }}</span>
+              </div>
+
+              <p class="field__hint">{{ t.recurso.sectorNombre }} · {{ t.detalle }}</p>
+
+              @if (t.precios.length > 0) {
+                <dl class="precios">
+                  @for (p of t.precios; track p.modalidad) {
+                    <div>
+                      <dt>{{ etiquetaModalidad[p.modalidad] }}</dt>
+                      <dd>{{ formatoPrecio(p.precio) }}</dd>
+                    </div>
+                  }
+                </dl>
+              }
+
+              @if (puedeElegir()) {
+                <button type="button" class="btn"
+                        [class.btn--primary]="!elegido"
+                        [class.btn--secundario]="elegido"
+                        [attr.aria-label]="(elegido ? 'Quitar ' : 'Elegir ') + t.recurso.nombre"
+                        (click)="seleccion.alternar(t.recurso)">
+                  {{ elegido ? 'Quitar' : 'Elegir' }}
+                </button>
+              }
+            </li>
+          }
+        </ul>
+
+        @if (hayMas()) {
+          <button type="button" class="btn btn--secundario" (click)="verMas()">Mostrar más</button>
+        }
+      }
+    </section>
+  }
+
+  @if (puedeElegir() && seleccion.elegidos().length > 0) {
+    <div class="seleccion" role="region" aria-label="Recursos elegidos">
+      <details>
+        <summary>{{ cantidadTexto() }} · {{ periodoTexto() }}</summary>
+        <ul class="seleccion__lista">
+          @for (r of seleccion.elegidos(); track r.publicId) {
+            <li>
+              <span>{{ r.nombre }}</span>
+              <button type="button" class="btn btn--secundario"
+                      [attr.aria-label]="'Quitar ' + r.nombre"
+                      (click)="seleccion.quitar(r.publicId)">Quitar</button>
+            </li>
+          }
+        </ul>
+      </details>
+
+      @if (seleccion.cocheraSinAlojamiento()) {
+        <p class="field__error" role="alert">
+          Para reservar una cochera elegí también una carpa o una sombrilla.
+        </p>
+      }
+
+      <button type="button" class="btn btn--primary"
+              [disabled]="!seleccion.puedeContinuar()" (click)="continuar()">
+        Reservar
+      </button>
+    </div>
+  }
+</section>

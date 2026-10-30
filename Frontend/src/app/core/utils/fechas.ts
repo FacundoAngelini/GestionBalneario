@@ -6,11 +6,20 @@ export function parsearIso(iso: string): Date {
   return new Date(y, m - 1, d);
 }
 
-export function aIso(f: Date): string {
-  const mm = String(f.getMonth() + 1).padStart(2, '0');
-  const dd = String(f.getDate()).padStart(2, '0');
-  return `${f.getFullYear()}-${mm}-${dd}`;
-}
+export const aIso = (d: Date): string =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+export const desdeIso = (s: string): Date | null => {
+  const [y, m, d] = s.split('-').map(Number);
+  return y && m && d ? new Date(y, m - 1, d) : null;
+};
+
+export const hoyIso = (): string => aIso(new Date());
+
+// "2026-12-01" -> "1 dic 2026"
+export const formatoFecha = (iso: string): string =>
+  desdeIso(iso)?.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' }) ?? '';
+
 
 function sumarDias(f: Date, n: number): Date {
   return new Date(f.getFullYear(), f.getMonth(), f.getDate() + n);

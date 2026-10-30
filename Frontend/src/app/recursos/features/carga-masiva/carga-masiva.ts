@@ -3,6 +3,7 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { aIso, desdeIso } from '../../../core/utils/fechas';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, of } from 'rxjs';
@@ -43,15 +44,9 @@ type ClavePrecio = 'precioDia' | 'precioQuincena' | 'precioMes' | 'precioTempora
 const esNumero = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 const esPrecioCargado = (n: unknown): n is number => esNumero(n) && n > 0;
 const redondear = (n: number): number => Math.round(n * 100) / 100;
+  const hoyIso = aIso(new Date());
 
-// Fechas: el backend usa 'YYYY-MM-DD'. Se arma con la hora local para evitar el corrimiento de zona horaria.
-const aIso = (d: Date): string =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-const desdeIso = (s: string): Date | null => {
-  const [y, m, d] = s.split('-').map(Number);
-  return y && m && d ? new Date(y, m - 1, d) : null;
-};
 // Valida un entero dentro de un rango; devuelve el mensaje de error o null si está bien
 const errorEntero = (
   valor: unknown,
@@ -227,7 +222,6 @@ protected readonly hoy = (() => {
 protected readonly errores = computed(() => {
   const m = this.modelo();
   const esCarpa = m.tipo === 'CARPA';
-  const hoyIso = aIso(new Date());
   const textoRango = `La numeración va de 1 a ${MAX_NUMERO.toLocaleString('es-AR')}`;
 
   const desde = errorEntero(m.numeroDesde, 1, MAX_NUMERO, textoRango, 'Ingresá el número inicial');

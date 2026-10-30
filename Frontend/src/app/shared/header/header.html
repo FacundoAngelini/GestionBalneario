@@ -1,6 +1,10 @@
 <a class="marca" routerLink="/">ArenaDesk</a>
 
 <div class="sesion">
+    <a matButton="text" class="btn-header" routerLink="/catalogo" [attr.aria-label]="etiquetaCatalogo()">
+    <mat-icon>beach_access</mat-icon>
+    <span class="texto-catalogo">{{ etiquetaCatalogo() }}</span>
+  </a>
   @if (logueado()) {
     <div class="usuario">
       <span class="usuario-nombre">{{ nombreUsuario() }}</span>

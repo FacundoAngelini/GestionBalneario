@@ -24,6 +24,11 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./core/UI/inicio/inicio').then(m => m.Inicio)
+      },
+      {
+        path: ROUTE_SEGMENTS.catalogo,
+        loadComponent: () =>
+        import('./recursos/features/catalogo/catalogo').then((m) => m.Catalogo)
       }
     ]
   },

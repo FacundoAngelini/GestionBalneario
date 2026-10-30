@@ -3,6 +3,13 @@
     <h1>Hola, {{ nombre() }}</h1>
     <p class="field__hint">{{ rol() }}</p>
   </header>
+    @if (esCliente()) {
+    <div class="card">
+      <h2>Reservá tu lugar</h2>
+      <p>Elegí tus fechas y mirá qué carpas, sombrillas y cocheras hay libres.</p>
+      <a class="btn btn--primary" routerLink="/catalogo">Ver disponibilidad</a>
+    </div>
+  }
 
   @if (sinFunciones()) {
     <div class="card" role="status">

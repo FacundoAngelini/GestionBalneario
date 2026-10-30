@@ -31,6 +31,9 @@ export class Header {
   protected readonly logueado = this.auth.usuarioLogueado;
   protected readonly nombreUsuario = this.auth.nombreUsuario;
   protected readonly rol = this.auth.etiquetaRol;
+    protected readonly etiquetaCatalogo = computed(() =>
+    this.auth.esCliente() ? 'Reservar' : 'Ver recursos',
+  );
 
   protected readonly menuPerfilAbierto = signal(false);
 

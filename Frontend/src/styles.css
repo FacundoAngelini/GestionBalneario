@@ -177,6 +177,34 @@ button:not([class*="mat-"]):disabled {
   transition: border-color var(--transicion), box-shadow var(--transicion);
 }
 
+/* Enlaces con aspecto de botón */
+a.btn {
+  text-decoration: none;
+}
+
+/* Botón secundario (contorno). ".btn.btn--secundario" para ganarle a la regla global de botones */
+.btn.btn--secundario {
+  border: 2px solid var(--color-primario);
+  background: var(--color-superficie);
+  color: var(--color-primario);
+}
+
+.btn.btn--secundario:hover:not(:disabled) {
+  background: var(--color-fondo);
+}
+
+/* Campo de fecha: se ve como los demás, con ícono de calendario y cursor de "tocable" */
+.control-fecha {
+  --icono-calendario: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3C5D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E");
+  padding-right: 2.75rem;
+  background: var(--color-superficie) var(--icono-calendario) no-repeat right var(--espacio-3) center / 1.25rem;
+  cursor: pointer;
+}
+
+.control-fecha[aria-invalid='true'] {
+  background: var(--color-error-fondo) var(--icono-calendario) no-repeat right var(--espacio-3) center / 1.25rem;
+}
+
 .field__control:focus-visible {
   outline: 3px solid var(--color-turquesa-oscuro);
   outline-offset: 1px;
