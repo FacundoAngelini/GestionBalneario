@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
 import { environment } from '../../core/environments/environment';
-import { AuthResponse, LoginRequest, RegistroClienteRequest } from './auth-model';
+import { AuthResponse, ETIQUETA_ROL, LoginRequest, RegistroClienteRequest } from './auth-model';
 import { finalize, tap } from 'rxjs';
 import { extraerRoles, leerPayload, tokenVencido } from './jwt.utils';
+import { ROLES, ROLES_RESUELVEN_RESERVAS } from './roles.constants';
 
 const TOKEN_KEY = 'jwt_token';
 
@@ -21,6 +22,17 @@ export class AuthClient {
     const token = this.token();
     return token ? (leerPayload(token)?.sub ?? '') : '';
   });
+    readonly publicId = computed(() => {
+    const token = this.token();
+    return token ? (leerPayload(token)?.publicId ?? null) : null;
+  });
+  readonly etiquetaRol = computed(() => ETIQUETA_ROL[this.roles()[0]] ?? '');
+  readonly esCliente = computed(() => this.roles().includes(ROLES.CLIENTE));
+  readonly esPersonal = computed(() => this.tieneAlgunRol(ROLES_RESUELVEN_RESERVAS));
+
+  tieneAlgunRol(grupo: readonly string[]): boolean {
+    return this.roles().some((rol) => grupo.includes(rol));
+  }
 
   login(credenciales: LoginRequest) {
     return this.http

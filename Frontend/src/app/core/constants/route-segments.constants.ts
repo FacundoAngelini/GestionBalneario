@@ -8,8 +8,9 @@ export const ROUTE_SEGMENTS = {
 
   catalogo: 'catalogo',
   reservas: 'reservas',
-  nuevaReserva: 'nueva',
+  /* nuevaReserva: 'nueva', */
   misReservas: 'mis-reservas',
+  sinPago: 'sin-pago',
   gestionReservas: 'gestion',
   recursos: 'recursos',
   cargaMasiva: 'carga-masiva',

@@ -1,0 +1,11 @@
+.panel {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+.panel h1,
+.card h2 {
+  margin-bottom: var(--espacio-2);
+}

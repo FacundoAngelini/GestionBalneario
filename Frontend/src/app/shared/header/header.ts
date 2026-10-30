@@ -30,9 +30,7 @@ export class Header {
 
   protected readonly logueado = this.auth.usuarioLogueado;
   protected readonly nombreUsuario = this.auth.nombreUsuario;
-  protected readonly rol = computed(
-    () => ETIQUETA_ROL[this.auth.roles()[0]] ?? '',
-  );
+  protected readonly rol = this.auth.etiquetaRol;
 
   protected readonly menuPerfilAbierto = signal(false);
 

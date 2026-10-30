@@ -1,1 +1,18 @@
-<p>aside works!</p>
+<nav class="menu" aria-label="Menú principal">
+  <ul class="menu-lista">
+    @for (item of items(); track item.ruta) {
+      <li>
+        <a
+          class="menu-link"
+          [routerLink]="item.ruta"
+          routerLinkActive="activo"
+          ariaCurrentWhenActive="page"
+          (click)="navegar.emit()"
+        >
+          <mat-icon aria-hidden="true">{{ item.icono }}</mat-icon>
+          <span>{{ item.etiqueta }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
