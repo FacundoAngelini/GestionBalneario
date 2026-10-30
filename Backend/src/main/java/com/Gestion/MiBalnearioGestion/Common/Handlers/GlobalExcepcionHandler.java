@@ -98,7 +98,7 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(ReservaException.class)
     public ResponseEntity<ErrorResponse> ReservaExceptionHandler(ReservaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Error en la reserva: " + ex.getMessage());        error.setPath(request.getRequestURI());
+        ErrorResponse error = new ErrorResponse(400, "Error en la reserva: " + ex.getMessage());
         return ResponseEntity.status(400).body(error);
     }
 
@@ -234,8 +234,7 @@ public class GlobalExcepcionHandler {
 
     @ExceptionHandler(DatosInvalidoException.class)
     public ResponseEntity<ErrorResponse> handleDatosInvalidos(DatosInvalidoException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Los datos son invalidos" + ex.getMessage());
-        error.setPath(request.getRequestURI());
+        ErrorResponse error = new ErrorResponse(400, "Los datos son invalidos: " + ex.getMessage());        error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
