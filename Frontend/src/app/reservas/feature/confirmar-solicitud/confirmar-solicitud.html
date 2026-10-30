@@ -13,6 +13,7 @@
         Quedó pendiente de confirmación. El personal la revisa dentro de las
         {{ horasConfirmar }} horas; si no se confirma en ese plazo, vence y los recursos se liberan.
       </p>
+      <p>{{ textoPago }}</p>
     </div>
 
     @for (item of r.creadas; track item.reserva.publicId) {
@@ -50,9 +51,12 @@
     </div>
   } @else {
     <form class="solicitud__form" (submit)="confirmar($event)" novalidate>
-      <section class="card seccion">
-        <h2>Tu estadía</h2>
+        <section class="card seccion">
+        <h2>Fechas buscadas</h2>
         <p class="destacado">{{ periodoTexto() }}</p>
+        <p class="field__hint">
+          Según la modalidad, la reserva puede durar más o menos que estas fechas. Lo ves abajo.
+        </p>
       </section>
 
       <section class="card seccion">
@@ -70,7 +74,7 @@
         </ul>
       </section>
 
-      <section class="card seccion">
+    <section class="card seccion">
         <h2>Modalidad de alquiler</h2>
         <div class="field">
           <label class="field__label" for="modalidad">Elegí cómo querés alquilar</label>
@@ -78,20 +82,26 @@
             <option value="">Elegí una modalidad</option>
             @for (o of opciones(); track o.modalidad) {
               <option [value]="o.modalidad">
-                {{ etiquetaModalidad[o.modalidad] }} · {{ formatoPrecio(o.precio) }}
+                {{ etiquetaModalidad[o.modalidad] }} · {{ formatoPrecio(o.total) }}
               </option>
             }
           </select>
           @if (sinModalidades()) {
             <p class="field__error" role="alert">
-              Los recursos que elegiste no comparten una modalidad de alquiler. Volvé al catálogo y quitá alguno.
-            </p>
-          } @else if (precioElegido() !== null) {
-            <p class="field__hint">
-              Precio de la modalidad para todo lo elegido. El total final lo calcula el sistema al enviar.
+              Con esos recursos y esa fecha de entrada no hay modalidades disponibles (falta un precio
+              cargado o el período se sale de la temporada). Volvé al catálogo y probá con otras fechas.
             </p>
           }
         </div>
+
+        @if (opcionActiva(); as o) {
+          <dl class="datos">
+            <dt>Período</dt>
+            <dd>{{ formatoRango(fechaInicio(), o.fechaFin) }} ({{ o.dias }} {{ o.dias === 1 ? 'día' : 'días' }})</dd>
+            <dt>Total</dt>
+            <dd>{{ formatoPrecio(o.total) }}</dd>
+          </dl>
+        }
       </section>
 
       <section class="card seccion">
@@ -102,6 +112,7 @@
             El personal la confirma dentro de las {{ horasConfirmar }} horas. Si no se confirma en ese
             plazo, vence y los recursos se liberan.
           </li>
+          <li>{{ textoPago }}</li>
           <li>Podés cancelarla hasta {{ horasCancelar }} horas antes de la entrada.</li>
         </ol>
       </section>

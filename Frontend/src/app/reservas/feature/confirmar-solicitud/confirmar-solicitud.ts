@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, of } from 'rxjs';
 import { AuthClient } from '../../../auth/data-access/auth-client';
 import { formatoRango } from '../../../core/utils/fechas';
 import { formatoPrecio } from '../../../core/utils/moneda';
@@ -11,21 +11,28 @@ import {
   ETIQUETA_TIPO_RECURSO,
   Modalidad,
   RecursoCatalogo,
+  Temporada,
 } from '../../../recursos/data-access/recurso-model';
 import {
   ETIQUETA_ESTADO_RESERVA,
   HORAS_PARA_CANCELAR,
   HORAS_PARA_CONFIRMAR,
   Reserva,
+  TEXTO_PAGO,
 } from '../../data-access/reserva-model';
 import { ReservaService } from '../../data-access/reserva-service';
 import { SeleccionReserva } from '../../data-access/seleccion-reserva';
+import { RecursoService } from '../../../recursos/data-access/recurso-service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { diasEntre, fechaFinEfectiva, precioVigente } from '../../data-access/periodo-reserva';
 
 const ORDEN_MODALIDAD: Modalidad[] = ['DIA', 'QUINCENA', 'MES', 'TEMPORADA'];
 
 interface OpcionModalidad {
   modalidad: Modalidad;
-  precio: number; // suma de los precios de todos los recursos elegidos
+  fechaFin: string; // hasta cuando dura realmente la reserva
+  dias: number;
+  total: number; // lo que calcula el backend
 }
 
 interface ReservaCreada {
@@ -57,6 +64,15 @@ export class ConfirmarSolicitud {
   protected readonly formatoRango = formatoRango;
   protected readonly horasConfirmar = HORAS_PARA_CONFIRMAR;
   protected readonly horasCancelar = HORAS_PARA_CANCELAR;
+    protected readonly textoPago = TEXTO_PAGO;
+
+  private readonly recursoService = inject(RecursoService);
+  private readonly temporada = toSignal(
+    this.recursoService.obtenerTemporada().pipe(catchError(() => of(null as Temporada | null))),
+    { initialValue: null as Temporada | null },
+  );
+
+  protected readonly fechaInicio = computed(() => this.seleccion.periodo()?.fechaInicio ?? '');
 
   protected readonly modelo = signal({ modalidad: '' as '' | Modalidad });
   protected readonly f = form(this.modelo);
@@ -74,17 +90,26 @@ export class ConfirmarSolicitud {
     return p ? formatoRango(p.fechaInicio, p.fechaFin) : '';
   });
 
-  // Solo las modalidades en las que TODOS los recursos elegidos tienen precio
+  // Solo las modalidades que el backend aceptaria: con precio para todo lo elegido y dentro de la temporada
   protected readonly opciones = computed<OpcionModalidad[]>(() => {
     const elegidos = this.seleccion.elegidos();
-    if (elegidos.length === 0) return [];
+    const periodo = this.seleccion.periodo();
+    if (!periodo || elegidos.length === 0) return [];
+    const finTemporada = this.temporada()?.finTemporada ?? null;
 
     return ORDEN_MODALIDAD.flatMap((modalidad) => {
-      const precios = elegidos
-        .map((r) => r.precios?.find((p) => p.modalidad === modalidad)?.precio ?? null)
-        .filter((p): p is number => p !== null);
-      if (precios.length !== elegidos.length) return [];
-      return [{ modalidad, precio: precios.reduce((suma, p) => suma + p, 0) }];
+      const fechaFin = fechaFinEfectiva(modalidad, periodo.fechaInicio, periodo.fechaFin, finTemporada);
+      if (!fechaFin) return [];
+      if (finTemporada && fechaFin > finTemporada) return [];
+
+      const dias = diasEntre(periodo.fechaInicio, fechaFin);
+      let total = 0;
+      for (const recurso of elegidos) {
+        const precio = precioVigente(recurso, modalidad, periodo.fechaInicio);
+        if (precio === null) return [];
+        total += modalidad === 'DIA' ? precio * dias : precio;
+      }
+      return [{ modalidad, fechaFin, dias, total }];
     });
   });
 
@@ -92,18 +117,13 @@ export class ConfirmarSolicitud {
     () => this.seleccion.elegidos().length > 0 && this.opciones().length === 0,
   );
 
-  // La modalidad del formulario, siempre que siga siendo una opción válida
-  protected readonly modalidadActiva = computed<Modalidad | null>(() => {
+  protected readonly opcionActiva = computed(() => {
     const elegida = this.modelo().modalidad;
-    return elegida && this.opciones().some((o) => o.modalidad === elegida) ? elegida : null;
+    return this.opciones().find((o) => o.modalidad === elegida) ?? null;
   });
 
-  protected readonly precioElegido = computed(
-    () => this.opciones().find((o) => o.modalidad === this.modalidadActiva())?.precio ?? null,
-  );
-
   protected readonly puedeEnviar = computed(
-    () => this.modalidadActiva() !== null && !this.sinIdCliente() && !this.enviando(),
+    () => this.opcionActiva() !== null && !this.sinIdCliente() && !this.enviando(),
   );
 
   // Carpas y sombrillas primero; las cocheras después (la cochera exige un alojamiento ya reservado)
@@ -122,12 +142,10 @@ export class ConfirmarSolicitud {
   }
 
   protected async confirmar(evento: Event): Promise<void> {
-    evento.preventDefault();
-    const modalidad = this.modalidadActiva();
+    const opcion = this.opcionActiva();
     const periodo = this.seleccion.periodo();
     const clienteId = this.clienteId();
-    if (!modalidad || !periodo || !clienteId || this.enviando()) return;
-
+    if (!opcion || !periodo || !clienteId || this.enviando()) return;
     this.enviando.set(true);
     this.errorEnvio.set('');
 
@@ -138,11 +156,11 @@ export class ConfirmarSolicitud {
     for (const recursos of grupos) {
       try {
         const reserva = await firstValueFrom(
-          this.reservaService.reservarSinPago({
+            this.reservaService.reservarSinPago({
             clientePublicId: clienteId,
             fechaInicio: periodo.fechaInicio,
-            fechaFin: periodo.fechaFin,
-            modalidad,
+            fechaFin: opcion.fechaFin,
+            modalidad: opcion.modalidad,
             recursosPublicIds: recursos.map((r) => r.publicId),
           }),
         );
@@ -177,7 +195,7 @@ export class ConfirmarSolicitud {
         return 'No tenés permiso para hacer esta reserva. Cerrá sesión y volvé a ingresar.';
       }
       if (error.status === 409) {
-        return 'Alguno de los recursos ya fue reservado por otra persona. Volvé al catálogo y buscá de nuevo.';
+        return 'Alguno de los recursos no está libre durante todo el período de la modalidad elegida. Probá con otra modalidad o con otras fechas.';
       }
       if (error.error?.message) return error.error.message;
     }

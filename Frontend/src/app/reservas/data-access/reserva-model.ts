@@ -1,6 +1,6 @@
 
 import { required, schema, validate } from '@angular/forms/signals';
-import { Modalidad } from '../../recursos/data-access/recurso-model';
+import { Modalidad, TipoRecurso } from '../../recursos/data-access/recurso-model';
 
 export type ReservaEstado =
   | 'PENDIENTE'
@@ -28,6 +28,15 @@ export interface ReservaRequest {
   recursosPublicIds: string[];
 }
 
+export interface RecursoResumen {
+  publicId: string;
+  nombre: string;
+  tipo: TipoRecurso | null;
+}
+
+export const TEXTO_PAGO =
+  'El cobro se realiza de manera presencial en administración. Podés abonar hasta el mismo día de inicio de la reserva.';
+
 // Lo que devuelve el backend (ReservaDTO.java). Todo viene siempre completo.
 export interface Reserva {
   publicId: string;
@@ -38,6 +47,9 @@ export interface Reserva {
   fechaFin: string;
   recursosPublicIds: string[];
   estadoReserva: ReservaEstado;
+  recursosDetalle: RecursoResumen[];
+  clienteNombre: string;
+  clienteDni: number;
 }
 
 // Plazos del negocio (el backend aplica los mismos)
