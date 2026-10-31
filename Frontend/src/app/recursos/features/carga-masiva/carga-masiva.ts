@@ -377,12 +377,18 @@ protected guardar(evento: Event): void {
   }
 
   // formulario como recien abierto, con las fechas d ela temporada.
-  private reiniciar(): void {
-    const t = this.temporada();
+ private reiniciar(): void {
+    const actual = this.modelo();
+    const cantidad = actual.numeroHasta - actual.numeroDesde + 1;
     this.modelo.set({
       ...modeloInicial(),
-      fechaVigencia: t?.inicioTemporada ?? '',
-      fechaCaducada: t?.finTemporada ?? '',
+      tipo: actual.tipo,
+      prefijoNombre: ETIQUETA_TIPO_RECURSO[actual.tipo],
+      sectorPublicId: actual.sectorPublicId,
+      fechaVigencia: actual.fechaVigencia,
+      fechaCaducada: actual.fechaCaducada,
+      numeroDesde: actual.numeroHasta + 1, // sigue donde terminó el lote anterior
+      numeroHasta: actual.numeroHasta + cantidad,
     });
     this.textosPrecio.set({ precioDia: '', precioQuincena: '', precioMes: '', precioTemporada: '' });
   }

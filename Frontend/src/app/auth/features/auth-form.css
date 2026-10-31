@@ -85,12 +85,18 @@
 }
 
 @media (max-width: 480px) {
-  .fila-telefono {
-    flex-direction: column;
-    gap: 0;
+  .card-premium {
+    padding: 1.5rem 1rem; /* mas lugar para los campos en pantallas chicas */
   }
 
-  .fila-telefono .campo-pais {
+  /* En celular, pais y teléfono se apilan con el mismo espacio que el resto de los campos */
+  .fila-telefono {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .fila-telefono .campo-pais,
+  .fila-telefono .campo-telefono {
     flex: none;
     width: 100%;
   }
