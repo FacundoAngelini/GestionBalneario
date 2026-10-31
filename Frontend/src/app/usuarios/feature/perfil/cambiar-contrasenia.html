@@ -3,10 +3,21 @@
     <mat-label>Contraseña actual</mat-label>
     <input
       matInput
-      [type]="verContrasenias() ? 'text' : 'password'"
+      [type]="verActual() ? 'text' : 'password'"
       autocomplete="current-password"
       [formField]="formulario.contraseniaActual"
     />
+    <button
+      matIconButton
+      matSuffix
+      type="button"
+      [disabled]="formulario().submitting()"
+      [attr.aria-label]="verActual() ? 'Ocultar contraseña actual' : 'Mostrar contraseña actual'"
+      [attr.aria-pressed]="verActual()"
+      (click)="verActual.set(!verActual())"
+    >
+      <mat-icon>{{ verActual() ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
     <mat-error>{{ formulario.contraseniaActual().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 
@@ -14,7 +25,7 @@
     <mat-label>Nueva contraseña</mat-label>
     <input
       matInput
-      [type]="verContrasenias() ? 'text' : 'password'"
+      [type]="verNueva() ? 'text' : 'password'"
       autocomplete="new-password"
       [formField]="formulario.nuevaContrasenia"
     />
@@ -23,11 +34,11 @@
       matSuffix
       type="button"
       [disabled]="formulario().submitting()"
-      [attr.aria-label]="verContrasenias() ? 'Ocultar contraseñas' : 'Mostrar contraseñas'"
-      [attr.aria-pressed]="verContrasenias()"
-      (click)="verContrasenias.set(!verContrasenias())"
+      [attr.aria-label]="verNueva() ? 'Ocultar nueva contraseña' : 'Mostrar nueva contraseña'"
+      [attr.aria-pressed]="verNueva()"
+      (click)="verNueva.set(!verNueva())"
     >
-      <mat-icon>{{ verContrasenias() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      <mat-icon>{{ verNueva() ? 'visibility_off' : 'visibility' }}</mat-icon>
     </button>
     <mat-hint>8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</mat-hint>
     <mat-error>{{ formulario.nuevaContrasenia().errors().at(0)?.message }}</mat-error>
@@ -37,10 +48,21 @@
     <mat-label>Repetir nueva contraseña</mat-label>
     <input
       matInput
-      [type]="verContrasenias() ? 'text' : 'password'"
+      [type]="verConfirmacion() ? 'text' : 'password'"
       autocomplete="new-password"
       [formField]="formulario.confirmacion"
     />
+    <button
+      matIconButton
+      matSuffix
+      type="button"
+      [disabled]="formulario().submitting()"
+      [attr.aria-label]="verConfirmacion() ? 'Ocultar repetición de contraseña' : 'Mostrar repetición de contraseña'"
+      [attr.aria-pressed]="verConfirmacion()"
+      (click)="verConfirmacion.set(!verConfirmacion())"
+    >
+      <mat-icon>{{ verConfirmacion() ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
     <mat-error>{{ formulario.confirmacion().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 

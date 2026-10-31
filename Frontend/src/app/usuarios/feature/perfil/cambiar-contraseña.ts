@@ -38,7 +38,9 @@ export class CambiarContrasenia {
   readonly cambiada = output<void>();
   readonly cancelada = output<void>();
 
-  protected readonly verContrasenias = signal(false);
+  protected readonly verActual = signal(false);
+  protected readonly verNueva = signal(false);
+  protected readonly verConfirmacion = signal(false);
 
   private readonly modelo = signal<CambiarContraseniaForm>({
     contraseniaActual: '',
