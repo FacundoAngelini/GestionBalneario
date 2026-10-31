@@ -477,3 +477,16 @@ button.chip[aria-pressed='true']:hover:not(:disabled) {
     width: auto;
   }
 }
+
+/* Fila pais + telefono
+   Dos columnas si entran,  si no, una debajo de la otra. */
+.fila-telefono {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  align-items: start;
+  gap: 1rem;
+}
+
+.fila-telefono > * {
+  min-width: 0;
+}

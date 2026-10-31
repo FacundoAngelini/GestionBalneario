@@ -68,37 +68,9 @@
   color: var(--color-primario);
 }
 
-.fila-telefono {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.fila-telefono .campo-pais {
-  flex: 0 0 11.5rem;
-  width: auto;
-}
-
-.fila-telefono .campo-telefono {
-  flex: 1;
-  min-width: 0;
-}
-
 @media (max-width: 480px) {
   .card-premium {
-    padding: 1.5rem 1rem; /* mas lugar para los campos en pantallas chicas */
-  }
-
-  /* En celular, pais y teléfono se apilan con el mismo espacio que el resto de los campos */
-  .fila-telefono {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .fila-telefono .campo-pais,
-  .fila-telefono .campo-telefono {
-    flex: none;
-    width: 100%;
+    padding: 1.5rem 1rem; /* más lugar para los campos en pantallas chicas */
   }
 }
 

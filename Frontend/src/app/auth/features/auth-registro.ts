@@ -27,6 +27,7 @@ import { noBlanco } from '../../core/validators/validadores';
 import { AuthClient } from '../data-access/auth-client';
 import { MatSelectModule } from '@angular/material/select';
 import { buscarPais, PAISES } from '../../core/constants/paises.constants';
+import { OjoContrasenia } from '../../shared/ojo-contrasenia/ojo-contrasenia';
 
 // El DNI empieza en null (campo vacío). En RegistroClienteRequest es number.
 interface RegistroForm {
@@ -51,6 +52,7 @@ interface RegistroForm {
     MatIconModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    OjoContrasenia
   ],
   templateUrl: './auth-registro.html',
   styleUrl: './auth-form.css',
@@ -61,7 +63,6 @@ export class Registro {
   private readonly snackBar = inject(MatSnackBar);
 
   protected readonly errorMsg = signal('');
-  protected readonly verContrasenia = signal(false);
   protected readonly paises = PAISES;
 
   private readonly registroModel = signal<RegistroForm>({

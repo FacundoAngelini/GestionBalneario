@@ -17,6 +17,7 @@ import { firstValueFrom } from 'rxjs';
 import { contraseniaSegura, noBlanco } from '../../../core/validators/validadores';
 import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 import { UsuarioClient } from '../../data-access/usuarios.client';
+import { OjoContrasenia } from '../../../shared/ojo-contrasenia/ojo-contrasenia';
 
 interface CambiarContraseniaForm {
   contraseniaActual: string;
@@ -26,7 +27,7 @@ interface CambiarContraseniaForm {
 
 @Component({
   selector: 'app-cambiar-contrasenia',
-  imports: [FormRoot, FormField, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [FormRoot, FormField, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, OjoContrasenia],
   templateUrl: './cambiar-contrasenia.html',
   styleUrl: './perfil-form.css',
 })
@@ -38,9 +39,6 @@ export class CambiarContrasenia {
   readonly cambiada = output<void>();
   readonly cancelada = output<void>();
 
-  protected readonly verActual = signal(false);
-  protected readonly verNueva = signal(false);
-  protected readonly verConfirmacion = signal(false);
 
   private readonly modelo = signal<CambiarContraseniaForm>({
     contraseniaActual: '',

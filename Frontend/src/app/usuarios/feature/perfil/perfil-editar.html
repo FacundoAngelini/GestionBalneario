@@ -33,7 +33,7 @@
   </mat-form-field>
 
   <div class="fila-telefono">
-    <mat-form-field class="campo-pais">
+    <mat-form-field>
       <mat-label>País</mat-label>
       <mat-select [formField]="formulario.pais">
         @for (p of paises; track p.prefijo) {
@@ -42,7 +42,7 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field class="campo-telefono">
+    <mat-form-field>
       <mat-label>Teléfono</mat-label>
       <span matTextPrefix>+{{ paisElegido().prefijo }}&nbsp;</span>
       <input matInput type="tel" inputmode="numeric" autocomplete="tel-national" [formField]="formulario.telefono" />

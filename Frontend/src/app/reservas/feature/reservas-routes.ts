@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ReservasLayout } from '../UI/reservas-layout/reservas-layout';
+import { ReservasLayout } from '../../../../papelara/UI/reservas-layout/reservas-layout';
 import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
 import { roleGuard } from '../../auth/data-access/auth.guard';
 import { seleccionGuard } from '../data-access/seleccion.guard';

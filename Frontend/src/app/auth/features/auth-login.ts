@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { OjoContrasenia } from '../../shared/ojo-contrasenia/ojo-contrasenia';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule],
+    MatProgressSpinnerModule,
+    OjoContrasenia],
   templateUrl: './auth-login.html',
   styleUrl: './auth-form.css',
 })
@@ -31,8 +33,6 @@ export class Login {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly errorMsg = signal('');
-  protected readonly verContrasenia = signal(false);
-
    private readonly loginModel = signal<LoginRequest>({ nombreUsuario: '', contrasenia: '' });
 
   protected readonly loginForm = form(

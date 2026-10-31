@@ -29,6 +29,7 @@ import {
   RespuestaDialogo,
 } from '../../../shared/dialogo-resultado/dialogo-resultado';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
+import { formatoPrecio, interpretarPrecio } from '../../../core/utils/moneda';
 
 
 
@@ -297,34 +298,16 @@ protected readonly listo = computed(
     });
   }
 
-  protected formatoPrecio(n: number): string {
-    return n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
-  }
+   protected readonly formatoPrecio = formatoPrecio;
 
   protected cambiarPrecio(clave: ClavePrecio, evento: Event): void {
-  const input = evento.target as HTMLInputElement;
-  const negativo = input.value.trim().startsWith('-');
-
-  // Nos quedamos solo con dígitos y la coma decimal
-  const limpio = input.value.replace(/[^\d,]/g, '');
-  const tieneComa = limpio.includes(',');
-  const [enteros = '', ...resto] = limpio.split(',');
-  const decimales = resto.join('').slice(0, 2);
-  const sinCeros = enteros.replace(/^0+(?=\d)/, '');
-  const base = sinCeros || (tieneComa ? '0' : '');
-
-  // Texto que se ve: 1234567 -> 1.234.567
-  let texto = base.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (tieneComa ? ',' + decimales : '');
-  if (negativo) texto = '-' + texto;
-
-  const hayDigitos = base !== '' || decimales !== '';
-  const numero = hayDigitos ? Number(`${negativo ? '-' : ''}${base || '0'}.${decimales || '0'}`) : null;
-
-  input.value = texto;
-  this.textosPrecio.update((t) => ({ ...t, [clave]: texto }));
-  this.modelo.update((m) => ({ ...m, [clave]: numero }));
-}
-
+    const input = evento.target as HTMLInputElement;
+    const { texto, valor } = interpretarPrecio(input.value);
+    input.value = texto;
+    this.textosPrecio.update((t) => ({ ...t, [clave]: texto }));
+    this.modelo.update((m) => ({ ...m, [clave]: valor }));
+  }
+  
 protected elegirFecha(campo: 'fechaVigencia' | 'fechaCaducada', fecha: Date | null): void {
   const valor = fecha ? aIso(fecha) : '';
   this.modelo.update((m) =>
