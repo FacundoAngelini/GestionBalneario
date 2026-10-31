@@ -14,6 +14,11 @@ export const ROUTE_SEGMENTS = {
   gestionReservas: 'gestion',
   recursos: 'recursos',
   cargaMasiva: 'carga-masiva',
+  precios: 'precios',
+
 
   unauthorized: 'no-autorizado'
 } as const;
+
+export const MIN_PORCENTAJE = -90;
+export const MAX_PORCENTAJE = 300;

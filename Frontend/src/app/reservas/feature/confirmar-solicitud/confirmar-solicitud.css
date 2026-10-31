@@ -47,13 +47,6 @@
   padding-left: var(--espacio-5);
 }
 
-.exito {
-  padding: var(--espacio-4);
-  border-color: var(--color-exito);
-  background: var(--color-exito-fondo);
-  color: var(--color-exito);
-}
-
 /* Botones: apilados en celular (el principal queda abajo, al alcance del pulgar) */
 .acciones-solicitud {
   display: grid;

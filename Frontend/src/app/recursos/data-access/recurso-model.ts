@@ -97,5 +97,30 @@ export interface PrecioRecurso {
   fechaCaducada: string;
 }
 
-// Lo que se envía para crear o modificar un precio
+// Lo que se envia para crear o modificar un precio 
 export type PrecioRecursoRequest = Omit<PrecioRecurso, 'publicId'>;
+
+export type OperacionAjuste = 'PORCENTAJE' | 'MONTO_FIJO';
+
+export interface AjustePreciosRequest {
+  tipo: TipoRecurso;
+  sectorPublicId: string | null;
+  modalidad: Modalidad | null; // null = todas
+  operacion: OperacionAjuste;
+  valor: number;
+  soloSimular: boolean;
+}
+
+export interface EjemploAjuste {
+  recurso: string;
+  modalidad: Modalidad;
+  precioActual: number;
+  precioNuevo: number;
+}
+
+export interface ResultadoAjuste {
+  simulado: boolean;
+  recursosAfectados: number;
+  preciosAfectados: number;
+  ejemplos: EjemploAjuste[];
+}

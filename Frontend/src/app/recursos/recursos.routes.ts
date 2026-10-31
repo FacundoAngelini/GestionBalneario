@@ -12,6 +12,13 @@ export const recursosRoutes: Routes = [
     loadComponent: () => import('./features/inventario/inventario').then((m) => m.Inventario),
   },
   {
+    path: ROUTE_SEGMENTS.precios,
+    canActivate: [roleGuard],
+    data: { roles: [ROLES.ADMIN] },
+    loadComponent: () =>
+      import('./features/ajuste-precios/ajuste-precios').then((m) => m.AjustePrecios),
+  },
+  {
     path: ROUTE_SEGMENTS.cargaMasiva,
     canActivate: [roleGuard],
     data: { roles: [ROLES.ADMIN] },

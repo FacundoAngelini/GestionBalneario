@@ -6,8 +6,11 @@
         <p class="field__hint">Solo lectura: los cambios los realiza el administrador.</p>
       }
     </div>
-    @if (esAdmin()) {
-      <a class="btn btn--primary" routerLink="/recursos/carga-masiva">Carga masiva</a>
+        @if (esAdmin()) {
+      <div class="inventario__acciones">
+        <a class="btn btn--secundario" routerLink="/recursos/precios">Actualizar precios</a>
+        <a class="btn btn--primary" routerLink="/recursos/carga-masiva">Carga masiva</a>
+      </div>
     }
   </header>
 

@@ -3,6 +3,7 @@ import { inject, Service } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from '../../core/environments/environment';
 import {
+  AjustePreciosRequest,
   DatosRecurso,
   PrecioRecurso,
   PrecioRecursoRequest,
@@ -10,6 +11,7 @@ import {
   RecursoInventario,
   RecursoLoteRequest,
   RecursoLoteResponse,
+  ResultadoAjuste,
   Sector,
   TamanioSombrilla,
   Temporada,
@@ -111,6 +113,10 @@ export class RecursoService {
 
   actualizarPrecio(publicId: string, precio: PrecioRecursoRequest) {
     return this.http.put<PrecioRecurso>(`${this.apiUrl}/recursos-precios/${publicId}`, precio);
+  }
+
+    ajustarPrecios(pedido: AjustePreciosRequest) {
+    return this.http.post<ResultadoAjuste>(`${this.apiUrl}/recursos-precios/ajuste-masivo`, pedido);
   }
 }
 

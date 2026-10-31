@@ -400,3 +400,10 @@ a.btn {
     width: auto;
   }
 }
+
+.exito {
+  padding: var(--espacio-4);
+  border-color: var(--color-exito);
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
