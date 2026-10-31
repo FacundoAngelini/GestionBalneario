@@ -1,0 +1,30 @@
+.panel {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+.panel h1,
+.card h2 {
+  margin-bottom: var(--espacio-2);
+}
+
+.panel .card {
+  display: grid;
+  gap: var(--espacio-3);
+  justify-items: start;
+}
+
+.acciones-panel {
+  display: grid;
+  gap: var(--espacio-2);
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .acciones-panel {
+    display: flex;
+    width: auto;
+  }
+}

@@ -19,6 +19,10 @@ public interface IReservaServicio {
                                               LocalDate fechaDesde,
                                               LocalDate fechaHasta,
                                               UUID clientePublicId);
-    void cancelarReservaPorPersonal(UUID reservaPublicId);
+    void cancelarReservaPorPersonal(UUID reservaPublicId, boolean cancelarCocherasAsociadas);
+    List<ReservaDTO> listarCocherasDependientes(UUID reservaPublicId);
     void cancelarReservaPorExpiracion(UUID publicId);
+    ReservaDTO reservarSinPago(ReservaDTO dto);
+    ReservaDTO confirmarReserva(UUID reservaPublicId);
+    ReservaDTO rechazarReserva(UUID reservaPublicId);
 }

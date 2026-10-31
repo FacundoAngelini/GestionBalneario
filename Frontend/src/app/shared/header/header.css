@@ -53,7 +53,8 @@
   color: var(--color-texto-sobre-primario);
 }
 
-.texto-salir {
+.texto-salir,
+.texto-catalogo {
   display: none;
 }
 
@@ -172,7 +173,8 @@
     display: flex;
   }
 
-  .texto-salir {
+  .texto-salir,
+   .texto-boton{
     display: inline;
   }
 }

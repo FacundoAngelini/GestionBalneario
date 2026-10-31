@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface CarpaRepositorio extends JpaRepository<CarpaEntity, Long>, JpaSpecificationExecutor<CarpaEntity> {
     Optional<CarpaEntity> findByPublicId(UUID id);
     Optional<CarpaEntity> findByNumero(int numero);
+    long countByPasillo(int pasillo);
+    boolean existsByNumeroBetween(int desde, int hasta);
 }

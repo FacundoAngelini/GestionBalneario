@@ -55,7 +55,7 @@ public class CanchaControlador {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Obtener una cancha por ID", description = "Recupera la información detallada de una cancha específica mediante su UUID público.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cancha encontrada y devuelta con éxito"),
@@ -69,7 +69,7 @@ public class CanchaControlador {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar canchas", description = "Obtiene una lista de canchas aplicando filtros avanzados opcionales por tipo, iluminación o rangos de capacidad.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de canchas obtenido con éxito"),

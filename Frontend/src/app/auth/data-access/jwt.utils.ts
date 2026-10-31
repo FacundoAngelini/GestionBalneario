@@ -2,6 +2,7 @@ export interface JwtPayload {
   sub: string;
   exp: number; 
   authorities?: string[];
+  publicId?: string; 
 }
 
 export function leerPayload(token: string): JwtPayload | null {

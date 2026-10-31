@@ -7,6 +7,7 @@ import com.Gestion.MiBalnearioGestion.Reservas.DTO.CancelarReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.CheckoutResponseDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
+import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Servicio.IReservaServicio;
 import com.Gestion.MiBalnearioGestion.Reservas.Servicio.ReservaServicio;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,7 +35,26 @@ import java.util.UUID;
 public class ReservaController {
 
     private final IReservaServicio reservaServicio;
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esElPropioCliente(#dto.clientePublicId)")
+
+    @Operation(summary = "Crear una reserva inicial",
+            description = "Registra una reserva pendiente sin generar un pago online.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Reserva creada con éxito"),
+            @ApiResponse(responseCode = "400", description = "Datos de la reserva inválidos", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflicto - Los recursos ya se encuentran reservados para las fechas seleccionadas", content = @Content)
+    })
+    public ResponseEntity<ReservaDTO> crearReservaInicial(@Valid @RequestBody ReservaDTO dto) {
+        ReservaEntity reserva = reservaServicio.crearReservaInicial(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservaServicio.buscarPorPublicId(reserva.getPublicId()));
+    }
+
     @PostMapping("/checkout-online")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esElPropioCliente(#dto.clientePublicId)")
+
     @Operation(summary = "Procesar checkout online de una reserva",
             description = "Registra una reserva de forma preliminar y genera la pasarela de pago correspondiente (Mercado Pago).")
     @ApiResponses(value = {
@@ -65,7 +86,7 @@ public class ReservaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or (#clientePublicId != null and @securityService.esElPropioCliente(#clientePublicId))")
     @Operation(summary = "Listar y filtrar reservas",
             description = "Obtiene una lista de reservas que pueden filtrarse de manera opcional por estado, rango de fechas y cliente. Requiere rol ADMIN, ADMINISTRADOR o GERENTE.")
     @ApiResponses(value = {
@@ -89,13 +110,13 @@ public class ReservaController {
 
 
     @PutMapping("/cancelar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO') or @securityService.esElPropioCliente(#dto.clientePublicId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esElPropioCliente(#dto.clientePublicId)")
     @Operation(summary = "Cancelar una reserva (Usuario/Cliente)",
             description = "Solicita la cancelación de una reserva validando políticas de anticipación. Puede ser invocado por personal interno o por el propio cliente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Reserva cancelada con éxito, no devuelve contenido", content = @Content),
             @ApiResponse(responseCode = "400", description = "Error en la solicitud o fuera del plazo permitido para cancelación", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado - No tiene permiso para cancelar las reservas de este cliente", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado - Requiere rol administrativo (ADMIN, GERENTE, ADMINISTRACION)", content = @Content),
             @ApiResponse(responseCode = "404", description = "Reserva o Cliente no encontrados", content = @Content)
     })
     public ResponseEntity<Void> cancelarReserva(@Valid @RequestBody CancelarReservaDTO dto) {
@@ -105,7 +126,7 @@ public class ReservaController {
 
 
     @PutMapping("/{id}/cancelar-administrativo")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Cancelar una reserva por la vía administrativa",
             description = "Fuerza la cancelación de una reserva por parte del personal del sistema, omitiendo ciertas restricciones aplicadas al cliente.")
     @ApiResponses(value = {
@@ -115,8 +136,39 @@ public class ReservaController {
     })
     public ResponseEntity<Void> cancelarReservaAdministrativa(
             @Parameter(description = "UUID público de la reserva a cancelar administrativamente", example = "d3b07384-d113-4c4e-9c8e-cfbd6c4e3012")
-            @PathVariable UUID id) {
-        reservaServicio.cancelarReservaPorPersonal(id);
+            @PathVariable UUID id,
+            @Parameter(description = "Confirma que también se cancelen las cocheras que quedarían sin carpa o sombrilla")
+            @RequestParam(defaultValue = "false") boolean cancelarCocherasAsociadas) {
+            reservaServicio.cancelarReservaPorPersonal(id, cancelarCocherasAsociadas);
         return ResponseEntity.noContent().build();
+    }
+
+        @GetMapping("/{id}/cocheras-dependientes")
+        @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esDuenioDeLaReserva(#id)")
+        @Operation(summary = "Cocheras que quedarían sin carpa o sombrilla si se cancela esta reserva", description = "Sirve para avisar al usuario antes de cancelar: si la lista no está vacía, hay que pedir confirmación.")
+        public ResponseEntity<List<ReservaDTO>> cocherasDependientes(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservaServicio.listarCocherasDependientes(id));
+         }
+
+
+    @PostMapping("/sin-pago")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esElPropioCliente(#dto.clientePublicId)")
+    @Operation(summary = "Reservar sin pago online", description = "Crea una reserva PENDIENTE de confirmación manual por el personal.")
+    public ResponseEntity<ReservaDTO> reservarSinPago(@Valid @RequestBody ReservaDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservaServicio.reservarSinPago(dto));
+    }
+
+    @PutMapping("/{id}/confirmar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    @Operation(summary = "Confirmar una reserva pendiente")
+    public ResponseEntity<ReservaDTO> confirmar(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservaServicio.confirmarReserva(id));
+    }
+
+    @PutMapping("/{id}/rechazar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    @Operation(summary = "Rechazar una reserva pendiente")
+    public ResponseEntity<ReservaDTO> rechazar(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservaServicio.rechazarReserva(id));
     }
 }

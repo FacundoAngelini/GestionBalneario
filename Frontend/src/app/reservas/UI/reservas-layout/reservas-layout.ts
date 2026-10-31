@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
-  imports: [],
   selector: 'app-reservas-layout',
-  styleUrl: './reservas-layout.css',
+  imports: [RouterOutlet],
   templateUrl: './reservas-layout.html',
+  styleUrl: './reservas-layout.css',
 })
 export class ReservasLayout {}

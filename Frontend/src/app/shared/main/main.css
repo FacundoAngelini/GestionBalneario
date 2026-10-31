@@ -111,3 +111,14 @@
     display: none;
   }
 }
+
+/* sin menu lateral (cliente. cajero...). el contenido ocupa todo el ancho */
+@media (min-width: 768px) {
+  .app-grid-layout.sin-aside {
+    grid-template-areas:
+      "header"
+      "main"
+      "footer";
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,11 +1,13 @@
 package com.Gestion.MiBalnearioGestion.Reservas.DTO;
 
+import com.Gestion.MiBalnearioGestion.Recursos.Enum.EModalidad;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +34,13 @@ public class ReservaDTO {
     @NotNull
     private LocalDate fechaFin;
 
+    @Schema(description = "Modalidad de alquiler elegida", example = "QUINCENA")
+    @NotNull
+    private EModalidad modalidad;
+
+    @Schema(description = "Monto total calculado por el sistema (solo lectura)", example = "45000.0")
+    private Double montoTotal;
+
     @Schema(description = "Lista de UUIDs públicos de los recursos asignados a la reserva",
             example = "[\"e1b2c3d4-5f6a-7b8c-9d0e-1f2a3b4c5d6e\", \"f5e4d3c2-b1a0-9f8e-7d6c-5b4a3f2e1d0c\"]")
     @NotNull
@@ -39,4 +48,16 @@ public class ReservaDTO {
 
     @Schema(description = "Estado actual en el que se encuentra la reserva", implementation = EReservaEstado.class)
     private EReservaEstado estadoReserva;
+
+    @Schema(description = "Nombre y tipo de los recursos de la reserva (solo lectura)")
+    private List<RecursoResumenDTO> recursosDetalle;
+
+    @Schema(description = "Nombre y apellido del cliente (solo lectura)", example = "Mariana Gómez")
+    private String clienteNombre;
+
+    @Schema(description = "DNI del cliente (solo lectura)", example = "38123456")
+    private Integer clienteDni;
+
+    @Schema(description = "Fecha y hora en que se creó la solicitud (solo lectura)")
+    private LocalDateTime fechaCreacion;
 }

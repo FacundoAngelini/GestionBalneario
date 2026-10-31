@@ -52,7 +52,7 @@ public class PiletaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Obtener una pileta por ID", description = "Recupera la información detallada de una pileta utilizando su UUID público.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pileta encontrada con éxito"),
@@ -67,7 +67,7 @@ public class PiletaControlador {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar piletas", description = "Obtiene un listado de piletas aplicando filtros opcionales por climatización y dimensiones.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de piletas obtenido con éxito"),

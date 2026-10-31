@@ -1,0 +1,215 @@
+<section class="inventario">
+  <header class="inventario__cabecera">
+    <div>
+      <h1>Inventario de recursos</h1>
+      @if (!esAdmin()) {
+        <p class="field__hint">Solo lectura: los cambios los realiza el administrador.</p>
+      }
+    </div>
+        @if (esAdmin()) {
+      <div class="inventario__acciones">
+        <a class="btn btn--secundario" routerLink="/recursos/precios">Actualizar precios</a>
+        <a class="btn btn--primary" routerLink="/recursos/carga-masiva">Carga masiva</a>
+      </div>
+    }
+  </header>
+
+  <div class="vistas" role="group" aria-label="Tipo de recurso">
+    @for (t of tipos; track t) {
+      <button type="button" class="chip" [attr.aria-pressed]="tipoActivo() === t"
+              (click)="elegirTipo(t)">
+        {{ etiquetaPlural[t] }}@if (cantidad(t) !== null) { ({{ cantidad(t) }}) }
+      </button>
+    }
+  </div>
+
+  <div class="card filtros-inventario">
+    <div class="field">
+      <label class="field__label" for="buscar">Buscar</label>
+      <input id="buscar" type="search" class="field__control" autocomplete="off"
+             placeholder="Nombre o número" [formField]="f.texto">
+    </div>
+    <div class="field">
+      <label class="field__label" for="filtro-sector">Sector</label>
+      <select id="filtro-sector" class="field__control" [formField]="f.sector">
+        <option value="">Todos los sectores</option>
+        @for (s of sectores(); track s.publicId) {
+          <option [value]="s.publicId">{{ s.nombre }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="filtro-estado">Estado</label>
+      <select id="filtro-estado" class="field__control" [formField]="f.estado">
+        <option value="TODOS">Todos</option>
+        <option value="ACTIVOS">Reservables</option>
+        <option value="DESACTIVADOS">Desactivados</option>
+      </select>
+    </div>
+  </div>
+
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+    <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
+  }
+
+    @if (errorPrecios()) {
+    <p class="field__error" role="alert">{{ errorPrecios() }}</p>
+    <button type="button" class="btn btn--secundario" (click)="cargarPrecios()">
+      Reintentar precios
+    </button>
+  }
+
+  @if (cargando() && !cargado()) {
+    <p role="status">Cargando…</p>
+  }
+
+  @if (cargado()) {
+    @if (visibles().length === 0) {
+      <div class="card vacio" role="status">
+        <p>No hay recursos que coincidan con los filtros.</p>
+      </div>
+    } @else {
+      <ul class="lista-items">
+        @for (r of visibles(); track r.publicId) {
+          <li class="card item" [class.item--inactivo]="!r.esReservable">
+            @if (editandoId() === r.publicId) {
+              <form class="item__form" (submit)="guardar($event)" novalidate>
+                <h3 class="item__nombre">Editar {{ r.nombre }}</h3>
+
+                <div class="item__campos">
+                  <div class="field campo-ancho">
+                    <label class="field__label" for="ed-nombre">Nombre</label>
+                    <input id="ed-nombre" type="text" autocomplete="off" class="field__control"
+                           [formField]="fe.nombre" [attr.aria-invalid]="!!errores().nombre">
+                    <p class="field__hint">{{ edicion().nombre.length }}/{{ maxNombre }} caracteres</p>
+                    @if (errores().nombre) {
+                      <p class="field__error">{{ errores().nombre }}</p>
+                    }
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="ed-sector">Sector</label>
+                    <select id="ed-sector" class="field__control" [formField]="fe.sectorPublicId"
+                            [attr.aria-invalid]="!!errores().sector">
+                      <option value="">Elegí un sector</option>
+                      @for (s of sectores(); track s.publicId) {
+                        <option [value]="s.publicId">{{ s.nombre }}</option>
+                      }
+                    </select>
+                    @if (errores().sector) {
+                      <p class="field__error">{{ errores().sector }}</p>
+                    }
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="ed-numero">Número</label>
+                    <input id="ed-numero" type="number" inputmode="numeric" class="field__control"
+                           [formField]="fe.numero" [attr.aria-invalid]="!!errores().numero">
+                    @if (errores().numero) {
+                      <p class="field__error">{{ errores().numero }}</p>
+                    }
+                  </div>
+
+                  @if (r.tipo === 'CARPA') {
+                    <div class="field">
+                      <label class="field__label" for="ed-pasillo">Pasillo (1 a {{ maxPasillo }})</label>
+                      <input id="ed-pasillo" type="number" inputmode="numeric" class="field__control"
+                             [formField]="fe.pasillo" [attr.aria-invalid]="!!errores().pasillo">
+                      @if (errores().pasillo) {
+                        <p class="field__error">{{ errores().pasillo }}</p>
+                      }
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="ed-capacidad">
+                        Capacidad ({{ minCapacidad }} a {{ maxCapacidad }} personas)
+                      </label>
+                      <input id="ed-capacidad" type="number" inputmode="numeric" class="field__control"
+                             [formField]="fe.capacidad" [attr.aria-invalid]="!!errores().capacidad">
+                      @if (errores().capacidad) {
+                        <p class="field__error">{{ errores().capacidad }}</p>
+                      }
+                    </div>
+                  }
+
+                  @if (r.tipo === 'SOMBRILLA') {
+                    <div class="field">
+                      <label class="field__label" for="ed-tamanio">Tamaño</label>
+                      <select id="ed-tamanio" class="field__control" [formField]="fe.tamanio">
+                        <option value="CHICO">Chico</option>
+                        <option value="MEDIANO">Mediano</option>
+                        <option value="GRANDE">Grande</option>
+                      </select>
+                    </div>
+                  }
+
+                  <label class="casilla campo-ancho">
+                    <input type="checkbox" [formField]="fe.esReservable">
+                    <span>Reservable. Si lo destildás, no se podrán hacer reservas nuevas; las reservas ya hechas no se cancelan.</span>                  </label>
+                </div>
+
+                @if (errorEdicion()) {
+                  <p class="field__error" role="alert">{{ errorEdicion() }}</p>
+                }
+
+                <div class="acciones-reserva">
+                  <button type="button" class="btn btn--secundario" [disabled]="guardando()"
+                          (click)="cancelarEdicion()">Cancelar</button>
+                  <button type="submit" class="btn btn--primary"
+                          [disabled]="!edicionValida() || guardando()">
+                    @if (guardando()) { Guardando… } @else { Guardar cambios }
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <div class="item__cabecera">
+                <h3 class="item__nombre">{{ r.nombre }}</h3>
+                <span class="estado" [class]="r.esReservable ? 'estado--confirmada' : 'estado--cerrada'">
+                  {{ r.esReservable ? 'Reservable' : 'Desactivado' }}
+                </span>
+              </div>
+
+              <dl class="datos">
+                <dt>Sector</dt>
+                <dd>{{ nombreSector(r.sectorPublicId) }}</dd>
+                <dt>Número</dt>
+                <dd>{{ r.numero }}</dd>
+                @if (r.tipo === 'CARPA') {
+                  <dt>Pasillo</dt>
+                  <dd>{{ r.pasillo }}</dd>
+                  <dt>Capacidad</dt>
+                  <dd>{{ r.capacidad }} personas</dd>
+                }
+                @if (r.tipo === 'SOMBRILLA' && r.tamanio) {
+                  <dt>Tamaño</dt>
+                  <dd>{{ etiquetaTamanio[r.tamanio] }}</dd>
+                }
+              </dl>
+
+                 <app-precios-recurso
+                [recurso]="r"
+                [precios]="preciosDe(r.publicId)"
+                [cargados]="preciosCargados()"
+                [esAdmin]="esAdmin()"
+                [temporada]="temporada()"
+                (guardado)="cargarPrecios()"
+              />
+
+              @if (esAdmin()) {
+                <div class="acciones-reserva">
+                  <button type="button" class="btn btn--secundario" (click)="empezarEdicion(r)">
+                    Editar
+                  </button>
+                </div>
+              }
+            }
+          </li>
+        }
+      </ul>
+
+      @if (hayMas()) {
+        <button type="button" class="btn btn--secundario" (click)="verMas()">Mostrar más</button>
+      }
+    }
+  }
+</section>

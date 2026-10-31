@@ -1,18 +1,82 @@
 
 import { required, schema, validate } from '@angular/forms/signals';
+import { Modalidad, TipoRecurso } from '../../recursos/data-access/recurso-model';
 
-export type ReservaEstado = 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'FINALIZADA' | 'RECHAZADA';
+export const ESTADOS_ACTIVOS: ReservaEstado[] = ['PENDIENTE', 'CONFIRMADA'];
 
-// Mirrors ReservaDTO.java. UUID -> string, LocalDate -> 'yyyy-MM-dd' string.
+// Clase de color de cada estado (definidas en styles.css)
+export const CLASE_ESTADO: Record<ReservaEstado, string> = {
+  PENDIENTE: 'estado--pendiente',
+  CONFIRMADA: 'estado--confirmada',
+  FINALIZADA: 'estado--finalizada',
+  CANCELADA: 'estado--cerrada',
+  RECHAZADA: 'estado--cerrada',
+  VENCIDA: 'estado--cerrada',
+};
 
-export interface Reserva {
-  publicId?: string;
+// Lo que se envía a PUT /reservas/cancelar
+export interface CancelarReservaRequest {
+  publicId: string;
   clientePublicId: string;
   fechaInicio: string;
   fechaFin: string;
-  recursosPublicIds: string[];
-  estadoReserva?: ReservaEstado;
+  cancelarCocherasAsociadas: boolean;
 }
+
+export type ReservaEstado =
+  | 'PENDIENTE'
+  | 'CONFIRMADA'
+  | 'CANCELADA'
+  | 'FINALIZADA'
+  | 'RECHAZADA'
+  | 'VENCIDA';
+
+export const ETIQUETA_ESTADO_RESERVA: Record<ReservaEstado, string> = {
+  PENDIENTE: 'Pendiente de confirmación',
+  CONFIRMADA: 'Confirmada',
+  CANCELADA: 'Cancelada',
+  FINALIZADA: 'Finalizada',
+  RECHAZADA: 'Rechazada',
+  VENCIDA: 'Vencida',
+};
+
+// Lo que se envía a POST /reservas/sin-pago y /reservas/checkout-online
+export interface ReservaRequest {
+  clientePublicId: string;
+  modalidad: Modalidad;
+  fechaInicio: string; // 'YYYY-MM-DD'
+  fechaFin: string;
+  recursosPublicIds: string[];
+}
+
+export interface RecursoResumen {
+  publicId: string;
+  nombre: string;
+  tipo: TipoRecurso | null;
+}
+
+export const TEXTO_PAGO =
+  'El cobro se realiza de manera presencial en administración. Podés abonar hasta el mismo día de inicio de la reserva.';
+
+// Lo que devuelve el backend (ReservaDTO.java). Todo viene siempre completo.
+export interface Reserva {
+  publicId: string;
+  clientePublicId: string;
+  modalidad: Modalidad;
+  montoTotal: number | null;
+  fechaInicio: string;
+  fechaFin: string;
+  recursosPublicIds: string[];
+  estadoReserva: ReservaEstado;
+  recursosDetalle: RecursoResumen[];
+  clienteNombre: string;
+  clienteDni: number;
+  fechaCreacion?: string | null;
+}
+
+// Plazos del negocio (el backend aplica los mismos)
+export const HORAS_PARA_CONFIRMAR = 48;
+export const HORAS_PARA_CANCELAR = 48;
 
 // Mirrors CheckoutResponseDTO.java
 //para mp
@@ -30,6 +94,7 @@ export interface CancelarReserva {
   clientePublicId: string;
   fechaInicio: string;
   fechaFin: string;
+  cancelarCocherasAsociadas?: boolean;
 }
 
 // Query params of GET /reservas (all optional)
@@ -45,6 +110,7 @@ export interface ReservaFiltros {
 // so they bind directly to <input type="date"> and match the backend LocalDate.
 export interface ReservaFormModel {
   clientePublicId: string;
+  modalidad: Modalidad;
   fechaInicio: string;
   fechaFin: string;
   recursosPublicIds: string[];
@@ -52,6 +118,7 @@ export interface ReservaFormModel {
 
 export const reservaFormInicial = (): ReservaFormModel => ({
   clientePublicId: '',
+  modalidad: 'DIA',
   fechaInicio: '',
   fechaFin: '',
   recursosPublicIds: [],
@@ -74,7 +141,7 @@ export const reservaSchema = schema<ReservaFormModel>((path) => {
   });
 });
 
-export function formToReserva(value: ReservaFormModel): Reserva {
+export function formToReserva(value: ReservaFormModel): ReservaRequest {
   return { ...value };
 }
 

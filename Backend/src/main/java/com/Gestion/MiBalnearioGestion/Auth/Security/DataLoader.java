@@ -194,8 +194,8 @@ public class DataLoader implements CommandLineRunner {
         // ya configuramos la temporada
         if (configTemporadaRepository.count() == 0) {
             configTemporadaRepository.save(ConfiguracionTemporadaEntity.builder()
-                    .inicioTemporada(LocalDate.of(2026, 12, 1))
-                    .fin_temporada(LocalDate.of(2027, 4, 15))
+                    .inicioTemporada(LocalDate.of(2027, 12, 1))
+                    .fin_temporada(LocalDate.of(2028, 4, 15))
                     .build());
             System.out.println("Configuracion de temporada cargada.");
         }

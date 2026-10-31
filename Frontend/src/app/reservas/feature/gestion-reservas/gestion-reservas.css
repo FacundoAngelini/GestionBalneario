@@ -1,0 +1,34 @@
+/* Mobile first. Las tarjetas, estados y botones vienen de styles.css */
+
+.gestion {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
+.gestion :is(h1, h2, h3) {
+  margin-bottom: var(--espacio-2);
+}
+
+.gestion__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+/* Tantas columnas como entren (mínimo 14rem): 1 en celular, 2 en pantallas más anchas */
+.filtros-reservas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+.dni {
+  color: var(--color-texto-suave);
+  font-weight: 400;
+}

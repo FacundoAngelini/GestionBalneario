@@ -58,7 +58,7 @@ public class PrecioRecursoControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Obtener un registro de precio por ID", description = "Recupera la información detallada de una asignación de precio utilizando su UUID público.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Precio encontrado con éxito"),
@@ -73,7 +73,7 @@ public class PrecioRecursoControlador {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar registros de precios", description = "Obtiene un listado de precios aplicando filtros avanzados opcionales por rangos de fechas de vigencia/caducidad y montos.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de precios obtenido con éxito"),

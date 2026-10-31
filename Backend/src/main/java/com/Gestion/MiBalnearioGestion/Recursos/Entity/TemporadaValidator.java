@@ -30,4 +30,9 @@ public class TemporadaValidator {
             throw new DatosInvalidoException("Fuera de temporada. La temporada finaliza estrictamente el " + config.getFin_temporada(),"ConfiguracionEntity");
         }
     }
+
+    public ConfiguracionTemporadaEntity obtenerConfiguracionVigente() {
+        return configRepository.findFirstByOrderByIdDesc()
+                .orElseThrow(() -> new DatosInvalidoException("No hay ninguna configuración de temporada dada de alta en el sistema", "ConfiguracionEntity"));
+    }
 }

@@ -1,0 +1,115 @@
+<section class="mis-reservas">
+  <header>
+    <h1>Mis reservas</h1>
+    <p class="field__hint">{{ textoPago }}</p>
+  </header>
+
+  @if (cargando() && reservas() === null) {
+    <p role="status">Cargando tus reservas…</p>
+  }
+
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+    <button type="button" class="btn btn--secundario" (click)="cargar()">Reintentar</button>
+  }
+
+  @if (reservas() !== null) {
+    <div class="vistas" role="group" aria-label="Filtrar reservas">
+      <button type="button" class="chip" [attr.aria-pressed]="vista() === 'ACTIVAS'"
+              (click)="vista.set('ACTIVAS')">
+        Activas ({{ activas().length }})
+      </button>
+      <button type="button" class="chip" [attr.aria-pressed]="vista() === 'HISTORIAL'"
+              (click)="vista.set('HISTORIAL')">
+        Historial ({{ historial().length }})
+      </button>
+    </div>
+
+    @if (visibles().length === 0) {
+      <div class="card vacio" role="status">
+        @if (vista() === 'ACTIVAS') {
+          <p>No tenés reservas activas.</p>
+          <a class="btn btn--primary" routerLink="/catalogo">Ver disponibilidad</a>
+        } @else {
+          <p>Todavía no tenés reservas en el historial.</p>
+        }
+      </div>
+    } @else {
+      <ul class="lista-reservas">
+        @for (r of visibles(); track r.publicId) {
+          @let enConfirmacion = cancelacion()?.reserva?.publicId === r.publicId;
+          <li class="card reserva">
+            <div class="reserva__cabecera">
+              <h3 class="reserva__titulo">{{ titulo(r) }}</h3>
+              <span class="estado" [class]="claseEstado[r.estadoReserva]">
+                {{ etiquetaEstado[r.estadoReserva] }}
+              </span>
+            </div>
+
+            <dl class="datos">
+              <dt>Período</dt>
+              <dd>{{ formatoRango(r.fechaInicio, r.fechaFin) }}</dd>
+              <dt>Modalidad</dt>
+              <dd>{{ etiquetaModalidad[r.modalidad] }}</dd>
+              @if (r.montoTotal != null) {
+                <dt>Total</dt>
+                <dd>{{ formatoPrecio(r.montoTotal) }}</dd>
+              }
+              <dt>Código</dt>
+              <dd class="codigo">{{ codigo(r) }}</dd>
+            </dl>
+
+            @if (r.estadoReserva === 'PENDIENTE') {
+              <p class="field__hint">Esperando la confirmación del personal.</p>
+            }
+
+            @if (esActiva(r)) {
+              @if (enConfirmacion) {
+                @let c = cancelacion();
+                <div class="confirmacion" role="alert">
+                  <p><strong>¿Querés cancelar esta reserva?</strong></p>
+                  @if (c && c.cocheras.length > 0) {
+                    <p>
+                      También se cancela la cochera asociada ({{ nombresDe(c.cocheras) }}): sin carpa
+                      ni sombrilla, no puede mantenerse.
+                    </p>
+                  }
+                  <p class="field__hint">Esta acción no se puede deshacer.</p>
+                  <div class="acciones-reserva">
+                    <button type="button" class="btn btn--secundario"
+                            [disabled]="procesando() === r.publicId"
+                            (click)="descartarCancelacion()">No, volver</button>
+                    <button type="button" class="btn btn--primary"
+                            [disabled]="procesando() === r.publicId"
+                            (click)="confirmarCancelacion()">
+                      @if (procesando() === r.publicId) { Cancelando… } @else { Sí, cancelar }
+                    </button>
+                  </div>
+                </div>
+              } @else if (puedeCancelar(r)) {
+                <div class="acciones-reserva">
+                  <button type="button" class="btn btn--secundario"
+                          [disabled]="procesando() !== null"
+                          (click)="pedirCancelacion(r)">
+                    @if (procesando() === r.publicId) { Consultando… } @else { Cancelar reserva }
+                  </button>
+                </div>
+              } @else {
+                <p class="field__hint">
+                  Ya no se puede cancelar desde acá (el plazo es hasta {{ horasCancelar }} horas antes
+                  de la entrada). Consultá en administración.
+                </p>
+              }
+            } @else {
+              <div class="acciones-reserva">
+                <button type="button" class="btn btn--secundario" (click)="reservarDeNuevo(r)">
+                  Reservar de nuevo
+                </button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

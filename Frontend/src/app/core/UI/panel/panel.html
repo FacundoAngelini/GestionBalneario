@@ -1,1 +1,37 @@
-<p>panel works!</p>
+<section class="panel">
+  <header>
+    <h1>Hola, {{ nombre() }}</h1>
+    <p class="field__hint">{{ rol() }}</p>
+  </header>
+    @if (esCliente()) {
+    <div class="card">
+      <h2>Reservá tu lugar</h2>
+      <p>Elegí tus fechas y mirá qué carpas, sombrillas y cocheras hay libres.</p>
+            <div class="acciones-panel">
+        <a class="btn btn--primary" routerLink="/catalogo">Ver disponibilidad</a>
+        <a class="btn btn--secundario" routerLink="/reservas/mis-reservas">Mis reservas</a>
+      </div>
+    </div>
+  }
+
+    @if (esPersonal()) {
+    <div class="card">
+      <h2>Reservas por confirmar</h2>
+      <p>Solicitudes pendientes: <strong>{{ pendientes() }}</strong></p>
+      <div class="acciones-panel">
+        <a class="btn btn--primary" routerLink="/reservas/gestion">Gestionar reservas</a>
+        <a class="btn btn--secundario" routerLink="/recursos">Inventario</a>
+      </div>
+    </div>
+  }
+
+  @if (sinFunciones()) {
+    <div class="card" role="status">
+      <h2>Tu perfil todavía no tiene funciones</h2>
+      <p>
+        Por ahora tu rol solo puede iniciar sesión. Las funciones para tu perfil se van a
+        habilitar en próximas versiones.
+      </p>
+    </div>
+  }
+</section>

@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Controladores;
 
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoCatalogoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.IRecursoServicio;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,7 @@ public class RecursoControlador {
     private final IRecursoServicio recursoServicio;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Buscar recurso base por ID", description = "Recupera los datos comunes de cualquier tipo de recurso utilizando su UUID público.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Recurso encontrado con éxito"),
@@ -43,7 +44,7 @@ public class RecursoControlador {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar todos los recursos", description = "Obtiene una lista polimórfica o genérica de recursos aplicando filtros por coincidencia exacta o parcial de nombre, y estado de reserva.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de recursos obtenido con éxito"),
@@ -127,5 +128,14 @@ public class RecursoControlador {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
         List<RecursoDTO> disponibles = recursoServicio.listarDisponiblesParaElCliente(fechaInicio, fechaFin);
         return ResponseEntity.ok(disponibles);
+    }
+
+    @GetMapping("/catalogo")
+    @Operation(summary = "Catálogo público de carpas, sombrillas y cocheras libres en un rango")
+    public ResponseEntity<List<RecursoCatalogoDTO>> catalogo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(required = false) String tipo) {
+        return ResponseEntity.ok(recursoServicio.listarCatalogo(fechaInicio, fechaFin, tipo));
     }
 }

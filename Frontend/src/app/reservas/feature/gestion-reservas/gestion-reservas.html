@@ -1,0 +1,149 @@
+<section class="gestion">
+  <header class="gestion__cabecera">
+    <h1>Gestión de reservas</h1>
+    <button type="button" class="btn btn--secundario" [disabled]="cargando()" (click)="cargar()">
+      @if (cargando()) { Actualizando… } @else { Actualizar }
+    </button>
+  </header>
+
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+  }
+
+  @if (cargando() && reservas() === null) {
+    <p role="status">Cargando reservas…</p>
+  }
+
+  @if (reservas() !== null) {
+    <div class="vistas" role="group" aria-label="Ver reservas">
+      <button type="button" class="chip" [attr.aria-pressed]="vista() === 'PENDIENTES'"
+              (click)="vista.set('PENDIENTES')">
+        Pendientes ({{ pendientes().length }})
+      </button>
+      <button type="button" class="chip" [attr.aria-pressed]="vista() === 'TODAS'"
+              (click)="vista.set('TODAS')">
+        Todas ({{ reservas()!.length }})
+      </button>
+    </div>
+
+    @if (vista() === 'TODAS') {
+      <div class="card filtros-reservas">
+        <div class="field">
+          <label class="field__label" for="buscar">Buscar</label>
+          <input id="buscar" type="search" class="field__control" autocomplete="off"
+                 placeholder="Cliente, DNI, recurso o código" [formField]="f.texto">
+        </div>
+        <div class="field">
+          <label class="field__label" for="estado">Estado</label>
+          <select id="estado" class="field__control" [formField]="f.estado">
+            <option value="TODOS">Todos</option>
+            @for (e of estados; track e) {
+              <option [value]="e">{{ etiquetaEstado[e] }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    }
+
+    @if (visibles().length === 0) {
+      <div class="card vacio" role="status">
+        @if (vista() === 'PENDIENTES') {
+          <p>No hay solicitudes esperando confirmación.</p>
+        } @else {
+          <p>No hay reservas que coincidan con la búsqueda.</p>
+        }
+      </div>
+    } @else {
+      <ul class="lista-reservas">
+        @for (r of visibles(); track r.publicId) {
+          @let a = accion();
+          @let enAccion = a?.reserva?.publicId === r.publicId;
+          @let venc = vencimiento(r);
+          <li class="card reserva">
+            <div class="reserva__cabecera">
+              <h3 class="reserva__titulo">{{ titulo(r) }}</h3>
+              <span class="estado" [class]="claseEstado[r.estadoReserva]">
+                {{ etiquetaEstado[r.estadoReserva] }}
+              </span>
+            </div>
+
+            <dl class="datos">
+              <dt>Cliente</dt>
+              <dd>
+                {{ r.clienteNombre }}
+                @if (r.clienteDni) { <span class="dni">· DNI {{ formatoDni(r.clienteDni) }}</span> }
+              </dd>
+              <dt>Período</dt>
+              <dd>{{ formatoRango(r.fechaInicio, r.fechaFin) }}</dd>
+              <dt>Modalidad</dt>
+              <dd>{{ etiquetaModalidad[r.modalidad] }}</dd>
+              @if (r.montoTotal != null) {
+                <dt>Total</dt>
+                <dd>{{ formatoPrecio(r.montoTotal) }}</dd>
+              }
+              <dt>Código</dt>
+              <dd class="codigo">{{ codigo(r) }}</dd>
+            </dl>
+
+            @if (venc) {
+              <p [class]="venc.urgente ? 'field__error' : 'field__hint'">{{ venc.texto }}</p>
+            }
+
+            @if (enAccion && a) {
+              <div class="confirmacion" role="alert">
+                @if (a.tipo === 'RECHAZAR') {
+                  <p><strong>¿Rechazar esta solicitud?</strong></p>
+                  <p>Los recursos se liberan.</p>
+                } @else {
+                  <p><strong>¿Cancelar esta reserva confirmada?</strong></p>
+                  <p>Los recursos se liberan.</p>
+                  @if (a.cocheras.length > 0) {
+                    <p>
+                      También se cancela la cochera asociada ({{ nombresDe(a.cocheras) }}): sin carpa
+                      ni sombrilla, no puede mantenerse.
+                    </p>
+                  }
+                }
+                <p class="field__hint">Esta acción no se puede deshacer.</p>
+                <div class="acciones-reserva">
+                  <button type="button" class="btn btn--secundario"
+                          [disabled]="procesando() === r.publicId" (click)="descartarAccion()">
+                    No, volver
+                  </button>
+                  <button type="button" class="btn btn--primary"
+                          [disabled]="procesando() === r.publicId" (click)="confirmarAccion()">
+                    @if (procesando() === r.publicId) { Procesando… }
+                    @else if (a.tipo === 'RECHAZAR') { Sí, rechazar }
+                    @else { Sí, cancelar }
+                  </button>
+                </div>
+              </div>
+            } @else if (r.estadoReserva === 'PENDIENTE') {
+              <div class="acciones-reserva">
+                <button type="button" class="btn btn--secundario"
+                        [disabled]="procesando() !== null" (click)="pedirRechazo(r)">
+                  Rechazar
+                </button>
+                <button type="button" class="btn btn--primary"
+                        [disabled]="procesando() !== null" (click)="confirmar(r)">
+                  @if (procesando() === r.publicId) { Confirmando… } @else { Confirmar }
+                </button>
+              </div>
+            } @else if (r.estadoReserva === 'CONFIRMADA') {
+              <div class="acciones-reserva">
+                <button type="button" class="btn btn--secundario"
+                        [disabled]="procesando() !== null" (click)="pedirCancelacion(r)">
+                  @if (procesando() === r.publicId) { Consultando… } @else { Cancelar reserva }
+                </button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+
+      @if (hayMas()) {
+        <button type="button" class="btn btn--secundario" (click)="verMas()">Mostrar más</button>
+      }
+    }
+  }
+</section>
