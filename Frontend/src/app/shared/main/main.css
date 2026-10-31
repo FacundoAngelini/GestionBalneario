@@ -39,8 +39,8 @@
 
 .area-main {
   grid-area: main;
+  min-width: 0;
   padding: 1.5rem;
-  overflow-y: auto;
 }
 
 .area-footer {
@@ -63,6 +63,8 @@
   box-shadow: var(--sombra-suave);
   transform: translateX(-100%); 
   transition: transform 0.3s ease;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .area-aside.abierto {
@@ -90,17 +92,14 @@
   }
 
   .area-aside {
-    grid-area: aside;          
+    grid-area: aside;
     position: sticky;
     top: var(--altura-header);
-    align-self: start;         /* no se estira más allá de su celda */
-    height: auto;
-    max-height: calc(100dvh - var(--altura-header));
-    min-height: 100%;          /* ocupa toda la columna, sin pasarse */
-    overflow-y: auto;
-    transform: none;
     align-self: start;
-    max-height: calc(100dvh - var(--altura-header));
+    height: calc(100dvh - var(--altura-header));
+    overflow-y: auto;
+    overscroll-behavior: contain; /* al llegar al final, no arrastra la página */
+    transform: none;
   }
 
   .area-main {

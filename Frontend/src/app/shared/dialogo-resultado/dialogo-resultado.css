@@ -1,0 +1,20 @@
+.dialogo__acciones {
+  display: grid;
+  gap: var(--espacio-2);
+  padding: var(--espacio-4);
+}
+
+.dialogo__acciones .btn {
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .dialogo__acciones {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .dialogo__acciones .btn {
+    width: auto;
+  }
+}
