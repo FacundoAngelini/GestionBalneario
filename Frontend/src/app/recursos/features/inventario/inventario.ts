@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
+import { PreciosRecurso } from './precios-recurso/precios-recurso';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
@@ -18,8 +19,10 @@ import {
   DatosRecurso,
   ETIQUETA_TAMANIO,
   ETIQUETA_TIPO_PLURAL,
+  PrecioRecurso,
   RecursoInventario,
   Sector,
+  Temporada,
   TipoRecurso,
 } from '../../data-access/recurso-model';
 import { RecursoService } from '../../data-access/recurso-service';
@@ -41,7 +44,7 @@ const EDICION_VACIA: DatosRecurso = {
 
 @Component({
   selector: 'app-inventario',
-  imports: [FormField, RouterLink],
+  imports: [FormField, RouterLink,PreciosRecurso],
   templateUrl: './inventario.html',
   styleUrl: './inventario.css',
 })
@@ -147,6 +150,7 @@ export class Inventario {
       untracked(() => this.limite.set(POR_PAGINA));
     });
     this.cargar('CARPA');
+    this.cargarPrecios();
   }
 
   protected cantidad(tipo: TipoRecurso): number | null {
@@ -156,6 +160,43 @@ export class Inventario {
   protected nombreSector(publicId: string): string {
     return this.nombresSector().get(publicId) ?? '—';
   }
+
+    protected preciosDe(publicId: string): PrecioRecurso[] {
+    return this.preciosPorRecurso().get(publicId) ?? [];
+  }
+
+  protected cargarPrecios(): void {
+    this.errorPrecios.set('');
+    this.recursoService.listarPrecios().subscribe({
+      next: (lista) => this.precios.set(lista),
+      error: (e: HttpErrorResponse) => {
+        this.errorPrecios.set(
+          e.status === 403
+            ? 'No tenés permiso para ver los precios.'
+            : (e.error?.message ?? 'No se pudieron cargar los precios.'),
+        );
+      },
+    });
+  }
+
+    // ---- Precios: se piden una sola vez para todos los recursos y se agrupan por recurso ----
+  protected readonly temporada = toSignal(
+    this.recursoService.obtenerTemporada().pipe(catchError(() => of(null as Temporada | null))),
+    { initialValue: null as Temporada | null },
+  );
+  private readonly precios = signal<PrecioRecurso[] | null>(null);
+  protected readonly preciosCargados = computed(() => this.precios() !== null);
+  protected readonly errorPrecios = signal('');
+
+  private readonly preciosPorRecurso = computed(() => {
+    const mapa = new Map<string, PrecioRecurso[]>();
+    for (const p of this.precios() ?? []) {
+      const lista = mapa.get(p.recursoPublicId);
+      if (lista) lista.push(p);
+      else mapa.set(p.recursoPublicId, [p]);
+    }
+    return mapa;
+  });
 
   protected elegirTipo(tipo: TipoRecurso): void {
     this.editandoId.set(null);

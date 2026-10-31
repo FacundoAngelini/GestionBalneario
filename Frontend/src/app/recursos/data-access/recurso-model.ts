@@ -86,3 +86,16 @@ export interface DatosRecurso {
   capacidad: number;
   tamanio: TamanioSombrilla;
 }
+
+// Un precio de un recurso para un periodo
+export interface PrecioRecurso {
+  publicId: string;
+  recursoPublicId: string;
+  modalidad: Modalidad;
+  precio: number;
+  fechaVigencia: string;
+  fechaCaducada: string;
+}
+
+// Lo que se envía para crear o modificar un precio
+export type PrecioRecursoRequest = Omit<PrecioRecurso, 'publicId'>;

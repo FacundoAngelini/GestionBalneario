@@ -4,6 +4,8 @@ import { map } from 'rxjs';
 import { environment } from '../../core/environments/environment';
 import {
   DatosRecurso,
+  PrecioRecurso,
+  PrecioRecursoRequest,
   RecursoCatalogo,
   RecursoInventario,
   RecursoLoteRequest,
@@ -98,4 +100,17 @@ export class RecursoService {
   obtenerTemporada() {
     return this.http.get<Temporada>(`${this.apiUrl}/temporada`);
   }
+
+    listarPrecios() {
+    return this.http.get<PrecioRecurso[]>(`${this.apiUrl}/recursos-precios`);
+  }
+
+  crearPrecio(precio: PrecioRecursoRequest) {
+    return this.http.post<PrecioRecurso>(`${this.apiUrl}/recursos-precios`, precio);
+  }
+
+  actualizarPrecio(publicId: string, precio: PrecioRecursoRequest) {
+    return this.http.put<PrecioRecurso>(`${this.apiUrl}/recursos-precios/${publicId}`, precio);
+  }
 }
+

@@ -50,6 +50,13 @@
     <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
   }
 
+    @if (errorPrecios()) {
+    <p class="field__error" role="alert">{{ errorPrecios() }}</p>
+    <button type="button" class="btn btn--secundario" (click)="cargarPrecios()">
+      Reintentar precios
+    </button>
+  }
+
   @if (cargando() && !cargado()) {
     <p role="status">Cargando…</p>
   }
@@ -135,8 +142,7 @@
 
                   <label class="casilla campo-ancho">
                     <input type="checkbox" [formField]="fe.esReservable">
-                    <span>Reservable. Si lo destildás, deja de poder reservarse.</span>
-                  </label>
+                    <span>Reservable. Si lo destildás, no se podrán hacer reservas nuevas; las reservas ya hechas no se cancelan.</span>                  </label>
                 </div>
 
                 @if (errorEdicion()) {
@@ -176,6 +182,15 @@
                   <dd>{{ etiquetaTamanio[r.tamanio] }}</dd>
                 }
               </dl>
+
+                 <app-precios-recurso
+                [recurso]="r"
+                [precios]="preciosDe(r.publicId)"
+                [cargados]="preciosCargados()"
+                [esAdmin]="esAdmin()"
+                [temporada]="temporada()"
+                (guardado)="cargarPrecios()"
+              />
 
               @if (esAdmin()) {
                 <div class="acciones-reserva">
