@@ -3,7 +3,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthClient } from '../../../auth/data-access/auth-client';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
-import { formatoRango, hoyIso } from '../../../core/utils/fechas';
+import { formatoFechaHora, formatoRango, hoyIso } from '../../../core/utils/fechas';
 import { formatoPrecio } from '../../../core/utils/moneda';
 import { ETIQUETA_MODALIDAD, ETIQUETA_TIPO_RECURSO } from '../../../recursos/data-access/recurso-model';
 import { plazoDeCancelacionVigente } from '../../data-access/periodo-reserva';
@@ -27,6 +27,8 @@ interface Cancelacion {
   cocheras: Reserva[]; // cocheras que se cancelan junto con esta reserva
 }
 
+
+
 @Component({
   selector: 'app-mis-reservas',
   imports: [RouterLink],
@@ -48,6 +50,7 @@ export class MisReservas {
   protected readonly formatoRango = formatoRango;
   protected readonly horasCancelar = HORAS_PARA_CANCELAR;
   protected readonly textoPago = TEXTO_PAGO;
+  protected readonly formatoFechaHora = formatoFechaHora;
 
   private readonly clienteId = this.auth.publicId;
 

@@ -38,4 +38,15 @@ export class PendientesReservas {
   fijar(n: number): void {
     this.cantidad.set(n);
   }
+
+    /** Vuelve a consultar ahora mismo (después de cobrar, por ejemplo). */
+  refrescar(): void {
+    this.reservaService
+      .pendientes()
+      .pipe(
+        map((lista) => lista.length),
+        catchError(() => EMPTY),
+      )
+      .subscribe((n) => this.cantidad.set(n));
+  }
 }

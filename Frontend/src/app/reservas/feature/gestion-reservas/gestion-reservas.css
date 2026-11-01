@@ -1,4 +1,3 @@
-/* Mobile first. Las tarjetas, estados y botones vienen de styles.css */
 
 .gestion {
   display: grid;
@@ -7,17 +6,22 @@
   margin-inline: auto;
 }
 
-/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
 .gestion :is(h1, h2, h3) {
   margin-bottom: var(--espacio-2);
 }
 
 .gestion__cabecera {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
   gap: var(--espacio-3);
+}
+
+.gestion__acciones {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.gestion__acciones .btn {
+  width: 100%;
 }
 
 /* Tantas columnas como entren (mínimo 14rem): 1 en celular, 2 en pantallas más anchas */
@@ -31,4 +35,19 @@
 .dni {
   color: var(--color-texto-suave);
   font-weight: 400;
+}
+
+@media (min-width: 40rem) {
+  .gestion__cabecera {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .gestion__acciones {
+    display: flex;
+  }
+
+  .gestion__acciones .btn {
+    width: auto;
+  }
 }

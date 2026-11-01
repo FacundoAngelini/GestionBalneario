@@ -55,12 +55,27 @@
                 <dt>Total</dt>
                 <dd>{{ formatoPrecio(r.montoTotal) }}</dd>
               }
+              @if (r.cobro; as c) {
+                <dt>Pago</dt>
+                <dd>Cobrado el {{ formatoFechaHora(c.fecha) }}</dd>
+              } @else if (r.estadoReserva === 'CONFIRMADA') {
+                <dt>Pago</dt>
+                <dd>Pendiente: se abona en administración</dd>
+              }
               <dt>Código</dt>
               <dd class="codigo">{{ codigo(r) }}</dd>
             </dl>
 
             @if (r.estadoReserva === 'PENDIENTE') {
               <p class="field__hint">Esperando la confirmación del personal.</p>
+            }
+
+             @if (r.cobro) {
+              <div class="acciones-reserva">
+                <a class="btn btn--secundario" [routerLink]="['/reservas/comprobante', r.publicId]">
+                  Ver comprobante
+                </a>
+              </div>
             }
 
             @if (esActiva(r)) {

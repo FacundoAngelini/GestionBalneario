@@ -490,3 +490,24 @@ button.chip[aria-pressed='true']:hover:not(:disabled) {
 .fila-telefono > * {
   min-width: 0;
 }
+
+/* ---- Impresión: solo el contenido de la página (comprobantes) ---- */
+@media print {
+  .area-header,
+  .area-aside,
+  .area-footer,
+  .overlay,
+  .cdk-overlay-container,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  body,
+  .app-grid-layout {
+    background: #fff;
+  }
+
+  .area-main {
+    padding: 0;
+  }
+}

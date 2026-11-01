@@ -164,6 +164,12 @@ button.chip[aria-pressed='true']:hover:not(:disabled) {
   width: 100%;
 }
 
+.aviso--mostrador {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+
 /* ---- Pantallas medianas y grandes ---- */
 @media (min-width: 40rem) {
   .busqueda {
@@ -174,5 +180,10 @@ button.chip[aria-pressed='true']:hover:not(:disabled) {
   .seleccion > .btn {
     width: auto;
     justify-self: end;
+  }
+
+   .aviso--mostrador {
+    grid-template-columns: 1fr auto;
+    align-items: center;
   }
 }

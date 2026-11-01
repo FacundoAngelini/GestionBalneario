@@ -2,9 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { formatoRango } from '../../../core/utils/fechas';
+import { Router, RouterLink } from '@angular/router';
+import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
+import { formatoFechaHora, formatoRango, hoyIso } from '../../../core/utils/fechas';
 import { formatoPrecio } from '../../../core/utils/moneda';
 import { ETIQUETA_MODALIDAD } from '../../../recursos/data-access/recurso-model';
+import { PendientesReservas } from '../../data-access/pendientes-reservas';
 import {
   CLASE_ESTADO,
   ReservaEstado,
@@ -12,32 +15,36 @@ import {
   HORAS_PARA_CONFIRMAR,
   Reserva,
 } from '../../data-access/reserva-model';
-import { PendientesReservas } from '../../data-access/pendientes-reservas';
 import { ReservaService } from '../../data-access/reserva-service';
+import { HistorialReserva } from './historial-reservas/historial-reservas';
 
 const POR_PAGINA = 20;
-const ESTADOS: ReservaEstado[] = [
-  'PENDIENTE',
-  'CONFIRMADA',
-  'FINALIZADA',
-  'CANCELADA',
-  'RECHAZADA',
-  'VENCIDA',
-];
+const MIN_MOTIVO = 5;
+const MAX_MOTIVO = 300;
+const ESTADOS: ReservaEstado[] = ['PENDIENTE', 'CONFIRMADA', 'FINALIZADA', 'CANCELADA', 'RECHAZADA', 'VENCIDA'];
+const ESTADOS_COBRABLES: ReservaEstado[] = ['PENDIENTE', 'CONFIRMADA', 'FINALIZADA'];
 
-type Vista = 'PENDIENTES' | 'TODAS';
+type Vista = 'PENDIENTES' | 'POR_COBRAR' | 'TODAS';
 type FiltroEstado = 'TODOS' | ReservaEstado;
+type TipoAccion = 'RECHAZAR' | 'CANCELAR' | 'COBRAR' | 'ANULAR_COBRO';
 
 /** Una acción esperando que el personal la confirme. */
 interface AccionPendiente {
-  tipo: 'RECHAZAR' | 'CANCELAR';
+  tipo: TipoAccion;
   reserva: Reserva;
   cocheras: Reserva[]; // cocheras que se cancelan junto con esta reserva
 }
 
+const TEXTO_CONFIRMAR: Record<TipoAccion, string> = {
+  RECHAZAR: 'Sí, rechazar',
+  CANCELAR: 'Sí, cancelar',
+  COBRAR: 'Sí, registrar cobro',
+  ANULAR_COBRO: 'Sí, anular cobro',
+};
+
 @Component({
   selector: 'app-gestion-reservas',
-  imports: [FormField],
+  imports: [FormField, RouterLink, HistorialReserva],
   templateUrl: './gestion-reservas.html',
   styleUrl: './gestion-reservas.css',
 })
@@ -45,13 +52,17 @@ export class GestionReservas {
   private readonly reservaService = inject(ReservaService);
   private readonly contador = inject(PendientesReservas);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
 
   protected readonly etiquetaEstado = ETIQUETA_ESTADO_RESERVA;
   protected readonly claseEstado = CLASE_ESTADO;
   protected readonly etiquetaModalidad = ETIQUETA_MODALIDAD;
   protected readonly formatoPrecio = formatoPrecio;
   protected readonly formatoRango = formatoRango;
+  protected readonly formatoFechaHora = formatoFechaHora;
   protected readonly estados = ESTADOS;
+  protected readonly textoConfirmar = TEXTO_CONFIRMAR;
+  protected readonly minMotivo = MIN_MOTIVO;
 
   protected readonly reservas = signal<Reserva[] | null>(null); // null = todavía no cargó
   protected readonly cargando = signal(false);
@@ -60,10 +71,20 @@ export class GestionReservas {
   protected readonly accion = signal<AccionPendiente | null>(null);
   protected readonly procesando = signal<string | null>(null); // publicId de la reserva en trámite
   private readonly limite = signal(POR_PAGINA);
+  private readonly descuento = signal(0); // % por pago en efectivo (solo para la vista previa)
 
   // Filtros de la pestaña "Todas"
   protected readonly filtros = signal({ texto: '', estado: 'TODOS' as FiltroEstado });
   protected readonly f = form(this.filtros);
+
+  // Motivo de una anulación de cobro
+  protected readonly datosMotivo = signal({ motivo: '' });
+  protected readonly fm = form(this.datosMotivo);
+  protected readonly motivoValido = computed(() => {
+    const largo = this.datosMotivo().motivo.trim().length;
+    return largo >= MIN_MOTIVO && largo <= MAX_MOTIVO;
+  });
+  protected readonly motivoLargo = computed(() => this.datosMotivo().motivo.trim().length > MAX_MOTIVO);
 
   // Las más antiguas primero: son las que vencen antes
   protected readonly pendientes = computed(() =>
@@ -72,6 +93,13 @@ export class GestionReservas {
       .sort((a, b) =>
         (a.fechaCreacion ?? a.fechaInicio).localeCompare(b.fechaCreacion ?? b.fechaInicio),
       ),
+  );
+
+  // Confirmadas o terminadas que todavía no se cobraron; las que empiezan antes, primero
+  protected readonly porCobrar = computed(() =>
+    (this.reservas() ?? [])
+      .filter((r) => ['CONFIRMADA', 'FINALIZADA'].includes(r.estadoReserva) && !r.cobro)
+      .sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio)),
   );
 
   private readonly filtradas = computed(() => {
@@ -83,9 +111,16 @@ export class GestionReservas {
       .sort((a, b) => b.fechaInicio.localeCompare(a.fechaInicio));
   });
 
-  private readonly lista = computed(() =>
-    this.vista() === 'PENDIENTES' ? this.pendientes() : this.filtradas(),
-  );
+  private readonly lista = computed(() => {
+    switch (this.vista()) {
+      case 'PENDIENTES':
+        return this.pendientes();
+      case 'POR_COBRAR':
+        return this.porCobrar();
+      case 'TODAS':
+        return this.filtradas();
+    }
+  });
   protected readonly visibles = computed(() => this.lista().slice(0, this.limite()));
   protected readonly hayMas = computed(() => this.lista().length > this.limite());
 
@@ -95,6 +130,10 @@ export class GestionReservas {
       this.vista();
       this.filtros();
       untracked(() => this.limite.set(POR_PAGINA));
+    });
+    this.reservaService.configuracionPago().subscribe({
+      next: (c) => this.descuento.set(c.descuentoEfectivo),
+      error: () => this.descuento.set(0), // sin dato, la vista previa no muestra descuento
     });
     this.cargar();
   }
@@ -137,22 +176,53 @@ export class GestionReservas {
     return dni ? dni.toLocaleString('es-AR') : '';
   }
 
+  protected esCobrable(r: Reserva): boolean {
+    return ESTADOS_COBRABLES.includes(r.estadoReserva) && !r.cobro;
+  }
+
+  protected montoACobrar(r: Reserva): number {
+    return Math.round((r.montoTotal ?? 0) * (100 - this.descuento())) / 100;
+  }
+
+  protected descuentoDe(r: Reserva): number {
+    return (r.montoTotal ?? 0) - this.montoACobrar(r);
+  }
+
+  protected hayDescuento(): boolean {
+    return this.descuento() > 0;
+  }
+
+  protected porcentajeDescuento(): number {
+    return this.descuento();
+  }
+
+  // Cambia cuando la reserva cambia, para que su historial se vuelva a pedir
+  protected huella(r: Reserva): string {
+    return `${r.estadoReserva}|${r.cobro?.fecha ?? ''}`;
+  }
+
   /** Cuánto hace que se pidió y cuánto falta para que venza (solo las pendientes). */
   protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
     if (r.estadoReserva !== 'PENDIENTE' || !r.fechaCreacion) return null;
-    const creada = new Date(r.fechaCreacion).getTime();
+    const creada = new Date(r.fechaCreacion.slice(0, 19)).getTime();
     if (Number.isNaN(creada)) return null;
 
     const transcurridas = (Date.now() - creada) / 3_600_000;
     const restantes = HORAS_PARA_CONFIRMAR - transcurridas;
-    const pedida =
-      transcurridas < 1 ? 'hace menos de 1 hora' : `hace ${Math.floor(transcurridas)} h`;
+    const pedida = transcurridas < 1 ? 'hace menos de 1 hora' : `hace ${Math.floor(transcurridas)} h`;
 
     if (restantes <= 0) {
       return { texto: `Pedida ${pedida} · plazo vencido, se libera en instantes`, urgente: true };
     }
     const vence = restantes < 1 ? 'menos de 1 hora' : `${Math.floor(restantes)} h`;
     return { texto: `Pedida ${pedida} · vence en ${vence}`, urgente: restantes < 6 };
+  }
+
+  /** Aviso para las confirmadas o terminadas que siguen sin cobrarse. */
+  protected avisoDeCobro(r: Reserva): string | null {
+    if (r.cobro || !['CONFIRMADA', 'FINALIZADA'].includes(r.estadoReserva)) return null;
+    if (r.estadoReserva === 'FINALIZADA') return 'La reserva terminó sin cobrarse';
+    return r.fechaInicio <= hoyIso() ? 'La reserva ya empezó y no está cobrada' : null;
   }
 
   private textoBusqueda(r: Reserva): string {
@@ -179,6 +249,15 @@ export class GestionReservas {
     this.accion.set({ tipo: 'RECHAZAR', reserva, cocheras: [] });
   }
 
+  protected pedirCobro(reserva: Reserva): void {
+    this.accion.set({ tipo: 'COBRAR', reserva, cocheras: [] });
+  }
+
+  protected pedirAnulacion(reserva: Reserva): void {
+    this.datosMotivo.set({ motivo: '' });
+    this.accion.set({ tipo: 'ANULAR_COBRO', reserva, cocheras: [] });
+  }
+
   // Antes de pedir confirmación, se consulta qué más se cancelaría
   protected pedirCancelacion(reserva: Reserva): void {
     this.procesando.set(reserva.publicId);
@@ -195,32 +274,64 @@ export class GestionReservas {
     this.accion.set(null);
   }
 
+  protected verComprobante(reserva: Reserva): void {
+    void this.router.navigateByUrl(`/${ROUTE_SEGMENTS.reservas}/${ROUTE_SEGMENTS.comprobante}/${reserva.publicId}`);
+  }
+
   protected confirmarAccion(): void {
     const pendiente = this.accion();
     if (!pendiente) return;
     const { tipo, reserva, cocheras } = pendiente;
-    this.procesando.set(reserva.publicId);
+    const id = reserva.publicId;
 
-    if (tipo === 'RECHAZAR') {
-      this.reservaService.rechazar(reserva.publicId).subscribe({
-        next: (actualizada) => this.terminar(actualizada, 'Solicitud rechazada'),
-        error: (e: HttpErrorResponse) => this.fallar(e),
-      });
-      return;
+    switch (tipo) {
+      case 'RECHAZAR':
+        this.procesando.set(id);
+        this.reservaService.rechazar(id).subscribe({
+          next: (actualizada) => this.terminar(actualizada, 'Solicitud rechazada'),
+          error: (e: HttpErrorResponse) => this.fallar(e),
+        });
+        break;
+
+      case 'CANCELAR':
+        this.procesando.set(id);
+        this.reservaService.cancelarAdministrativa(id, cocheras.length > 0).subscribe({
+          next: () => {
+            this.procesando.set(null);
+            this.accion.set(null);
+            this.snackBar.open('Reserva cancelada', 'Cerrar', { duration: 5000 });
+            this.cargar(); // también pudo cambiar una cochera asociada
+          },
+          error: (e: HttpErrorResponse) => this.fallar(e),
+        });
+        break;
+
+      case 'COBRAR':
+        this.procesando.set(id);
+        this.reservaService.registrarCobro(id).subscribe({
+          next: () => {
+            this.procesando.set(null);
+            this.accion.set(null);
+            this.contador.refrescar();
+            this.snackBar.open('Cobro registrado', 'Cerrar', { duration: 5000 });
+            this.verComprobante(reserva); // el comprobante se puede imprimir desde ahí
+          },
+          error: (e: HttpErrorResponse) => this.fallar(e),
+        });
+        break;
+
+      case 'ANULAR_COBRO':
+        if (!this.motivoValido()) return;
+        this.procesando.set(id);
+        this.reservaService.anularCobro(id, this.datosMotivo().motivo.trim()).subscribe({
+          next: (actualizada) => this.terminar(actualizada, 'Cobro anulado'),
+          error: (e: HttpErrorResponse) => this.fallar(e),
+        });
+        break;
     }
-
-    this.reservaService.cancelarAdministrativa(reserva.publicId, cocheras.length > 0).subscribe({
-      next: () => {
-        this.procesando.set(null);
-        this.accion.set(null);
-        this.snackBar.open('Reserva cancelada', 'Cerrar', { duration: 5000 });
-        this.cargar(); // también pudo cambiar una cochera asociada
-      },
-      error: (e: HttpErrorResponse) => this.fallar(e),
-    });
   }
 
-  // Una reserva confirmada o rechazada: se reemplaza en la lista con lo que devolvió el backend
+  // Una reserva modificada: se reemplaza en la lista con lo que devolvió el backend
   private terminar(actualizada: Reserva, mensaje: string): void {
     this.reservas.update((lista) =>
       (lista ?? []).map((r) => (r.publicId === actualizada.publicId ? actualizada : r)),
