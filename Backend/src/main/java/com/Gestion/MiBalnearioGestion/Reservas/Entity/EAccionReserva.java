@@ -7,5 +7,6 @@ public enum EAccionReserva {
     CANCELADA,
     VENCIDA,
     COBRO_REGISTRADO,
-    COBRO_ANULADO
+    COBRO_ANULADO,
+    FINALIZADA
 }
