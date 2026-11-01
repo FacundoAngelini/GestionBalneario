@@ -9,6 +9,7 @@ import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.Mapper.ClienteMapper;
 import com.Gestion.MiBalnearioGestion.Clientes.Repository.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteBusquedaDTO;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteUpdateRequest;
@@ -271,5 +272,13 @@ public class ClienteService implements IClienteService {
         ClienteEntity actualizado = clienteRepository.save(cliente);
 
         return clienteMapper.convertToResponseDTO(actualizado);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ClienteBusquedaDTO buscarPorDni(Integer dni) {
+        ClienteEntity c = clienteRepository.findByDni(dni)
+                .orElseThrow(() -> new EntidadNoEncontradaException("No hay un cliente registrado con ese DNI", dni.toString()));
+        return new ClienteBusquedaDTO(c.getPublicId(), c.getNombre(), c.getApellido(), c.getDni(), c.isEstado());
     }
 }

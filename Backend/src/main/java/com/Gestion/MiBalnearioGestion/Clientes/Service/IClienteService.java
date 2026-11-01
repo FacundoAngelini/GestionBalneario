@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Clientes.Service;
 
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteBusquedaDTO;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioContraseniaRequest;
@@ -31,4 +32,5 @@ public interface IClienteService {
     void cambiarContraseniaCliente(UUID publicId, CambioContraseniaRequest request);
     ClienteResponse reactivarCliente(UUID publicId);
     ClienteResponse actualizarMiPerfil(String nombreUsuario, ClienteUpdateRequest request);
+    ClienteBusquedaDTO buscarPorDni(Integer dni);
 }

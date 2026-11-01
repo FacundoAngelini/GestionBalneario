@@ -60,4 +60,7 @@ public class ReservaDTO {
 
     @Schema(description = "Fecha y hora en que se creó la solicitud (solo lectura)")
     private LocalDateTime fechaCreacion;
+
+    @Schema(description = "Cobro vigente de la reserva (null si no está cobrada) (solo lectura)")
+    private CobroResumenDTO cobro;
 }
