@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: MiBalnearioGestion
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: balnearioapiutn@gmail.com
+    password: ${GMAIL_APP}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 100
+      thread-name-prefix: async-
+      shutdown:
+        await-termination: true
+        await-termination-period: 60s
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+mp:
+  accesstoken: ${MP_ACCESS_TOKEN}
+  webhook: "${MP_WEBHOOK_URL}/api/v1/public/webhooks/mercadopago"
+  backurl:
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
+  backurls:
+    success: "${MP_REDIRECT_URL}/pago-exitoso"
+    failure: "${MP_REDIRECT_URL}/pago-fallido"
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG

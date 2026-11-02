@@ -1,0 +1,126 @@
+<section class="perfil">
+  <header class="perfil-cabecera">
+    <button matIconButton type="button" class="btn-volver" aria-label="Volver" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <div>
+      <h1>Mi perfil</h1>
+      <p>Consultá tus datos personales y de tu cuenta.</p>
+    </div>
+  </header>
+
+  @if (perfil.isLoading()) {
+    <p class="mensaje" role="status">Cargando perfil...</p>
+  } @else if (perfil.error()) {
+    <p class="mensaje error" role="alert">No se pudo cargar tu perfil.</p>
+    <button matButton="outlined" type="button" (click)="perfil.reload()">Reintentar</button>
+  } @else if (perfil.value(); as datos) {
+    <article class="tarjeta">
+      <header class="identidad">
+        <div class="avatar" aria-hidden="true">{{ inicial() }}</div>
+        <div>
+          <h2>{{ nombreCompleto() }}</h2>
+          <p>{{ etiquetaTipo() }}</p>
+        </div>
+      </header>
+
+      <section aria-labelledby="titulo-cuenta">
+        <h3 id="titulo-cuenta" class="seccion-titulo">Cuenta</h3>
+        <dl class="datos">
+          <div>
+            <dt>Usuario</dt>
+            <dd>{{ datos.nombreUsuario }}</dd>
+          </div>
+          <div>
+            <dt>Roles</dt>
+            <dd>{{ etiquetaRoles() || 'Sin roles asignados' }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section aria-labelledby="titulo-personales">
+        <div class="seccion-cabecera">
+          <h3 id="titulo-personales" class="seccion-titulo">Datos personales</h3>
+        </div>
+
+        @if (modo() === 'editar' && cliente(); as c) {
+          <app-perfil-editar [cliente]="c" (guardado)="alGuardar($event)" (cancelado)="modo.set('ver')" />
+        } @else if (ficha(); as f) {
+          <dl class="datos">
+            <div><dt>Nombre</dt><dd>{{ f.nombre }}</dd></div>
+            <div><dt>Apellido</dt><dd>{{ f.apellido }}</dd></div>
+            <div><dt>DNI</dt><dd>{{ f.dni }}</dd></div>
+            <div><dt>Email</dt><dd>{{ f.email }}</dd></div>
+            <div><dt>Teléfono</dt><dd>{{ f.telefono || 'No informado' }}</dd></div>
+
+            @if (cliente(); as c) {
+              <div>
+                <dt>Fecha de alta</dt>
+                <dd>{{ c.fechaAlta | date: 'dd/MM/yyyy' }}</dd>
+              </div>
+              <div>
+                <dt>Estado</dt>
+                <dd>{{ c.estado ? 'Activo' : 'Inactivo' }}</dd>
+              </div>
+            }
+
+            @if (empleado(); as e) {
+              <div><dt>CUIT</dt><dd>{{ e.cuit }}</dd></div>
+              <div><dt>Estado laboral</dt><dd>{{ e.estadoEmpleado }}</dd></div>
+              @if (e.sector) {
+                <div><dt>Sector</dt><dd>{{ e.sector.nombre }}</dd></div>
+              }
+              @if (e.rol) {
+                <div><dt>Función</dt><dd>{{ e.rol.tipoRol }}</dd></div>
+              }
+              @if (e.direccion; as d) {
+                <div class="datos-ancho">
+                  <dt>Dirección</dt>
+                  <dd>{{ d.calle }} {{ d.numero }}, {{ d.ciudad }}, {{ d.provincia }}</dd>
+                </div>
+              }
+            }
+          </dl>
+        } @else {
+          <p class="nota">{{ mensajeSinFicha() }}</p>
+        }
+
+        @if (cliente() && modo() === 'ver') {
+          <div class="acciones">
+            <button matButton="outlined" type="button" (click)="modo.set('editar')">
+              <mat-icon>edit</mat-icon>
+              Editar datos
+            </button>
+            <button matButton="outlined" type="button" (click)="modo.set('contrasenia')">
+              <mat-icon>lock</mat-icon>
+              Cambiar contraseña
+            </button>
+            <button matButton="outlined" type="button" (click)="modo.set('usuario')">
+              <mat-icon>manage_accounts</mat-icon>
+              Cambiar nombre de usuario
+            </button>
+          </div>
+        }
+      </section>
+
+      @if (modo() === 'contrasenia' && cliente(); as c) {
+        <section aria-labelledby="titulo-contrasenia">
+          <h3 id="titulo-contrasenia" class="seccion-titulo">Cambiar contraseña</h3>
+          <app-cambiar-contrasenia
+            [clientePublicId]="c.publicId"
+            (cambiada)="modo.set('ver')"
+            (cancelada)="modo.set('ver')"
+          />
+        </section>
+      }
+
+      @if (modo() === 'usuario' && cliente(); as c) {
+        <section aria-labelledby="titulo-usuario">
+          <h3 id="titulo-usuario" class="seccion-titulo">Cambiar nombre de usuario</h3>
+          <app-cambiar-usuario [clientePublicId]="c.publicId" (cancelado)="modo.set('ver')" />
+        </section>
+      }
+    </article>
+  }
+</section>

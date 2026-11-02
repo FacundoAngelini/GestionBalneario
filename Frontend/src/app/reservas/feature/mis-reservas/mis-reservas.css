@@ -1,0 +1,13 @@
+/* Mobile first: lo de abajo es para celular; el @media acomoda los botones en pantallas más anchas. */
+
+.mis-reservas {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 50rem;
+  margin-inline: auto;
+}
+
+/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
+.mis-reservas :is(h1, h2, h3) {
+  margin-bottom: var(--espacio-2);
+}

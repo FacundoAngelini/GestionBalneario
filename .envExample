@@ -1,0 +1,21 @@
+# Base de datos
+DB_NAME=nombre_de_base_de_datos
+DB_USERNAME=db_username
+DB_PASSWORD=db_password
+
+# Spring datasource (apunta al servicio "db" de docker-compose)
+DB_URL=db_URL
+
+# JWT
+JWT_SECRET=jwt_token_generado
+JWT_TOKEN=jwt_token_generado
+JWT_EXPIRATION=jwt_expiration_ms
+JWT_REFRESH_EXPIRATION=jwt_expiration_refresh_rate_ms
+
+# Gmail
+GMAIL_APP=gmail_api_password
+
+# MercadoPago (Nosotros probamos Ngrok y nos funciono mejor Node.js)
+MP_ACCESS_TOKEN=mercadopago_developer_generated_key
+MP_REDIRECT_URL=servicio_test_webhook
+MP_WEBHOOK_URL=servicio_test_webhook

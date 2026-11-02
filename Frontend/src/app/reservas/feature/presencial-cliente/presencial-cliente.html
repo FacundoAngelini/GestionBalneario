@@ -1,0 +1,43 @@
+<section class="presencial">
+  <header>
+    <a class="enlace-volver" routerLink="/reservas/gestion">← Volver a Gestión</a>
+    <h1>Nueva reserva presencial</h1>
+    <p class="field__hint">Paso 1 de 3: ¿para quién es la reserva?</p>
+  </header>
+
+  <form class="card presencial__form" (submit)="buscar($event)" novalidate>
+    <div class="field">
+      <label class="field__label" for="dni">DNI del cliente</label>
+      <input id="dni" type="text" inputmode="numeric" autocomplete="off" class="field__control"
+             placeholder="Sin puntos" [formField]="f.dni" [attr.aria-invalid]="!!errorDni()">
+      @if (errorDni()) {
+        <p class="field__error">{{ errorDni() }}</p>
+      }
+    </div>
+
+    <button type="submit" class="btn btn--primary" [disabled]="!puedeBuscar()">
+      @if (buscando()) { Buscando… } @else { Buscar cliente }
+    </button>
+  </form>
+
+  @if (mensaje()) {
+    <p class="field__error" role="alert">{{ mensaje() }}</p>
+  }
+
+  @if (encontrado(); as c) {
+    <article class="card presencial__cliente" role="status">
+      <h2>{{ c.nombre }} {{ c.apellido }}</h2>
+      <p>DNI {{ c.dni.toLocaleString('es-AR') }}</p>
+
+      @if (c.activo) {
+        <button type="button" class="btn btn--primary" (click)="elegirRecursos(c)">
+          Elegir recursos
+        </button>
+      } @else {
+        <p class="field__error" role="alert">
+          La cuenta de este cliente está desactivada. No se pueden hacer reservas a su nombre.
+        </p>
+      }
+    </article>
+  }
+</section>

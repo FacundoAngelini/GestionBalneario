@@ -1,0 +1,105 @@
+.solicitud,
+.solicitud__form {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.solicitud {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.solicitud :is(h1, h2, h3) {
+  margin-bottom: var(--espacio-2);
+}
+
+.seccion {
+  display: grid;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+}
+
+.destacado {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.lista-recursos {
+  display: grid;
+  gap: var(--espacio-2);
+  list-style: none;
+}
+
+.lista-recursos li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  overflow-wrap: anywhere;
+}
+
+.lista-recursos li > span {
+  min-width: 0;
+}
+
+.lista-recursos li > strong {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: 2.75rem;
+}
+
+.casilla input {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  accent-color: var(--color-primario);
+}
+
+.totales {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.totales p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.totales .total {
+  padding-top: var(--espacio-3);
+  border-top: 1px solid var(--color-borde);
+  font-size: 1.15rem;
+}
+
+/* Botones: apilados en celular (el principal queda abajo, al alcance del pulgar) */
+.acciones-solicitud {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.acciones-solicitud .btn {
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .seccion {
+    padding: var(--espacio-5);
+  }
+
+  .acciones-solicitud {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .acciones-solicitud .btn {
+    width: auto;
+  }
+}

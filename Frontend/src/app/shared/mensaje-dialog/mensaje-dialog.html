@@ -1,0 +1,20 @@
+<div class="dialogo-cabecera" [attr.data-tipo]="data.tipo">
+  <mat-icon class="dialogo-icono" aria-hidden="true">{{ icono }}</mat-icon>
+  <h2 mat-dialog-title>{{ data.titulo }}</h2>
+</div>
+
+<mat-dialog-content>
+  <p>{{ data.mensaje }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (data.textoCancelar) {
+    <button matButton="outlined" type="button" (click)="cerrar(false)">
+      {{ data.textoCancelar }}
+    </button>
+  }
+
+  <button matButton="filled" type="button" (click)="cerrar(true)">
+    {{ data.textoAceptar ?? 'Aceptar' }}
+  </button>
+</mat-dialog-actions>
