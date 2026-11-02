@@ -9,19 +9,18 @@ import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.SombrillaRepositorio
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;import static com.Gestion.MiBalnearioGestion.Recursos.Validacion.LimitesRecursos.*;
+import static com.Gestion.MiBalnearioGestion.Recursos.Validacion.LimitesRecursos.*;
 
 import java.util.UUID;
+
+import static com.Gestion.MiBalnearioGestion.Recursos.Validacion.LimitesRecursos.MAX_NUMERO;
 
 @Service
 @RequiredArgsConstructor
 public class RecursoLoteServicio implements IRecursoLoteServicio {
 
     private static final int MAX_POR_LOTE = 200;
-    private static final int MAX_PASILLO = 20;
-    private static final int MIN_CAPACIDAD = 2;
-    private static final int MAX_CAPACIDAD = 8;
-    private static final int MAX_NOMBRE = 25;
     private static final int MAX_POR_UBICACION = 200; // total por pasillo (carpas) o por sector (sombrillas, cocheras)
 
     private final ICarpaServicio carpaServicio;
@@ -78,6 +77,9 @@ public class RecursoLoteServicio implements IRecursoLoteServicio {
         }
         if (dto.getNumeroHasta() - dto.getNumeroDesde() + 1 > MAX_POR_LOTE) {
             throw new DatosInvalidoException("Máximo " + MAX_POR_LOTE + " recursos por carga", "RecursoEntity");
+        }
+        if (dto.getNumeroDesde() < 1 || dto.getNumeroHasta() > MAX_NUMERO) {
+            throw new DatosInvalidoException("La numeración va de 1 a " + MAX_NUMERO, "RecursoEntity");
         }
         if (dto.getTipo() == ETipoRecurso.CARPA && (dto.getPasillo() == null || dto.getCapacidad() == null)) {
             throw new DatosInvalidoException("Las carpas requieren pasillo y capacidad", "RecursoEntity");

@@ -1,8 +1,10 @@
 package com.Gestion.MiBalnearioGestion.Recursos.DTO;
 
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.EtamanioSombrilla;
+import com.Gestion.MiBalnearioGestion.Recursos.Validacion.LimitesRecursos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ public class SombrillaDTO extends RecursoDTO {
     @Schema(description = "Número identificador físico de la sombrilla", example = "18")
     @NotNull
     @Min(1)
+    @Max(value = LimitesRecursos.MAX_NUMERO, message = "El número no puede superar 1000")
     private Integer numero;
 
     @Schema(description = "Dimensión o tamaño de la sombrilla", implementation = EtamanioSombrilla.class)
