@@ -1,1 +1,22 @@
-<p>inicio works!</p>
+<section class="hero">
+  <img ngSrc="/images/hero-playa.webp" fill priority
+       alt="Playa con sombrillas y mar en un día soleado" />
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <h1>Tu día de playa, sin vueltas</h1>
+    <p>Reservá tu carpa y consultá nuestro menú del restaurante desde acá.</p>
+  </div>
+</section>
+
+<section class="accesos">
+  @for (a of accesos; track a.ruta) {
+    <article class="card">
+      <img [ngSrc]="a.imagen" width="600" height="400" [alt]="a.alt" />
+      <div class="card__body">
+        <h2>{{ a.titulo }}</h2>
+        <p>{{ a.texto }}</p>
+        <a [routerLink]="a.ruta" class="btn btn--primary">{{ a.cta }}</a>
+      </div>
+    </article>
+  }
+</section>
