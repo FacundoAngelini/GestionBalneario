@@ -47,3 +47,11 @@ export function calcularFechaFin(
 
 export const formatoRango = (inicio: string, fin: string): string =>
   inicio === fin ? formatoFecha(inicio) : `${formatoFecha(inicio)} al ${formatoFecha(fin)}`;
+
+export const formatoFechaHora = (iso: string | null | undefined): string => {
+  if (!iso) return '';
+  const fecha = new Date(iso.slice(0, 19));
+  return Number.isNaN(fecha.getTime())
+    ? ''
+    : fecha.toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+};

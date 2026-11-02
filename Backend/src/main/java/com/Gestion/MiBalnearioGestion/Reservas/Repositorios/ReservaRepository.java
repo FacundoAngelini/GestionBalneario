@@ -69,5 +69,7 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long>, J
             @Param("fin") LocalDate fin,
             @Param("estados") List<EReservaEstado> estados,
             @Param("reservaId") UUID reservaId);
+
+    List<ReservaEntity> findByEstadoReservaAndFechaFinBefore(EReservaEstado estado, LocalDate fecha);
 }
 

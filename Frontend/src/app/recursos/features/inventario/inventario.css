@@ -18,29 +18,36 @@
   gap: var(--espacio-3);
 }
 
-/* Tantas columnas como entren (mínimo 12rem): 1 en celular, 3 en pantallas anchas */
 .filtros-inventario {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: var(--espacio-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--espacio-3) var(--espacio-4);
   padding: var(--espacio-4);
 }
 
+/* min(100%, 18rem): nunca más angosto que el contenedor, así no desborda en celulares chicos */
 .lista-items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
   gap: var(--espacio-4);
   list-style: none;
 }
 
 .item {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: var(--espacio-3);
   padding: var(--espacio-4);
 }
 
-/* Un recurso desactivado se ve apagado y con borde punteado */
+.item__acciones {
+  margin-top: auto;
+}
+
+.item__acciones .btn {
+  width: 100%;
+}
+
 .item--inactivo {
   border-style: dashed;
   opacity: 0.8;

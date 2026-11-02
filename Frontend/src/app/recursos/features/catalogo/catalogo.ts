@@ -117,10 +117,14 @@ export class Catalogo {
   private readonly limite = signal(POR_PAGINA);
   private readonly busquedaPendiente = signal(this.seleccion.periodo() !== null);
 
-  // Los visitantes y clientes pueden elegir recursos; el personal solo puede verlos.
+    // Visitantes y clientes eligen; el personal, solo cuando está reservando para un cliente
   protected readonly puedeElegir = computed(
-    () => !this.auth.usuarioLogueado() || this.auth.esCliente(),
+    () =>
+      !this.auth.usuarioLogueado() ||
+      this.auth.esCliente() ||
+      (this.auth.esPersonal() && this.seleccion.clienteMostrador() !== null),
   );
+
   protected readonly rol = this.auth.etiquetaRol;
 
   private readonly hoy = (() => {
@@ -197,6 +201,17 @@ export class Catalogo {
   protected readonly valido = computed(
     () => this.finEfectiva() !== null && !this.errores().entrada && !this.errores().salida,
   );
+
+  protected readonly faltante = computed(() => {
+    const { fechaInicio, fechaFin, modalidad } = this.seleccion.busqueda();
+    if (modalidad === 'DIA') {
+      if (!fechaInicio && !fechaFin) return 'Elegí las fechas de entrada y de salida para ver la disponibilidad.';
+      if (!fechaInicio) return 'Elegí la fecha de entrada.';
+      if (!fechaFin) return 'Elegí la fecha de salida.';
+      return '';
+    }
+    return fechaInicio ? '' : 'Elegí la fecha de entrada para ver la disponibilidad.';
+  });
 
   // Resumen del período seleccionado.
   protected readonly periodoPrevio = computed(() => {
@@ -318,9 +333,18 @@ export class Catalogo {
     this.limite.update((l) => l + POR_PAGINA);
   }
 
+  protected cancelarMostrador(): void {
+    this.seleccion.limpiar();
+  }
+
   protected continuar(): void {
     if (!this.seleccion.puedeContinuar()) return;
-    // Para continuar, el usuario debe iniciar sesión con una cuenta de cliente.
-    this.router.navigateByUrl(`/${ROUTE_SEGMENTS.reservas}/${ROUTE_SEGMENTS.sinPago}`);
+    const mostrador = this.auth.esPersonal() && this.seleccion.clienteMostrador() !== null;
+    const destino = mostrador
+      ? `/${ROUTE_SEGMENTS.reservas}/${ROUTE_SEGMENTS.presencial}/${ROUTE_SEGMENTS.confirmar}`
+      : `/${ROUTE_SEGMENTS.reservas}/${ROUTE_SEGMENTS.sinPago}`;
+    this.router.navigateByUrl(destino);
   }
+
+  
 }

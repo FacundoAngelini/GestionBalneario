@@ -26,6 +26,7 @@ import {
   TipoRecurso,
 } from '../../data-access/recurso-model';
 import { RecursoService } from '../../data-access/recurso-service';
+import { mensajeAmigable } from '../../../core/utils/errores';
 
 const POR_PAGINA = 30;
 const TIPOS: TipoRecurso[] = ['CARPA', 'SOMBRILLA', 'COCHERA'];
@@ -263,10 +264,13 @@ export class Inventario {
         this.snackBar.open('Cambios guardados', 'Cerrar', { duration: 5000 });
         this.cargar(tipo, true);
       },
-      error: (e: HttpErrorResponse) => {
+            error: (e: HttpErrorResponse) => {
         this.guardando.set(false);
+        const mensaje = String(e.error?.message ?? '');
         this.errorEdicion.set(
-          e.error?.message ?? 'No se pudieron guardar los cambios. Intentá de nuevo.',
+          e.status === 409 || /restringido|duplicate|ya existe/i.test(mensaje)
+            ? 'Ya existe un recurso con ese número o nombre. Elegí otro.'
+            : mensajeAmigable(e, 'No se pudieron guardar los cambios. Intentá de nuevo.'),
         );
       },
     });

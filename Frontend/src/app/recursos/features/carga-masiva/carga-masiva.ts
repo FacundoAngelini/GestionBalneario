@@ -1,6 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { errorEntero, esNumero } from '../../../core/utils/validaciones';
 import { MAX_CAPACIDAD, MAX_NUMERO, MAX_PASILLO, MIN_CAPACIDAD } from '../../data-access/limites-recursos';
 import { form, FormField } from '@angular/forms/signals';
@@ -21,10 +23,20 @@ import {
   TipoRecurso,
 } from '../../data-access/recurso-model';
 import { RecursoService } from '../../data-access/recurso-service';
+import {
+  DatosDialogoResultado,
+  DialogoResultado,
+  RespuestaDialogo,
+} from '../../../shared/dialogo-resultado/dialogo-resultado';
+import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
+import { formatoPrecio, interpretarPrecio } from '../../../core/utils/moneda';
+
+
 
 // Límites de negocio (el backend tiene que aplicar los mismos)
 const MAX_POR_LOTE = 200;
 const MAX_NOMBRE = 25;
+export const MAX_NOMBRE_RECURSO = MAX_NOMBRE + 1 + String(MAX_NUMERO).length;
 
 // Cuánto vale cada modalidad respecto de la inmediata superior.
 // MES depende de la cantidad de meses del rango de fechas (se calcula aparte).
@@ -49,6 +61,24 @@ const redondear = (n: number): number => Math.round(n * 100) / 100;
 const errorPrecio = (valor: number | null): string | null =>
   esNumero(valor) && valor < 0 ? 'No puede ser negativo' : null;
 
+// valores con los que arranca y se reinicia el formulario
+const modeloInicial = () => ({
+  tipo: 'CARPA' as TipoRecurso,
+  prefijoNombre: 'Carpa',
+  numeroDesde: 1,
+  numeroHasta: 50,
+  sectorPublicId: '',
+  pasillo: 1,
+  capacidad: 4,
+  tamanio: 'MEDIANO' as TamanioSombrilla,
+  fechaVigencia: '',
+  fechaCaducada: '',
+  // 0 se trata como vacio
+  precioDia: null as number | null,
+  precioQuincena: null as number | null,
+  precioMes: null as number | null,
+  precioTemporada: null as number | null,
+});
 
 @Component({
   selector: 'app-carga-masiva',
@@ -60,6 +90,8 @@ const errorPrecio = (valor: number | null): string | null =>
 export class CargaMasiva {
   private readonly recursoService = inject(RecursoService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
 
   protected readonly sectores = toSignal(
     this.recursoService.listarSectores().pipe(catchError(() => of([] as Sector[]))),
@@ -94,23 +126,7 @@ export class CargaMasiva {
   protected readonly esMovil =
     typeof window !== 'undefined' && window.matchMedia('(max-width: 40rem)').matches;
 
-  protected readonly modelo = signal({
-    tipo: 'CARPA' as TipoRecurso,
-    prefijoNombre: 'Carpa',
-    numeroDesde: 1,
-    numeroHasta: 50,
-    sectorPublicId: '',
-    pasillo: 1,
-    capacidad: 4,
-    tamanio: 'MEDIANO' as TamanioSombrilla,
-    fechaVigencia: '',
-    fechaCaducada: '',
-    // null = vacío (se prorratea). 0 se trata igual que vacío.
-    precioDia: null as number | null,
-    precioQuincena: null as number | null,
-    precioMes: null as number | null,
-    precioTemporada: null as number | null,
-  });
+  protected readonly modelo = signal(modeloInicial());
 
 protected readonly f = form(this.modelo);
 
@@ -283,34 +299,16 @@ protected readonly listo = computed(
     });
   }
 
-  protected formatoPrecio(n: number): string {
-    return n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
-  }
+   protected readonly formatoPrecio = formatoPrecio;
 
   protected cambiarPrecio(clave: ClavePrecio, evento: Event): void {
-  const input = evento.target as HTMLInputElement;
-  const negativo = input.value.trim().startsWith('-');
-
-  // Nos quedamos solo con dígitos y la coma decimal
-  const limpio = input.value.replace(/[^\d,]/g, '');
-  const tieneComa = limpio.includes(',');
-  const [enteros = '', ...resto] = limpio.split(',');
-  const decimales = resto.join('').slice(0, 2);
-  const sinCeros = enteros.replace(/^0+(?=\d)/, '');
-  const base = sinCeros || (tieneComa ? '0' : '');
-
-  // Texto que se ve: 1234567 -> 1.234.567
-  let texto = base.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (tieneComa ? ',' + decimales : '');
-  if (negativo) texto = '-' + texto;
-
-  const hayDigitos = base !== '' || decimales !== '';
-  const numero = hayDigitos ? Number(`${negativo ? '-' : ''}${base || '0'}.${decimales || '0'}`) : null;
-
-  input.value = texto;
-  this.textosPrecio.update((t) => ({ ...t, [clave]: texto }));
-  this.modelo.update((m) => ({ ...m, [clave]: numero }));
-}
-
+    const input = evento.target as HTMLInputElement;
+    const { texto, valor } = interpretarPrecio(input.value);
+    input.value = texto;
+    this.textosPrecio.update((t) => ({ ...t, [clave]: texto }));
+    this.modelo.update((m) => ({ ...m, [clave]: valor }));
+  }
+  
 protected elegirFecha(campo: 'fechaVigencia' | 'fechaCaducada', fecha: Date | null): void {
   const valor = fecha ? aIso(fecha) : '';
   this.modelo.update((m) =>
@@ -328,7 +326,7 @@ protected guardar(evento: Event): void {
     this.recursoService.crearLote(this.armarPeticion()).subscribe({
       next: (r) => {
         this.enviando.set(false);
-        this.snackBar.open(`Se crearon ${r.creados} recursos`, 'Cerrar', { duration: 5000 });
+        this.mostrarResultado(r.creados);
       },
       error: (e: HttpErrorResponse) => {
         this.enviando.set(false);
@@ -337,6 +335,46 @@ protected guardar(evento: Event): void {
         });
       },
     });
+  }
+
+    private mostrarResultado(creados: number): void {
+    const m = this.modelo();
+    const base = m.prefijoNombre.trim();
+    this.dialog
+      .open<DialogoResultado, DatosDialogoResultado, RespuestaDialogo>(DialogoResultado, {
+        width: 'min(28rem, calc(100vw - 2rem))',
+        data: {
+          titulo: creados === 1 ? 'Se creó 1 recurso' : `Se crearon ${creados} recursos`,
+          mensaje: `${base} ${m.numeroDesde} … ${base} ${m.numeroHasta}`,
+          textoPrincipal: 'Cargar más',
+          textoSecundario: 'Ir al inventario',
+        },
+      })
+      .afterClosed()
+      .subscribe((respuesta) => {
+        if (respuesta === 'secundaria') {
+          this.router.navigateByUrl(`/${ROUTE_SEGMENTS.recursos}`);
+        } else {
+          this.reiniciar(); // cargar mas o cerrar ventana = formulario vacio.
+        }
+      });
+  }
+
+  // formulario como recien abierto, con las fechas d ela temporada.
+ private reiniciar(): void {
+    const actual = this.modelo();
+    const cantidad = actual.numeroHasta - actual.numeroDesde + 1;
+    this.modelo.set({
+      ...modeloInicial(),
+      tipo: actual.tipo,
+      prefijoNombre: ETIQUETA_TIPO_RECURSO[actual.tipo],
+      sectorPublicId: actual.sectorPublicId,
+      fechaVigencia: actual.fechaVigencia,
+      fechaCaducada: actual.fechaCaducada,
+      numeroDesde: actual.numeroHasta + 1, // sigue donde terminó el lote anterior
+      numeroHasta: actual.numeroHasta + cantidad,
+    });
+    this.textosPrecio.set({ precioDia: '', precioQuincena: '', precioMes: '', precioTemporada: '' });
   }
 
   private armarPeticion(): RecursoLoteRequest {

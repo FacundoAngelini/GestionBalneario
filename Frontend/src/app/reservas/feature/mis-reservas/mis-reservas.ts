@@ -3,7 +3,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthClient } from '../../../auth/data-access/auth-client';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
-import { formatoRango, hoyIso } from '../../../core/utils/fechas';
+import { formatoFechaHora, formatoRango, hoyIso } from '../../../core/utils/fechas';
 import { formatoPrecio } from '../../../core/utils/moneda';
 import { ETIQUETA_MODALIDAD, ETIQUETA_TIPO_RECURSO } from '../../../recursos/data-access/recurso-model';
 import { plazoDeCancelacionVigente } from '../../data-access/periodo-reserva';
@@ -18,6 +18,7 @@ import {
 import { ReservaService } from '../../data-access/reserva-service';
 import { SeleccionReserva } from '../../data-access/seleccion-reserva';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { mensajeAmigable } from '../../../core/utils/errores';
 
 type Vista = 'ACTIVAS' | 'HISTORIAL';
 
@@ -26,6 +27,8 @@ interface Cancelacion {
   reserva: Reserva;
   cocheras: Reserva[]; // cocheras que se cancelan junto con esta reserva
 }
+
+
 
 @Component({
   selector: 'app-mis-reservas',
@@ -48,6 +51,7 @@ export class MisReservas {
   protected readonly formatoRango = formatoRango;
   protected readonly horasCancelar = HORAS_PARA_CANCELAR;
   protected readonly textoPago = TEXTO_PAGO;
+  protected readonly formatoFechaHora = formatoFechaHora;
 
   private readonly clienteId = this.auth.publicId;
 
@@ -183,9 +187,7 @@ export class MisReservas {
     this.router.navigateByUrl(`/${ROUTE_SEGMENTS.catalogo}`);
   }
 
-  private mensajeDeError(e: HttpErrorResponse): string {
-    if (e.status === 0) return 'No se pudo conectar con el servidor';
-    if (e.status === 403) return 'No tenés permiso para esta operación. Cerrá sesión y volvé a ingresar.';
-    return e.error?.message ?? 'Ocurrió un error inesperado. Intentá de nuevo';
+   private mensajeDeError(e: HttpErrorResponse): string {
+    return mensajeAmigable(e, 'Ocurrió un error inesperado. Intentá de nuevo');
   }
 }

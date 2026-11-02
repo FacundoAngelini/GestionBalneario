@@ -66,6 +66,22 @@
   min-height: 2.75rem;
 }
 
+
+/* El nombre se achica y el precio nunca se parte: así no empuja el borde derecho */
+.lista-recursos li {
+  align-items: flex-start;
+}
+
+.lista-recursos li > span {
+  min-width: 0;
+}
+
+.lista-recursos li > strong {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+
 /* ---- Pantallas medianas (tablet) ---- */
 @media (min-width: 30rem) {
   .precios {

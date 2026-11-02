@@ -1,7 +1,16 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../core/environments/environment';
-import { CancelarReservaRequest, Reserva, ReservaRequest } from './reserva-model';
+import {
+  CancelarReservaRequest,
+  ClienteBusqueda,
+  Comprobante,
+  EventoReserva,
+  Reserva,
+  ReservaPresencialRequest,
+  ReservaPresencialResponse,
+  ReservaRequest,
+} from './reserva-model';
 
 @Service()
 export class ReservaService {
@@ -28,6 +37,10 @@ export class ReservaService {
     return this.http.get<Reserva[]>(`${this.apiUrl}/${reservaPublicId}/cocheras-dependientes`);
   }
 
+  comprobante(publicId: string) {
+    return this.http.get<Comprobante>(`${this.apiUrl}/${publicId}/cobro`);
+  }
+
   // ---- Personal ----
   todas() {
     return this.http.get<Reserva[]>(this.apiUrl);
@@ -49,5 +62,31 @@ export class ReservaService {
   cancelarAdministrativa(publicId: string, cancelarCocheras: boolean) {
     const params = new HttpParams().set('cancelarCocherasAsociadas', cancelarCocheras);
     return this.http.put<void>(`${this.apiUrl}/${publicId}/cancelar-administrativo`, {}, { params });
+  }
+
+  registrarCobro(publicId: string) {
+    return this.http.post<Comprobante>(`${this.apiUrl}/${publicId}/cobro`, { metodoPago: 'EFECTIVO' });
+  }
+
+  anularCobro(publicId: string, motivo: string) {
+    return this.http.put<Reserva>(`${this.apiUrl}/${publicId}/cobro/anular`, { motivo });
+  }
+
+  historial(publicId: string) {
+    return this.http.get<EventoReserva[]>(`${this.apiUrl}/${publicId}/historial`);
+  }
+
+  // ---- Mostrador ----
+  crearPresencial(pedido: ReservaPresencialRequest) {
+    return this.http.post<ReservaPresencialResponse>(`${this.apiUrl}/presencial`, pedido);
+  }
+
+  buscarClientePorDni(dni: number) {
+    const params = new HttpParams().set('dni', dni);
+    return this.http.get<ClienteBusqueda>(`${environment.apiUrl}/clientes/buscar`, { params });
+  }
+
+  configuracionPago() {
+    return this.http.get<{ descuentoEfectivo: number }>(`${environment.apiUrl}/configuracion/pagos`);
   }
 }

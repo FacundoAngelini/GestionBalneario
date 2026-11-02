@@ -20,8 +20,8 @@
   --color-texto: #1B2A35;
   --color-texto-suave: #52606B;
   --color-texto-sobre-primario: #FFFFFF;
-  --color-borde: #E3DDD0;           /* Separadores y tarjetas */
-  --color-borde-campo: #7B8791;     /* Inputs / Outline */
+  --color-borde: #E3DDD0;
+  --color-borde-campo: #7B8791;
 
   /* ===== Estados ===== */
   --color-error: #B3261E;
@@ -143,27 +143,27 @@ button:not([class*="mat-"]):disabled {
   padding: var(--espacio-5);
 }
 
-.field { 
-  display: flex; 
-  flex-direction: column; 
-  gap: var(--espacio-1); 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
 }
 
-.field__label { 
-  font-weight: 600; 
-  font-size: 0.9rem; 
+.field__label {
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
-.field__hint { 
-  margin: 0; 
-  font-size: 0.85rem; 
-  color: var(--color-texto-suave); 
+.field__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
 }
 
-.field__error { 
-  margin: 0; 
-  font-size: 0.85rem; 
-  color: var(--color-error); 
+.field__error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-error);
 }
 
 .field__control {
@@ -175,34 +175,6 @@ button:not([class*="mat-"]):disabled {
   color: inherit;
   font: inherit;
   transition: border-color var(--transicion), box-shadow var(--transicion);
-}
-
-/* Enlaces con aspecto de botón */
-a.btn {
-  text-decoration: none;
-}
-
-/* Botón secundario (contorno). ".btn.btn--secundario" para ganarle a la regla global de botones */
-.btn.btn--secundario {
-  border: 2px solid var(--color-primario);
-  background: var(--color-superficie);
-  color: var(--color-primario);
-}
-
-.btn.btn--secundario:hover:not(:disabled) {
-  background: var(--color-fondo);
-}
-
-/* Campo de fecha: se ve como los demás, con ícono de calendario y cursor de "tocable" */
-.control-fecha {
-  --icono-calendario: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3C5D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E");
-  padding-right: 2.75rem;
-  background: var(--color-superficie) var(--icono-calendario) no-repeat right var(--espacio-3) center / 1.25rem;
-  cursor: pointer;
-}
-
-.control-fecha[aria-invalid='true'] {
-  background: var(--color-error-fondo) var(--icono-calendario) no-repeat right var(--espacio-3) center / 1.25rem;
 }
 
 .field__control:focus-visible {
@@ -229,33 +201,28 @@ a.btn {
   transition: background var(--transicion);
 }
 
-.btn:focus-visible { 
-  outline: 3px solid var(--color-turquesa-oscuro); 
-  outline-offset: 2px; 
+.btn:focus-visible {
+  outline: 3px solid var(--color-turquesa-oscuro);
+  outline-offset: 2px;
 }
 
-.btn:disabled { 
-  opacity: 0.55; 
-  cursor: not-allowed; 
+.btn--primary {
+  background: var(--color-primario);
+  color: var(--color-texto-sobre-primario);
 }
 
-.btn--primary { 
-  background: var(--color-primario); 
-  color: var(--color-texto-sobre-primario); 
+.btn--primary:hover:not(:disabled) {
+  background: var(--color-primario-hover);
 }
 
-.btn--primary:hover:not(:disabled) { 
-  background: var(--color-primario-hover); 
+.aviso {
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio-sm);
+  background: var(--color-advertencia-fondo);
+  color: var(--color-advertencia);
 }
 
-   .aviso {
-     padding: var(--espacio-3) var(--espacio-4);
-     border-radius: var(--radio-sm);
-     background: var(--color-advertencia-fondo);
-     color: var(--color-advertencia);
-   }
-
-  /* ===== Calendario (Angular Material) con la paleta Brisa Marina ===== */
+/* ===== Calendario (Angular Material) con la paleta Brisa Marina ===== */
 .calendario-brisa {
   /* Fondo, texto y forma de la tarjeta del calendario */
   --mat-datepicker-calendar-container-background-color: var(--color-superficie);
@@ -278,7 +245,7 @@ a.btn {
   --mat-datepicker-calendar-date-focus-state-background-color: rgb(43 166 160 / 0.25);
 }
 
-/* Botón deshabilitado: se ve apagado y no parece tocable */
+/* Botón deshabilitado */
 .btn:disabled,
 .btn--primary:disabled {
   opacity: 0.5;
@@ -286,6 +253,60 @@ a.btn {
   filter: grayscale(0.4);
 }
 
+/* ============================================================
+   COMPONENTES COMPARTIDOS (usados por varias pantallas)
+   ============================================================ */
+
+/* Evita que un campo ensanche la pantalla en celular */
+.field,
+.field__control {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Enlaces con aspecto de botón */
+a.btn {
+  text-decoration: none;
+}
+
+/* Botón secundario (contorno) */
+.btn.btn--secundario {
+  border: 2px solid var(--color-primario);
+  background: var(--color-superficie);
+  color: var(--color-primario);
+}
+
+.btn.btn--secundario:hover:not(:disabled) {
+  background: var(--color-fondo);
+}
+
+/* ---- Desplegables (select): flecha propia y mismo aspecto en todos los navegadores ---- */
+select.field__control {
+  --icono-flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3C5D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  appearance: none;
+  padding-right: 2.75rem;
+  background: var(--color-superficie) var(--icono-flecha) no-repeat right var(--espacio-3) center / 1.25rem;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+select.field__control[aria-invalid='true'] {
+  background: var(--color-error-fondo) var(--icono-flecha) no-repeat right var(--espacio-3) center / 1.25rem;
+}
+
+/* ---- Campo de fecha con ícono de calendario ---- */
+.control-fecha {
+  --icono-calendario: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3C5D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E");
+  padding-right: 2.75rem;
+  background: var(--color-superficie) var(--icono-calendario) no-repeat right var(--espacio-3) center / 1.25rem;
+  cursor: pointer;
+}
+
+.control-fecha[aria-invalid='true'] {
+  background: var(--color-error-fondo) var(--icono-calendario) no-repeat right var(--espacio-3) center / 1.25rem;
+}
+
+/* ---- Etiqueta (tipo de recurso) ---- */
 .etiqueta {
   flex-shrink: 0;
   padding: 0.15rem var(--espacio-2);
@@ -296,13 +317,61 @@ a.btn {
   font-weight: 700;
 }
 
-/* Estado de una reserva (Mis reservas y Gestión) */
+/* ---- Filtros en forma de píldora ---- */
+button.chip {
+  min-height: 2.75rem;
+  padding: 0 var(--espacio-4);
+  border: 1.5px solid var(--color-borde-campo);
+  border-radius: 999px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+}
+
+button.chip:hover:not(:disabled) {
+  background: var(--color-fondo);
+}
+
+button.chip[aria-pressed='true'] {
+  border-color: var(--color-primario);
+  background: var(--color-primario);
+  color: var(--color-texto-sobre-primario);
+}
+
+button.chip[aria-pressed='true']:hover:not(:disabled) {
+  background: var(--color-primario-hover);
+}
+
+/* ---- Datos: etiqueta a la izquierda, valor a la derecha (en la misma línea) ---- */
+.datos {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--espacio-2) var(--espacio-4);
+}
+
+.datos dt {
+  color: var(--color-texto-suave);
+}
+
+.datos dd {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.datos .codigo {
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+/* ---- Estados (reservas y precios) ---- */
 .estado {
   display: inline-block;
   padding: 0.15rem var(--espacio-3);
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .estado--pendiente {
@@ -320,13 +389,21 @@ a.btn {
   color: var(--color-info);
 }
 
-/* Cancelada, rechazada o vencida */
+/* Cancelada, rechazada, vencida o desactivado */
 .estado--cerrada {
   background: var(--color-error-fondo);
   color: var(--color-error);
 }
 
-/* ===== Listas y tarjetas de reserva (Mis reservas y Gestión) ===== */
+/* ---- Cartel de éxito ---- */
+.exito {
+  padding: var(--espacio-4);
+  border-color: var(--color-exito);
+  background: var(--color-exito-fondo);
+  color: var(--color-exito);
+}
+
+/* ---- Listas y tarjetas de reserva (Mis reservas y Gestión) ---- */
 .vistas {
   display: flex;
   flex-wrap: wrap;
@@ -355,11 +432,11 @@ a.btn {
 
 .reserva__titulo {
   margin: 0;
+  min-width: 0;
   font-size: 1.25rem;
   overflow-wrap: anywhere;
 }
 
-/* Aviso de confirmación dentro de la tarjeta */
 .confirmacion {
   display: grid;
   gap: var(--espacio-3);
@@ -401,9 +478,36 @@ a.btn {
   }
 }
 
-.exito {
-  padding: var(--espacio-4);
-  border-color: var(--color-exito);
-  background: var(--color-exito-fondo);
-  color: var(--color-exito);
+/* Fila pais + telefono
+   Dos columnas si entran,  si no, una debajo de la otra. */
+.fila-telefono {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  align-items: start;
+  gap: 1rem;
+}
+
+.fila-telefono > * {
+  min-width: 0;
+}
+
+/* ---- Impresión: solo el contenido de la página (comprobantes) ---- */
+@media print {
+  .area-header,
+  .area-aside,
+  .area-footer,
+  .overlay,
+  .cdk-overlay-container,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  body,
+  .app-grid-layout {
+    background: #fff;
+  }
+
+  .area-main {
+    padding: 0;
+  }
 }

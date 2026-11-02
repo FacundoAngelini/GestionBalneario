@@ -14,9 +14,8 @@ import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
 import com.Gestion.MiBalnearioGestion.Common.MercadoPago.MercadoPagoService;
 import com.Gestion.MiBalnearioGestion.Pagos.Repository.IPagoRepository;
 import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
-import com.Gestion.MiBalnearioGestion.Reservas.DTO.CancelarReservaDTO;
-import com.Gestion.MiBalnearioGestion.Reservas.DTO.CheckoutResponseDTO;
-import com.Gestion.MiBalnearioGestion.Reservas.DTO.ReservaDTO;
+import com.Gestion.MiBalnearioGestion.Reservas.DTO.*;
+import com.Gestion.MiBalnearioGestion.Reservas.Entity.EAccionReserva;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.ReservaEntity;
 import com.Gestion.MiBalnearioGestion.Reservas.Exception.ReservaException;
@@ -29,7 +28,6 @@ import org.hibernate.Hibernate;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.Gestion.MiBalnearioGestion.Reservas.DTO.RecursoResumenDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.ETipoRecurso;
 
 import java.time.LocalDate;
@@ -52,6 +50,7 @@ public class ReservaServicio implements IReservaServicio{
     private final TemporadaValidator temporadaValidator;
     private final EmailService emailService;
     private final IPagoRepository pagoRepository;
+    private final ReservaAuditoriaServicio auditoria;
     /** Anticipación mínima para que un cliente cancele (se cuenta desde las 00:00 del primer día). */
     private static final long HORAS_ANTICIPACION_CANCELACION = 48;
     private static final List<EReservaEstado> ESTADOS_ACTIVOS =
@@ -108,7 +107,10 @@ public class ReservaServicio implements IReservaServicio{
                 .fechaCreacion(LocalDateTime.now())
                 .modalidad(modalidad)
                 .build();
-        return reservaRepository.save(reserva);
+        ReservaEntity guardada = reservaRepository.save(reserva);
+        auditoria.registrar(guardada, EAccionReserva.CREADA, null,
+                modalidad + " del " + fechaInicio + " al " + fechaFin + " por $" + montoTotal);
+        return guardada;
     }
 
     @Transactional
@@ -208,6 +210,8 @@ public class ReservaServicio implements IReservaServicio{
         }
 
         reservaRepository.save(reserva);
+        auditoria.registrar(reserva, pago == null ? EAccionReserva.VENCIDA : EAccionReserva.CANCELADA,
+                null, "Venció el plazo sin confirmarse");
     }
 
     @Transactional
@@ -217,33 +221,25 @@ public class ReservaServicio implements IReservaServicio{
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se puede cancelar. La reserva no existe" +
                         reservaPublicId.toString(),"ReservaEntity"));
 
-        if (!ESTADOS_ACTIVOS.contains(reserva.getEstadoReserva())) {throw new DatosInvalidoException("Solo se pueden cancelar reservas pendientes o confirmadas. Estado actual: "
-                + reserva.getEstadoReserva(), "ReservaEntity");
+        if (!ESTADOS_ACTIVOS.contains(reserva.getEstadoReserva())) {
+            throw new DatosInvalidoException("Solo se pueden cancelar reservas pendientes o confirmadas. Estado actual: "
+                    + reserva.getEstadoReserva(), "ReservaEntity");
+        }
+        PagoReservaEntity pago = reserva.getPagosReservaaa();
+        if (pago != null && pago.getEestadoPago() == EestadoPago.PAGADO) {
+            throw new DatosInvalidoException("La reserva está cobrada. Primero anulá el cobro (con el motivo, "
+                    + "por ejemplo un reembolso) y después cancelala", "ReservaEntity");
         }
         resolverCocherasDependientes(reserva, cancelarCocherasAsociadas);
-        reserva.setEstadoReserva(EReservaEstado.CANCELADA);
-        reserva.setReservado(false);
-
-        if (reserva.getPagosReservaaa() != null) {
-            PagoReservaEntity pago = reserva.getPagosReservaaa();
-
-            if (pago.getEestadoPago() == EestadoPago.PAGADO) {
-                pago.setEestadoPago(EestadoPago.RECHAZADO);
-            } else {
-                pago.setEestadoPago(EestadoPago.RECHAZADO);
-            }
-        }
-        reservaRepository.save(reserva);
+        marcarCancelada(reserva, "Cancelada por el personal");
 
         emailService.cancelacionReserva(reserva)
-                .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", reserva.getCliente().getEmail()))
+                .thenRun(() -> log.info("Email de cancelación enviado exitosamente a: {}", reserva.getCliente().getEmail()))
                 .exceptionally(throwable -> {
-                    log.error("Fallo el envío del email de confirmación de pago a: {}", reserva.getCliente().getEmail(), throwable);
+                    log.error("Fallo el envío del email de cancelación a: {}", reserva.getCliente().getEmail(), throwable);
                     return null;
                 });
-
     }
-
 
     @Transactional
     @Override
@@ -296,8 +292,11 @@ public class ReservaServicio implements IReservaServicio{
                 });
 
         // 5. Se conserva el historial: la reserva queda CANCELADA en vez de borrarse
-        marcarCancelada(reserva);
-    }@Transactional(readOnly = true)
+        marcarCancelada(reserva, "Cancelada por el cliente");
+
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public List<ReservaDTO> listarCocherasDependientes(UUID reservaPublicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(reservaPublicId)
@@ -336,6 +335,11 @@ public class ReservaServicio implements IReservaServicio{
         ClienteEntity cliente = reserva.getCliente();
         dto.setClienteNombre(cliente.getNombre() + " " + cliente.getApellido());
         dto.setClienteDni(cliente.getDni());
+        PagoReservaEntity pago = reserva.getPagosReservaaa();
+        if (pago != null && pago.getEestadoPago() == EestadoPago.PAGADO) {
+            dto.setCobro(new CobroResumenDTO(pago.getMonto(), pago.getDescuento(),
+                    pago.getMetodoPago(), pago.getFechaHoraCobro(), pago.getCobradoPor()));
+        }
         return dto;
     }
 
@@ -360,19 +364,20 @@ public class ReservaServicio implements IReservaServicio{
             if (cochera.getPagosReservaaa() != null && cochera.getPagosReservaaa().getEestadoPago() == EestadoPago.PAGADO) {
                 throw new DatosInvalidoException("La cochera asociada ya está paga. Contactá al administrador para cancelarla", "ReservaEntity");
             }
-            marcarCancelada(cochera);
-        }
+            marcarCancelada(cochera, "Cancelada junto con la reserva " + reserva.getPublicId().toString().substring(0, 8));        }
     }
 
-    private void marcarCancelada(ReservaEntity reserva) {
+    private void marcarCancelada(ReservaEntity reserva, String detalle) {
         reserva.setEstadoReserva(EReservaEstado.CANCELADA);
         reserva.setReservado(false);
         PagoReservaEntity pago = reserva.getPagosReservaaa();
-        if (pago != null) {
+        // Un cobro ya anulado conserva ese estado (es la huella de que hubo dinero y se devolvió)
+        if (pago != null && pago.getEestadoPago() != EestadoPago.ANULADO) {
             pago.setEestadoPago(EestadoPago.RECHAZADO);
             ipagoRepository.save(pago);
         }
         reservaRepository.save(reserva);
+        auditoria.registrar(reserva, EAccionReserva.CANCELADA, null, detalle);
     }
 
 
@@ -433,7 +438,9 @@ public class ReservaServicio implements IReservaServicio{
         ReservaEntity reserva = buscarPendiente(reservaPublicId);
         reserva.setEstadoReserva(EReservaEstado.CONFIRMADA);
         reserva.setReservado(true);
-        return aDTO(reservaRepository.save(reserva));
+        ReservaEntity guardada = reservaRepository.save(reserva);
+        auditoria.registrar(guardada, EAccionReserva.CONFIRMADA, null, null);
+        return aDTO(guardada);
     }
 
     @Transactional
@@ -442,8 +449,11 @@ public class ReservaServicio implements IReservaServicio{
         ReservaEntity reserva = buscarPendiente(reservaPublicId);
         reserva.setEstadoReserva(EReservaEstado.RECHAZADA);
         reserva.setReservado(false);
-        return aDTO(reservaRepository.save(reserva));
+        ReservaEntity guardada = reservaRepository.save(reserva);
+        auditoria.registrar(guardada, EAccionReserva.RECHAZADA, null, null);
+        return aDTO(guardada);
     }
+
 
     private ReservaEntity buscarPendiente(UUID publicId) {
         ReservaEntity reserva = reservaRepository.findByPublicId(publicId)

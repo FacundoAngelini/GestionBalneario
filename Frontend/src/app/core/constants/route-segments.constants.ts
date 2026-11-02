@@ -14,7 +14,10 @@ export const ROUTE_SEGMENTS = {
   gestionReservas: 'gestion',
   recursos: 'recursos',
   cargaMasiva: 'carga-masiva',
-  precios: 'precios',
+  precios: 'precios', 
+  presencial: 'presencial',
+  confirmar: 'confirmar',
+  comprobante: 'comprobante',
 
 
   unauthorized: 'no-autorizado'

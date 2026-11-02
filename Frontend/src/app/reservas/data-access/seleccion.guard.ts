@@ -11,3 +11,15 @@ export const seleccionGuard: CanActivateFn = () => {
     ? true
     : router.createUrlTree([`/${ROUTE_SEGMENTS.catalogo}`]);
 };
+
+// La confirmación del mostrador necesita un cliente, una búsqueda y algo elegido
+export const mostradorGuard: CanActivateFn = () => {
+  const seleccion = inject(SeleccionReserva);
+  const router = inject(Router);
+  if (seleccion.clienteMostrador() === null) {
+    return router.createUrlTree([`/${ROUTE_SEGMENTS.reservas}/${ROUTE_SEGMENTS.presencial}`]);
+  }
+  return seleccion.periodo() !== null && seleccion.puedeContinuar()
+    ? true
+    : router.createUrlTree([`/${ROUTE_SEGMENTS.catalogo}`]);
+};

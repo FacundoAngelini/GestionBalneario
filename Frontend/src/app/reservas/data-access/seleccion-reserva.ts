@@ -1,6 +1,7 @@
 import { computed, Service, signal } from '@angular/core';
 import { Modalidad, RecursoCatalogo } from '../../recursos/data-access/recurso-model';
 import { diasEntre, totalRecurso } from './periodo-reserva';
+import { ClienteBusqueda } from './reserva-model';
 
 /** Lo que el usuario tiene cargado en el buscador (se conserva al ir al login y volver). */
 export interface Busqueda {
@@ -23,6 +24,9 @@ export class SeleccionReserva {
   readonly busqueda = signal<Busqueda>({ ...BUSQUEDA_INICIAL });
   readonly periodo = signal<Periodo | null>(null);
   readonly elegidos = signal<RecursoCatalogo[]>([]);
+
+    /** Cliente a cuyo nombre se reserva en el mostrador (solo el personal lo usa). */
+  readonly clienteMostrador = signal<ClienteBusqueda | null>(null);
 
   readonly idsElegidos = computed(() => new Set(this.elegidos().map((r) => r.publicId)));
   readonly alojamientos = computed(() => this.elegidos().filter((r) => r.tipo !== 'COCHERA'));
@@ -82,6 +86,7 @@ export class SeleccionReserva {
     this.elegidos.set([]);
     this.periodo.set(null);
     this.busqueda.set({ ...BUSQUEDA_INICIAL });
+    this.clienteMostrador.set(null);
   }
 
    vaciar(): void {

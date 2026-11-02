@@ -32,7 +32,7 @@
     </mat-form-field>
 
     <div class="fila-telefono">
-      <mat-form-field class="campo-pais">
+      <mat-form-field>
         <mat-label>País</mat-label>
         <mat-select [formField]="registroForm.pais">
           @for (p of paises; track p.prefijo) {
@@ -41,7 +41,7 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="campo-telefono">
+      <mat-form-field>
         <mat-label>Teléfono</mat-label>
         <span matTextPrefix>+{{ paisElegido().prefijo }}&nbsp;</span>
         <input matInput type="tel" inputmode="numeric" autocomplete="tel-national" [formField]="registroForm.telefono" />
@@ -56,28 +56,19 @@
       <mat-error>{{ registroForm.nombreUsuario().errors().at(0)?.message }}</mat-error>
     </mat-form-field>
 
-    <mat-form-field>
+     <mat-form-field>
       <mat-label>Contraseña</mat-label>
       <input
         matInput
-        [type]="verContrasenia() ? 'text' : 'password'"
+        [type]="ojo.visible() ? 'text' : 'password'"
         autocomplete="new-password"
         [formField]="registroForm.contrasenia"
       />
-      <button
-        matIconButton
-        matSuffix
-        type="button"
-        [disabled]="registroForm().submitting()"
-        [attr.aria-label]="verContrasenia() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-        [attr.aria-pressed]="verContrasenia()"
-        (click)="verContrasenia.set(!verContrasenia())"
-      >
-        <mat-icon>{{ verContrasenia() ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </button>
+      <app-ojo-contrasenia #ojo matSuffix [deshabilitado]="registroForm().submitting()" />
       <mat-hint>8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</mat-hint>
       <mat-error>{{ registroForm.contrasenia().errors().at(0)?.message }}</mat-error>
     </mat-form-field>
+
 
     <button matButton="filled" type="submit" class="btn-submit">
       @if (registroForm().submitting()) {

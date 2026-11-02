@@ -6,8 +6,21 @@
     }
   </header>
 
+    @if (seleccion.clienteMostrador(); as c) {
+    <div class="aviso aviso--mostrador" role="status">
+      <span>
+        Reserva presencial para <strong>{{ c.nombre }} {{ c.apellido }}</strong>
+        (DNI {{ c.dni.toLocaleString('es-AR') }}).
+      </span>
+      <button type="button" class="btn btn--secundario" (click)="cancelarMostrador()">
+        Cancelar reserva presencial
+      </button>
+    </div>
+  }
+
   <form class="card busqueda" (submit)="enviar($event)" novalidate>
     <h2>¿Cuándo querés venir?</h2>
+    
 
     <div class="busqueda__campos">
       <div class="field">
@@ -62,6 +75,10 @@
     <button type="submit" class="btn btn--primary" [disabled]="!valido() || cargando()">
       @if (cargando()) { Buscando… } @else { Ver disponibilidad }
     </button>
+
+    @if (!valido() && faltante()) {
+      <p class="field__hint" role="status">{{ faltante() }}</p>
+    }
   </form>
 
   @if (errorCarga()) {
@@ -73,7 +90,8 @@
       <h2 id="titulo-resultados">Disponible: {{ periodoTexto() }}</h2>
       @if (!puedeElegir()) {
         <p class="aviso" role="note">
-          Estás viendo el catálogo como {{ rol() }}. Las reservas las realizan los clientes.
+          Estás viendo el catálogo como {{ rol() }}. Para reservar en el mostrador, empezá desde
+          "Nueva reserva presencial" en Gestión de reservas.
         </p>
       }
 

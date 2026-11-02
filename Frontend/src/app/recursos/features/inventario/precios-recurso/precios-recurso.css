@@ -1,3 +1,11 @@
+:host {
+  display: block;
+}
+
+.precios {
+  padding-top: var(--espacio-1);
+  border-top: 1px solid var(--color-borde);
+}
 
 .precios summary {
   display: flex;
