@@ -62,7 +62,7 @@ public class PagoController {
     }
 
     @GetMapping("/{reservaPublicId}/pagos")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO') or @securityService.esDuenioDeLaReserva(#reservaPublicId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esDuenioDeLaReserva(#reservaPublicId)")
     @Operation(summary = "Obtener pago por ID de reserva", description = "Recupera el comprobante de pago vinculado al alquiler de un recurso (como carpas o sombrillas). Permitido para staff administrativo o el CLIENTE dueño de la reserva.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Información del pago de la reserva obtenida con éxito"),
@@ -77,7 +77,7 @@ public class PagoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y auditar pagos con filtros avanzados", description = "Herramienta de auditoría para la administración. Permite listar todas las transacciones históricas filtrando por rangos de fechas, montos mínimos/máximos, canales de pago y estados financieros.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de pagos filtrados obtenido con éxito"),

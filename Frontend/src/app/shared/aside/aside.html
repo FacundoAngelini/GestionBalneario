@@ -1,1 +1,22 @@
-<p>aside works!</p>
+<nav class="menu" aria-label="Menú principal">
+  <ul class="menu-lista">
+    @for (item of items(); track item.ruta) {
+      <li>
+        <a
+          class="menu-link"
+          [routerLink]="item.ruta"
+          routerLinkActive="activo"
+          ariaCurrentWhenActive="page"
+          (click)="navegar.emit()"
+        >
+          @let n = item.insignia ? item.insignia() : 0;
+          <mat-icon aria-hidden="true">{{ item.icono }}</mat-icon>
+          <span>{{ item.etiqueta }}</span>
+          @if (n > 0) {
+            <span class="menu-insignia" [attr.aria-label]="n + ' pendientes'">{{ n }}</span>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+</nav>

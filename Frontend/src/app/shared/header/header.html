@@ -1,13 +1,25 @@
 <a class="marca" routerLink="/">ArenaDesk</a>
 
 <div class="sesion">
+    <a matButton="text" class="btn-header" routerLink="/catalogo" [attr.aria-label]="etiquetaCatalogo()" [class.solo-escritorio]="esPersonal()">
+    <mat-icon>beach_access</mat-icon>
+    <span class="texto-boton">{{ etiquetaCatalogo() }}</span>
+  </a>
   @if (logueado()) {
     <div class="usuario">
       <span class="usuario-nombre">{{ nombreUsuario() }}</span>
       <span class="usuario-rol">{{ rol() }}</span>
     </div>
 
-    <a matButton="text" class="btn-header" routerLink="/panel">Panel</a>
+        @if (esPersonal()) {
+      <a matButton="text" class="btn-header" routerLink="/reservas/gestion"
+         [attr.aria-label]="'Reservas pendientes: ' + pendientes()">
+        <mat-icon>pending_actions</mat-icon>
+        <span class="texto-boton">Pendientes&nbsp;</span><span>({{ pendientes() }})</span>
+      </a>
+    }
+
+    <a matButton="text" class="btn-header btn-panel" routerLink="/panel">Panel</a>
 
     <button
       #botonPerfil
@@ -88,18 +100,28 @@
     <nav class="perfil-panel-contenido" aria-label="Opciones de usuario">
       <p class="perfil-panel-etiqueta">Cuenta</p>
 
-      <a
-        matButton="text"
-        class="opcion-perfil"
-        routerLink="/perfil"
-        (click)="cerrarMenuPerfil(false)"
-      >
+      <a matButton="text" class="opcion-perfil" routerLink="/panel"
+         (click)="cerrarMenuPerfil(false)">
+        <mat-icon>dashboard</mat-icon>
+        <span>Panel</span>
+        <mat-icon class="icono-final">chevron_right</mat-icon>
+      </a>
+
+      @if (esCliente()) {
+        <a matButton="text" class="opcion-perfil" routerLink="/reservas/mis-reservas"
+           (click)="cerrarMenuPerfil(false)">
+          <mat-icon>event_available</mat-icon>
+          <span>Mis reservas</span>
+          <mat-icon class="icono-final">chevron_right</mat-icon>
+        </a>
+      }
+
+      <a matButton="text" class="opcion-perfil" routerLink="/perfil"
+         (click)="cerrarMenuPerfil(false)">
         <mat-icon>account_circle</mat-icon>
         <span>Ver perfil</span>
         <mat-icon class="icono-final">chevron_right</mat-icon>
       </a>
-
-      <!-- Futuro: Mis reservas, etc. -->
     </nav>
   </div>
 }

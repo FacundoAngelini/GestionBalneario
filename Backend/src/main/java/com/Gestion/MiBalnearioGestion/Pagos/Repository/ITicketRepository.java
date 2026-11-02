@@ -14,4 +14,6 @@ public interface ITicketRepository extends JpaRepository<TicketEntity, Long>, Jp
     Optional<TicketEntity>findByPublicId(UUID publicId);
     boolean existsByPublicId(UUID publicId);
     boolean existsByPagoEntityId(Long pagoId);
+    Optional<TicketEntity> findByPagoEntityId(Long pagoId);
+
 }

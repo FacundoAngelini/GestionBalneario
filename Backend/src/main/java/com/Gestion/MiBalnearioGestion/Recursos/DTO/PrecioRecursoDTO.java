@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.DTO;
 
+import com.Gestion.MiBalnearioGestion.Recursos.Enum.EModalidad;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,10 @@ public class PrecioRecursoDTO {
     @NotNull
     @Min(0)
     private Double precio;
+
+    @Schema(description = "Modalidad de alquiler a la que aplica este precio", example = "DIA")
+    @NotNull
+    private EModalidad modalidad;
 
     @Schema(description = "Fecha a partir de la cual el precio comienza a regir (inclusive)", example = "2026-06-01")
     @NotNull

@@ -55,7 +55,7 @@ public class CarpaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Obtener una carpa por ID", description = "Recupera la información detallada de una carpa específica usando su UUID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Carpa encontrada con éxito"),
@@ -72,7 +72,7 @@ public class CarpaControlador {
 
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar carpas", description = "Obtiene un listado de carpas aplicando filtros avanzados opcionales por número de carpa, pasillo o capacidad.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de carpas obtenido con éxito"),

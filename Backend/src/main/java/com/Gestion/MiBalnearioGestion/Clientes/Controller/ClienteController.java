@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Clientes.Controller;
 
 import com.Gestion.MiBalnearioGestion.Clientes.Service.IClienteService;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteBusquedaDTO;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
 import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioContraseniaRequest;
@@ -47,6 +48,13 @@ public class ClienteController {
             @Parameter(description = "Número telefónico exacto") @RequestParam(required = false) String telefonoIgual,
             @Parameter(description = "Filtrar por estado de la cuenta (true: Activo, false: Inactivo)") @RequestParam(required = false) Boolean estadoIgual) {
         return ResponseEntity.ok(clienteService.listarTodos(nombreIgual, nombreContiene, apellidoIgual, apellidoContiene, dniIgual, emailContiene, telefonoIgual, estadoIgual));
+    }
+
+    @GetMapping("/buscar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
+    @Operation(summary = "Buscar un cliente por DNI", description = "Devuelve solo nombre, apellido y DNI. Lo usa el personal en el mostrador.")
+    public ResponseEntity<ClienteBusquedaDTO> buscarPorDni(@RequestParam Integer dni) {
+        return ResponseEntity.ok(clienteService.buscarPorDni(dni));
     }
 
     @GetMapping("/{id}")

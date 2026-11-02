@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthClient } from '../data-access/auth-client';
 import { form, FormField, FormRoot, disabled } from '@angular/forms/signals';
 import { LoginRequest } from '../data-access/auth-model';
@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { OjoContrasenia } from '../../shared/ojo-contrasenia/ojo-contrasenia';
 
 @Component({
   selector: 'app-login',
@@ -21,17 +22,17 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule],
+    MatProgressSpinnerModule,
+    OjoContrasenia],
   templateUrl: './auth-login.html',
   styleUrl: './auth-form.css',
 })
 export class Login {
   private readonly auth = inject(AuthClient);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly errorMsg = signal('');
-  protected readonly verContrasenia = signal(false);
-
    private readonly loginModel = signal<LoginRequest>({ nombreUsuario: '', contrasenia: '' });
 
   protected readonly loginForm = form(
@@ -47,7 +48,7 @@ export class Login {
           this.errorMsg.set('');
           try {
             await firstValueFrom(this.auth.login(campo().value()));
-            await this.router.navigateByUrl(`/${ROUTE_SEGMENTS.panel}`);
+            await this.router.navigateByUrl(this.destinoTrasLogin());
           } catch (error) {
             this.errorMsg.set(this.mensajeDeError(error));
           }
@@ -63,5 +64,13 @@ export class Login {
       if (error.status === 0) return 'No se pudo conectar con el servidor';
     }
     return 'Ocurrió un error inesperado. Intentá de nuevo';
+  }
+
+    // Vuelve a donde el usuario iba antes de loguearse; si no hay destino válido, al panel
+  private destinoTrasLogin(): string {
+    const destino = this.route.snapshot.queryParamMap.get('returnUrl');
+    // Solo rutas internas, evita redirecciones a sitios ajenos
+    if (destino?.startsWith('/') && !destino.startsWith('//')) return destino;
+    return `/${ROUTE_SEGMENTS.panel}`;
   }
 }

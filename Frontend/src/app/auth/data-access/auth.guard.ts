@@ -3,10 +3,14 @@ import { CanActivateFn, Router } from "@angular/router";
 import { AuthClient } from "./auth-client";
 import { ROUTE_SEGMENTS } from "../../core/constants/route-segments.constants";
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthClient);
   const router = inject(Router);
-  return authService.usuarioLogueado() ? true : router.createUrlTree([`/${ROUTE_SEGMENTS.auth}/${ROUTE_SEGMENTS.login}`]);
+  return authService.usuarioLogueado()
+  ? true
+    : router.createUrlTree([`/${ROUTE_SEGMENTS.auth}/${ROUTE_SEGMENTS.login}`], {
+        queryParams: { returnUrl: state.url },
+      });
 };
 
 export const guestGuard: CanActivateFn = () => {

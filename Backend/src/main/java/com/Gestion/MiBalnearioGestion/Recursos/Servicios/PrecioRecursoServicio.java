@@ -7,8 +7,7 @@ import com.Gestion.MiBalnearioGestion.Recursos.DTO.PrecioRecursoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.PrecioRecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Entity.RecursoEntity;
 import com.Gestion.MiBalnearioGestion.Recursos.Mappers.PrecioRecursoMapper;
-import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.PrecioRecursoRepositorio;
-import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.RecursoRepositorio;
+import com.Gestion.MiBalnearioGestion.Recursos.Repositorios.*;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces.IPrecioRecursoServicio;
 import com.Gestion.MiBalnearioGestion.Recursos.Servicios.Specification.PrecioRecursoSpecification;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +39,8 @@ public class PrecioRecursoServicio implements IPrecioRecursoServicio {
         LocalDate fin = (dto.getFechaCaducada() != null) ? dto.getFechaCaducada() : LocalDate.of(2099, 12, 31); // Por si es vigencia indefinida
 
         boolean seSolapa = precioRecursoRepositorio
-                .existsByRecurso_PublicIdAndFechaVigenciaLessThanEqualAndFechaCaducadaGreaterThanEqual(
-                        dto.getRecursoPublicId(), fin, dto.getFechaVigencia()
+                .existsByRecurso_PublicIdAndModalidadAndFechaVigenciaLessThanEqualAndFechaCaducadaGreaterThanEqual(
+                        dto.getRecursoPublicId(), dto.getModalidad(), fin, dto.getFechaVigencia()
                 );
 
         if (seSolapa) {

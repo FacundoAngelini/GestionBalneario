@@ -27,7 +27,7 @@ public class SectorController {
     private final ISectorService sectorService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar todos los sectores", description = "Obtiene una lista con todos los sectores registrados en el sistema.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de sectores obtenida con éxito"),
@@ -37,7 +37,7 @@ public class SectorController {
         return ResponseEntity.ok(sectorService.listarTodos());
     }
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Buscar un sector por ID", description = "Obtiene los detalles de un sector específico mediante su UUID público.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sector encontrado con éxito"),

@@ -6,5 +6,7 @@ public enum EReservaEstado {
     CANCELADA,
     FINALIZADA,
     RECHAZADA,
+    VENCIDA,
+
 
 }

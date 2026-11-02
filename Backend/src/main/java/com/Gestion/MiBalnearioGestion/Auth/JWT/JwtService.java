@@ -1,5 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Auth.JWT;
 
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -40,12 +42,20 @@ public class JwtService {
         List<String> authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
         claims.put("authorities", authorities);
+
+        // ID público del cliente o empleado: lo usa el frontend para "Mis reservas" y para reservar
+        if (userDetails instanceof CredencialEntity credencial && credencial.getUsuario() != null) {
+            UsuarioEntity usuario = credencial.getUsuario();
+            if (usuario.getCliente() != null) {
+                claims.put("publicId", usuario.getCliente().getPublicId().toString());
+            } else if (usuario.getEmpleado() != null) {
+                claims.put("publicId", usuario.getEmpleado().getPublicId().toString());
+            }
+        }
 
         return buildToken(claims, userDetails, jwtExpiration);
     }
-
     public List<GrantedAuthority> extractAuthorities(String token) {
         Claims claims = extractAllClaims(token);
 

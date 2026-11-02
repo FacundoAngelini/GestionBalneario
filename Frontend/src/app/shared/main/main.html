@@ -1,14 +1,24 @@
-<div class="app-grid-layout">
+<div class="app-grid-layout" [class.sin-aside]="!menu.hayItems()">
   <header class="area-header">
-<!--     boton visible solo para celulares
- -->    <button class="btn-hamburguesa" (click)="toggleMenu()">☰</button>
+    <!-- botón visible solo en celular, y solo si hay menú -->
+    @if (menu.hayItems()) {
+      <button
+        class="btn-hamburguesa"
+        type="button"
+        aria-label="Abrir menú"
+        [attr.aria-expanded]="menuAbierto()"
+        (click)="toggleMenu()"
+      >☰</button>
+    }
     <app-header></app-header>
   </header>
-  
+
   <!-- recibe la clase abierto si es true -->
-  <aside class="area-aside" [class.abierto]="menuAbierto()">
-    <app-aside></app-aside>
-  </aside>
+  @if (menu.hayItems()) {
+    <aside class="area-aside" [class.abierto]="menuAbierto()">
+      <app-aside (navegar)="menuAbierto.set(false)"></app-aside>
+    </aside>
+  }
   
   <main class="area-main" (click)="menuAbierto.set(false)">
     <!--al tocar main, se cierra menu -->
