@@ -16,6 +16,7 @@ import {
   Temporada,
 } from '../../../data-access/recurso-model';
 import { RecursoService } from '../../../data-access/recurso-service';
+import { mensajeAmigable } from '../../../../core/utils/errores';
 
 const NUEVO = 'nuevo'; // valor de editandoId cuando se está agregando un precio
 const ORDEN_MODALIDAD: Modalidad[] = ['DIA', 'QUINCENA', 'MES', 'TEMPORADA'];
@@ -214,8 +215,7 @@ export class PreciosRecurso {
       },
       error: (e: HttpErrorResponse) => {
         this.guardando.set(false);
-        this.errorGuardado.set(e.error?.message ?? 'No se pudo guardar el precio. Intentá de nuevo.');
-      },
+        this.errorGuardado.set(mensajeAmigable(e, 'No se pudo guardar el precio. Intentá de nuevo.'));      },
     });
   }
 }

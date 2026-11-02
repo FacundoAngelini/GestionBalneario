@@ -78,6 +78,10 @@
   z-index: var(--z-overlay);
 }
 
+.area-footer {
+  color: var(--color-texto-sobre-primario);
+}
+
 @media (min-width: 768px) {
   .app-grid-layout {
     grid-template-areas:

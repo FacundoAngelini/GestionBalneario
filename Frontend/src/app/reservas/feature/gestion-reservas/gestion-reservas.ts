@@ -4,7 +4,7 @@ import { form, FormField } from '@angular/forms/signals';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
-import { formatoFechaHora, formatoRango, hoyIso } from '../../../core/utils/fechas';
+import { formatoFecha, formatoFechaHora, formatoRango, hoyIso } from '../../../core/utils/fechas';
 import { formatoPrecio } from '../../../core/utils/moneda';
 import { ETIQUETA_MODALIDAD } from '../../../recursos/data-access/recurso-model';
 import { PendientesReservas } from '../../data-access/pendientes-reservas';
@@ -17,6 +17,7 @@ import {
 } from '../../data-access/reserva-model';
 import { ReservaService } from '../../data-access/reserva-service';
 import { HistorialReserva } from './historial-reservas/historial-reservas';
+import { mensajeAmigable } from '../../../core/utils/errores';
 
 const POR_PAGINA = 20;
 const MIN_MOTIVO = 5;
@@ -24,7 +25,7 @@ const MAX_MOTIVO = 300;
 const ESTADOS: ReservaEstado[] = ['PENDIENTE', 'CONFIRMADA', 'FINALIZADA', 'CANCELADA', 'RECHAZADA', 'VENCIDA'];
 const ESTADOS_COBRABLES: ReservaEstado[] = ['PENDIENTE', 'CONFIRMADA', 'FINALIZADA'];
 
-type Vista = 'PENDIENTES' | 'POR_COBRAR' | 'TODAS';
+type Vista = 'PENDIENTES' | 'POR_COBRAR' | 'INGRESO' | 'TODAS';
 type FiltroEstado = 'TODOS' | ReservaEstado;
 type TipoAccion = 'RECHAZAR' | 'CANCELAR' | 'COBRAR' | 'ANULAR_COBRO';
 
@@ -102,6 +103,29 @@ export class GestionReservas {
       .sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio)),
   );
 
+    // Reservas que eetsna llegando en pendientes o condirmadas que otdavia no terminaron // Reservas que pueden estar llegando: pendientes o confirmadas que todavía no terminaron
+  private readonly vigentes = computed(() => {
+    const hoy = hoyIso();
+    return (this.reservas() ?? []).filter(
+      (r) => ['PENDIENTE', 'CONFIRMADA'].includes(r.estadoReserva) && r.fechaFin >= hoy,
+    );
+  });
+
+  // Las que estan en curso hoy (es lo que se ve sin buscar)
+  protected readonly vigentesHoy = computed(() => {
+    const hoy = hoyIso();
+    return this.vigentes().filter((r) => r.fechaInicio <= hoy);
+  });
+
+  // Con busqueda se encuentra cualquier reserva vigente (por ejemplo, alguien que llega un dia antes)
+  private readonly ingreso = computed(() => {
+    const buscado = this.filtros().texto.trim().toLowerCase();
+    const base = buscado
+      ? this.vigentes().filter((r) => this.textoBusqueda(r).includes(buscado))
+      : this.vigentesHoy();
+    return [...base].sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio));
+  });
+
   private readonly filtradas = computed(() => {
     const { texto, estado } = this.filtros();
     const buscado = texto.trim().toLowerCase();
@@ -117,6 +141,8 @@ export class GestionReservas {
         return this.pendientes();
       case 'POR_COBRAR':
         return this.porCobrar();
+      case 'INGRESO':
+        return this.ingreso();
       case 'TODAS':
         return this.filtradas();
     }
@@ -134,6 +160,15 @@ export class GestionReservas {
     this.reservaService.configuracionPago().subscribe({
       next: (c) => this.descuento.set(c.descuentoEfectivo),
       error: () => this.descuento.set(0), // sin dato, la vista previa no muestra descuento
+    });
+        // Si el contador (que consulta cada minuto) cambia y la lista quedó desfasada, se recarga sola
+    effect(() => {
+      const n = this.contador.cantidad();
+      untracked(() => {
+        if (this.reservas() !== null && !this.cargando() && this.procesando() === null && n !== this.pendientes().length) {
+          this.cargar();
+        }
+      });
     });
     this.cargar();
   }
@@ -223,6 +258,20 @@ export class GestionReservas {
     if (r.cobro || !['CONFIRMADA', 'FINALIZADA'].includes(r.estadoReserva)) return null;
     if (r.estadoReserva === 'FINALIZADA') return 'La reserva terminó sin cobrarse';
     return r.fechaInicio <= hoyIso() ? 'La reserva ya empezó y no está cobrada' : null;
+  }
+
+ /** Lo que ve quien atiende en la entrada: si la reserva puede ingresar hoy. */
+  protected veredicto(r: Reserva): { texto: string; clase: string } | null {
+    if (r.estadoReserva === 'PENDIENTE') {
+      return { texto: 'Todavía no confirmada', clase: 'estado--pendiente' };
+    }
+    if (r.estadoReserva !== 'CONFIRMADA') return null;
+    if (r.fechaInicio > hoyIso()) {
+      return { texto: `Empieza el ${formatoFecha(r.fechaInicio)}`, clase: 'estado--finalizada' };
+    }
+    return r.cobro
+      ? { texto: 'Puede ingresar', clase: 'estado--confirmada' }
+      : { texto: 'Falta cobrar antes de ingresar', clase: 'estado--pendiente' };
   }
 
   private textoBusqueda(r: Reserva): string {
@@ -349,9 +398,7 @@ export class GestionReservas {
     this.cargar(); // el estado pudo haber cambiado (por ejemplo, si venció)
   }
 
-  private mensajeDeError(e: HttpErrorResponse): string {
-    if (e.status === 0) return 'No se pudo conectar con el servidor';
-    if (e.status === 403) return 'No tenés permiso para esta operación. Cerrá sesión y volvé a ingresar.';
-    return e.error?.message ?? 'Ocurrió un error inesperado. Intentá de nuevo';
+   private mensajeDeError(e: HttpErrorResponse): string {
+    return mensajeAmigable(e, 'Ocurrió un error inesperado. Intentá de nuevo');
   }
 }

@@ -19,6 +19,7 @@ import {
 } from '../../data-access/recurso-model';
 import { RecursoService } from '../../data-access/recurso-service';
 import { MAX_PORCENTAJE, MIN_PORCENTAJE } from '../../../core/constants/route-segments.constants';
+import { mensajeAmigable } from '../../../core/utils/errores';
 
 const TIPOS: TipoRecurso[] = ['CARPA', 'SOMBRILLA', 'COCHERA'];
 const MODALIDADES: Modalidad[] = ['DIA', 'QUINCENA', 'MES', 'TEMPORADA'];
@@ -176,6 +177,5 @@ export class AjustePrecios {
     this.confirmando.set(false);
     if (e.status === 0) this.error.set('No se pudo conectar con el servidor');
     else if (e.status === 403) this.error.set('Solo el administrador puede actualizar precios.');
-    else this.error.set(e.error?.message ?? 'No se pudo completar la operación. Intentá de nuevo.');
-  }
+    else this.error.set(mensajeAmigable(e, 'No se pudo completar la operación. Intentá de nuevo.'));  }
 }

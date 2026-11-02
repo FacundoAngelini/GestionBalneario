@@ -36,6 +36,7 @@ import { formatoPrecio, interpretarPrecio } from '../../../core/utils/moneda';
 // Límites de negocio (el backend tiene que aplicar los mismos)
 const MAX_POR_LOTE = 200;
 const MAX_NOMBRE = 25;
+export const MAX_NOMBRE_RECURSO = MAX_NOMBRE + 1 + String(MAX_NUMERO).length;
 
 // Cuánto vale cada modalidad respecto de la inmediata superior.
 // MES depende de la cantidad de meses del rango de fechas (se calcula aparte).

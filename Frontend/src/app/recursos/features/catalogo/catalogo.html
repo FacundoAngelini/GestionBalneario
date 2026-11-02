@@ -20,6 +20,7 @@
 
   <form class="card busqueda" (submit)="enviar($event)" novalidate>
     <h2>¿Cuándo querés venir?</h2>
+    
 
     <div class="busqueda__campos">
       <div class="field">
@@ -74,6 +75,10 @@
     <button type="submit" class="btn btn--primary" [disabled]="!valido() || cargando()">
       @if (cargando()) { Buscando… } @else { Ver disponibilidad }
     </button>
+
+    @if (!valido() && faltante()) {
+      <p class="field__hint" role="status">{{ faltante() }}</p>
+    }
   </form>
 
   @if (errorCarga()) {

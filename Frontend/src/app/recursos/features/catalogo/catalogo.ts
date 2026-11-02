@@ -202,6 +202,17 @@ export class Catalogo {
     () => this.finEfectiva() !== null && !this.errores().entrada && !this.errores().salida,
   );
 
+  protected readonly faltante = computed(() => {
+    const { fechaInicio, fechaFin, modalidad } = this.seleccion.busqueda();
+    if (modalidad === 'DIA') {
+      if (!fechaInicio && !fechaFin) return 'Elegí las fechas de entrada y de salida para ver la disponibilidad.';
+      if (!fechaInicio) return 'Elegí la fecha de entrada.';
+      if (!fechaFin) return 'Elegí la fecha de salida.';
+      return '';
+    }
+    return fechaInicio ? '' : 'Elegí la fecha de entrada para ver la disponibilidad.';
+  });
+
   // Resumen del período seleccionado.
   protected readonly periodoPrevio = computed(() => {
     const fin = this.finEfectiva();

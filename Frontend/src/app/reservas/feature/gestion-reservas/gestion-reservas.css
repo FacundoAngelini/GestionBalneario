@@ -37,6 +37,11 @@
   font-weight: 400;
 }
 
+.veredicto .estado {
+  padding: 0.35rem var(--espacio-4);
+  font-size: 1rem;
+}
+
 @media (min-width: 40rem) {
   .gestion__cabecera {
     grid-template-columns: 1fr auto;

@@ -57,8 +57,7 @@
               }
               @if (r.cobro; as c) {
                 <dt>Pago</dt>
-                <dd>Cobrado el {{ formatoFechaHora(c.fecha) }}</dd>
-              } @else if (r.estadoReserva === 'CONFIRMADA') {
+                <dd>@if (c.fecha) { Cobrado el {{ formatoFechaHora(c.fecha) }} } @else { Cobrado }</dd>              } @else if (r.estadoReserva === 'CONFIRMADA') {
                 <dt>Pago</dt>
                 <dd>Pendiente: se abona en administración</dd>
               }

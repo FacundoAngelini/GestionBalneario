@@ -18,6 +18,7 @@ import {
 import { ReservaService } from '../../data-access/reserva-service';
 import { SeleccionReserva } from '../../data-access/seleccion-reserva';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { mensajeAmigable } from '../../../core/utils/errores';
 
 type Vista = 'ACTIVAS' | 'HISTORIAL';
 
@@ -186,9 +187,7 @@ export class MisReservas {
     this.router.navigateByUrl(`/${ROUTE_SEGMENTS.catalogo}`);
   }
 
-  private mensajeDeError(e: HttpErrorResponse): string {
-    if (e.status === 0) return 'No se pudo conectar con el servidor';
-    if (e.status === 403) return 'No tenés permiso para esta operación. Cerrá sesión y volvé a ingresar.';
-    return e.error?.message ?? 'Ocurrió un error inesperado. Intentá de nuevo';
+   private mensajeDeError(e: HttpErrorResponse): string {
+    return mensajeAmigable(e, 'Ocurrió un error inesperado. Intentá de nuevo');
   }
 }
