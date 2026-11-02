@@ -177,7 +177,7 @@ public class DataLoader implements CommandLineRunner {
                     .dni(99999999)
                     .email("gerente@balneario.com")
                     .sueldo(300000)
-                    .cuit("20999999990")
+                    .cuit("23999999999")
                     .estadoEmpleado(EEstadoEmpleado.ACTIVO)
                     .telefono("2235550001")
                     .direccion(new DireccionEntity("San Martin", 100, "Mar del Plata", "Buenos Aires"))
