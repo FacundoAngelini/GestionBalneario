@@ -3,13 +3,12 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [NgOptimizedImage, RouterLink],
   selector: 'app-inicio',
-  styleUrl: './inicio.css',
+  imports: [NgOptimizedImage, RouterLink],
   templateUrl: './inicio.html',
+  styleUrl: './inicio.css',
 })
 export class Inicio {
-  
   protected readonly accesos = [
     {
       titulo: 'Reservá tu lugar',
