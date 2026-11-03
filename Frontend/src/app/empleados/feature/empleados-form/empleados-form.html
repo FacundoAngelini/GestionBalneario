@@ -1,0 +1,181 @@
+<section class="formulario">
+  <a class="enlace-volver" [routerLink]="id ? ['/empleados', id] : ['/empleados']">← Volver</a>
+  <h1>{{ esAlta ? 'Nuevo empleado' : 'Editar empleado' }}</h1>
+
+  @if (cargando()) {
+    <p role="status">Cargando…</p>
+  }
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+  }
+
+  @if (!cargando() && !errorCarga()) {
+    <form class="formulario__cuerpo" (submit)="guardar($event)" novalidate>
+
+      <section class="card bloque">
+        <h2>Datos personales</h2>
+        <div class="campos">
+          <div class="field">
+            <label class="field__label" for="nombre">Nombre</label>
+            <input id="nombre" type="text" autocomplete="off" class="field__control"
+                   [formField]="f.nombre" [attr.aria-invalid]="!!errores().nombre && modelo().nombre.length > 0">
+            @if (errores().nombre && modelo().nombre.length > 0) { <p class="field__error">{{ errores().nombre }}</p> }
+          </div>
+          <div class="field">
+            <label class="field__label" for="apellido">Apellido</label>
+            <input id="apellido" type="text" autocomplete="off" class="field__control"
+                   [formField]="f.apellido" [attr.aria-invalid]="!!errores().apellido && modelo().apellido.length > 0">
+            @if (errores().apellido && modelo().apellido.length > 0) { <p class="field__error">{{ errores().apellido }}</p> }
+          </div>
+          <div class="field">
+            <label class="field__label" for="dni">DNI</label>
+            <input id="dni" type="number" inputmode="numeric" class="field__control"
+                   [formField]="f.dni" [attr.aria-invalid]="!!errores().dni && modelo().dni !== null">
+            @if (errores().dni && modelo().dni !== null) { <p class="field__error">{{ errores().dni }}</p> }
+          </div>
+          <div class="field">
+            <label class="field__label" for="cuit">CUIT</label>
+            <input id="cuit" type="text" inputmode="numeric" autocomplete="off" class="field__control"
+                   placeholder="11 números, sin guiones"
+                   [formField]="f.cuit" [attr.aria-invalid]="!!errores().cuit && modelo().cuit.length > 0">
+            @if (errores().cuit && modelo().cuit.length > 0) { <p class="field__error">{{ errores().cuit }}</p> }
+          </div>
+          <div class="field campo-ancho">
+            <label class="field__label" for="email">Email</label>
+            <input id="email" type="email" autocomplete="off" class="field__control"
+                   [formField]="f.email" [attr.aria-invalid]="!!errores().email && modelo().email.length > 0">
+            @if (errores().email && modelo().email.length > 0) { <p class="field__error">{{ errores().email }}</p> }
+          </div>
+        </div>
+
+        <div class="fila-telefono">
+          <div class="field">
+            <label class="field__label" for="pais">País</label>
+            <select id="pais" class="field__control" [formField]="f.pais">
+              @for (p of paises; track p.prefijo) {
+                <option [value]="p.prefijo">{{ p.nombre }} (+{{ p.prefijo }})</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="telefono">Teléfono (+{{ paisElegido().prefijo }})</label>
+            <input id="telefono" type="tel" inputmode="numeric" autocomplete="off" class="field__control"
+                   [formField]="f.telefono" [attr.aria-invalid]="!!errores().telefono && modelo().telefono.length > 0">
+            @if (errores().telefono && modelo().telefono.length > 0) {
+              <p class="field__error">{{ errores().telefono }}</p>
+            } @else {
+              <p class="field__hint">{{ paisElegido().ayuda }}. Ej: {{ paisElegido().ejemplo }}</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="card bloque">
+        <h2>Domicilio</h2>
+        <div class="campos">
+          <div class="field">
+            <label class="field__label" for="calle">Calle</label>
+            <input id="calle" type="text" autocomplete="off" class="field__control"
+                   [formField]="f.calle" [attr.aria-invalid]="!!errores().calle && modelo().calle.length > 0">
+            @if (errores().calle && modelo().calle.length > 0) { <p class="field__error">{{ errores().calle }}</p> }
+          </div>
+          <div class="field">
+            <label class="field__label" for="numero">Número</label>
+            <input id="numero" type="number" inputmode="numeric" class="field__control"
+                   [formField]="f.numero" [attr.aria-invalid]="!!errores().numero && modelo().numero !== null">
+            @if (errores().numero && modelo().numero !== null) { <p class="field__error">{{ errores().numero }}</p> }
+          </div>
+          <div class="field">
+            <label class="field__label" for="ciudad">Ciudad</label>
+            <input id="ciudad" type="text" autocomplete="off" class="field__control"
+                   [formField]="f.ciudad" [attr.aria-invalid]="!!errores().ciudad && modelo().ciudad.length > 0">
+            @if (errores().ciudad && modelo().ciudad.length > 0) { <p class="field__error">{{ errores().ciudad }}</p> }
+          </div>
+          <div class="field">
+            <label class="field__label" for="provincia">Provincia</label>
+            <input id="provincia" type="text" autocomplete="off" class="field__control"
+                   [formField]="f.provincia" [attr.aria-invalid]="!!errores().provincia && modelo().provincia.length > 0">
+            @if (errores().provincia && modelo().provincia.length > 0) { <p class="field__error">{{ errores().provincia }}</p> }
+          </div>
+        </div>
+      </section>
+
+      <section class="card bloque">
+        <h2>Datos laborales</h2>
+        <div class="campos">
+          @if (esAlta) {
+            <div class="field">
+              <label class="field__label" for="rol">Rol</label>
+              <select id="rol" class="field__control" [formField]="f.rolSolicitado">
+                <option value="">Elegí un rol</option>
+                @for (r of opcionesRol(); track r.valor) {
+                  <option [value]="r.valor">{{ r.etiqueta }}</option>
+                }
+              </select>
+              <p class="field__hint">El rol no se puede cambiar después.</p>
+            </div>
+          }
+          <div class="field">
+            <label class="field__label" for="sector">Sector</label>
+            <select id="sector" class="field__control" [formField]="f.sectorPublicId">
+              <option value="">Elegí un sector</option>
+              @for (s of sectores(); track s.publicId) {
+                <option [value]="s.publicId">{{ s.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="sueldo">Sueldo ($)</label>
+            <input id="sueldo" type="text" inputmode="decimal" autocomplete="off" class="field__control"
+                   [value]="textoSueldo()" (input)="cambiarSueldo($event)"
+                   [attr.aria-invalid]="!!errores().sueldo && textoSueldo().length > 0">
+            @if (errores().sueldo && textoSueldo().length > 0) { <p class="field__error">{{ errores().sueldo }}</p> }
+          </div>
+        </div>
+      </section>
+
+      @if (esAlta) {
+        <section class="card bloque">
+          <h2>Cuenta de acceso</h2>
+          <div class="campos">
+            <div class="field">
+              <label class="field__label" for="usuario">Nombre de usuario</label>
+              <input id="usuario" type="text" autocomplete="off" class="field__control"
+                     [formField]="f.nombreUsuario" [attr.aria-invalid]="!!errores().usuario && modelo().nombreUsuario.length > 0">
+              @if (errores().usuario && modelo().nombreUsuario.length > 0) { <p class="field__error">{{ errores().usuario }}</p> }
+            </div>
+            <div class="field">
+              <label class="field__label" for="contrasenia">Contraseña inicial</label>
+              <input id="contrasenia" [type]="verContrasenia() ? 'text' : 'password'" autocomplete="new-password"
+                     class="field__control" [formField]="f.contrasenia"
+                     [attr.aria-invalid]="!!errores().contrasenia && modelo().contrasenia.length > 0">
+              @if (errores().contrasenia && modelo().contrasenia.length > 0) {
+                <p class="field__error">{{ errores().contrasenia }}</p>
+              } @else {
+                <p class="field__hint">8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</p>
+              }
+            </div>
+          </div>
+          <label class="casilla">
+            <input type="checkbox" [checked]="verContrasenia()" (change)="verContrasenia.set(!verContrasenia())">
+            <span>Mostrar contraseña</span>
+          </label>
+          <p class="aviso" role="note">
+            Entregale esta contraseña al empleado y recomendale cambiarla en "Mi perfil". No se vuelve a mostrar.
+          </p>
+        </section>
+      }
+
+      @if (errorEnvio()) {
+        <p class="field__error" role="alert">{{ errorEnvio() }}</p>
+      }
+
+      <div class="acciones-reserva">
+        <a class="btn btn--secundario" [routerLink]="id ? ['/empleados', id] : ['/empleados']">Cancelar</a>
+        <button type="submit" class="btn btn--primary" [disabled]="!valido() || enviando()">
+          @if (enviando()) { Guardando… } @else { {{ esAlta ? 'Crear empleado' : 'Guardar cambios' }} }
+        </button>
+      </div>
+    </form>
+  }
+</section>

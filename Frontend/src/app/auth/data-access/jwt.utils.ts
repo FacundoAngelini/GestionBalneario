@@ -3,6 +3,8 @@ export interface JwtPayload {
   exp: number; 
   authorities?: string[];
   publicId?: string; 
+  estadoEmpleado?: string; 
+  rolOriginal?: string; 
 }
 
 export function leerPayload(token: string): JwtPayload | null {

@@ -1,0 +1,39 @@
+<form [formRoot]="formulario" class="perfil-form" [attr.aria-busy]="formulario().submitting()">
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input matInput type="email" autocomplete="email" [formField]="formulario.email" />
+    <mat-error>{{ formulario.email().errors().at(0)?.message }}</mat-error>
+  </mat-form-field>
+
+  <div class="fila-telefono">
+    <mat-form-field>
+      <mat-label>País</mat-label>
+      <mat-select [formField]="formulario.pais">
+        @for (p of paises; track p.prefijo) {
+          <mat-option [value]="p.prefijo">{{ p.nombre }} (+{{ p.prefijo }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Teléfono</mat-label>
+      <span matTextPrefix>+{{ paisElegido().prefijo }}&nbsp;</span>
+      <input matInput type="tel" inputmode="numeric" autocomplete="tel-national" [formField]="formulario.telefono" />
+      <mat-hint>{{ paisElegido().ayuda }}. Ej: {{ paisElegido().ejemplo }}</mat-hint>
+      <mat-error>{{ formulario.telefono().errors().at(0)?.message }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-acciones">
+    <button matButton="outlined" type="button" [disabled]="formulario().submitting()" (click)="cancelado.emit()">
+      Cancelar
+    </button>
+    <button matButton="filled" type="submit">
+      @if (formulario().submitting()) {
+        <mat-spinner diameter="22" aria-label="Guardando cambios" />
+      } @else {
+        Guardar cambios
+      }
+    </button>
+  </div>
+</form>

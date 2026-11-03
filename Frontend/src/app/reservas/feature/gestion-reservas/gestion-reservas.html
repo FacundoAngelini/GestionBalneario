@@ -5,7 +5,9 @@
       <button type="button" class="btn btn--secundario" [disabled]="cargando()" (click)="cargar()">
         @if (cargando()) { Actualizando… } @else { Actualizar }
       </button>
-      <a class="btn btn--primary" routerLink="/reservas/presencial">Nueva reserva presencial</a>
+      @if (!soloLectura()) {
+        <a class="btn btn--primary" routerLink="/reservas/presencial">Nueva reserva presencial</a>
+      }
     </div>
   </header>
 
@@ -19,7 +21,8 @@
 
   @if (reservas() !== null) {
     <div class="vistas" role="group" aria-label="Ver reservas">
-      <button type="button" class="chip" [attr.aria-pressed]="vista() === 'PENDIENTES'"
+     @if (!soloLectura()) {
+     <button type="button" class="chip" [attr.aria-pressed]="vista() === 'PENDIENTES'"
               (click)="vista.set('PENDIENTES')">
         Pendientes ({{ pendientes().length }})
       </button>
@@ -27,6 +30,7 @@
               (click)="vista.set('POR_COBRAR')">
         Por cobrar ({{ porCobrar().length }})
       </button>
+    }
       <button type="button" class="chip" [attr.aria-pressed]="vista() === 'INGRESO'"
               (click)="vista.set('INGRESO')">
         Ingreso ({{ vigentesHoy().length }})
@@ -128,7 +132,8 @@
             @if (aviso) {
               <p class="field__error">{{ aviso }}</p>
             }
-
+                
+            @if (!soloLectura()) {
             @if (enAccion && a) {
               <div class="confirmacion" role="alert">
                 @switch (a.tipo) {
@@ -238,8 +243,10 @@
                 }
               }
             }
-
+          }
+          @if (!soloLectura()) {
             <app-historial-reserva [reservaId]="r.publicId" [huella]="huella(r)" />
+          }
           </li>
         }
       </ul>
