@@ -16,4 +16,6 @@ public interface PrecioRecursoRepositorio extends JpaRepository<PrecioRecursoEnt
     boolean existsByRecurso_PublicIdAndModalidadAndFechaVigenciaLessThanEqualAndFechaCaducadaGreaterThanEqual(
             UUID recursoPublicId, EModalidad modalidad, LocalDate fechaCaducadaNueva, LocalDate fechaVigenciaNueva
     );
+    boolean existsByRecurso_PublicIdAndModalidadAndFechaVigenciaLessThanEqualAndFechaCaducadaGreaterThanEqualAndPublicIdNot(
+            UUID recursoPublicId, EModalidad modalidad, LocalDate hasta, LocalDate desde, UUID excluirPublicId);
 }
