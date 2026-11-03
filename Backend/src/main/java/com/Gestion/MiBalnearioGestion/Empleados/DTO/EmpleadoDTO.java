@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
 import com.Gestion.MiBalnearioGestion.Common.Validacion.CuitValido;
+import com.Gestion.MiBalnearioGestion.Common.Validacion.TelefonoValido;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -37,7 +38,7 @@ public class EmpleadoDTO {
     @NotBlank @CuitValido
     private String cuit;
 
-    @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @Size(min = 9, max = 15)
+    @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @TelefonoValido
     private String telefono;
 
     @Valid @NotNull(message = "La dirección es obligatoria")
