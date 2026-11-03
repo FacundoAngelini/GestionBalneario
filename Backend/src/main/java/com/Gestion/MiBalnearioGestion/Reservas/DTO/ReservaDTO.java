@@ -3,6 +3,7 @@ package com.Gestion.MiBalnearioGestion.Reservas.DTO;
 import com.Gestion.MiBalnearioGestion.Recursos.Enum.EModalidad;
 import com.Gestion.MiBalnearioGestion.Reservas.Entity.EReservaEstado;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -43,7 +44,7 @@ public class ReservaDTO {
 
     @Schema(description = "Lista de UUIDs públicos de los recursos asignados a la reserva",
             example = "[\"e1b2c3d4-5f6a-7b8c-9d0e-1f2a3b4c5d6e\", \"f5e4d3c2-b1a0-9f8e-7d6c-5b4a3f2e1d0c\"]")
-    @NotNull
+    @NotEmpty
     private List<UUID> recursosPublicIds;
 
     @Schema(description = "Estado actual en el que se encuentra la reserva", implementation = EReservaEstado.class)

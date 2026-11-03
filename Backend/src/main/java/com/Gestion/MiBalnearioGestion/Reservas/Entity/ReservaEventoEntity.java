@@ -3,7 +3,9 @@ package com.Gestion.MiBalnearioGestion.Reservas.Entity;
 import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -32,6 +34,7 @@ public class ReservaEventoEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private EAccionReserva accion;
 
     /** Nombre de usuario de quien hizo la acción ("sistema" si fue un proceso automático). */

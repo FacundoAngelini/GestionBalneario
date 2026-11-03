@@ -36,7 +36,6 @@ export class CambiarUsuario implements OnInit {
   private readonly router = inject(Router);
   private readonly dialogos = inject(Dialogos);
 
-  readonly clientePublicId = input.required<string>();
   readonly cancelado = output<void>();
 
   protected readonly usuarioActual = this.auth.nombreUsuario;
@@ -66,8 +65,8 @@ export class CambiarUsuario implements OnInit {
           if (!confirmado) return undefined;
 
           try {
-            await firstValueFrom(
-              this.usuarioClient.cambiarNombreUsuario(this.clientePublicId(), {
+              await firstValueFrom(
+              this.usuarioClient.cambiarNombreUsuario({
                 nuevoNombreUsuario: campos().value().nuevoNombreUsuario.trim(),
               }),
             );

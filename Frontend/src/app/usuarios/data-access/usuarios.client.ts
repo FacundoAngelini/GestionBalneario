@@ -6,6 +6,7 @@ import {
   CambioContraseniaRequest,
   CambioNombreUsuarioRequest,
   PerfilCliente,
+  PerfilEmpleado,
   PerfilUsuario,
 } from './usuario-model';
 
@@ -14,6 +15,7 @@ export class UsuarioClient {
   private readonly http = inject(HttpClient);
   private readonly usuariosUrl = `${environment.apiUrl}/usuarios`;
   private readonly clientesUrl = `${environment.apiUrl}/clientes`;
+  private readonly empleadosUrl = `${environment.apiUrl}/empleados`;
 
   obtenerMiPerfil() {
     return this.http.get<PerfilUsuario>(`${this.usuariosUrl}/me`);
@@ -23,11 +25,15 @@ export class UsuarioClient {
     return this.http.patch<PerfilCliente>(`${this.clientesUrl}/me`, datos);
   }
 
-  cambiarContrasenia(clientePublicId: string, datos: CambioContraseniaRequest) {
-    return this.http.patch<void>(`${this.clientesUrl}/${clientePublicId}/contrasenia`, datos);
+  actualizarMiFichaEmpleado(datos: { email: string; telefono: string }) {
+    return this.http.patch<PerfilEmpleado>(`${this.empleadosUrl}/me`, datos);
   }
 
-  cambiarNombreUsuario(clientePublicId: string, datos: CambioNombreUsuarioRequest) {
-    return this.http.patch<void>(`${this.clientesUrl}/${clientePublicId}/nombre-usuario`, datos);
+  cambiarContrasenia(datos: CambioContraseniaRequest) {
+    return this.http.patch<void>(`${this.usuariosUrl}/me/contrasenia`, datos);
+  }
+
+  cambiarNombreUsuario(datos: CambioNombreUsuarioRequest) {
+    return this.http.patch<void>(`${this.usuariosUrl}/me/nombre-usuario`, datos);
   }
 }

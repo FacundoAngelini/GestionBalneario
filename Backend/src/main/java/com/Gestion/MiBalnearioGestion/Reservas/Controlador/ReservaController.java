@@ -71,7 +71,7 @@ public class ReservaController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or @securityService.esDuenioDeLaReserva(#id)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION', 'CARPERO') or @securityService.esDuenioDeLaReserva(#id)")
     @Operation(summary = "Obtener una reserva específica por ID",
             description = "Permite recuperar los datos de una reserva mediante su UUID público. Accesible por personal autorizado o por el dueño de la reserva.")
     @ApiResponses(value = {
@@ -86,7 +86,7 @@ public class ReservaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION') or (#clientePublicId != null and @securityService.esElPropioCliente(#clientePublicId))")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION', 'CARPERO') or (#clientePublicId != null and @securityService.esElPropioCliente(#clientePublicId))")
     @Operation(summary = "Listar y filtrar reservas",
             description = "Obtiene una lista de reservas que pueden filtrarse de manera opcional por estado, rango de fechas y cliente. Requiere rol ADMIN, ADMINISTRADOR o GERENTE.")
     @ApiResponses(value = {

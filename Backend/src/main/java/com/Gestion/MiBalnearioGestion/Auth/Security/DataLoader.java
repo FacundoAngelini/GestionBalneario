@@ -87,6 +87,15 @@ public class DataLoader implements CommandLineRunner {
         }
 
         // roles del negocio
+        // Roles agregados después de la primera carga (por ejemplo, carpero y administrador)
+        for (Roles r : Roles.values()) {
+            if (rolesRepository.findByRole(r).isEmpty()) rolesRepository.save(new RolesEntity(r));
+        }
+        for (EtipoRol t : EtipoRol.values()) {
+            if (empleadoRolRepository.findByTipoRol(t).isEmpty()) {
+                empleadoRolRepository.save(RolEntity.builder().tipoRol(t).build());
+            }
+        }
         if (empleadoRolRepository.count() == 0) {
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.GERENTE).build());
             empleadoRolRepository.save(RolEntity.builder().tipoRol(EtipoRol.MOZO).build());
@@ -144,7 +153,7 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("Admin supremo creado: admin_supremo / @dmiN2026");
         }
 
-        // hacemos un gerente de  prueba para que al probar sea mas facil
+        // hacemos un gerente de prueba para que al probar sea mas facil
         if (!credentialsRepository.existsByNombreUsuario("gerente_prueba")) {
             UsuarioEntity usuarioGerente = new UsuarioEntity();
             usuarioGerente = usuarioRepository.save(usuarioGerente);
@@ -177,7 +186,7 @@ public class DataLoader implements CommandLineRunner {
                     .dni(99999999)
                     .email("gerente@balneario.com")
                     .sueldo(300000)
-                    .cuit("20999999990")
+                    .cuit("23999999999")
                     .estadoEmpleado(EEstadoEmpleado.ACTIVO)
                     .telefono("2235550001")
                     .direccion(new DireccionEntity("San Martin", 100, "Mar del Plata", "Buenos Aires"))

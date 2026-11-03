@@ -150,6 +150,9 @@ export class PerfilEditar implements OnInit {
     if (estado === 409 && /tel[eé]fono/i.test(mensaje)) {
       return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'Ya existe un cliente con ese teléfono' }];
     }
+    if (estado === 409) {
+      return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'Ya existe un cliente con ese teléfono' }];
+    }
 
     await this.dialogos.avisar(
       'error',

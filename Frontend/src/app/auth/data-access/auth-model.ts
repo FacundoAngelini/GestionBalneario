@@ -28,4 +28,6 @@ export const ETIQUETA_ROL: Record<string, string> = {
   ROLE_REPARTIDOR: 'Repartidor',
   ROLE_EMPLEADO: 'Empleado',
   ROLE_CLIENTE: 'Cliente',
+  ROLE_CARPERO: 'Carpero',
+  ROLE_RESTRINGIDO: 'Acceso restringido',
 };

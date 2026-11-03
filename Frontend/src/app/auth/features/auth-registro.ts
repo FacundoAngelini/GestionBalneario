@@ -155,15 +155,16 @@ export class Registro {
     if (error.status === 409 && mensaje.toLowerCase().includes('email')) {
       return [{ fieldTree: campos.email, kind: 'servidor', message: 'Ya existe un cliente con ese email' }];
     }
-    if (error.status === 403 && mensaje.includes('nombre de usuario')) {
+    if (error.status === 409 && mensaje.includes('nombre de usuario')) {
       return [{ fieldTree: campos.nombreUsuario, kind: 'servidor', message: 'Ese nombre de usuario ya está en uso' }];
     }
     if (error.status === 409 && /tel[eé]fono/i.test(mensaje)) {
       return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'Ya existe un cliente con ese teléfono' }];
     }
-    if (error.status === 403 && mensaje.includes('Acceso Restringido')) {
+        if (error.status === 409) {
       return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'No se pudo registrar: revisá que el teléfono no esté ya registrado' }];
     }
+    
 
     this.errorMsg.set(
       error.status === 0

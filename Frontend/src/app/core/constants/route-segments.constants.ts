@@ -19,6 +19,11 @@ export const ROUTE_SEGMENTS = {
   confirmar: 'confirmar',
   comprobante: 'comprobante',
 
+  //empleados
+  empleados: 'empleados',
+  nuevo: 'nuevo',
+  editar: 'editar',
+
 
   unauthorized: 'no-autorizado'
 } as const;
