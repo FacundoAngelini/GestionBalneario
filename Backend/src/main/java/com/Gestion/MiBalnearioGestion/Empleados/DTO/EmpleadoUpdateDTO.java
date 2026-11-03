@@ -1,66 +1,44 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
+import com.Gestion.MiBalnearioGestion.Common.Validacion.CuitValido;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "DTO de solicitud utilizado para actualizar la información de la ficha de un empleado, sus condiciones laborales o sus asignaciones operativas")
+@Schema(description = "Datos que el administrador o el gerente pueden modificar de un empleado")
 public class EmpleadoUpdateDTO {
 
-    @Schema(description = "Nombres del empleado a actualizar", example = "Juan Carlos")
-    @NotBlank
-    private String nombre;
+    @NotBlank private String nombre;
+    @NotBlank private String apellido;
 
-    @Schema(description = "Apellidos del empleado a actualizar", example = "Pérez")
-    @NotBlank
-    private String apellido;
-
-    @Schema(description = "Documento Nacional de Identidad", example = "34567890")
-    @NotNull
+    @NotNull @Min(value = 1_000_000, message = "El DNI no es válido") @Max(value = 99_999_999, message = "El DNI no es válido")
     private Integer dni;
 
-    @Schema(description = "Correo electrónico actualizado", example = "juan.perez@establecimiento.com")
-    @NotBlank
-    @Email
+    @NotBlank @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email tiene un formato inválido")
     private String email;
 
-    @Schema(description = "Sueldo o remuneración base actualizada", example = "480000.00")
-    @NotNull
+    @NotNull @Positive(message = "El sueldo debe ser mayor a 0")
     private Double sueldo;
 
-    @Schema(description = "Clave Única de Identificación Tributaria (Solo caracteres numéricos)", example = "20345678909")
-    @NotBlank
-    @Pattern(regexp = "^[0-9]+$")
+    @NotBlank @CuitValido
     private String cuit;
 
-    @Schema(description = "Nuevo estado operativo del empleado dentro de la organización", implementation = EEstadoEmpleado.class)
-    @NotNull
-    private EEstadoEmpleado estado;
-
-    @Schema(description = "Número telefónico de contacto actualizado (Solo números)", example = "2235123456")
-    @NotBlank
+    @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @Size(min = 9, max = 15)
     private String telefono;
 
-    @Schema(description = "Datos de localización domiciliaria actualizados")
-    @Valid
-    @NotNull
+    @Valid @NotNull
     private DireccionDTO direccion;
 
-    @Schema(description = "UUID público del nuevo rol de seguridad asignado (null si no se desea modificar)", example = "8a7b6c5d-4e3f-2a1b-0c9d-e8f7d6c5b4a3", nullable = true)
-    private UUID rolPublicId;
-
-    @Schema(description = "UUID público del nuevo sector físico u operativo asignado (null si no se desea modificar)", example = "5e4d3c2b-1a0f-9e8d-7c6b-5a4f3e2d1c0b", nullable = true)
+    @Schema(description = "Nuevo sector (null = no cambiarlo)", nullable = true)
     private UUID sectorPublicId;
 }

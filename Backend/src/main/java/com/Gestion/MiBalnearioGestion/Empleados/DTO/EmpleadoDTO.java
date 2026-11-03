@@ -1,86 +1,51 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
-import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.DTO.AuthRequest;
-import com.Gestion.MiBalnearioGestion.Empleados.Entities.*;
-import com.Gestion.MiBalnearioGestion.Sector.DTO.SectorDTO;
-import com.Gestion.MiBalnearioGestion.Usuarios.DTO.UsuarioDTO;
+import com.Gestion.MiBalnearioGestion.Common.Validacion.CuitValido;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "DTO  para el registro, actualización y consulta detallada de la información del personal del establecimiento")
+@Schema(description = "Datos para dar de alta a un empleado, con su cuenta de acceso")
 public class EmpleadoDTO {
 
-    @Schema(description = "UUID público único del empleado en el sistema", example = "3b2c1d0a-4e5f-6a7b-8c9d-0e1f2a3b4c5d")
-    private UUID IDpublico;
+    @NotBlank private String nombre;
+    @NotBlank private String apellido;
 
-    @Schema(description = "Nombres del empleado", example = "Juan Carlos")
-    @NotBlank
-    private String nombre;
-
-    @Schema(description = "Apellidos del empleado", example = "Pérez")
-    @NotBlank
-    private String apellido;
-
-    @Schema(description = "Documento Nacional de Identidad", example = "34567890")
-    @NotNull
+    @NotNull @Min(value = 1_000_000, message = "El DNI no es válido") @Max(value = 99_999_999, message = "El DNI no es válido")
     private Integer dni;
 
-    @Schema(description = "Correo electrónico institucional o de contacto", example = "juan.perez@establecimiento.com")
-    @NotBlank
-    @Email
+    @NotBlank @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email tiene un formato inválido")
     private String email;
 
-    @Schema(description = "Sueldo o remuneración base asignada", example = "450000.00")
-    @NotNull
+    @NotNull @Positive(message = "El sueldo debe ser mayor a 0")
     private Double sueldo;
 
-    @Schema(description = "Clave Única de Identificación Tributaria (Solo números)", example = "20345678909")
-    @NotBlank
-    @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
-
+    @NotBlank @CuitValido
     private String cuit;
 
-    @Schema(description = "Estado operativo actual del empleado en la empresa (Ej: ACTIVO, LICENCIA, INACTIVO)", implementation = EEstadoEmpleado.class)
-    @NotNull
-    private EEstadoEmpleado estado;
-
-    @Schema(description = "Rol o puesto solicitado durante el proceso de postulación/alta rápida", example = "CAJERO", nullable = true)
-    private String rolSolicitado;
-
-    @Schema(description = "Número telefónico de contacto (Solo números)", example = "2235123456")
-    @Pattern(regexp = "^[0-9]+$", message = "El campo debe contener solo caracteres numéricos")
-    @NotBlank
+    @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @Size(min = 9, max = 15)
     private String telefono;
 
-    @Schema(description = "Datos de localización domiciliaria del empleado")
-    @Valid
-    @NotNull(message = "La direccion no puede estar vacia")
+    @Valid @NotNull(message = "La dirección es obligatoria")
     private DireccionDTO direccion;
 
-    @Schema(description = "Datos de la cuenta de usuario vinculada para accesos generales", nullable = true)
-    private UsuarioDTO usuario;
+    @Schema(description = "Rol de seguridad: ROLE_ADMIN, ROLE_GERENTE, ROLE_ADMINISTRACION, ROLE_CARPERO, ROLE_CAJERO, ROLE_MOZO o ROLE_REPARTIDOR")
+    @NotBlank(message = "El rol es obligatorio")
+    private String rolSolicitado;
 
-    @Schema(description = "Rol de seguridad asignado en el sistema (Spring Security)", nullable = true)
-    private RolDTO rol;
+    @NotNull(message = "El sector es obligatorio")
+    private UUID sectorPublicId;
 
-    @Schema(description = "Sector físico u operativo asignado dentro del complejo (Ej: Cocina, Barra, Carpas)", nullable = true)
-    private SectorDTO sector;
-
-    @Schema(description = "Credenciales iniciales de acceso (Usuario y contraseña) requeridas para dar de alta su cuenta en el sistema de manera simultánea")
-    @Valid
-    @NotNull
-    private AuthRequest credencial;
+    @Valid @NotNull
+    private CredencialInicialDTO credencial;
 }
