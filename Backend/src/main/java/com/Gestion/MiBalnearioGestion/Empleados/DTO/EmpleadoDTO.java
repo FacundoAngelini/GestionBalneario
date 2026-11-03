@@ -1,0 +1,55 @@
+package com.Gestion.MiBalnearioGestion.Empleados.DTO;
+
+import com.Gestion.MiBalnearioGestion.Common.Validacion.CuitValido;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.UUID;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Schema(description = "Datos para dar de alta a un empleado, con su cuenta de acceso")
+public class EmpleadoDTO {
+
+
+    @NotBlank @Size(max = 50, message = "El nombre admite hasta 50 caracteres")
+    private String nombre;
+
+    @NotBlank @Size(max = 50, message = "El apellido admite hasta 50 caracteres")
+    private String apellido;
+
+    @NotNull @Min(value = 1_000_000, message = "El DNI no es válido") @Max(value = 99_999_999, message = "El DNI no es válido")
+    private Integer dni;
+
+    @NotBlank @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email tiene un formato inválido")
+    private String email;
+
+    @NotNull @Positive(message = "El sueldo debe ser mayor a 0")
+    private Double sueldo;
+
+    @NotBlank @CuitValido
+    private String cuit;
+
+    @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @Size(min = 9, max = 15)
+    private String telefono;
+
+    @Valid @NotNull(message = "La dirección es obligatoria")
+    private DireccionDTO direccion;
+
+    @Schema(description = "Rol de seguridad: ROLE_ADMIN, ROLE_GERENTE, ROLE_ADMINISTRACION, ROLE_CARPERO, ROLE_CAJERO, ROLE_MOZO o ROLE_REPARTIDOR")
+    @NotBlank(message = "El rol es obligatorio")
+    private String rolSolicitado;
+
+    @NotNull(message = "El sector es obligatorio")
+    private UUID sectorPublicId;
+
+    @Valid @NotNull
+    private CredencialInicialDTO credencial;
+}

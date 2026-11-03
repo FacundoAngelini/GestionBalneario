@@ -1,0 +1,28 @@
+.auth-layout {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  display: flex;
+  background-color: var(--color-fondo);
+  padding: 1.5rem;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 100%;
+  margin: auto;
+}
+
+@media (min-width: 768px) {
+  .auth-layout {
+    background-image:
+      linear-gradient(rgba(11, 60, 93, 0.4), rgba(11, 60, 93, 0.4)),
+      url('/assets/images/fondo-balneario.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+
+  .auth-container {
+    max-width: 480px;
+  }
+}

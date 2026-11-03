@@ -1,0 +1,66 @@
+
+.ajuste {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 50rem;
+  margin-inline: auto;
+}
+
+/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
+.ajuste :is(h1, h2) {
+  margin-bottom: var(--espacio-2);
+}
+
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+.ajuste__form,
+.ajuste__previa {
+  display: grid;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+/* Tantas columnas como entren (mínimo 12rem): 1 en celular, 2 o 3 en pantallas más anchas */
+.ajuste__campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--espacio-4);
+}
+
+.ajuste__form .btn {
+  width: 100%;
+}
+
+.ejemplos {
+  display: grid;
+  gap: var(--espacio-2);
+  list-style: none;
+  overflow-wrap: anywhere;
+}
+
+.antes {
+  color: var(--color-texto-suave);
+  text-decoration: line-through;
+}
+
+.exito .btn {
+  justify-self: start;
+}
+
+@media (min-width: 40rem) {
+  .ajuste__form,
+  .ajuste__previa {
+    padding: var(--espacio-5);
+  }
+
+  .ajuste__form .btn {
+    width: auto;
+    justify-self: end;
+  }
+}

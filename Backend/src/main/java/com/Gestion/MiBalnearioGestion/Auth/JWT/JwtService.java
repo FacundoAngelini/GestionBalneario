@@ -1,0 +1,154 @@
+package com.Gestion.MiBalnearioGestion.Auth.JWT;
+
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@Service
+public class JwtService {
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshTokenExpiration;
+
+    @Value("${jwt.secret}")
+    private String jwtSecretKey;
+
+    @Value("${jwt.expiration}")
+    private Long jwtExpiration;
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+
+        List<String> authorities = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        // ID público del cliente o empleado: lo usa el frontend para "Mis reservas" y para reservar
+        if (userDetails instanceof CredencialEntity credencial && credencial.getUsuario() != null) {
+            UsuarioEntity usuario = credencial.getUsuario();
+            if (usuario.getCliente() != null) {
+                claims.put("publicId", usuario.getCliente().getPublicId().toString());
+            } else if (usuario.getEmpleado() != null) {
+                EmpleadoEntity empleado = usuario.getEmpleado();
+                claims.put("publicId", empleado.getPublicId().toString());
+                claims.put("estadoEmpleado", empleado.getEstadoEmpleado().name());
+                // Suspendido, de vacaciones o de licencia: entra, pero solo puede ver su perfil y su historial.
+                // Se aplica al iniciar sesión: tarda hasta lo que dura el token en reflejarse.
+                if (empleado.getEstadoEmpleado() != EEstadoEmpleado.ACTIVO) {
+                    authorities.stream().filter(a -> a.startsWith("ROLE_")).findFirst()
+                            .ifPresent(rol -> claims.put("rolOriginal", rol));
+                    authorities = List.of("ROLE_RESTRINGIDO");
+                }
+            }
+        }
+        claims.put("authorities", authorities);
+        return buildToken(claims, userDetails, jwtExpiration);
+    }
+
+    public List<GrantedAuthority> extractAuthorities(String token) {
+        Claims claims = extractAllClaims(token);
+
+        List<?> rawAuthorities = claims.get("authorities", List.class);
+
+        if (rawAuthorities == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        return rawAuthorities.stream()
+                .map(Object::toString)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()))
+                && !isTokenExpired(token)
+                && userDetails.isAccountNonLocked()
+                && userDetails.isEnabled();
+    }
+
+    private String buildToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails,
+            long expiration
+    ) {
+        return Jwts
+                .builder()
+                .claims(extraClaims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInKey())
+                .compact();
+    }
+
+    private SecretKey getSignInKey() {
+        byte[] keyBytes = this.jwtSecretKey.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private boolean isTokenExpired(String token) {
+        Date expiration = extractClaim(token, Claims::getExpiration);
+        return expiration.before(new Date());
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+        return buildToken(claims, userDetails, refreshTokenExpiration);
+    }
+
+    public boolean validateRefreshToken(String refreshToken, UserDetails userDetails) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getSignInKey())
+                    .build()
+                    .parseSignedClaims(refreshToken);
+
+            final String username = extractUsername(refreshToken);
+            return (username.equals(userDetails.getUsername())) && !isTokenExpired(refreshToken);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}
