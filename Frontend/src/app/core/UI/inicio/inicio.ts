@@ -15,7 +15,7 @@ export class Inicio {
       texto: 'Carpas, sombrillas y mesas. Elegí fecha y listo.',
       imagen: '/images/carpas.webp',
       alt: 'Fila de carpas frente al mar',
-      ruta: '/reservas',
+      ruta: '/reservas/mis-reservas',
       cta: 'Reservar',
     },
     {
