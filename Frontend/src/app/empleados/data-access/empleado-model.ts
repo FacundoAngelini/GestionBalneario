@@ -10,6 +10,7 @@ export const ETIQUETA_ESTADO_EMPLEADO: Record<EstadoEmpleado, string> = {
   LICENCIA: 'De licencia',
   SUSPENDIDO: 'Suspendido',
   INACTIVO: 'Dado de baja',
+  
 };
 
 // Clases de color definidas en styles.css
