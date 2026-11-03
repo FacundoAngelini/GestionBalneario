@@ -1,6 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Common.Handlers;
 
-
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.*;
 import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoException;
 import com.Gestion.MiBalnearioGestion.Recursos.Exception.RecursoOcupadoException;
@@ -9,8 +8,8 @@ import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaEncontradaExcepti
 import com.Gestion.MiBalnearioGestion.Usuarios.Exception.CuentaNoEncontradaException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mail.MailException;
@@ -28,219 +27,183 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.stream.Collectors;
+
+/**
+ * Convierte las excepciones en respuestas JSON { status, message, path, timestamp }.
+ * Regla: el mensaje que ve el usuario nunca trae detalles internos (SQL, clases, pilas de error);
+ * esos detalles quedan en el log del servidor.
+ */
+@Slf4j
 @RestControllerAdvice
 public class GlobalExcepcionHandler {
 
-    @ExceptionHandler(EntidadNoEncontradaException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(EntidadNoEncontradaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(404,"La entidad no fue encontrada : "+ ex.getMessage());
+    private ResponseEntity<ErrorResponse> respuesta(int estado, String mensaje, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(estado, mensaje);
         error.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(estado).body(error);
     }
+
+    // ---- No controlados: mensaje genérico, detalle solo en el log ----
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneral(
-                                            Exception ex,
-                                            HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(500, "Error interno del servidor" +ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.internalServerError().body(error);
+    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex, HttpServletRequest request) {
+        log.error("Error no controlado en {}", request.getRequestURI(), ex);
+        return respuesta(500, "Ocurrió un error interno. Intentá de nuevo más tarde.", request);
     }
-
-    @ExceptionHandler(EntidadExistenteException.class)
-    public ResponseEntity<ErrorResponse> handleUserFound(EntidadExistenteException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(409,"La entidad fue encontrada : "+ ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(409).body(error);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handExceptionValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Argumento no valido" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handViolationException(ConstraintViolationException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Error" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(400).body(error);
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handMessageException(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "error de mensaje " + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(400).body(error);
-    }
-
-    @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class})
-    public ResponseEntity<ErrorResponse> handleBadRequestExceptions(Exception ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Los datos enviados son invalidos o estan incompletos" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(403, "No tiene los permisos suficientes" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(403).body(error);
-    }
-
-    @ExceptionHandler(MailException.class)
-    public ResponseEntity<ErrorResponse> handleMailException(MailException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(403, "Error al enviar el mail" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(403).body(error);
-    }
-
-    @ExceptionHandler(ReservaException.class)
-    public ResponseEntity<ErrorResponse> ReservaExceptionHandler(ReservaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Error en la reserva: " + ex.getMessage());
-        return ResponseEntity.status(400).body(error);
-    }
-
-    @ExceptionHandler(ProductoException.class)
-    public ResponseEntity<ErrorResponse> ProductoExceptionHandler (ProductoException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(422, "Producto no disponible" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(422).body(error);
-    }
-
-    @ExceptionHandler(RecursoException.class)
-    public ResponseEntity<ErrorResponse> RecursoExceptionHandler(RecursoException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Error en el recurso" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(400).body(error);
-    }
-
-    @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class, DisabledException.class,
-            LockedException.class})
-    public ResponseEntity<ErrorResponse> handleBadCredentials(Exception ex, HttpServletRequest request
-    ) {
-        String mensajeError = "Usuario o contraseña incorrecta";
-
-        if (ex instanceof org.springframework.security.authentication.DisabledException) {
-            mensajeError = "Esta cuenta ha sido deshabilitada. Contacte al administrador.";
-        }
-        else if (ex instanceof org.springframework.security.authentication.LockedException) {
-            mensajeError = "Esta cuenta se encuentra bloqueada.";
-        }
-
-        ErrorResponse error = new ErrorResponse(401, mensajeError);
-        error.setPath(request.getRequestURI());
-
-        return ResponseEntity.status(401).body(error);
-    }
-
-    @ExceptionHandler(com.mercadopago.exceptions.MPApiException.class)
-    public ResponseEntity<ErrorResponse> handleMPApiException(com.mercadopago.exceptions.MPApiException ex, HttpServletRequest request) {
-        int status = ex.getStatusCode();
-        String detalleError = ex.getApiResponse() != null ? ex.getApiResponse().getContent() : ex.getMessage();
-        ErrorResponse error = new ErrorResponse(status, "Error en la API de Mercado Pago: " + detalleError);
-        error.setPath(request.getRequestURI());
-
-        return ResponseEntity.status(status).body(error);
-    }
-
-    @ExceptionHandler(com.mercadopago.exceptions.MPException.class)
-    public ResponseEntity<ErrorResponse> handleMPException(com.mercadopago.exceptions.MPException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(500, "Error de comunicación con el SDK de Mercado Pago: " + ex.getMessage());
-        error.setPath(request.getRequestURI());
-
-        return ResponseEntity.status(500).body(error);
-    }
-
-    @ExceptionHandler(RecursoOcupadoException.class)
-    public ResponseEntity<ErrorResponse> handleRecursoOcupado(RecursoOcupadoException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(409, "Error de recurso ocupado" + ex.getMessage());
-       errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(409).body(errorResponse) ;
-    }
-
-    @ExceptionHandler(AccionInvalidaException.class)
-    public ResponseEntity<ErrorResponse> handleAccionInvalida(AccionInvalidaException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(422, "No puede realizar esta accion" + ex.getMessage());
-        errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(422).body(errorResponse) ;
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(MethodArgumentTypeMismatchException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(400, "Error de parametro" + ex.getMessage());
-        errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
-    }
-
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handeNotFoud(NoResourceFoundException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(400, "URL mal escrita" + ex.getMessage());
-        errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse) ;
-    }
-
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthentificationError(AuthenticationException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(401, "Error de autentificacion" + ex.getMessage());
-        errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(401).body(errorResponse) ;
-    }
-
-    @ExceptionHandler( DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(403, "Acceso Restringido" + ex.getMessage());
-        errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(403).body(errorResponse) ;
-    }
-
-    @ExceptionHandler( HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest  request) {
-        ErrorResponse errorResponse= new ErrorResponse(405, "Metodo incorrecto" + ex.getMessage());
-        errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(405).body(errorResponse) ;
-    }
-
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(400).body(error);
+        return respuesta(400, ex.getMessage(), request);
+    }
+
+    // ---- Datos de entrada ----
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidacion(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String detalle = ex.getBindingResult().getFieldErrors().stream()
+                .map(f -> f.getField() + ": " + f.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+        return respuesta(400, "Datos inválidos: " + detalle, request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleViolacion(ConstraintViolationException ex, HttpServletRequest request) {
+        String detalle = ex.getConstraintViolations().stream()
+                .map(v -> v.getMessage())
+                .collect(Collectors.joining("; "));
+        return respuesta(400, "Datos inválidos: " + detalle, request);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleCuerpoIlegible(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        log.warn("Cuerpo ilegible en {}: {}", request.getRequestURI(), ex.getMessage());
+        return respuesta(400, "El cuerpo de la solicitud no es válido o tiene un valor que no corresponde", request);
+    }
+
+    @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> handleDatosIncompletos(Exception ex, HttpServletRequest request) {
+        log.warn("Datos inválidos en {}: {}", request.getRequestURI(), ex.getMessage());
+        return respuesta(400, "Los datos enviados son inválidos o están incompletos", request);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTipoParametro(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        return respuesta(400, "El parámetro '" + ex.getName() + "' tiene un valor inválido", request);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingServlet(MissingServletRequestParameterException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Error al mandar los parametros" +ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(400).body(error);
+    public ResponseEntity<ErrorResponse> handleFaltaParametro(MissingServletRequestParameterException ex, HttpServletRequest request) {
+        return respuesta(400, "Falta el parámetro '" + ex.getParameterName() + "'", request);
     }
 
-    @ExceptionHandler(CuentaEncontradaException.class)
-    public ResponseEntity<ErrorResponse> handleCuentaAsociada(CuentaEncontradaException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(403, "Esta cuenta ya esta asociada" +ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(403).body(error);
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRutaInexistente(NoResourceFoundException ex, HttpServletRequest request) {
+        return respuesta(400, "URL mal escrita", request);
     }
 
-    @ExceptionHandler(CuentaNoEncontradaException.class)
-    public ResponseEntity<ErrorResponse> handleCuentaNoEncontrada(CuentaNoEncontradaException ex, HttpServletRequest request){
-        ErrorResponse error = new ErrorResponse(404, "Esta cuenta no se encuentra" + ex.getMessage());
-        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(404).body(error);
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMetodo(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        return respuesta(405, "Método no permitido para esta ruta", request);
+    }
+
+    // ---- Reglas de negocio (los mensajes son intencionales) ----
+
+    @ExceptionHandler(EntidadNoEncontradaException.class)
+    public ResponseEntity<ErrorResponse> handleNoEncontrada(EntidadNoEncontradaException ex, HttpServletRequest request) {
+        return respuesta(404, "La entidad no fue encontrada: " + ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(EntidadExistenteException.class)
+    public ResponseEntity<ErrorResponse> handleExistente(EntidadExistenteException ex, HttpServletRequest request) {
+        return respuesta(409, "La entidad ya existe: " + ex.getMessage(), request);
     }
 
     @ExceptionHandler(DatosInvalidoException.class)
     public ResponseEntity<ErrorResponse> handleDatosInvalidos(DatosInvalidoException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Los datos son invalidos: " + ex.getMessage());        error.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return respuesta(400, "Los datos son inválidos: " + ex.getMessage(), request);
     }
 
+    @ExceptionHandler(ReservaException.class)
+    public ResponseEntity<ErrorResponse> handleReserva(ReservaException ex, HttpServletRequest request) {
+        return respuesta(400, "Error en la reserva: " + ex.getMessage(), request);
+    }
 
+    @ExceptionHandler(RecursoException.class)
+    public ResponseEntity<ErrorResponse> handleRecurso(RecursoException ex, HttpServletRequest request) {
+        return respuesta(400, "Error en el recurso: " + ex.getMessage(), request);
+    }
 
+    @ExceptionHandler(RecursoOcupadoException.class)
+    public ResponseEntity<ErrorResponse> handleRecursoOcupado(RecursoOcupadoException ex, HttpServletRequest request) {
+        return respuesta(409, "Recurso ocupado: " + ex.getMessage(), request);
+    }
 
+    @ExceptionHandler(ProductoException.class)
+    public ResponseEntity<ErrorResponse> handleProducto(ProductoException ex, HttpServletRequest request) {
+        return respuesta(422, "Producto no disponible: " + ex.getMessage(), request);
+    }
 
+    @ExceptionHandler(AccionInvalidaException.class)
+    public ResponseEntity<ErrorResponse> handleAccionInvalida(AccionInvalidaException ex, HttpServletRequest request) {
+        return respuesta(422, "No se puede realizar esta acción: " + ex.getMessage(), request);
+    }
 
+    // ---- Duplicados y conflictos: 409 (antes respondían 403) ----
+
+    @ExceptionHandler(CuentaEncontradaException.class)
+    public ResponseEntity<ErrorResponse> handleCuentaExistente(CuentaEncontradaException ex, HttpServletRequest request) {
+        return respuesta(409, "Esta cuenta ya está asociada: " + ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(CuentaNoEncontradaException.class)
+    public ResponseEntity<ErrorResponse> handleCuentaNoEncontrada(CuentaNoEncontradaException ex, HttpServletRequest request) {
+        return respuesta(404, "Esta cuenta no se encuentra: " + ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleIntegridad(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.warn("Violación de integridad en {}: {}", request.getRequestURI(), ex.getMostSpecificCause().getMessage());
+        return respuesta(409, "No se pudo completar la operación: ya existe un registro con esos datos o el dato está en uso", request);
+    }
+
+    // ---- Seguridad ----
+
+    @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class, DisabledException.class, LockedException.class})
+    public ResponseEntity<ErrorResponse> handleCredenciales(Exception ex, HttpServletRequest request) {
+        String mensaje = "Usuario o contraseña incorrecta";
+        if (ex instanceof DisabledException) mensaje = "Esta cuenta ha sido deshabilitada. Contacte al administrador.";
+        else if (ex instanceof LockedException) mensaje = "Esta cuenta se encuentra bloqueada.";
+        return respuesta(401, mensaje, request);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAutenticacion(AuthenticationException ex, HttpServletRequest request) {
+        return respuesta(401, "Error de autenticación", request);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccesoDenegado(AccessDeniedException ex, HttpServletRequest request) {
+        return respuesta(403, "No tiene los permisos suficientes", request);
+    }
+
+    // ---- Servicios externos ----
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ErrorResponse> handleMail(MailException ex, HttpServletRequest request) {
+        log.error("Error al enviar un correo", ex);
+        return respuesta(403, "No se pudo enviar el correo", request);
+    }
+
+    @ExceptionHandler(com.mercadopago.exceptions.MPApiException.class)
+    public ResponseEntity<ErrorResponse> handleMPApi(com.mercadopago.exceptions.MPApiException ex, HttpServletRequest request) {
+        log.error("Error de la API de Mercado Pago: {}", ex.getApiResponse() != null ? ex.getApiResponse().getContent() : ex.getMessage());
+        return respuesta(502, "No se pudo procesar el pago con Mercado Pago", request);
+    }
+
+    @ExceptionHandler(com.mercadopago.exceptions.MPException.class)
+    public ResponseEntity<ErrorResponse> handleMP(com.mercadopago.exceptions.MPException ex, HttpServletRequest request) {
+        log.error("Error de comunicación con Mercado Pago", ex);
+        return respuesta(502, "No se pudo comunicar con Mercado Pago", request);
+    }
 }
