@@ -53,7 +53,11 @@ export const routes: Routes = [
       },
       {
         path: ROUTE_SEGMENTS.reservas,
-        loadChildren: () => import('./reservas/feature/reservas-routes').then((m) => m.reservasRoutes)
+        loadChildren: () => import('./reservas/reservas-routes').then((m) => m.reservasRoutes)
+      },
+    {
+        path: ROUTE_SEGMENTS.empleados,
+        loadChildren: () => import('./empleados/empleados.routes').then(m => m.empleadosRoutes)
       }
     ]
   },

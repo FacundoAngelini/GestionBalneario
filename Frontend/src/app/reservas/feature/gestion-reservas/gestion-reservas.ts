@@ -18,6 +18,7 @@ import {
 import { ReservaService } from '../../data-access/reserva-service';
 import { HistorialReserva } from './historial-reservas/historial-reservas';
 import { mensajeAmigable } from '../../../core/utils/errores';
+import { AuthClient } from '../../../auth/data-access/auth-client';
 
 const POR_PAGINA = 20;
 const MIN_MOTIVO = 5;
@@ -54,6 +55,10 @@ export class GestionReservas {
   private readonly contador = inject(PendientesReservas);
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthClient);
+
+  // El carpero consulta las reservas, pero no tiene ninguna acción
+  protected readonly soloLectura = computed(() => !this.auth.esPersonal());
 
   protected readonly etiquetaEstado = ETIQUETA_ESTADO_RESERVA;
   protected readonly claseEstado = CLASE_ESTADO;
@@ -68,8 +73,7 @@ export class GestionReservas {
   protected readonly reservas = signal<Reserva[] | null>(null); // null = todavía no cargó
   protected readonly cargando = signal(false);
   protected readonly errorCarga = signal('');
-  protected readonly vista = signal<Vista>('PENDIENTES');
-  protected readonly accion = signal<AccionPendiente | null>(null);
+  protected readonly vista = signal<Vista>(this.auth.esPersonal() ? 'PENDIENTES' : 'INGRESO');  protected readonly accion = signal<AccionPendiente | null>(null);
   protected readonly procesando = signal<string | null>(null); // publicId de la reserva en trámite
   private readonly limite = signal(POR_PAGINA);
   private readonly descuento = signal(0); // % por pago en efectivo (solo para la vista previa)
@@ -157,10 +161,12 @@ export class GestionReservas {
       this.filtros();
       untracked(() => this.limite.set(POR_PAGINA));
     });
-    this.reservaService.configuracionPago().subscribe({
-      next: (c) => this.descuento.set(c.descuentoEfectivo),
-      error: () => this.descuento.set(0), // sin dato, la vista previa no muestra descuento
-    });
+    if (!this.soloLectura()) {
+      this.reservaService.configuracionPago().subscribe({
+        next: (c) => this.descuento.set(c.descuentoEfectivo),
+        error: () => this.descuento.set(0),
+      });
+    }
         // Si el contador (que consulta cada minuto) cambia y la lista quedó desfasada, se recarga sola
     effect(() => {
       const n = this.contador.cantidad();

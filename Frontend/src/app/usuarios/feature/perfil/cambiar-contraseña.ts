@@ -35,7 +35,6 @@ export class CambiarContrasenia {
   private readonly usuarioClient = inject(UsuarioClient);
   private readonly dialogos = inject(Dialogos);
 
-  readonly clientePublicId = input.required<string>();
   readonly cambiada = output<void>();
   readonly cancelada = output<void>();
 
@@ -79,9 +78,9 @@ export class CambiarContrasenia {
 
           try {
             const { contraseniaActual, nuevaContrasenia } = campos().value();
-            await firstValueFrom(
-              this.usuarioClient.cambiarContrasenia(this.clientePublicId(), { contraseniaActual, nuevaContrasenia }),
-            );
+          await firstValueFrom(
+         this.usuarioClient.cambiarContrasenia({ contraseniaActual, nuevaContrasenia }),
+        );
             await this.dialogos.avisar('exito', 'Contraseña actualizada', 'Tu contraseña se cambió correctamente.');
             this.cambiada.emit();
             return undefined;
