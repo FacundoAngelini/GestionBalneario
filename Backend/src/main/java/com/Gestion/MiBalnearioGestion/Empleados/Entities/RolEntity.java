@@ -3,7 +3,9 @@ package com.Gestion.MiBalnearioGestion.Empleados.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +28,7 @@ public class RolEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name="tipo_rol", nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private EtipoRol tipoRol;
 
     @OneToMany(mappedBy = "rol")
