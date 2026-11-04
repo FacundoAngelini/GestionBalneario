@@ -10,93 +10,107 @@
   }
 
   @if (!cargando() && !errorCarga()) {
-    <form class="formulario__cuerpo" (submit)="guardar($event)" novalidate>
+    <form [formRoot]="formulario" class="formulario__cuerpo" [attr.aria-busy]="formulario().submitting()">
 
       <section class="card bloque">
         <h2>Datos personales</h2>
         <div class="campos">
-          <div class="field">
-            <label class="field__label" for="nombre">Nombre</label>
-            <input id="nombre" type="text" autocomplete="off" class="field__control"
-                   [formField]="f.nombre" [attr.aria-invalid]="!!errores().nombre && modelo().nombre.length > 0">
-            @if (errores().nombre && modelo().nombre.length > 0) { <p class="field__error">{{ errores().nombre }}</p> }
-          </div>
-          <div class="field">
-            <label class="field__label" for="apellido">Apellido</label>
-            <input id="apellido" type="text" autocomplete="off" class="field__control"
-                   [formField]="f.apellido" [attr.aria-invalid]="!!errores().apellido && modelo().apellido.length > 0">
-            @if (errores().apellido && modelo().apellido.length > 0) { <p class="field__error">{{ errores().apellido }}</p> }
-          </div>
-          <div class="field">
-            <label class="field__label" for="dni">DNI</label>
-            <input id="dni" type="number" inputmode="numeric" class="field__control"
-                   [formField]="f.dni" [attr.aria-invalid]="!!errores().dni && modelo().dni !== null">
-            @if (errores().dni && modelo().dni !== null) { <p class="field__error">{{ errores().dni }}</p> }
-          </div>
-          <div class="field">
-            <label class="field__label" for="cuit">CUIT</label>
-            <input id="cuit" type="text" inputmode="numeric" autocomplete="off" class="field__control"
-                   placeholder="11 números, sin guiones"
-                   [formField]="f.cuit" [attr.aria-invalid]="!!errores().cuit && modelo().cuit.length > 0">
-            @if (errores().cuit && modelo().cuit.length > 0) { <p class="field__error">{{ errores().cuit }}</p> }
-          </div>
-          <div class="field campo-ancho">
-            <label class="field__label" for="email">Email</label>
-            <input id="email" type="email" autocomplete="off" class="field__control"
-                   [formField]="f.email" [attr.aria-invalid]="!!errores().email && modelo().email.length > 0">
-            @if (errores().email && modelo().email.length > 0) { <p class="field__error">{{ errores().email }}</p> }
-          </div>
+          <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <input matInput type="text" autocomplete="off" [formField]="formulario.nombre" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.nombre().value().length >= limites.nombre">
+            {{ formulario.nombre().value().length }}/{{ limites.nombre }}
+            </mat-hint>
+            <mat-error>{{ formulario.nombre().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Apellido</mat-label>
+            <input matInput type="text" autocomplete="off" [formField]="formulario.apellido" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.apellido().value().length >= limites.apellido">
+            {{ formulario.apellido().value().length }}/{{ limites.apellido }}
+            </mat-hint>
+            <mat-error>{{ formulario.apellido().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>DNI</mat-label>
+            <input matInput type="number" inputmode="numeric" [formField]="formulario.dni" />
+            <mat-error>{{ formulario.dni().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>CUIT</mat-label>
+            <input matInput type="text" inputmode="numeric" autocomplete="off" [formField]="formulario.cuit" />
+            <mat-hint>11 números, sin guiones</mat-hint>
+            <mat-error>{{ formulario.cuit().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="campo-ancho">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" autocomplete="off" [formField]="formulario.email" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.email().value().length >= limites.email">
+            {{ formulario.email().value().length }}/{{ limites.email }}
+            </mat-hint>
+            <mat-error>{{ formulario.email().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
         </div>
 
         <div class="fila-telefono">
-          <div class="field">
-            <label class="field__label" for="pais">País</label>
-            <select id="pais" class="field__control" [formField]="f.pais">
+          <mat-form-field>
+            <mat-label>País</mat-label>
+            <mat-select [formField]="formulario.pais">
               @for (p of paises; track p.prefijo) {
-                <option [value]="p.prefijo">{{ p.nombre }} (+{{ p.prefijo }})</option>
+                <mat-option [value]="p.prefijo">{{ p.nombre }} (+{{ p.prefijo }})</mat-option>
               }
-            </select>
-          </div>
-          <div class="field">
-            <label class="field__label" for="telefono">Teléfono (+{{ paisElegido().prefijo }})</label>
-            <input id="telefono" type="tel" inputmode="numeric" autocomplete="off" class="field__control"
-                   [formField]="f.telefono" [attr.aria-invalid]="!!errores().telefono && modelo().telefono.length > 0">
-            @if (errores().telefono && modelo().telefono.length > 0) {
-              <p class="field__error">{{ errores().telefono }}</p>
-            } @else {
-              <p class="field__hint">{{ paisElegido().ayuda }}. Ej: {{ paisElegido().ejemplo }}</p>
-            }
-          </div>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Teléfono</mat-label>
+            <span matTextPrefix>+{{ paisElegido().prefijo }}&nbsp;</span>
+            <input matInput type="tel" inputmode="numeric" autocomplete="off" [formField]="formulario.telefono" />
+            <mat-hint>{{ paisElegido().ayuda }}. Ej: {{ paisElegido().ejemplo }}</mat-hint>
+            <mat-error>{{ formulario.telefono().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
         </div>
       </section>
 
       <section class="card bloque">
         <h2>Domicilio</h2>
         <div class="campos">
-          <div class="field">
-            <label class="field__label" for="calle">Calle</label>
-            <input id="calle" type="text" autocomplete="off" class="field__control"
-                   [formField]="f.calle" [attr.aria-invalid]="!!errores().calle && modelo().calle.length > 0">
-            @if (errores().calle && modelo().calle.length > 0) { <p class="field__error">{{ errores().calle }}</p> }
-          </div>
-          <div class="field">
-            <label class="field__label" for="numero">Número</label>
-            <input id="numero" type="number" inputmode="numeric" class="field__control"
-                   [formField]="f.numero" [attr.aria-invalid]="!!errores().numero && modelo().numero !== null">
-            @if (errores().numero && modelo().numero !== null) { <p class="field__error">{{ errores().numero }}</p> }
-          </div>
-          <div class="field">
-            <label class="field__label" for="ciudad">Ciudad</label>
-            <input id="ciudad" type="text" autocomplete="off" class="field__control"
-                   [formField]="f.ciudad" [attr.aria-invalid]="!!errores().ciudad && modelo().ciudad.length > 0">
-            @if (errores().ciudad && modelo().ciudad.length > 0) { <p class="field__error">{{ errores().ciudad }}</p> }
-          </div>
-          <div class="field">
-            <label class="field__label" for="provincia">Provincia</label>
-            <input id="provincia" type="text" autocomplete="off" class="field__control"
-                   [formField]="f.provincia" [attr.aria-invalid]="!!errores().provincia && modelo().provincia.length > 0">
-            @if (errores().provincia && modelo().provincia.length > 0) { <p class="field__error">{{ errores().provincia }}</p> }
-          </div>
+          <mat-form-field>
+            <mat-label>Calle</mat-label>
+            <input matInput type="text" autocomplete="off" [formField]="formulario.calle" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.calle().value().length >= limites.calle">
+            {{ formulario.calle().value().length }}/{{ limites.calle }}
+            </mat-hint>
+            <mat-error>{{ formulario.calle().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Número</mat-label>
+            <input matInput type="number" inputmode="numeric" [formField]="formulario.numero" />
+            <mat-error>{{ formulario.numero().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Ciudad</mat-label>
+            <input matInput type="text" autocomplete="off" [formField]="formulario.ciudad" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.ciudad().value().length >= limites.ciudad">
+            {{ formulario.ciudad().value().length }}/{{ limites.ciudad }}
+            </mat-hint>
+            <mat-error>{{ formulario.ciudad().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Provincia</mat-label>
+            <input matInput type="text" autocomplete="off" [formField]="formulario.provincia" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.provincia().value().length >= limites.provincia">
+            {{ formulario.provincia().value().length }}/{{ limites.provincia }}
+            </mat-hint>
+            <mat-error>{{ formulario.provincia().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
         </div>
       </section>
 
@@ -104,62 +118,70 @@
         <h2>Datos laborales</h2>
         <div class="campos">
           @if (esAlta) {
-            <div class="field">
-              <label class="field__label" for="rol">Rol</label>
-              <select id="rol" class="field__control" [formField]="f.rolSolicitado">
-                <option value="">Elegí un rol</option>
+            <mat-form-field>
+              <mat-label>Rol</mat-label>
+              <mat-select [formField]="formulario.rolSolicitado">
                 @for (r of opcionesRol(); track r.valor) {
-                  <option [value]="r.valor">{{ r.etiqueta }}</option>
+                  <mat-option [value]="r.valor">{{ r.etiqueta }}</mat-option>
                 }
-              </select>
-              <p class="field__hint">El rol no se puede cambiar después.</p>
-            </div>
+              </mat-select>
+              <mat-hint>El rol no se puede cambiar después</mat-hint>
+              <mat-error>{{ formulario.rolSolicitado().errors().at(0)?.message }}</mat-error>
+            </mat-form-field>
           }
-          <div class="field">
-            <label class="field__label" for="sector">Sector</label>
-            <select id="sector" class="field__control" [formField]="f.sectorPublicId">
-              <option value="">Elegí un sector</option>
+
+          <mat-form-field>
+            <mat-label>Sector</mat-label>
+            <mat-select [formField]="formulario.sectorPublicId">
               @for (s of sectores(); track s.publicId) {
-                <option [value]="s.publicId">{{ s.nombre }}</option>
+                <mat-option [value]="s.publicId">{{ s.nombre }}</mat-option>
               }
-            </select>
-          </div>
-          <div class="field">
-            <label class="field__label" for="sueldo">Sueldo ($)</label>
-            <input id="sueldo" type="text" inputmode="decimal" autocomplete="off" class="field__control"
-                   [value]="textoSueldo()" (input)="cambiarSueldo($event)"
-                   [attr.aria-invalid]="!!errores().sueldo && textoSueldo().length > 0">
-            @if (errores().sueldo && textoSueldo().length > 0) { <p class="field__error">{{ errores().sueldo }}</p> }
-          </div>
+            </mat-select>
+            <mat-error>{{ formulario.sectorPublicId().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+        
+          <mat-form-field>
+            <mat-label>Sueldo</mat-label>
+            <span matTextPrefix>$&nbsp;</span>
+            <input matInput type="number" inputmode="decimal" [formField]="formulario.sueldo" />
+            <mat-error>{{ formulario.sueldo().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
         </div>
+
+         @if (rolSinPantallas()) {
+            <p class="aviso campo-ancho" role="note">
+              Este rol todavía no tiene pantallas: podrá iniciar sesión y ver su perfil, nada más.
+            </p>
+          }
       </section>
 
       @if (esAlta) {
         <section class="card bloque">
           <h2>Cuenta de acceso</h2>
           <div class="campos">
-            <div class="field">
-              <label class="field__label" for="usuario">Nombre de usuario</label>
-              <input id="usuario" type="text" autocomplete="off" class="field__control"
-                     [formField]="f.nombreUsuario" [attr.aria-invalid]="!!errores().usuario && modelo().nombreUsuario.length > 0">
-              @if (errores().usuario && modelo().nombreUsuario.length > 0) { <p class="field__error">{{ errores().usuario }}</p> }
-            </div>
-            <div class="field">
-              <label class="field__label" for="contrasenia">Contraseña inicial</label>
-              <input id="contrasenia" [type]="verContrasenia() ? 'text' : 'password'" autocomplete="new-password"
-                     class="field__control" [formField]="f.contrasenia"
-                     [attr.aria-invalid]="!!errores().contrasenia && modelo().contrasenia.length > 0">
-              @if (errores().contrasenia && modelo().contrasenia.length > 0) {
-                <p class="field__error">{{ errores().contrasenia }}</p>
-              } @else {
-                <p class="field__hint">8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</p>
-              }
-            </div>
+            <mat-form-field>
+              <mat-label>Nombre de usuario</mat-label>
+              <input matInput type="text" autocomplete="off" [formField]="formulario.nombreUsuario" />
+              <mat-hint align="end" [class.contador-lleno]="formulario.nombreUsuario().value().length >= limites.nombreUsuario">
+               {{ formulario.nombreUsuario().value().length }}/{{ limites.nombreUsuario }}
+              </mat-hint>
+              <mat-error>{{ formulario.nombreUsuario().errors().at(0)?.message }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Contraseña inicial</mat-label>
+              <input
+                matInput
+                [type]="ojo.visible() ? 'text' : 'password'"
+                autocomplete="new-password"
+                [formField]="formulario.contrasenia"
+              />
+              <app-ojo-contrasenia #ojo matSuffix [deshabilitado]="formulario().submitting()" />
+              <mat-hint>8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</mat-hint>
+              <mat-error>{{ formulario.contrasenia().errors().at(0)?.message }}</mat-error>
+            </mat-form-field>
           </div>
-          <label class="casilla">
-            <input type="checkbox" [checked]="verContrasenia()" (change)="verContrasenia.set(!verContrasenia())">
-            <span>Mostrar contraseña</span>
-          </label>
           <p class="aviso" role="note">
             Entregale esta contraseña al empleado y recomendale cambiarla en "Mi perfil". No se vuelve a mostrar.
           </p>
@@ -170,10 +192,36 @@
         <p class="field__error" role="alert">{{ errorEnvio() }}</p>
       }
 
-      <div class="acciones-reserva">
-        <a class="btn btn--secundario" [routerLink]="id ? ['/empleados', id] : ['/empleados']">Cancelar</a>
-        <button type="submit" class="btn btn--primary" [disabled]="!valido() || enviando()">
-          @if (enviando()) { Guardando… } @else { {{ esAlta ? 'Crear empleado' : 'Guardar cambios' }} }
+        @if (problemas().length > 0) {
+        @if (esAlta) {
+          <p class="field__hint" role="status">
+            Completá los campos obligatorios para crear el empleado ({{ problemas().length }}
+            {{ problemas().length === 1 ? 'pendiente' : 'pendientes' }}).
+          </p>
+        } @else {
+          <div class="aviso" role="status">
+            <p><strong>Para guardar, corregí:</strong></p>
+            <ul class="lista-problemas">
+              @for (p of problemas(); track p.etiqueta) {
+                <li><strong>{{ p.etiqueta }}:</strong> {{ p.mensaje }}</li>
+              }
+            </ul>
+            <p class="field__hint">
+              Al editar se revisan todos los datos, no solo los que cambiaste. Los que se cargaron antes de estas
+              validaciones (por ejemplo, un CUIT de prueba) hay que corregirlos para poder guardar.
+            </p>
+          </div>
+        }
+      }
+
+      <div class="acciones-form">
+        <a matButton="outlined" [routerLink]="id ? ['/empleados', id] : ['/empleados']">Cancelar</a>
+        <button matButton="filled" type="submit" [disabled]="formulario().invalid()">
+          @if (formulario().submitting()) {
+            <mat-spinner diameter="22" aria-label="Guardando" />
+          } @else {
+            {{ esAlta ? 'Crear empleado' : 'Guardar cambios' }}
+          }
         </button>
       </div>
     </form>

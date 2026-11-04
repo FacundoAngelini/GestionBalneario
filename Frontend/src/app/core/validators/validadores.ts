@@ -51,3 +51,22 @@ export function contraseniaSegura<TPathKind extends PathKind = PathKind.Root>(
     message: 'Solo se permiten letras, números y los símbolos @ $ ! % * ? &',
   });
 }
+
+/** convierte una función texto → mensaje de error o null , en una regla de signal forms */
+export function regla<TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
+  comprobar: (valor: string) => string | null,
+) {
+  validate(path, ({ value }) => {
+    const mensaje = comprobar(value());
+    return mensaje ? { kind: 'regla', message: mensaje } : undefined;
+  });
+}
+
+/** Largo máximo con el mensaje estándar. */
+export function tope<TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
+  maximo: number,
+) {
+  maxLength(path, maximo, { message: `Máximo ${maximo} caracteres` });
+}
