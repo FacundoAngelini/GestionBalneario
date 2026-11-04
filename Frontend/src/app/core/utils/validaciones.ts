@@ -53,6 +53,11 @@ export const errorCuit = (cuit: string): string | null => {
   if (!/^\d{11}$/.test(v)) return 'El CUIT son 11 números, sin guiones';
   const suma = PESOS_CUIT.reduce((acc, peso, i) => acc + Number(v[i]) * peso, 0);
   const resto = 11 - (suma % 11);
+  if (resto === 10) {
+    return 'Con esos números no puede existir un CUIT. Cambiá el prefijo por 23 y volvé a calcular el último dígito';
+  }
   const verificador = resto === 11 ? 0 : resto;
-  return verificador === Number(v[10]) ? null : 'El CUIT no es válido: el dígito verificador no coincide';
+  return verificador === Number(v[10])
+    ? null
+    : `El CUIT no es válido: con esos números, el último dígito debería ser ${verificador}`;
 };

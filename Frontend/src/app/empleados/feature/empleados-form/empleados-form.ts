@@ -1,30 +1,69 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { form, FormField } from '@angular/forms/signals';
+import {
+  disabled,
+  FieldTree,
+  form,
+  FormField,
+  FormRoot,
+  max,
+  maxLength,
+  min,
+  required,
+  TreeValidationResult,
+  validate,
+} from '@angular/forms/signals';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, of } from 'rxjs';
+import { catchError, firstValueFrom, of } from 'rxjs';
 import { AuthClient } from '../../../auth/data-access/auth-client';
 import { buscarPais, PAISES, separarTelefono } from '../../../core/constants/paises.constants';
 import { mensajeAmigable } from '../../../core/utils/errores';
-import { formatoNumero, interpretarPrecio } from '../../../core/utils/moneda';
-import {
-  errorContrasenia,
-  errorCuit,
-  errorEmail,
-  errorEntero,
-  errorTelefono,
-  esNumero,
-} from '../../../core/utils/validaciones';
+import { errorContrasenia, errorCuit, errorEmail } from '../../../core/utils/validaciones';
+import { noBlanco, regla, telefonoSegunPais, tope } from '../../../core/validators/validadores';
 import { Sector } from '../../../recursos/data-access/recurso-model';
 import { RecursoService } from '../../../recursos/data-access/recurso-service';
+import { OjoContrasenia } from '../../../shared/ojo-contrasenia/ojo-contrasenia';
 import { EmpleadoUpdateRequest, ROLES_ALTA } from '../../data-access/empleado-model';
 import { EmpleadoService } from '../../data-access/empleado-service';
+import { LIMITES } from '../../../core/constants/limites.constants';
+
+interface EmpleadoFormModelo {
+  nombre: string;
+  apellido: string;
+  dni: number | null;
+  cuit: string;
+  email: string;
+  pais: string;
+  telefono: string;
+  sueldo: number | null;
+  calle: string;
+  numero: number | null;
+  ciudad: string;
+  provincia: string;
+  sectorPublicId: string;
+  rolSolicitado: string;
+  nombreUsuario: string;
+  contrasenia: string;
+}
 
 @Component({
   selector: 'app-empleado-form',
-  imports: [FormField, RouterLink],
+  imports: [
+    FormRoot,
+    FormField,
+    RouterLink,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    OjoContrasenia,
+  ],
   templateUrl: './empleados-form.html',
   styleUrl: './empleados-form.css',
 })
@@ -34,7 +73,9 @@ export class EmpleadoForm {
   private readonly auth = inject(AuthClient);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  protected readonly limites = LIMITES;
 
+  // Sin id en la ruta es un alta; con id, una edición
   protected readonly id = inject(ActivatedRoute).snapshot.paramMap.get('id');
   protected readonly esAlta = this.id === null;
   protected readonly paises = PAISES;
@@ -44,21 +85,26 @@ export class EmpleadoForm {
     { initialValue: [] as Sector[] },
   );
 
+  // El administrador crea cualquier rol; el gerente, solo los de menor rango
   protected readonly opcionesRol = computed(() =>
     ROLES_ALTA.filter((r) => !r.soloAdmin || this.auth.esAdmin()),
   );
 
-  protected readonly modelo = signal({
+  protected readonly cargando = signal(!this.esAlta);
+  protected readonly errorCarga = signal('');
+  protected readonly errorEnvio = signal('');
+
+  private readonly modelo = signal<EmpleadoFormModelo>({
     nombre: '',
     apellido: '',
-    dni: null as number | null,
+    dni: null,
     cuit: '',
     email: '',
     pais: '54',
     telefono: '',
-    sueldo: null as number | null,
+    sueldo: null,
     calle: '',
-    numero: null as number | null,
+    numero: null,
     ciudad: '',
     provincia: '',
     sectorPublicId: '',
@@ -66,41 +112,138 @@ export class EmpleadoForm {
     nombreUsuario: '',
     contrasenia: '',
   });
-  protected readonly f = form(this.modelo);
-  protected readonly textoSueldo = signal(''); 
-  protected readonly verContrasenia = signal(false);
-
-  protected readonly cargando = signal(!this.esAlta);
-  protected readonly enviando = signal(false);
-  protected readonly errorCarga = signal('');
-  protected readonly errorEnvio = signal('');
 
   protected readonly paisElegido = computed(() => buscarPais(this.modelo().pais) ?? PAISES[0]);
 
-  protected readonly errores = computed(() => {
-    const m = this.modelo();
-    const vacio = (valor: string, mensaje: string) => (valor.trim() ? null : mensaje);
+    // Cajero, mozo y repartidor se pueden crear, pero todavía no tienen pantallas
+  protected readonly rolSinPantallas = computed(() =>
+    ['ROLE_CAJERO', 'ROLE_MOZO', 'ROLE_REPARTIDOR'].includes(this.modelo().rolSolicitado),
+  );
 
-    return {
-      nombre: vacio(m.nombre, 'El nombre es obligatorio'),
-      apellido: vacio(m.apellido, 'El apellido es obligatorio'),
-      dni: errorEntero(m.dni, 1_000_000, 99_999_999, 'El DNI debe ser un número válido (7 u 8 dígitos)', 'El DNI es obligatorio'),
-      cuit: errorCuit(m.cuit),
-      email: errorEmail(m.email),
-      telefono: errorTelefono(m.pais, m.telefono),
-      sueldo: !esNumero(m.sueldo) ? 'Ingresá el sueldo' : m.sueldo <= 0 ? 'Tiene que ser mayor a 0' : null,
-      calle: vacio(m.calle, 'La calle es obligatoria'),
-      numero: errorEntero(m.numero, 0, 99_999, 'El número de la calle no es válido', 'Ingresá el número de la calle'),
-      ciudad: vacio(m.ciudad, 'La ciudad es obligatoria'),
-      provincia: vacio(m.provincia, 'La provincia es obligatoria'),
-      sector: m.sectorPublicId ? null : 'Elegí un sector',
-      // Solo en el alta
-      rol: this.esAlta && !m.rolSolicitado ? 'Elegí un rol' : null,
-      usuario: this.esAlta ? vacio(m.nombreUsuario, 'El nombre de usuario es obligatorio') : null,
-      contrasenia: this.esAlta ? errorContrasenia(m.contrasenia) : null,
-    };
+    // Qué campos impiden guardar, también los que vienen cargados y no se tocaron
+  protected readonly problemas = computed(() => {
+    const f = this.formulario;
+    const campos: { etiqueta: string; errores: () => readonly { message?: string }[] }[] = [
+      { etiqueta: 'Nombre', errores: () => f.nombre().errors() },
+      { etiqueta: 'Apellido', errores: () => f.apellido().errors() },
+      { etiqueta: 'DNI', errores: () => f.dni().errors() },
+      { etiqueta: 'CUIT', errores: () => f.cuit().errors() },
+      { etiqueta: 'Email', errores: () => f.email().errors() },
+      { etiqueta: 'Teléfono', errores: () => f.telefono().errors() },
+      { etiqueta: 'Calle', errores: () => f.calle().errors() },
+      { etiqueta: 'Número de la calle', errores: () => f.numero().errors() },
+      { etiqueta: 'Ciudad', errores: () => f.ciudad().errors() },
+      { etiqueta: 'Provincia', errores: () => f.provincia().errors() },
+      { etiqueta: 'Sector', errores: () => f.sectorPublicId().errors() },
+      { etiqueta: 'Sueldo', errores: () => f.sueldo().errors() },
+      { etiqueta: 'Rol', errores: () => f.rolSolicitado().errors() },
+      { etiqueta: 'Nombre de usuario', errores: () => f.nombreUsuario().errors() },
+      { etiqueta: 'Contraseña', errores: () => f.contrasenia().errors() },
+    ];
+    return campos
+      .map((c) => ({ etiqueta: c.etiqueta, mensaje: c.errores().at(0)?.message ?? '' }))
+      .filter((p) => p.mensaje !== '');
   });
-  protected readonly valido = computed(() => Object.values(this.errores()).every((e) => e === null));
+
+  protected readonly formulario = form(
+    this.modelo,
+    (campos) => {
+      noBlanco(campos.nombre, 'El nombre es obligatorio');
+      tope(campos.nombre, LIMITES.nombre);
+      noBlanco(campos.apellido, 'El apellido es obligatorio');
+      tope(campos.apellido, LIMITES.apellido);
+
+      required(campos.dni, { message: 'El DNI es obligatorio' });
+      min(campos.dni, 1_000_000, { message: 'El DNI debe ser un número válido' });
+      max(campos.dni, 99_999_999, { message: 'El DNI es demasiado grande' });
+
+      regla(campos.cuit, errorCuit);
+      regla(campos.email, errorEmail);
+      tope(campos.email, LIMITES.email);
+      telefonoSegunPais(campos.telefono, campos.pais);
+
+      required(campos.sueldo, { message: 'Ingresá el sueldo' });
+      min(campos.sueldo, 0.01, { message: 'El sueldo debe ser mayor a 0' });
+      max(campos.sueldo, 999_999_999, { message: 'El sueldo es demasiado grande' });
+
+      noBlanco(campos.calle, 'La calle es obligatoria');
+      tope(campos.calle, LIMITES.calle);
+      required(campos.numero, { message: 'Ingresá el número de la calle' });
+      min(campos.numero, 0, { message: 'El número de la calle no es válido' });
+      max(campos.numero, 15000, { message: 'El número de la calle es demasiado grande' });
+      noBlanco(campos.ciudad, 'La ciudad es obligatoria');
+      tope(campos.ciudad, LIMITES.ciudad);
+      noBlanco(campos.provincia, 'La provincia es obligatoria');
+      tope(campos.provincia, LIMITES.provincia);
+
+      noBlanco(campos.sectorPublicId, 'Elegí un sector');
+
+      // Solo en el alta: rol, usuario y contraseña inicial
+      validate(campos.rolSolicitado, ({ value }) =>
+        this.esAlta && !value() ? { kind: 'requerido', message: 'Elegí un rol' } : undefined,
+      );
+      validate(campos.nombreUsuario, ({ value }) =>
+        this.esAlta && value().trim() === ''
+          ? { kind: 'requerido', message: 'El nombre de usuario es obligatorio' }
+          : undefined,
+      );
+      tope(campos.nombreUsuario, LIMITES.nombreUsuario);
+      validate(campos.contrasenia, ({ value }) => {
+        const mensaje = this.esAlta ? errorContrasenia(value()) : null;
+        return mensaje ? { kind: 'clave', message: mensaje } : undefined;
+      });
+
+      // Mientras se envía, se bloquean todos los campos
+      disabled(campos, { when: ({ state }) => state.submitting() });
+    },
+    {
+      submission: {
+        action: async (campos) => {
+          this.errorEnvio.set('');
+          const m = campos().value();
+          const datos: EmpleadoUpdateRequest = {
+            nombre: m.nombre.trim(),
+            apellido: m.apellido.trim(),
+            dni: Number(m.dni),
+            email: m.email.trim(),
+            sueldo: Number(m.sueldo),
+            cuit: m.cuit.trim(),
+            telefono: m.pais + m.telefono.trim(),
+            direccion: {
+              calle: m.calle.trim(),
+              numero: Number(m.numero),
+              ciudad: m.ciudad.trim(),
+              provincia: m.provincia.trim(),
+            },
+            sectorPublicId: m.sectorPublicId,
+          };
+
+          try {
+            const empleado = await firstValueFrom(
+              this.id
+                ? this.empleadoService.actualizar(this.id, datos)
+                : this.empleadoService.crear({
+                    ...datos,
+                    rolSolicitado: m.rolSolicitado,
+                    credencial: { nombreUsuario: m.nombreUsuario.trim(), contrasenia: m.contrasenia },
+                  }),
+            );
+            this.snackBar.open(
+              this.esAlta
+                ? 'Empleado creado. Entregale su contraseña y recomendale cambiarla en "Mi perfil".'
+                : 'Cambios guardados',
+              'Cerrar',
+              { duration: this.esAlta ? 10000 : 5000 },
+            );
+            await this.router.navigate(['/empleados', empleado.publicId]);
+            return undefined;
+          } catch (error) {
+            return this.manejarError(error, campos);
+          }
+        },
+      },
+    },
+  );
 
   constructor() {
     if (this.id) this.cargarFicha(this.id);
@@ -131,7 +274,6 @@ export class EmpleadoForm {
           provincia: e.direccion?.provincia ?? '',
           sectorPublicId: e.sector?.publicId ?? '',
         }));
-        this.textoSueldo.set(e.sueldo !== null ? formatoNumero(e.sueldo) : '');
         this.cargando.set(false);
       },
       error: (e: HttpErrorResponse) => {
@@ -143,62 +285,29 @@ export class EmpleadoForm {
     });
   }
 
-  protected cambiarSueldo(evento: Event): void {
-    const input = evento.target as HTMLInputElement;
-    const { texto, valor } = interpretarPrecio(input.value);
-    input.value = texto;
-    this.textoSueldo.set(texto);
-    this.modelo.update((m) => ({ ...m, sueldo: valor }));
-  }
+  // Traduce los errores del backend a mensajes en el campo que corresponde
+  private manejarError(error: unknown, campos: FieldTree<EmpleadoFormModelo>): TreeValidationResult {
+    if (!(error instanceof HttpErrorResponse)) {
+      this.errorEnvio.set('Ocurrió un error inesperado. Intentá de nuevo');
+      return undefined;
+    }
+    const mensaje = String(error.error?.message ?? '');
 
-  protected guardar(evento: Event): void {
-    evento.preventDefault();
-    if (!this.valido() || this.enviando()) return;
-
-    const m = this.modelo();
-    const datos: EmpleadoUpdateRequest = {
-      nombre: m.nombre.trim(),
-      apellido: m.apellido.trim(),
-      dni: Number(m.dni),
-      email: m.email.trim(),
-      sueldo: Number(m.sueldo),
-      cuit: m.cuit.trim(),
-      telefono: m.pais + m.telefono.trim(),
-      direccion: {
-        calle: m.calle.trim(),
-        numero: Number(m.numero),
-        ciudad: m.ciudad.trim(),
-        provincia: m.provincia.trim(),
-      },
-      sectorPublicId: m.sectorPublicId,
-    };
-
-    const peticion = this.id
-      ? this.empleadoService.actualizar(this.id, datos)
-      : this.empleadoService.crear({
-          ...datos,
-          rolSolicitado: m.rolSolicitado,
-          credencial: { nombreUsuario: m.nombreUsuario.trim(), contrasenia: m.contrasenia },
-        });
-
-    this.enviando.set(true);
-    this.errorEnvio.set('');
-    peticion.subscribe({
-      next: (empleado) => {
-        this.enviando.set(false);
-        this.snackBar.open(
-          this.esAlta
-            ? 'Empleado creado. Entregale su contraseña y recomendale cambiarla en "Mi perfil".'
-            : 'Cambios guardados',
-          'Cerrar',
-          { duration: this.esAlta ? 10000 : 5000 },
-        );
-        void this.router.navigate(['/empleados', empleado.publicId]);
-      },
-      error: (e: HttpErrorResponse) => {
-        this.enviando.set(false);
-        this.errorEnvio.set(mensajeAmigable(e, 'No se pudieron guardar los datos. Intentá de nuevo.'));
-      },
-    });
+    if (error.status === 409) {
+      if (/DNI/i.test(mensaje)) {
+        return [{ fieldTree: campos.dni, kind: 'servidor', message: 'Ya existe un empleado con ese DNI' }];
+      }
+      if (/email/i.test(mensaje)) {
+        return [{ fieldTree: campos.email, kind: 'servidor', message: 'Ya existe un empleado con ese email' }];
+      }
+      if (/CUIT/i.test(mensaje)) {
+        return [{ fieldTree: campos.cuit, kind: 'servidor', message: 'Ya existe un empleado con ese CUIT' }];
+      }
+      if (/nombre de usuario/i.test(mensaje)) {
+        return [{ fieldTree: campos.nombreUsuario, kind: 'servidor', message: 'Ese nombre de usuario ya está en uso' }];
+      }
+    }
+    this.errorEnvio.set(mensajeAmigable(error, 'No se pudieron guardar los datos. Intentá de nuevo.'));
+    return undefined;
   }
 }

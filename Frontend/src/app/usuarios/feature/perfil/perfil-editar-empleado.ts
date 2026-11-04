@@ -6,6 +6,7 @@ import {
   form,
   FormField,
   FormRoot,
+  maxLength,
   pattern,
   TreeValidationResult,
 } from '@angular/forms/signals';
@@ -15,10 +16,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { firstValueFrom } from 'rxjs';
 import { buscarPais, PAISES, separarTelefono } from '../../../core/constants/paises.constants';
-import { noBlanco, telefonoSegunPais } from '../../../core/validators/validadores';
+import { noBlanco, telefonoSegunPais, tope } from '../../../core/validators/validadores';
 import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 import { UsuarioClient } from '../../data-access/usuarios.client';
 import { PerfilEmpleado } from '../../data-access/usuario-model';
+import { LIMITES } from '../../../core/constants/limites.constants';
 
 interface EditarEmpleadoForm {
   email: string;
@@ -43,6 +45,8 @@ export class PerfilEditarEmpleado implements OnInit {
 
   protected readonly paises = PAISES;
 
+  protected readonly limites = LIMITES;
+
   private readonly modelo = signal<EditarEmpleadoForm>({ email: '', pais: PAISES[0].prefijo, telefono: '' });
 
   protected readonly paisElegido = computed(() => buscarPais(this.modelo().pais) ?? PAISES[0]);
@@ -57,6 +61,7 @@ export class PerfilEditarEmpleado implements OnInit {
     this.modelo,
     (campos) => {
       noBlanco(campos.email, 'El email es obligatorio');
+      tope(campos.email, LIMITES.email);
       pattern(campos.email, /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/, {
         message: 'Formato inválido: en minúsculas y con dominio de 2 o 3 letras (ej: nombre@correo.com)',
       });

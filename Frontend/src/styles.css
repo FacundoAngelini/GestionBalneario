@@ -463,6 +463,12 @@ button.chip[aria-pressed='true']:hover:not(:disabled) {
   padding: var(--espacio-4);
 }
 
+/* Contador de caracteres (x/máximo) debajo de un campo. Se pone rojo al llegar al límite */
+.mat-mdc-form-field .mat-mdc-form-field-hint.contador-lleno {
+  color: var(--color-error);
+  font-weight: 700;
+}
+
 @media (min-width: 40rem) {
   .reserva {
     padding: var(--espacio-5);

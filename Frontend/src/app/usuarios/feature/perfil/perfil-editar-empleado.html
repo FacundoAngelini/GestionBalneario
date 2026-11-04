@@ -2,6 +2,9 @@
   <mat-form-field>
     <mat-label>Email</mat-label>
     <input matInput type="email" autocomplete="email" [formField]="formulario.email" />
+    <mat-hint align="end" [class.contador-lleno]="formulario.email().value().length >= limites.email">
+    {{ formulario.email().value().length }}/{{ limites.email }}
+    </mat-hint>
     <mat-error>{{ formulario.email().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 

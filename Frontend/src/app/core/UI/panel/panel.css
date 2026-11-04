@@ -14,6 +14,10 @@
   display: grid;
   gap: var(--espacio-3);
   justify-items: start;
+  align-content: start; 
+}
+.panel .card .acciones-panel {
+  margin-top: auto; 
 }
 
 .acciones-panel {
@@ -22,9 +26,17 @@
   width: 100%;
 }
 
+.grilla-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  align-items: stretch; 
+  gap: var(--espacio-4);
+}
+
 @media (min-width: 40rem) {
   .acciones-panel {
     display: flex;
+    flex-wrap: wrap;
     width: auto;
   }
 }
