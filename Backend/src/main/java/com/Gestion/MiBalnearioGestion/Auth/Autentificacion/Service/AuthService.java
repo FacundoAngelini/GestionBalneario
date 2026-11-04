@@ -11,7 +11,9 @@ import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
 import com.Gestion.MiBalnearioGestion.Clientes.Entity.ClienteEntity;
+import com.Gestion.MiBalnearioGestion.Clientes.Entity.EAccionCliente;
 import com.Gestion.MiBalnearioGestion.Clientes.Repository.ClientesRepository;
+import com.Gestion.MiBalnearioGestion.Clientes.Service.ClienteAuditoria;
 import com.Gestion.MiBalnearioGestion.Common.Email.EmailService;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.DatosInvalidoException;
 import com.Gestion.MiBalnearioGestion.Common.Exepciones.EntidadExistenteException;
@@ -48,6 +50,7 @@ public class AuthService implements IAuthService {
     private final ClientesRepository clientesRepository;
     private final EmailService emailService;
     private final TokenRevocadoServicio tokenRevocado;
+    private final ClienteAuditoria clienteAuditoria;
 
     @Transactional
     @Override
@@ -118,6 +121,7 @@ public class AuthService implements IAuthService {
         usuarioRepository.save(nuevoUsuario);
         credentialsRepository.save(nuevaCredencial);
         clientesRepository.save(nuevoCliente);
+        clienteAuditoria.registrarComo(nuevoCliente, EAccionCliente.ALTA, request.getNombreUsuario(), null, "Registro propio");
 
         emailService.BienvenidaClienteRegistro(request)
                 .thenRun(() -> log.info("Email de confirmación de pago enviado exitosamente a: {}", request.getEmail()))
