@@ -1,0 +1,7 @@
+.producto-form { display: grid; gap: 1rem; max-width: 28rem; margin: 0 auto; padding: 1rem; }
+.campo { display: grid; gap: 0.25rem; }
+input[type='text'], input[type='number'], select { padding: 0.5rem; font: inherit; }
+.check { display: flex; gap: 0.5rem; align-items: center; }
+.error { color: #b00020; }
+.exito { color: #1b7f3b; }
+button { padding: 0.6rem 1rem; font: inherit; cursor: pointer; }
