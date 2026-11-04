@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
 import { formatoFecha, formatoFechaHora, formatoRango, hoyIso } from '../../../core/utils/fechas';
 import { formatoPrecio } from '../../../core/utils/moneda';
@@ -177,6 +177,13 @@ export class GestionReservas {
       });
     });
     this.cargar();
+
+        // Si se llega desde la ficha de un cliente, se busca directamente en "Todas"
+    const buscar = inject(ActivatedRoute).snapshot.queryParamMap.get('buscar');
+    if (buscar) {
+      this.filtros.update((f) => ({ ...f, texto: buscar }));
+      this.vista.set('TODAS');
+    }
   }
 
   protected cargar(): void {

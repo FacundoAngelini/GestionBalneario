@@ -1,5 +1,4 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -23,13 +22,10 @@ import {
   TipoRecurso,
 } from '../../data-access/recurso-model';
 import { RecursoService } from '../../data-access/recurso-service';
-import {
-  DatosDialogoResultado,
-  DialogoResultado,
-  RespuestaDialogo,
-} from '../../../shared/dialogo-resultado/dialogo-resultado';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
 import { formatoPrecio, interpretarPrecio } from '../../../core/utils/moneda';
+import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
+import { mensajeAmigable } from '../../../core/utils/errores';
 
 
 
@@ -90,7 +86,7 @@ const modeloInicial = () => ({
 export class CargaMasiva {
   private readonly recursoService = inject(RecursoService);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialogos = inject(Dialogos);
   private readonly router = inject(Router);
 
   protected readonly sectores = toSignal(
@@ -323,41 +319,37 @@ protected guardar(evento: Event): void {
   if (!this.listo() || this.enviando()) return;
 
   this.enviando.set(true);
-    this.recursoService.crearLote(this.armarPeticion()).subscribe({
+        this.recursoService.crearLote(this.armarPeticion()).subscribe({
       next: (r) => {
         this.enviando.set(false);
-        this.mostrarResultado(r.creados);
+        void this.mostrarResultado(r.creados);
       },
       error: (e: HttpErrorResponse) => {
         this.enviando.set(false);
-        this.snackBar.open(e.error?.message ?? 'No se pudo completar la carga', 'Cerrar', {
-          duration: 8000,
-        });
+        void this.dialogos.avisar(
+          'error',
+          'No se pudo completar la carga',
+          mensajeAmigable(e, 'No se pudo completar la carga. Intentá de nuevo.'),
+        );
       },
     });
   }
 
-    private mostrarResultado(creados: number): void {
+  private async mostrarResultado(creados: number): Promise<void> {
     const m = this.modelo();
     const base = m.prefijoNombre.trim();
-    this.dialog
-      .open<DialogoResultado, DatosDialogoResultado, RespuestaDialogo>(DialogoResultado, {
-        width: 'min(28rem, calc(100vw - 2rem))',
-        data: {
-          titulo: creados === 1 ? 'Se creó 1 recurso' : `Se crearon ${creados} recursos`,
-          mensaje: `${base} ${m.numeroDesde} … ${base} ${m.numeroHasta}`,
-          textoPrincipal: 'Cargar más',
-          textoSecundario: 'Ir al inventario',
-        },
-      })
-      .afterClosed()
-      .subscribe((respuesta) => {
-        if (respuesta === 'secundaria') {
-          this.router.navigateByUrl(`/${ROUTE_SEGMENTS.recursos}`);
-        } else {
-          this.reiniciar(); // cargar mas o cerrar ventana = formulario vacio.
-        }
-      });
+    const eleccion = await this.dialogos.elegir(
+      'exito',
+      creados === 1 ? 'Se creó 1 recurso' : `Se crearon ${creados} recursos`,
+      `${base} ${m.numeroDesde} … ${base} ${m.numeroHasta}`,
+      'Cargar más',
+      'Ir al inventario',
+    );
+    if (eleccion === 'secundaria') {
+      void this.router.navigateByUrl(`/${ROUTE_SEGMENTS.recursos}`);
+    } else {
+      this.reiniciar(); // "Cargar más" o cerrar la ventana: formulario listo para otro lote
+    }
   }
 
   // formulario como recien abierto, con las fechas d ela temporada.

@@ -23,6 +23,8 @@ export class PresencialCliente {
   protected readonly modelo = signal({ dni: '' });
   protected readonly f = form(this.modelo);
 
+  protected readonly noEncontrado = signal(false);
+
   protected readonly buscando = signal(false);
   protected readonly encontrado = signal<ClienteBusqueda | null>(this.seleccion.clienteMostrador());
   protected readonly mensaje = signal('');
@@ -42,17 +44,19 @@ export class PresencialCliente {
     this.buscando.set(true);
     this.mensaje.set('');
     this.encontrado.set(null);
+    this.noEncontrado.set(false);
 
     this.reservaService.buscarClientePorDni(Number(this.modelo().dni.trim())).subscribe({
       next: (cliente) => {
         this.buscando.set(false);
         this.encontrado.set(cliente);
       },
-      error: (e: HttpErrorResponse) => {
+        error: (e: HttpErrorResponse) => {
         this.buscando.set(false);
+        this.noEncontrado.set(e.status === 404);
         this.mensaje.set(
           e.status === 404
-            ? 'No hay un cliente registrado con ese DNI. Pedile que se registre desde su celular y volvé a buscarlo.'
+            ? 'No hay un cliente registrado con ese DNI. Podés crearlo ahora, o pedirle que se registre desde su celular y volver a buscarlo.'
             : e.status === 0
               ? 'No se pudo conectar con el servidor'
               : (e.error?.message ?? 'No se pudo buscar al cliente. Intentá de nuevo.'),

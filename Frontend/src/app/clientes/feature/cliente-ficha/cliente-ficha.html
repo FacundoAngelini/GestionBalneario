@@ -1,0 +1,149 @@
+<section class="ficha">
+  <a class="enlace-volver" routerLink="/clientes">← Volver a clientes</a>
+
+  @if (cargando()) {
+    <p role="status">Cargando ficha…</p>
+  }
+
+  @if (error()) {
+    <p class="field__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (cliente(); as c) {
+    <header class="ficha__cabecera">
+      <div>
+        <h1>{{ c.nombre }} {{ c.apellido }}</h1>
+        <p class="field__hint">DNI {{ c.dni.toLocaleString('es-AR') }}</p>
+      </div>
+      <span class="estado" [class]="c.estado ? 'estado--confirmada' : 'estado--cerrada'">
+        {{ c.estado ? 'Activo' : 'Dado de baja' }}
+      </span>
+    </header>
+
+    <div class="acciones-ficha">
+      <a class="btn btn--secundario" [routerLink]="['/clientes', c.publicId, 'editar']">Editar datos</a>
+      @if (c.estado) {
+        <button type="button" class="btn btn--primary" (click)="abrirPanel('baja')" [disabled]="panel() !== 'cerrado'">
+          Dar de baja
+        </button>
+      } @else {
+        <button type="button" class="btn btn--primary" (click)="abrirPanel('reactivar')" [disabled]="panel() !== 'cerrado'">
+          Reactivar cuenta
+        </button>
+      }
+    </div>
+
+    @if (panel() !== 'cerrado') {
+      <section class="card panel-estado">
+        @if (panel() === 'baja' && tieneReservasActivas()) {
+          <h2>No se puede dar de baja</h2>
+          <p class="aviso" role="alert">
+            El cliente tiene {{ c.reservasActivas.length }}
+            {{ c.reservasActivas.length === 1 ? 'reserva activa' : 'reservas activas' }}
+            (pendientes o confirmadas). Cancelalas antes de dar de baja la cuenta.
+          </p>
+          <div class="acciones-reserva">
+            <button type="button" class="btn btn--secundario" (click)="cerrarPanel()">Cerrar</button>
+            <a class="btn btn--primary" routerLink="/reservas/gestion" [queryParams]="{ buscar: c.dni }">Ir a las reservas</a>
+          </div>
+        } @else {
+          <form (submit)="confirmar($event)" novalidate class="panel-estado__form">
+            <h2>{{ panel() === 'baja' ? 'Dar de baja la cuenta' : 'Reactivar la cuenta' }}</h2>
+            <p class="aviso" role="note">
+              @if (panel() === 'baja') {
+                El cliente no podrá iniciar sesión ni reservar. Sus datos y su historial se conservan.
+              } @else {
+                El cliente podrá volver a iniciar sesión y reservar.
+              }
+            </p>
+
+            <div class="field">
+              <label class="field__label" for="motivo">Motivo (obligatorio)</label>
+              <input id="motivo" type="text" autocomplete="off" class="field__control"
+                     [formField]="f.motivo" [attr.aria-invalid]="!!errorMotivo() && modelo().motivo.length > 0">
+              @if (errorMotivo() && modelo().motivo.length > 0) {
+                <p class="field__error">{{ errorMotivo() }}</p>
+              } @else {
+                <p class="field__hint">Queda registrado en el historial, junto con tu usuario.</p>
+              }
+            </div>
+
+            @if (errorEstado()) {
+              <p class="field__error" role="alert">{{ errorEstado() }}</p>
+            }
+
+            <div class="acciones-reserva">
+              <button type="button" class="btn btn--secundario" [disabled]="guardando()" (click)="cerrarPanel()">Cancelar</button>
+              <button type="submit" class="btn btn--primary" [disabled]="!valido() || guardando()">
+                @if (guardando()) { Guardando… } @else { Confirmar }
+              </button>
+            </div>
+          </form>
+        }
+      </section>
+    }
+
+    <article class="card bloque">
+      <h2>Datos personales</h2>
+      <dl class="datos">
+        <dt>Nombre</dt><dd>{{ c.nombre }} {{ c.apellido }}</dd>
+        <dt>DNI</dt><dd>{{ c.dni.toLocaleString('es-AR') }}</dd>
+        <dt>Email</dt><dd>{{ c.email }}</dd>
+        <dt>Teléfono</dt><dd>{{ c.telefono }}</dd>
+        <dt>Alta</dt><dd>{{ formatoFecha(c.fechaAlta) }}</dd>
+        @if (c.nombreUsuario) {
+          <dt>Usuario</dt><dd>{{ c.nombreUsuario }}</dd>
+        }
+      </dl>
+    </article>
+
+    <article class="card bloque">
+      <h2>Reservas activas ({{ c.reservasActivas.length }})</h2>
+      @if (c.reservasActivas.length === 0) {
+        <p class="field__hint">No tiene reservas pendientes ni confirmadas.</p>
+      } @else {
+        <ul class="reservas-cliente">
+          @for (r of c.reservasActivas; track r.publicId) {
+            <li>
+              <div class="reservas-cliente__cabecera">
+                <strong>{{ titulo(r) }}</strong>
+                <span class="estado" [class]="claseEstado[r.estadoReserva]">{{ etiquetaEstado[r.estadoReserva] }}</span>
+              </div>
+              <span class="field__hint">
+                {{ formatoRango(r.fechaInicio, r.fechaFin) }} · {{ etiquetaModalidad[r.modalidad] }} · {{ formatoPrecio(r.montoTotal) }}
+              </span>
+            </li>
+          }
+        </ul>
+        <a class="btn btn--secundario" routerLink="/reservas/gestion" [queryParams]="{ buscar: c.dni }">Ver en Gestión de reservas</a>
+      }
+    </article>
+
+    <article class="card bloque">
+      <h2>Reservas anteriores ({{ c.reservasAnteriores }})</h2>
+      @if (c.reservasAnteriores === 0) {
+        <p class="field__hint">Todavía no tiene reservas anteriores.</p>
+      } @else {
+        <ul class="reservas-cliente">
+          @for (r of c.ultimasAnteriores; track r.publicId) {
+            <li>
+              <div class="reservas-cliente__cabecera">
+                <strong>{{ titulo(r) }}</strong>
+                <span class="estado" [class]="claseEstado[r.estadoReserva]">{{ etiquetaEstado[r.estadoReserva] }}</span>
+              </div>
+              <span class="field__hint">{{ formatoRango(r.fechaInicio, r.fechaFin) }} · {{ etiquetaModalidad[r.modalidad] }}</span>
+            </li>
+          }
+        </ul>
+        @if (c.reservasAnteriores > c.ultimasAnteriores.length) {
+          <p class="field__hint">Se muestran las últimas {{ c.ultimasAnteriores.length }}.</p>
+          <a class="btn btn--secundario" routerLink="/reservas/gestion" [queryParams]="{ buscar: c.dni }">Ver todas en Gestión de reservas</a>
+        }
+      }
+    </article>
+
+    <article class="card bloque">
+      <app-historial-cliente [clienteId]="c.publicId" [huella]="huella()" />
+    </article>
+  }
+</section>

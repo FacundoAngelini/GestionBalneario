@@ -15,8 +15,9 @@ import { CambiarContrasenia } from './cambiar-contraseña';
 import { CambiarUsuario } from './cambiar-usuario';
 import { PerfilEditar } from './perfil-editar';
 import { PerfilEditarEmpleado } from './perfil-editar-empleado';
+import { SolicitarBaja } from './solicitar-baja';
 
-type ModoPerfil = 'ver' | 'editar' | 'contrasenia' | 'usuario';
+type ModoPerfil = 'ver' | 'editar' | 'contrasenia' | 'usuario' | 'baja';
 
 @Component({
   selector: 'app-perfil',
@@ -29,6 +30,7 @@ type ModoPerfil = 'ver' | 'editar' | 'contrasenia' | 'usuario';
     CambiarContrasenia,
     CambiarUsuario,
     HistorialEmpleado,
+    SolicitarBaja,
   ],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',

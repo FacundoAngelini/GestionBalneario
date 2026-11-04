@@ -32,6 +32,7 @@ import { OjoContrasenia } from '../../../shared/ojo-contrasenia/ojo-contrasenia'
 import { EmpleadoUpdateRequest, ROLES_ALTA } from '../../data-access/empleado-model';
 import { EmpleadoService } from '../../data-access/empleado-service';
 import { LIMITES } from '../../../core/constants/limites.constants';
+import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 
 interface EmpleadoFormModelo {
   nombre: string;
@@ -51,6 +52,25 @@ interface EmpleadoFormModelo {
   nombreUsuario: string;
   contrasenia: string;
 }
+
+const MODELO_INICIAL: EmpleadoFormModelo = {
+  nombre: '',
+  apellido: '',
+  dni: null,
+  cuit: '',
+  email: '',
+  pais: '54',
+  telefono: '',
+  sueldo: null,
+  calle: '',
+  numero: null,
+  ciudad: '',
+  provincia: '',
+  sectorPublicId: '',
+  rolSolicitado: '',
+  nombreUsuario: '',
+  contrasenia: '',
+};
 
 @Component({
   selector: 'app-empleado-form',
@@ -74,6 +94,7 @@ export class EmpleadoForm {
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   protected readonly limites = LIMITES;
+  private readonly dialogos = inject(Dialogos);
 
   // Sin id en la ruta es un alta; con id, una edición
   protected readonly id = inject(ActivatedRoute).snapshot.paramMap.get('id');
@@ -94,24 +115,7 @@ export class EmpleadoForm {
   protected readonly errorCarga = signal('');
   protected readonly errorEnvio = signal('');
 
-  private readonly modelo = signal<EmpleadoFormModelo>({
-    nombre: '',
-    apellido: '',
-    dni: null,
-    cuit: '',
-    email: '',
-    pais: '54',
-    telefono: '',
-    sueldo: null,
-    calle: '',
-    numero: null,
-    ciudad: '',
-    provincia: '',
-    sectorPublicId: '',
-    rolSolicitado: '',
-    nombreUsuario: '',
-    contrasenia: '',
-  });
+  private readonly modelo = signal<EmpleadoFormModelo>({ ...MODELO_INICIAL });
 
   protected readonly paisElegido = computed(() => buscarPais(this.modelo().pais) ?? PAISES[0]);
 
@@ -228,13 +232,23 @@ export class EmpleadoForm {
                     credencial: { nombreUsuario: m.nombreUsuario.trim(), contrasenia: m.contrasenia },
                   }),
             );
-            this.snackBar.open(
-              this.esAlta
-                ? 'Empleado creado. Entregale su contraseña y recomendale cambiarla en "Mi perfil".'
-                : 'Cambios guardados',
-              'Cerrar',
-              { duration: this.esAlta ? 10000 : 5000 },
-            );
+            if (this.esAlta) {
+              const eleccion = await this.dialogos.elegir(
+                'exito',
+                'Empleado creado',
+                `${empleado.nombre} ${empleado.apellido} ya puede iniciar sesión con el usuario "${m.nombreUsuario.trim()}".\n\n` +
+                  'Entregale la contraseña que definiste y recomendale cambiarla cuanto antes en "Mi perfil". No se vuelve a mostrar.',
+                'Ver ficha',
+                'Crear otro empleado',
+              );
+              if (eleccion === 'secundaria') {
+                this.modelo.set({ ...MODELO_INICIAL });
+                this.formulario().reset(); // limpia también lo "tocado", para que no aparezcan errores en un formulario nuevo
+                return undefined;
+              }
+            } else {
+              this.snackBar.open('Cambios guardados', 'Cerrar', { duration: 5000 });
+            }
             await this.router.navigate(['/empleados', empleado.publicId]);
             return undefined;
           } catch (error) {
@@ -245,6 +259,7 @@ export class EmpleadoForm {
     },
   );
 
+  
   constructor() {
     if (this.id) this.cargarFicha(this.id);
   }

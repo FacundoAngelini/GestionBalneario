@@ -36,6 +36,12 @@ export class MenuLateral {
       roles: ROLES_PERSONAL,
     },
     {
+      etiqueta: 'Clientes',
+      icono: 'groups',
+      ruta: `/${ROUTE_SEGMENTS.clientes}`,
+      roles: ROLES_PERSONAL,
+    },
+    {
       etiqueta: 'Empleados',
       icono: 'badge',
       ruta: `/${ROUTE_SEGMENTS.empleados}`,

@@ -1,0 +1,39 @@
+.clientes {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 70rem;
+  margin-inline: auto;
+}
+
+.clientes h1 {
+  margin-bottom: var(--espacio-2);
+}
+
+.clientes__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.filtros-clientes {
+  display: grid;
+  gap: var(--espacio-3) var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+.filtros-clientes .btn {
+  width: 100%;
+}
+
+@media (min-width: 48rem) {
+  .filtros-clientes {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .filtros-clientes .btn {
+    width: auto;
+  }
+}
