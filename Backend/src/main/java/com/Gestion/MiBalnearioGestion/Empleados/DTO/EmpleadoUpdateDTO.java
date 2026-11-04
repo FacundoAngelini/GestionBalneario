@@ -28,7 +28,7 @@ public class EmpleadoUpdateDTO {
     @NotNull @Min(value = 1_000_000, message = "El DNI no es válido") @Max(value = 99_999_999, message = "El DNI no es válido")
     private Integer dni;
 
-    @NotBlank @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email tiene un formato inválido")
+    @NotBlank @Size(max = 75, message = "El email no puede contener mas de 75 caracteres") @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email tiene un formato inválido")
     private String email;
 
     @NotNull @Positive(message = "El sueldo debe ser mayor a 0")
