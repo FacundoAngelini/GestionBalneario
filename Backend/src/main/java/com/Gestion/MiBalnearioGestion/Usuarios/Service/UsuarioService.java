@@ -41,9 +41,9 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public void reactivarCuenta(UsuarioEntity usuario) {
         CredencialEntity credencial = credencialRepositorio.findByUsuario(usuario)
-                .orElseThrow(() -> new CuentaEncontradaException("No tiene credencial asociada", "CredencialEntity"));
+                .orElseThrow(() -> new CuentaNoEncontradaException("No tiene credencial asociada", "CredencialEntity"));
         if (credencial.isEnabled()) {
-            throw new CuentaEncontradaException("La cuenta ya esta activa", "CredencialEntity");
+            throw new DatosInvalidoException("La cuenta ya está activa", "CredencialEntity");
         }
         credencial.setEnabled(true);
         credencialRepositorio.save(credencial);

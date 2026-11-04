@@ -6,6 +6,7 @@ import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Repositorio.CredencialRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.JWT.JwtService;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.NewAccountRequest;
+import com.Gestion.MiBalnearioGestion.Auth.JWT.TokenRevocadoServicio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Repositorio.RolesRepositorio;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.Roles;
 import com.Gestion.MiBalnearioGestion.Auth.Roles.RolesEntity;
@@ -46,6 +47,7 @@ public class AuthService implements IAuthService {
     private final RolesRepositorio rolesRepositorio;
     private final ClientesRepository clientesRepository;
     private final EmailService emailService;
+    private final TokenRevocadoServicio tokenRevocado;
 
     @Transactional
     @Override
@@ -166,6 +168,7 @@ public class AuthService implements IAuthService {
         CredencialEntity credencial = credentialsRepository.findByNombreUsuario(username)
                 .orElseThrow(() -> new CuentaNoEncontradaException("Usuario no encontrado", "Credencialentity"));
         credencial.setRefreshToken(null);
+        tokenRevocado.revocar(token);
         credentialsRepository.save(credencial);
     }
 }
