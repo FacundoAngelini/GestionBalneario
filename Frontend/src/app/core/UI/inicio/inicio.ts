@@ -23,7 +23,7 @@ export class Inicio {
       texto: 'Mirá la carta antes de llegar.',
       imagen: '/images/restaurant.webp',
       alt: 'Mesa servida frente a la playa',
-      ruta: '/menu',
+      ruta: '/productos',
       cta: 'Ver menú',
     },
   ];

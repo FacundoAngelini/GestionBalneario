@@ -26,6 +26,11 @@ export const routes: Routes = [
         loadComponent: () => import('./core/UI/inicio/inicio').then(m => m.Inicio)
       },
       {
+        path: ROUTE_SEGMENTS.productos,
+        loadChildren: () =>
+          import('./productos/productos.routes').then((m) => m.productosPublicRoutes)
+      },
+      {
         path: ROUTE_SEGMENTS.catalogo,
         loadComponent: () =>
         import('./recursos/features/catalogo/catalogo').then((m) => m.Catalogo)
@@ -53,7 +58,8 @@ export const routes: Routes = [
       },
       {
         path: ROUTE_SEGMENTS.productos,
-        loadChildren: () => import('./productos/productos.routes').then((m) => m.productosRoutes)
+        loadChildren: () =>
+          import('./productos/productos.routes').then((m) => m.productosPrivateRoutes)
       },
       {
         path: ROUTE_SEGMENTS.reservas,
