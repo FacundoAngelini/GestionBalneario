@@ -36,4 +36,8 @@ export class UsuarioClient {
   cambiarNombreUsuario(datos: CambioNombreUsuarioRequest) {
     return this.http.patch<void>(`${this.usuariosUrl}/me/nombre-usuario`, datos);
   }
+
+  darmeDeBaja(datos: { motivo: string }) {
+    return this.http.post<void>(`${this.clientesUrl}/me/baja`, datos);
+  }
 }

@@ -3,20 +3,19 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [NgOptimizedImage, RouterLink],
   selector: 'app-inicio',
-  styleUrl: './inicio.css',
+  imports: [NgOptimizedImage, RouterLink],
   templateUrl: './inicio.html',
+  styleUrl: './inicio.css',
 })
 export class Inicio {
-  
   protected readonly accesos = [
     {
       titulo: 'Reservá tu lugar',
       texto: 'Carpas, sombrillas y mesas. Elegí fecha y listo.',
       imagen: '/images/carpas.webp',
       alt: 'Fila de carpas frente al mar',
-      ruta: '/reservas',
+      ruta: '/reservas/mis-reservas',
       cta: 'Reservar',
     },
     {

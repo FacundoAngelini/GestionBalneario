@@ -37,7 +37,6 @@
     } @else {
       <ul class="lista-reservas">
         @for (r of visibles(); track r.publicId) {
-          @let enConfirmacion = cancelacion()?.reserva?.publicId === r.publicId;
           <li class="card reserva">
             <div class="reserva__cabecera">
               <h3 class="reserva__titulo">{{ titulo(r) }}</h3>
@@ -78,34 +77,12 @@
             }
 
             @if (esActiva(r)) {
-              @if (enConfirmacion) {
-                @let c = cancelacion();
-                <div class="confirmacion" role="alert">
-                  <p><strong>¿Querés cancelar esta reserva?</strong></p>
-                  @if (c && c.cocheras.length > 0) {
-                    <p>
-                      También se cancela la cochera asociada ({{ nombresDe(c.cocheras) }}): sin carpa
-                      ni sombrilla, no puede mantenerse.
-                    </p>
-                  }
-                  <p class="field__hint">Esta acción no se puede deshacer.</p>
-                  <div class="acciones-reserva">
-                    <button type="button" class="btn btn--secundario"
-                            [disabled]="procesando() === r.publicId"
-                            (click)="descartarCancelacion()">No, volver</button>
-                    <button type="button" class="btn btn--primary"
-                            [disabled]="procesando() === r.publicId"
-                            (click)="confirmarCancelacion()">
-                      @if (procesando() === r.publicId) { Cancelando… } @else { Sí, cancelar }
-                    </button>
-                  </div>
-                </div>
-              } @else if (puedeCancelar(r)) {
+              @if (puedeCancelar(r)) {
                 <div class="acciones-reserva">
                   <button type="button" class="btn btn--secundario"
                           [disabled]="procesando() !== null"
                           (click)="pedirCancelacion(r)">
-                    @if (procesando() === r.publicId) { Consultando… } @else { Cancelar reserva }
+                    @if (procesando() === r.publicId) { Procesando… } @else { Cancelar reserva }
                   </button>
                 </div>
               } @else {

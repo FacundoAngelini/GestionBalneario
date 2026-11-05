@@ -7,6 +7,8 @@ export const ROUTE_SEGMENTS = {
   perfil: 'perfil',
 
   catalogo: 'catalogo',
+  productos: 'productos',
+  cargarProducto: 'cargar',
   reservas: 'reservas',
   /* nuevaReserva: 'nueva', */
   misReservas: 'mis-reservas',
@@ -23,6 +25,8 @@ export const ROUTE_SEGMENTS = {
   empleados: 'empleados',
   nuevo: 'nuevo',
   editar: 'editar',
+  //clientes
+  clientes: 'clientes',
 
 
   unauthorized: 'no-autorizado'

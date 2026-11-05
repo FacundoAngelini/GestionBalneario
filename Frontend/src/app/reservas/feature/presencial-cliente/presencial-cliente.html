@@ -24,6 +24,12 @@
     <p class="field__error" role="alert">{{ mensaje() }}</p>
   }
 
+    @if (noEncontrado()) {
+    <a class="btn btn--primary" routerLink="/clientes/nuevo" [queryParams]="{ dni: modelo().dni.trim(), reserva: 1 }">
+      Crear cliente y reservar
+    </a>
+  }
+
   @if (encontrado(); as c) {
     <article class="card presencial__cliente" role="status">
       <h2>{{ c.nombre }} {{ c.apellido }}</h2>

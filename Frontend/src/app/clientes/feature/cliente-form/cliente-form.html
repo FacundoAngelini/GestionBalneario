@@ -1,0 +1,145 @@
+<section class="formulario">
+  <a class="enlace-volver" [routerLink]="id ? ['/clientes', id] : ['/clientes']">← Volver</a>
+  <h1>{{ esAlta ? 'Nuevo cliente' : 'Editar cliente' }}</h1>
+
+  @if (cargando()) {
+    <p role="status">Cargando…</p>
+  }
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+  }
+
+  @if (!cargando() && !errorCarga()) {
+    <form [formRoot]="formulario" class="formulario__cuerpo" [attr.aria-busy]="formulario().submitting()">
+
+      <section class="card bloque">
+        <h2>Datos personales</h2>
+        <div class="campos">
+          <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <input matInput type="text" autocomplete="off" [formField]="formulario.nombre" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.nombre().value().length >= limites.nombre">
+              {{ formulario.nombre().value().length }}/{{ limites.nombre }}
+            </mat-hint>
+            <mat-error>{{ formulario.nombre().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Apellido</mat-label>
+            <input matInput type="text" autocomplete="off" [formField]="formulario.apellido" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.apellido().value().length >= limites.apellido">
+              {{ formulario.apellido().value().length }}/{{ limites.apellido }}
+            </mat-hint>
+            <mat-error>{{ formulario.apellido().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>DNI</mat-label>
+            <input matInput type="number" inputmode="numeric" [formField]="formulario.dni" />
+            @if (!esAlta) {
+              <mat-hint>Corregilo solo si se cargó mal</mat-hint>
+            }
+            <mat-error>{{ formulario.dni().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput type="email" autocomplete="off" [formField]="formulario.email" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.email().value().length >= limites.email">
+              {{ formulario.email().value().length }}/{{ limites.email }}
+            </mat-hint>
+            <mat-error>{{ formulario.email().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="fila-telefono">
+          <mat-form-field>
+            <mat-label>País</mat-label>
+            <mat-select [formField]="formulario.pais">
+              @for (p of paises; track p.prefijo) {
+                <mat-option [value]="p.prefijo">{{ p.nombre }} (+{{ p.prefijo }})</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Teléfono</mat-label>
+            <span matTextPrefix>+{{ paisElegido().prefijo }}&nbsp;</span>
+            <input matInput type="tel" inputmode="numeric" autocomplete="off" [formField]="formulario.telefono" />
+            <mat-hint>{{ paisElegido().ayuda }}. Ej: {{ paisElegido().ejemplo }}</mat-hint>
+            <mat-error>{{ formulario.telefono().errors().at(0)?.message }}</mat-error>
+          </mat-form-field>
+        </div>
+      </section>
+
+      @if (esAlta) {
+        <section class="card bloque">
+          <h2>Cuenta de acceso</h2>
+          <div class="campos">
+            <mat-form-field>
+              <mat-label>Nombre de usuario</mat-label>
+              <input matInput type="text" autocomplete="off" [formField]="formulario.nombreUsuario" />
+              <mat-hint align="end" [class.contador-lleno]="formulario.nombreUsuario().value().length >= limites.nombreUsuario">
+                {{ formulario.nombreUsuario().value().length }}/{{ limites.nombreUsuario }}
+              </mat-hint>
+              <mat-error>{{ formulario.nombreUsuario().errors().at(0)?.message }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Contraseña provisoria</mat-label>
+              <input
+                matInput
+                [type]="ojo.visible() ? 'text' : 'password'"
+                autocomplete="new-password"
+                [formField]="formulario.contrasenia"
+              />
+              <app-ojo-contrasenia #ojo matSuffix [deshabilitado]="formulario().submitting()" />
+              <mat-hint>8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</mat-hint>
+              <mat-error>{{ formulario.contrasenia().errors().at(0)?.message }}</mat-error>
+            </mat-form-field>
+          </div>
+          <p class="aviso" role="note">
+            Entregale esta contraseña al cliente y recomendale cambiarla en "Mi perfil". No se vuelve a mostrar.
+          </p>
+        </section>
+      }
+
+      @if (errorEnvio()) {
+        <p class="field__error" role="alert">{{ errorEnvio() }}</p>
+      }
+
+      @if (problemas().length > 0) {
+        @if (esAlta) {
+          <p class="field__hint" role="status">
+            Completá los campos obligatorios para crear el cliente ({{ problemas().length }}
+            {{ problemas().length === 1 ? 'pendiente' : 'pendientes' }}).
+          </p>
+        } @else {
+          <div class="aviso" role="status">
+            <p><strong>Para guardar, corregí:</strong></p>
+            <ul class="lista-problemas">
+              @for (p of problemas(); track p.etiqueta) {
+                <li><strong>{{ p.etiqueta }}:</strong> {{ p.mensaje }}</li>
+              }
+            </ul>
+            <p class="field__hint">
+              Al editar se revisan todos los datos, no solo los que cambiaste. Los que se cargaron antes de estas
+              validaciones hay que corregirlos para poder guardar.
+            </p>
+          </div>
+        }
+      }
+
+      <div class="acciones-form">
+        <a matButton="outlined" [routerLink]="id ? ['/clientes', id] : ['/clientes']">Cancelar</a>
+        <button matButton="filled" type="submit" [disabled]="formulario().invalid()">
+          @if (formulario().submitting()) {
+            <mat-spinner diameter="22" aria-label="Guardando" />
+          } @else {
+            {{ esAlta ? 'Crear cliente' : 'Guardar cambios' }}
+          }
+        </button>
+      </div>
+    </form>
+  }
+</section>
