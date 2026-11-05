@@ -3,25 +3,73 @@
     <h1>Hola, {{ nombre() }}</h1>
     <p class="field__hint">{{ rol() }}</p>
   </header>
-    @if (esCliente()) {
+
+  @if (restringido()) {
+    <div class="card" role="status">
+      <h2>Tu cuenta tiene el acceso limitado</h2>
+      <p>Estado de tu cuenta: <strong>{{ estadoTexto() }}</strong>. Por ahora solo podés ver tu perfil y su historial.</p>
+      <div class="acciones-panel">
+        <a class="btn btn--primary" routerLink="/perfil">Ver mi perfil</a>
+      </div>
+    </div>
+  }
+
+  @if (esCliente()) {
     <div class="card">
       <h2>Reservá tu lugar</h2>
       <p>Elegí tus fechas y mirá qué carpas, sombrillas y cocheras hay libres.</p>
-            <div class="acciones-panel">
+      <div class="acciones-panel">
         <a class="btn btn--primary" routerLink="/catalogo">Ver disponibilidad</a>
         <a class="btn btn--secundario" routerLink="/reservas/mis-reservas">Mis reservas</a>
       </div>
     </div>
   }
 
-    @if (esPersonal()) {
+  @if (esPersonal()) {
+    <div class="grilla-panel">
+      <div class="card">
+        <h2>Reservas</h2>
+        <p>Solicitudes por confirmar: <strong>{{ pendientes() }}</strong></p>
+        <div class="acciones-panel">
+          <a class="btn btn--primary" routerLink="/reservas/gestion">Gestionar reservas</a>
+          <a class="btn btn--secundario" routerLink="/reservas/presencial">Reserva presencial</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Clientes</h2>
+        <p>Altas, modificaciones y estados de los clientes.</p>
+        <div class="acciones-panel">
+          <a class="btn btn--secundario" routerLink="/clientes">Clientes</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Inventario</h2>
+        <p>Carpas, sombrillas y cocheras, con sus precios.</p>
+        <div class="acciones-panel">
+          <a class="btn btn--primary" routerLink="/recursos">Ver inventario</a>
+        </div>
+      </div>
+
+      @if (gestionaEmpleados()) {
+        <div class="card">
+          <h2>Empleados</h2>
+          <p>Altas, modificaciones y estados del personal.</p>
+          <div class="acciones-panel">
+            <a class="btn btn--primary" routerLink="/empleados">Gestionar empleados</a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (esCarpero()) {
     <div class="card">
-      <h2>Reservas por confirmar</h2>
-      <p>Solicitudes pendientes: <strong>{{ pendientes() }}</strong></p>
+      <h2>Reservas</h2>
+      <p>Podés consultar las reservas de los clientes. No podés modificarlas.</p>
       <div class="acciones-panel">
-        <a class="btn btn--primary" routerLink="/reservas/gestion">Gestionar reservas</a>
-        <a class="btn btn--secundario" routerLink="/recursos">Inventario</a>
-        <a class="btn btn--secundario" routerLink="/reservas/presencial">Reserva presencial</a>
+        <a class="btn btn--primary" routerLink="/reservas/gestion">Ver reservas</a>
       </div>
     </div>
   }

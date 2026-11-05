@@ -7,7 +7,9 @@ import com.Gestion.MiBalnearioGestion.Recursos.Enum.EModalidad;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,6 +44,7 @@ public class ReservaEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name="estado_reserva", nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private EReservaEstado estadoReserva;
 
     @Column(name="monto_total", nullable = false)

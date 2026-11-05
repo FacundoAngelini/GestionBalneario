@@ -1,8 +1,10 @@
 package com.Gestion.MiBalnearioGestion.Recursos.DTO;
 
+import com.Gestion.MiBalnearioGestion.Recursos.Validacion.LimitesRecursos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -21,6 +23,7 @@ public class RecursoDTO {
 
     @Schema(description = "Nombre identificatorio o descriptivo del recurso", example = "Carpa Standard Lateral")
     @NotBlank
+    @Size(max = LimitesRecursos.MAX_NOMBRE, message = "El nombre admite hasta 31 caracteres")
     private String nombre;
 
     @Schema(description = "Indica si el recurso se encuentra disponible para ser reservado por los clientes", example = "true")

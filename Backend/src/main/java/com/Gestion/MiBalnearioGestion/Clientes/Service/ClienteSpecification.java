@@ -46,4 +46,20 @@ public class ClienteSpecification {
         return valor == null ? null :
                 (root, cb) -> cb.equal(root.get("estado"), valor);
     }
+
+    /** Un solo texto contra nombre, apellido, nombre completo, email, teléfono y DNI. */
+    public static PredicateSpecification<ClienteEntity> textoContiene(String texto) {
+        return (root, cb) -> {
+            if (texto == null || texto.isBlank()) return cb.conjunction();
+            String patron = "%" + texto.trim().toLowerCase() + "%";
+            return cb.or(
+                    cb.like(cb.lower(root.<String>get("nombre")), patron),
+                    cb.like(cb.lower(root.<String>get("apellido")), patron),
+                    cb.like(cb.lower(cb.concat(cb.concat(root.<String>get("nombre"), " "), root.<String>get("apellido"))), patron),
+                    cb.like(cb.lower(root.<String>get("email")), patron),
+                    cb.like(root.<String>get("telefono"), patron),
+                    cb.like(root.get("dni").as(String.class), patron));
+        };
+    }
+
 }

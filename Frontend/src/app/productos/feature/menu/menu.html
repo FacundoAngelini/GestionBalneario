@@ -1,0 +1,66 @@
+<section class="menu">
+  <header>
+    <h1>Menú</h1>
+    <p class="field__hint">Conocé los productos que tenemos para vos.</p>
+  </header>
+
+  @if (productos.isLoading()) {
+    <p role="status">Cargando el menú…</p>
+  }
+
+  @if (productos.error()) {
+    <p class="field__error" role="alert">No se pudo cargar el menú.</p>
+    <button type="button" class="btn btn--secundario" (click)="productos.reload()">
+      Reintentar
+    </button>
+  }
+
+  @if (productos.hasValue()) {
+    @if (categorias().length > 1) {
+      <div class="vistas" role="group" aria-label="Filtrar por categoría">
+        <button type="button" class="chip" [attr.aria-pressed]="categoriaActiva() === null"
+                (click)="categoriaActiva.set(null)">
+          Todos
+        </button>
+        @for (c of categorias(); track c) {
+          <button type="button" class="chip" [attr.aria-pressed]="categoriaActiva() === c"
+                  (click)="categoriaActiva.set(c)">
+            {{ etiquetaCategoria[c] }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (visibles().length === 0) {
+      <div class="card vacio" role="status">
+        <p>Todavía no hay productos cargados en el menú.</p>
+      </div>
+    } @else {
+      <ul class="lista-reservas">
+        @for (p of visibles(); track p.publicId) {
+          <li class="card producto">
+            <div class="producto__cabecera">
+              <h3 class="producto__titulo">{{ p.nombre }}</h3>
+              <span class="estado"
+                    [class.estado--confirmada]="p.productoDisponible"
+                    [class.estado--cerrada]="!p.productoDisponible">
+                {{ p.productoDisponible ? 'Disponible' : 'No disponible' }}
+              </span>
+            </div>
+
+            <dl class="datos">
+              <dt>Categoría</dt>
+              <dd>{{ etiquetaCategoria[p.categoria] }}</dd>
+              <dt>Precio</dt>
+              <dd>{{ formatoPrecio(p.precio) }}</dd>
+            </dl>
+
+            <div class="acciones-reserva">
+              <a class="btn btn--secundario" [routerLink]="['/productos', p.publicId]">Ver más</a>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

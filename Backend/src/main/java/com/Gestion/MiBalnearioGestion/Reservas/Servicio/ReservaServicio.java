@@ -59,8 +59,20 @@ public class ReservaServicio implements IReservaServicio{
     @Transactional
     @Override
     public ReservaEntity crearReservaInicial(ReservaDTO dto) {
+
+        if (dto.getRecursosPublicIds() == null || dto.getRecursosPublicIds().isEmpty()) {
+            throw new DatosInvalidoException("La reserva debe incluir al menos un recurso", "ReservaEntity");
+        }
+        // Sin repetidos (un recurso no se cobra dos veces). Y, antes de leer cualquier otra cosa, se bloquean los recursos.
+        List<UUID> idsRecursos = dto.getRecursosPublicIds().stream().distinct().toList();
+        recursoRepositorio.bloquearPorPublicIds(idsRecursos);
+        
         ClienteEntity cliente = clienteRepository.findByPublicId(dto.getClientePublicId())
                 .orElseThrow(() -> new CuentaNoEncontradaException("Cliente no encontrado"+ dto.getClientePublicId().toString(), "ClienteEntity"));
+
+        if (!cliente.isEstado()) {
+            throw new ReservaException("La cuenta del cliente está desactivada", "ClienteEntity");
+        }
 
         EModalidad modalidad = dto.getModalidad();
         LocalDate fechaInicio = dto.getFechaInicio();
@@ -79,7 +91,7 @@ public class ReservaServicio implements IReservaServicio{
         List<RecursoEntity> recursosEntities = new ArrayList<>();
         List<EReservaEstado> estadosConflictivos = List.of(EReservaEstado.PENDIENTE, EReservaEstado.CONFIRMADA);
 
-        for (UUID recursoId : dto.getRecursosPublicIds()) {
+        for (UUID recursoId : idsRecursos) {
             if (reservaRepository.isRecursoOcupadoEnFechas(recursoId, fechaInicio, fechaFin, estadosConflictivos)) {
                 throw new RecursoOcupadoException("El recurso con ID " + recursoId + " ya esta ocupado", "RecursoEntity");
             }

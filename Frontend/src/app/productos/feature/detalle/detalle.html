@@ -1,0 +1,48 @@
+<section class="detalle">
+  <header>
+    <h1>Detalle del producto</h1>
+  </header>
+
+  @if (producto.isLoading()) {
+    <p role="status">Cargando el producto…</p>
+  }
+
+  @if (producto.error()) {
+    <div class="card vacio" role="alert">
+      <p class="field__error">No se pudo cargar el producto.</p>
+      <button type="button" class="btn btn--secundario" (click)="producto.reload()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (producto.value(); as p) {
+    <article class="card">
+      <div class="detalle__cabecera">
+        <h2>{{ p.nombre }}</h2>
+        <span class="estado"
+              [class.estado--confirmada]="p.productoDisponible"
+              [class.estado--cerrada]="!p.productoDisponible">
+          {{ p.productoDisponible ? 'Disponible' : 'No disponible' }}
+        </span>
+      </div>
+
+      <dl class="datos">
+        <dt>Nombre</dt>
+        <dd>{{ p.nombre }}</dd>
+        <dt>Categoría</dt>
+        <dd>{{ etiquetaCategoria[p.categoria] }}</dd>
+        <dt>Precio</dt>
+        <dd>{{ formatoPrecio(p.precio) }}</dd>
+        <dt>Disponibilidad</dt>
+        <dd>{{ p.productoDisponible ? 'Disponible para la venta' : 'Sin stock o deshabilitado' }}</dd>
+        <dt>Código</dt>
+        <dd class="codigo">{{ p.publicId }}</dd>
+      </dl>
+    </article>
+  }
+
+  <div class="acciones-reserva">
+    <a class="btn btn--secundario" routerLink="/productos">Volver al menú</a>
+  </div>
+</section>

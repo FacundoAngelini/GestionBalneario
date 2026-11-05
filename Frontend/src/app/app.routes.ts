@@ -52,8 +52,20 @@ export const routes: Routes = [
         loadChildren: () => import('./recursos/recursos.routes').then(m => m.recursosRoutes)
       },
       {
+        path: ROUTE_SEGMENTS.productos,
+        loadChildren: () => import('./productos/productos.routes').then((m) => m.productosRoutes)
+      },
+      {
         path: ROUTE_SEGMENTS.reservas,
-        loadChildren: () => import('./reservas/feature/reservas-routes').then((m) => m.reservasRoutes)
+        loadChildren: () => import('./reservas/reservas-routes').then((m) => m.reservasRoutes)
+      },
+      {
+        path: ROUTE_SEGMENTS.clientes,
+        loadChildren: () => import('./clientes/clientes.routes').then(m => m.clientesRoutes)
+      },
+    {
+        path: ROUTE_SEGMENTS.empleados,
+        loadChildren: () => import('./empleados/empleados.routes').then(m => m.empleadosRoutes)
       }
     ]
   },

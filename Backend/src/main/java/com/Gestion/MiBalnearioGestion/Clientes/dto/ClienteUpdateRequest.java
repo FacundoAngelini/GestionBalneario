@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
+import com.Gestion.MiBalnearioGestion.Common.Validacion.TelefonoValido;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +32,7 @@ public record ClienteUpdateRequest(
 
         @Schema(description = "Correo electrónico del cliente")
         @NotBlank(message = "El email es obligatorio")
+        @Size(max = 75, message = "El email no puede contener mas de 75 caracteres")
         @Email(
                 regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
                 message = "El email ingresado tiene un formato inválido"
@@ -38,11 +40,7 @@ public record ClienteUpdateRequest(
         String email,
 
         @Schema(description = "Teléfono del cliente")
-        @NotBlank(message = "El teléfono es obligatorio")
-        @Pattern(
-                regexp = "^[0-9]+$",
-                message = "El teléfono debe contener solo números"
-        )
+        @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @TelefonoValido
         String telefono
 ) {
 }

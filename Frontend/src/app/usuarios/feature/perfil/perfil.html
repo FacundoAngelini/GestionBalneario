@@ -44,8 +44,14 @@
           <h3 id="titulo-personales" class="seccion-titulo">Datos personales</h3>
         </div>
 
+        @if (restringido()) {
+          <p class="aviso" role="status">{{ mensajeRestringido() }}</p>
+        }
+
         @if (modo() === 'editar' && cliente(); as c) {
           <app-perfil-editar [cliente]="c" (guardado)="alGuardar($event)" (cancelado)="modo.set('ver')" />
+        } @else if (modo() === 'editar' && empleado(); as e) {
+          <app-perfil-editar-empleado [empleado]="e" (guardado)="alGuardarEmpleado($event)" (cancelado)="modo.set('ver')" />
         } @else if (ficha(); as f) {
           <dl class="datos">
             <div><dt>Nombre</dt><dd>{{ f.nombre }}</dd></div>
@@ -67,7 +73,7 @@
 
             @if (empleado(); as e) {
               <div><dt>CUIT</dt><dd>{{ e.cuit }}</dd></div>
-              <div><dt>Estado laboral</dt><dd>{{ e.estadoEmpleado }}</dd></div>
+              <div><dt>Estado laboral</dt><dd>{{ etiquetaEstado(e.estadoEmpleado) }}</dd></div>
               @if (e.sector) {
                 <div><dt>Sector</dt><dd>{{ e.sector.nombre }}</dd></div>
               }
@@ -86,12 +92,14 @@
           <p class="nota">{{ mensajeSinFicha() }}</p>
         }
 
-        @if (cliente() && modo() === 'ver') {
+        @if (puedeModificar() && modo() === 'ver') {
           <div class="acciones">
-            <button matButton="outlined" type="button" (click)="modo.set('editar')">
-              <mat-icon>edit</mat-icon>
-              Editar datos
-            </button>
+            @if (ficha()) {
+              <button matButton="outlined" type="button" (click)="modo.set('editar')">
+                <mat-icon>edit</mat-icon>
+                Editar datos
+              </button>
+            }
             <button matButton="outlined" type="button" (click)="modo.set('contrasenia')">
               <mat-icon>lock</mat-icon>
               Cambiar contraseña
@@ -100,25 +108,41 @@
               <mat-icon>manage_accounts</mat-icon>
               Cambiar nombre de usuario
             </button>
+            @if (cliente()) {
+              <button matButton="outlined" type="button" (click)="modo.set('baja')">
+                <mat-icon>person_off</mat-icon>
+                Dar de baja mi cuenta
+              </button>
+            }
           </div>
         }
       </section>
 
-      @if (modo() === 'contrasenia' && cliente(); as c) {
-        <section aria-labelledby="titulo-contrasenia">
-          <h3 id="titulo-contrasenia" class="seccion-titulo">Cambiar contraseña</h3>
-          <app-cambiar-contrasenia
-            [clientePublicId]="c.publicId"
-            (cambiada)="modo.set('ver')"
-            (cancelada)="modo.set('ver')"
-          />
+      @if (empleado(); as e) {
+        <section aria-labelledby="titulo-historial">
+          <h3 id="titulo-historial" class="seccion-titulo">Historial de tu ficha</h3>
+          <app-historial-empleado [empleadoId]="e.publicId" [huella]="e.email + e.telefono" />
         </section>
       }
 
-      @if (modo() === 'usuario' && cliente(); as c) {
+      @if (modo() === 'contrasenia' && puedeModificar()) {
+        <section aria-labelledby="titulo-contrasenia">
+          <h3 id="titulo-contrasenia" class="seccion-titulo">Cambiar contraseña</h3>
+          <app-cambiar-contrasenia (cambiada)="modo.set('ver')" (cancelada)="modo.set('ver')" />
+        </section>
+      }
+
+      @if (modo() === 'usuario' && puedeModificar()) {
         <section aria-labelledby="titulo-usuario">
           <h3 id="titulo-usuario" class="seccion-titulo">Cambiar nombre de usuario</h3>
-          <app-cambiar-usuario [clientePublicId]="c.publicId" (cancelado)="modo.set('ver')" />
+          <app-cambiar-usuario (cancelado)="modo.set('ver')" />
+        </section>
+      }
+
+      @if (modo() === 'baja' && cliente() && puedeModificar()) {
+        <section aria-labelledby="titulo-baja">
+          <h3 id="titulo-baja" class="seccion-titulo">Dar de baja mi cuenta</h3>
+          <app-solicitar-baja (cancelado)="modo.set('ver')" />
         </section>
       }
     </article>

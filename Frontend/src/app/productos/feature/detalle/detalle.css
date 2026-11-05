@@ -1,0 +1,18 @@
+.detalle {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 50rem;
+  margin-inline: auto;
+}
+
+.detalle :is(h1, h2) {
+  margin-bottom: var(--espacio-2);
+}
+
+.detalle__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}

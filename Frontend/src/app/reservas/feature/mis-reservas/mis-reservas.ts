@@ -19,16 +19,10 @@ import { ReservaService } from '../../data-access/reserva-service';
 import { SeleccionReserva } from '../../data-access/seleccion-reserva';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { mensajeAmigable } from '../../../core/utils/errores';
+import { firstValueFrom } from 'rxjs';
+import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 
 type Vista = 'ACTIVAS' | 'HISTORIAL';
-
-/** Una cancelación esperando que el cliente la confirme. */
-interface Cancelacion {
-  reserva: Reserva;
-  cocheras: Reserva[]; // cocheras que se cancelan junto con esta reserva
-}
-
-
 
 @Component({
   selector: 'app-mis-reservas',
@@ -53,13 +47,14 @@ export class MisReservas {
   protected readonly textoPago = TEXTO_PAGO;
   protected readonly formatoFechaHora = formatoFechaHora;
 
+ private readonly dialogos = inject(Dialogos);
+
   private readonly clienteId = this.auth.publicId;
 
   protected readonly reservas = signal<Reserva[] | null>(null); // null = no cargo todaviaa
   protected readonly cargando = signal(false);
   protected readonly errorCarga = signal('');
   protected readonly vista = signal<Vista>('ACTIVAS');
-  protected readonly cancelacion = signal<Cancelacion | null>(null);
   protected readonly procesando = signal<string | null>(null); // publicId de la reserva en tramite
 
   // Las activas, de la más próxima a la más lejana
@@ -125,32 +120,33 @@ export class MisReservas {
     return r.publicId.slice(0, 8);
   }
 
-  // Paso 1: antes de pedir confirmación, se consulta qué más se cancelaría
-  protected pedirCancelacion(reserva: Reserva): void {
-    this.procesando.set(reserva.publicId);
-    this.reservaService.cocherasDependientes(reserva.publicId).subscribe({
-      next: (cocheras) => {
-        this.cancelacion.set({ reserva, cocheras });
-        this.procesando.set(null);
-      },
-      error: (e: HttpErrorResponse) => {
-        this.procesando.set(null);
-        this.snackBar.open(this.mensajeDeError(e), 'Cerrar', { duration: 8000 });
-      },
-    });
-  }
-
-  protected descartarCancelacion(): void {
-    this.cancelacion.set(null);
-  }
-
-  // Paso 2: el cliente confirmó
-  protected confirmarCancelacion(): void {
-    const pendiente = this.cancelacion();
+  // Antes de confirmar, se consulta si se cancela también una cochera
+  protected async pedirCancelacion(reserva: Reserva): Promise<void> {
     const clienteId = this.clienteId();
-    if (!pendiente || !clienteId) return;
+    if (!clienteId) return;
 
-    const { reserva, cocheras } = pendiente;
+    this.procesando.set(reserva.publicId);
+    let cocheras: Reserva[];
+    try {
+      cocheras = await firstValueFrom(this.reservaService.cocherasDependientes(reserva.publicId));
+    } catch (e) {
+      this.procesando.set(null);
+      void this.dialogos.avisar('error', 'No se pudo consultar la reserva', this.mensajeDeError(e as HttpErrorResponse));
+      return;
+    }
+    this.procesando.set(null);
+
+    const aviso =
+      cocheras.length > 0
+        ? `\n\nTambién se cancela la cochera asociada (${this.nombresDe(cocheras)}): sin carpa ni sombrilla, no puede mantenerse.`
+        : '';
+    const confirmado = await this.dialogos.confirmar(
+      'Cancelar la reserva',
+      `¿Querés cancelar esta reserva?\n${this.titulo(reserva)} · ${formatoRango(reserva.fechaInicio, reserva.fechaFin)}${aviso}\n\nEsta acción no se puede deshacer.`,
+      'Sí, cancelar',
+    );
+    if (!confirmado) return;
+
     this.procesando.set(reserva.publicId);
     this.reservaService
       .cancelar({
@@ -163,19 +159,16 @@ export class MisReservas {
       .subscribe({
         next: () => {
           this.procesando.set(null);
-          this.cancelacion.set(null);
           this.snackBar.open('Reserva cancelada', 'Cerrar', { duration: 5000 });
           this.cargar();
         },
         error: (e: HttpErrorResponse) => {
           this.procesando.set(null);
-          this.cancelacion.set(null);
-          this.snackBar.open(this.mensajeDeError(e), 'Cerrar', { duration: 8000 });
+          void this.dialogos.avisar('error', 'No se pudo cancelar la reserva', this.mensajeDeError(e));
           this.cargar(); // el estado pudo haber cambiado
         },
       });
   }
-
   // Lleva al catálogo con la modalidad (y las fechas, si siguen en el futuro) ya cargadas
   protected reservarDeNuevo(r: Reserva): void {
     const futura = r.fechaInicio >= hoyIso();

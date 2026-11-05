@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,5 +72,8 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long>, J
             @Param("reservaId") UUID reservaId);
 
     List<ReservaEntity> findByEstadoReservaAndFechaFinBefore(EReservaEstado estado, LocalDate fecha);
+
+    List<ReservaEntity> findByCliente_PublicId(UUID clientePublicId);
+    List<ReservaEntity> findByCliente_PublicIdAndEstadoReservaIn(UUID clientePublicId, Collection<EReservaEstado> estados);
 }
 

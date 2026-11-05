@@ -2,6 +2,7 @@ package com.Gestion.MiBalnearioGestion.Clientes.dto;
 
 import com.Gestion.MiBalnearioGestion.Auth.Autentificacion.DTO.AuthRequest;
 import com.Gestion.MiBalnearioGestion.Auth.Validaciones.Telefono;
+import com.Gestion.MiBalnearioGestion.Common.Validacion.TelefonoValido;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -28,17 +29,21 @@ public class ClienteRequest {
 
     @Schema(description = "Documento Nacional de Identidad único del usuario", example = "38123456")
     @NotNull
+    @Min(value = 1_000_000, message = "El DNI no es válido")
+    @Max(value = 99_999_999, message = "El DNI no es válido")
     private Integer dni;
 
     @Schema(description = "Dirección de correo electrónico con formato estándar en minúsculas", example = "mariana.gomez@example.com")
     @NotBlank
+    @Size(max = 75, message = "El email no puede contener mas de 75 caracteres")
     @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
             message = "El email ingresado tiene un formato inválido")
     private String email;
 
     @Schema(description = "Teléfono con código de país, solo dígitos (ej: 542236987654)", example = "542236987654")
     @NotBlank
-    @Pattern(regexp = Telefono.REGEX, message = Telefono.MENSAJE)
+    @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números")
+    @TelefonoValido
     private String telefono;
 
     @Schema(description = "Credenciales de acceso iniciales (Nombre de usuario único y contraseña cifrada) requeridas para el login")

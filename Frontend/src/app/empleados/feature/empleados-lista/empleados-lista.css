@@ -1,0 +1,26 @@
+.empleados {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 70rem;
+  margin-inline: auto;
+}
+
+.empleados h1 {
+  margin-bottom: var(--espacio-2);
+}
+
+.empleados__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.filtros-empleados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--espacio-3) var(--espacio-4);
+  padding: var(--espacio-4);
+}
+

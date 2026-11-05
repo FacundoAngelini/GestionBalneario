@@ -6,6 +6,7 @@ import {
   form,
   FormField,
   FormRoot,
+  maxLength,
   TreeValidationResult,
   validate,
 } from '@angular/forms/signals';
@@ -16,9 +17,10 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthClient } from '../../../auth/data-access/auth-client';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
-import { noBlanco } from '../../../core/validators/validadores';
+import { noBlanco, tope } from '../../../core/validators/validadores';
 import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 import { UsuarioClient } from '../../data-access/usuarios.client';
+import { LIMITES } from '../../../core/constants/limites.constants';
 
 interface CambiarUsuarioForm {
   nuevoNombreUsuario: string;
@@ -36,8 +38,9 @@ export class CambiarUsuario implements OnInit {
   private readonly router = inject(Router);
   private readonly dialogos = inject(Dialogos);
 
-  readonly clientePublicId = input.required<string>();
   readonly cancelado = output<void>();
+
+  protected readonly limites = LIMITES;
 
   protected readonly usuarioActual = this.auth.nombreUsuario;
 
@@ -47,6 +50,7 @@ export class CambiarUsuario implements OnInit {
     this.modelo,
     (campos) => {
       noBlanco(campos.nuevoNombreUsuario, 'El nombre de usuario es obligatorio');
+      tope(campos.nuevoNombreUsuario, LIMITES.nombreUsuario);
       validate(campos.nuevoNombreUsuario, ({ value }) =>
         value().trim() !== '' && value().trim() === this.usuarioActual()
           ? { kind: 'igual', message: 'Ese ya es tu nombre de usuario actual' }
@@ -66,8 +70,8 @@ export class CambiarUsuario implements OnInit {
           if (!confirmado) return undefined;
 
           try {
-            await firstValueFrom(
-              this.usuarioClient.cambiarNombreUsuario(this.clientePublicId(), {
+              await firstValueFrom(
+              this.usuarioClient.cambiarNombreUsuario({
                 nuevoNombreUsuario: campos().value().nuevoNombreUsuario.trim(),
               }),
             );

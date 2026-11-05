@@ -1,0 +1,157 @@
+/* inicio.css */
+:host {
+  display: block;
+}
+
+/* ---------- HERO (base = celular) ---------- */
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 70vh;            /* fallback */
+  min-height: 70dvh;           /* evita saltos con la barra del navegador móvil */
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+  background: #0b3d5c;         /* color mientras carga la foto */
+}
+
+.hero img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgb(11 61 92 / .35), rgb(11 61 92 / .65));
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 42rem;
+  padding: 3rem 1.25rem 6rem;  /* abajo deja lugar para las tarjetas que suben */
+}
+
+.hero h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  line-height: 1.15;
+}
+
+.hero p {
+  margin: 0 0 1.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+/* ---------- TARJETAS (base = una columna) ---------- */
+.accesos {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 64rem;
+  margin: -4rem auto 2.5rem;   /* sube sobre el hero */
+  padding: 0 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .12);
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: 11rem;
+  object-fit: cover;
+}
+
+.card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: 1.25rem;
+}
+
+.card__body h2 { margin: 0; font-size: 1.375rem; }
+.card__body p  { margin: 0 0 .75rem; line-height: 1.5; }
+.card__body .btn { margin-top: auto; }
+
+/* ---------- BOTONES ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;         /* 44px: tamaño táctil recomendado */
+  padding: .75rem 1.5rem;
+  border-radius: .5rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn--primary { background: #2aa5a0; color: #fff; }
+.btn--primary:hover { background: #23908b; }
+
+.btn:focus-visible {
+  outline: 3px solid #ffd166;
+  outline-offset: 2px;
+}
+
+/* ---------- TABLET en adelante ---------- */
+@media (min-width: 640px) {
+  .hero {
+    min-height: 75dvh;
+  }
+
+  .hero__content {
+    padding: 5rem 2rem 8rem;
+  }
+
+  .hero p {
+    font-size: 1.25rem;
+  }
+
+  .accesos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: -5rem;
+    padding: 0 1.5rem;
+  }
+
+  .card img {
+    height: 13rem;
+  }
+}
+
+/* ---------- ESCRITORIO ---------- */
+@media (min-width: 1024px) {
+  .hero {
+    min-height: 80dvh;
+  }
+
+  .card img {
+    height: 15rem;
+  }
+}
+
+/* ---------- Accesibilidad ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .btn,
+  .card {
+    transition: transform .2s ease, background-color .2s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+  }
+}
