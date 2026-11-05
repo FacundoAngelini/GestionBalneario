@@ -1,7 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
+import { catchError, debounceTime, of, switchMap, tap } from 'rxjs';
 import { mensajeAmigable } from '../../../core/utils/errores';
 import { formatoFecha } from '../../../core/utils/fechas';
 import { Cliente, MAX_RESULTADOS_CLIENTES } from '../../data-access/cliente-model';
@@ -32,32 +34,34 @@ export class ClientesLista {
   protected readonly hayMas = computed(() => (this.clientes()?.length ?? 0) >= MAX_RESULTADOS_CLIENTES);
 
   constructor() {
-    this.buscar();
-  }
-
-  protected buscar(evento?: Event): void {
-    evento?.preventDefault();
-    if (this.cargando()) return;
-
-    const { texto, estado } = this.filtros();
-    const activo = estado === 'ACTIVOS' ? true : estado === 'BAJA' ? false : undefined;
-
-    this.cargando.set(true);
-    this.errorCarga.set('');
-    this.clienteService.listar(texto, activo).subscribe({
-      next: (lista) => {
-        this.clientes.set(lista);
+    // Cada cambio de filtro busca solo, esperando 300 ms a que termine de escribir
+    toObservable(this.filtros)
+      .pipe(
+        debounceTime(300),
+        tap(() => {
+          this.cargando.set(true);
+          this.errorCarga.set('');
+        }),
+        switchMap(({ texto, estado }) =>
+          this.clienteService
+            .listar(texto, estado === 'ACTIVOS' ? true : estado === 'BAJA' ? false : undefined)
+            .pipe(
+              catchError((e: HttpErrorResponse) => {
+                this.errorCarga.set(
+                  e.status === 403
+                    ? 'No tenés permiso para ver los clientes.'
+                    : mensajeAmigable(e, 'No se pudo cargar la lista de clientes. Intentá de nuevo.'),
+                );
+                return of(null);
+              }),
+            ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((lista) => {
+        if (lista) this.clientes.set(lista);
         this.cargando.set(false);
-      },
-      error: (e: HttpErrorResponse) => {
-        this.cargando.set(false);
-        this.errorCarga.set(
-          e.status === 403
-            ? 'No tenés permiso para ver los clientes.'
-            : mensajeAmigable(e, 'No se pudo cargar la lista de clientes. Intentá de nuevo.'),
-        );
-      },
-    });
+      });
   }
 
   protected formatoDni(dni: number): string {

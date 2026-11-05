@@ -22,18 +22,8 @@
   gap: var(--espacio-3) var(--espacio-4);
   padding: var(--espacio-4);
 }
-
-.filtros-clientes .btn {
-  width: 100%;
-}
-
 @media (min-width: 48rem) {
   .filtros-clientes {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
-    align-items: end;
-  }
-
-  .filtros-clientes .btn {
-    width: auto;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* sin botón: dos columnas */
   }
 }

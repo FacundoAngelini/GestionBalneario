@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MAX_MOTIVO, MIN_MOTIVO } from '../../../empleados/data-access/empleado-model';
 import { mensajeAmigable } from '../../../core/utils/errores';
 import { formatoFecha, formatoRango } from '../../../core/utils/fechas';
@@ -12,6 +11,8 @@ import { CLASE_ESTADO, ETIQUETA_ESTADO_RESERVA } from '../../../reservas/data-ac
 import { ClienteFicha as Ficha } from '../../data-access/cliente-model';
 import { ClienteService } from '../../data-access/cliente-service';
 import { HistorialCliente } from '../historial-cliente/historial-cliente';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 
 type Panel = 'cerrado' | 'baja' | 'reactivar';
 
@@ -45,6 +46,9 @@ export class ClienteFicha {
   protected readonly f = form(this.modelo);
   protected readonly guardando = signal(false);
   protected readonly errorEstado = signal('');
+
+  private readonly router = inject(Router);
+  private readonly dialogos = inject(Dialogos);
 
   // La baja se bloquea mientras tenga reservas pendientes o confirmadas (el servidor lo controla también)
   protected readonly tieneReservasActivas = computed(() => (this.cliente()?.reservasActivas.length ?? 0) > 0);
@@ -90,12 +94,28 @@ export class ClienteFicha {
     return r.recursos.length > 0 ? r.recursos.join(', ') : 'Reserva';
   }
 
-  protected abrirPanel(tipo: Exclude<Panel, 'cerrado'>): void {
+  protected async abrirPanel(tipo: Exclude<Panel, 'cerrado'>): Promise<void> {
+    if (tipo === 'baja' && this.tieneReservasActivas()) {
+      const c = this.cliente();
+      const n = c?.reservasActivas.length ?? 0;
+      const eleccion = await this.dialogos.elegir(
+        'advertencia',
+        'No se puede dar de baja',
+        `El cliente tiene ${n} ${n === 1 ? 'reserva activa' : 'reservas activas'} (pendientes o confirmadas).\n\n` +
+          'Cancelalas antes de dar de baja la cuenta.',
+        'Ir a las reservas',
+        'Cerrar',
+      );
+      if (eleccion === 'principal') {
+        void this.router.navigate(['/reservas/gestion'], { queryParams: { buscar: c?.dni } });
+      }
+      return;
+    }
     this.modelo.set({ motivo: '' });
     this.errorEstado.set('');
     this.panel.set(tipo);
   }
-
+  
   protected cerrarPanel(): void {
     this.panel.set('cerrado');
   }

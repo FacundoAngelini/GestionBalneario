@@ -10,7 +10,7 @@ export const clientesRoutes: Routes = [
     path: '',
     pathMatch: 'full',
     ...acceso,
-    loadComponent: () => import('./feature/clientes-lista/clientes-lista').then((m) => m.ClientesLista),
+    loadComponent: () => import('./feature/cliente-lista/cliente-lista').then((m) => m.ClientesLista),
   },
   {
     path: ROUTE_SEGMENTS.nuevo, // antes de ":id", si no "nuevo" se tomaría como un id

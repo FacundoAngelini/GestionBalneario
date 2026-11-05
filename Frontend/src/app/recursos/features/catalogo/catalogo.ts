@@ -4,7 +4,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { AuthClient } from '../../../auth/data-access/auth-client';
@@ -27,6 +26,7 @@ import {
   TipoRecurso,
 } from '../../data-access/recurso-model';
 import { RecursoService } from '../../data-access/recurso-service';
+import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 
 const POR_PAGINA = 24;
 const MODALIDADES: Modalidad[] = ['DIA', 'QUINCENA', 'MES', 'TEMPORADA'];
@@ -84,7 +84,6 @@ export class Catalogo {
   private readonly recursoService = inject(RecursoService);
   private readonly auth = inject(AuthClient);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
   protected readonly seleccion = inject(SeleccionReserva);
 
   private readonly temporada = toSignal(
@@ -101,6 +100,8 @@ export class Catalogo {
     ...(Object.keys(ETIQUETA_TIPO_RECURSO) as TipoRecurso[]),
   ];
   protected readonly formatoPrecio = formatoPrecio;
+
+  private readonly dialogos = inject(Dialogos);
 
   // En pantallas chicas, el calendario se muestra en un modal.
   protected readonly esMovil =
@@ -310,10 +311,12 @@ export class Catalogo {
         this.limite.set(POR_PAGINA);
         this.cargando.set(false);
         if (perdidos > 0) {
-          this.snackBar.open(
-            'Algunos recursos que habías elegido ya no están disponibles para esas fechas',
-            'Cerrar',
-            { duration: 6000 },
+          void this.dialogos.avisar(
+            'advertencia',
+            'Cambió tu selección',
+            perdidos === 1
+              ? 'Un recurso que habías elegido ya no está disponible para esas fechas, así que lo quitamos de tu selección.'
+              : `${perdidos} recursos que habías elegido ya no están disponibles para esas fechas, así que los quitamos de tu selección.`,
           );
         }
       },

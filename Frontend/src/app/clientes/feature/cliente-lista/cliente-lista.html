@@ -4,7 +4,7 @@
     <a class="btn btn--primary" routerLink="/clientes/nuevo">Nuevo cliente</a>
   </header>
 
-  <form class="card filtros-clientes" (submit)="buscar($event)" novalidate>
+   <form class="card filtros-clientes" (submit)="$event.preventDefault()" novalidate>
     <div class="field">
       <label class="field__label" for="buscar">Buscar</label>
       <input id="buscar" type="search" class="field__control" autocomplete="off"
@@ -18,10 +18,11 @@
         <option value="TODOS">Todos</option>
       </select>
     </div>
-    <button type="submit" class="btn btn--primary" [disabled]="cargando()">
-      @if (cargando()) { Buscando… } @else { Buscar }
-    </button>
   </form>
+
+  @if (cargando()) {
+    <p class="field__hint" role="status">Buscando…</p>
+  }
 
   @if (errorCarga()) {
     <p class="field__error" role="alert">{{ errorCarga() }}</p>

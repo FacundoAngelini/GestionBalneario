@@ -18,12 +18,18 @@
           <mat-form-field>
             <mat-label>Nombre</mat-label>
             <input matInput type="text" autocomplete="off" [formField]="formulario.nombre" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.nombre().value().length >= limites.nombre">
+              {{ formulario.nombre().value().length }}/{{ limites.nombre }}
+            </mat-hint>
             <mat-error>{{ formulario.nombre().errors().at(0)?.message }}</mat-error>
           </mat-form-field>
 
           <mat-form-field>
             <mat-label>Apellido</mat-label>
             <input matInput type="text" autocomplete="off" [formField]="formulario.apellido" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.apellido().value().length >= limites.apellido">
+              {{ formulario.apellido().value().length }}/{{ limites.apellido }}
+            </mat-hint>
             <mat-error>{{ formulario.apellido().errors().at(0)?.message }}</mat-error>
           </mat-form-field>
 
@@ -39,6 +45,9 @@
           <mat-form-field>
             <mat-label>Email</mat-label>
             <input matInput type="email" autocomplete="off" [formField]="formulario.email" />
+            <mat-hint align="end" [class.contador-lleno]="formulario.email().value().length >= limites.email">
+              {{ formulario.email().value().length }}/{{ limites.email }}
+            </mat-hint>
             <mat-error>{{ formulario.email().errors().at(0)?.message }}</mat-error>
           </mat-form-field>
         </div>
@@ -70,6 +79,9 @@
             <mat-form-field>
               <mat-label>Nombre de usuario</mat-label>
               <input matInput type="text" autocomplete="off" [formField]="formulario.nombreUsuario" />
+              <mat-hint align="end" [class.contador-lleno]="formulario.nombreUsuario().value().length >= limites.nombreUsuario">
+                {{ formulario.nombreUsuario().value().length }}/{{ limites.nombreUsuario }}
+              </mat-hint>
               <mat-error>{{ formulario.nombreUsuario().errors().at(0)?.message }}</mat-error>
             </mat-form-field>
 
@@ -96,8 +108,26 @@
         <p class="field__error" role="alert">{{ errorEnvio() }}</p>
       }
 
-      @if (formulario().invalid()) {
-        <p class="field__hint" role="status">Completá todos los campos obligatorios para continuar.</p>
+      @if (problemas().length > 0) {
+        @if (esAlta) {
+          <p class="field__hint" role="status">
+            Completá los campos obligatorios para crear el cliente ({{ problemas().length }}
+            {{ problemas().length === 1 ? 'pendiente' : 'pendientes' }}).
+          </p>
+        } @else {
+          <div class="aviso" role="status">
+            <p><strong>Para guardar, corregí:</strong></p>
+            <ul class="lista-problemas">
+              @for (p of problemas(); track p.etiqueta) {
+                <li><strong>{{ p.etiqueta }}:</strong> {{ p.mensaje }}</li>
+              }
+            </ul>
+            <p class="field__hint">
+              Al editar se revisan todos los datos, no solo los que cambiaste. Los que se cargaron antes de estas
+              validaciones hay que corregirlos para poder guardar.
+            </p>
+          </div>
+        }
       }
 
       <div class="acciones-form">

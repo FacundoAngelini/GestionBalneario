@@ -49,6 +49,17 @@ export class SolicitarBaja {
           try {
             await firstValueFrom(this.usuarioClient.darmeDeBaja({ motivo: campos().value().motivo.trim() }));
           } catch (error) {
+            if (error instanceof HttpErrorResponse && error.status === 422) {
+              const eleccion = await this.dialogos.elegir(
+                'advertencia',
+                'No podés darte de baja todavía',
+                'Tenés reservas pendientes o confirmadas.\n\nCancelalas desde "Mis reservas" y después volvé a pedir la baja.',
+                'Ir a Mis reservas',
+                'Cerrar',
+              );
+              if (eleccion === 'principal') await this.router.navigateByUrl('/reservas/mis-reservas');
+              return undefined;
+            }
             await this.dialogos.avisar(
               'error',
               'No se pudo dar de baja tu cuenta',
