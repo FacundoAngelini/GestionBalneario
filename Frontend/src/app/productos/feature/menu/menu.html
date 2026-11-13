@@ -33,7 +33,13 @@
 
     @if (visibles().length === 0) {
       <div class="card vacio" role="status">
-        <p>Todavía no hay productos cargados en el menú.</p>
+        <p>
+          @if (esAdmin()) {
+            Todavía no hay productos cargados en el menú.
+          } @else {
+            No hay productos disponibles en el menú.
+          }
+        </p>
       </div>
     } @else {
       <ul class="lista-reservas">
