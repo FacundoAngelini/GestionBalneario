@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.historial {
+  padding-top: var(--espacio-1);
+  border-top: 1px solid var(--color-borde);
+}
+
+.historial summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.historial__lista {
+  display: grid;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-2);
+  list-style: none;
+}
+
+.historial__lista li {
+  display: grid;
+  gap: 0.15rem;
+  padding-left: var(--espacio-3);
+  border-left: 3px solid var(--color-borde);
+  overflow-wrap: anywhere;
+}

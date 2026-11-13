@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 /** Usuario y contraseña con los que se da de alta a un empleado (las mismas reglas que el registro de clientes). */
 public record CredencialInicialDTO(
         @NotBlank(message = "El nombre de usuario es obligatorio")
+        @Size(max=30, message = "El nombre de usuario no puede ser mayor de 30")
         String nombreUsuario,
 
         @NotBlank(message = "La contraseña es obligatoria")

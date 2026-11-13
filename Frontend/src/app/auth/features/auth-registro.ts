@@ -23,11 +23,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
-import { noBlanco } from '../../core/validators/validadores';
+import { noBlanco, tope } from '../../core/validators/validadores';
 import { AuthClient } from '../data-access/auth-client';
 import { MatSelectModule } from '@angular/material/select';
 import { buscarPais, PAISES } from '../../core/constants/paises.constants';
 import { OjoContrasenia } from '../../shared/ojo-contrasenia/ojo-contrasenia';
+import { LIMITES } from '../../core/constants/limites.constants';
 
 // El DNI empieza en null (campo vacío). En RegistroClienteRequest es number.
 interface RegistroForm {
@@ -64,6 +65,7 @@ export class Registro {
 
   protected readonly errorMsg = signal('');
   protected readonly paises = PAISES;
+  protected readonly limites = LIMITES;
 
   private readonly registroModel = signal<RegistroForm>({
     nombre: '',
@@ -83,7 +85,10 @@ export class Registro {
     (campos) => {
       // las reglas 
       noBlanco(campos.nombre, 'El nombre es obligatorio');
+      tope(campos.nombre, LIMITES.nombre)
       noBlanco(campos.apellido, 'El apellido es obligatorio');
+      tope(campos.apellido, LIMITES.apellido)
+
 
       required(campos.dni, { message: 'El DNI es obligatorio' });
       min(campos.dni, 1000000, { message: 'El DNI debe ser un número valido' });
@@ -93,8 +98,9 @@ export class Registro {
       pattern(campos.email, /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/, {
         message: 'Formato inválido: en minúsculas y con dominio de 2 o 3 letras (ej: nombre@correo.com)',
       });
+      tope(campos.email, LIMITES.email);
 
-            noBlanco(campos.telefono, 'El teléfono es obligatorio');
+      noBlanco(campos.telefono, 'El teléfono es obligatorio');
       pattern(campos.telefono, /^[0-9]*$/, { message: 'Ingresá solo números, sin espacios, guiones ni el signo +' });
       validate(campos.telefono, ({ value, valueOf }) => {
         const numero = value();
@@ -106,6 +112,7 @@ export class Registro {
       });
 
       noBlanco(campos.nombreUsuario, 'El nombre de usuario es obligatorio');
+      tope(campos.nombreUsuario, LIMITES.nombreUsuario);
 
       noBlanco(campos.contrasenia, 'La contraseña es obligatoria');
       minLength(campos.contrasenia, 8, { message: 'Debe tener al menos 8 caracteres' });

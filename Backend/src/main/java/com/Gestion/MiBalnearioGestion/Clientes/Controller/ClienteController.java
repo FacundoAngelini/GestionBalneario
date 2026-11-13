@@ -1,12 +1,10 @@
 package com.Gestion.MiBalnearioGestion.Clientes.Controller;
 
+import com.Gestion.MiBalnearioGestion.Clientes.Service.ClienteGestionService;
 import com.Gestion.MiBalnearioGestion.Clientes.Service.IClienteService;
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteBusquedaDTO;
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteRequest;
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteResponse;
+import com.Gestion.MiBalnearioGestion.Clientes.dto.*;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioContraseniaRequest;
 import com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO.CambioNombreUsuarioRequest;
-import com.Gestion.MiBalnearioGestion.Clientes.dto.ClienteUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,6 +28,7 @@ import java.util.UUID;
 public class ClienteController {
 
     private final IClienteService clienteService;
+    private final ClienteGestionService gestionService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
@@ -72,62 +71,6 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.buscarPorIDpublico(id));
     }
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
-    @Operation(summary = "Registrar un nuevo cliente de forma administrativa", description = "Permite al personal del establecimiento dar de alta un cliente de forma manual, vinculando sus datos filiatorios y credenciales iniciales.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "211", description = "Cliente creado con éxito"), // Equivale a 201 Created
-            @ApiResponse(responseCode = "400", description = "Payload de entrada inválido o falla en las restricciones de validación", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado - Requiere rol administrativo", content = @Content),
-            @ApiResponse(responseCode = "409", description = "Conflicto - El DNI, Email o Nombre de Usuario ya se encuentra registrado", content = @Content)
-    })
-    public ResponseEntity<ClienteResponse> crearCliente(@Valid @RequestBody ClienteRequest clienteNuevo) {
-        return new ResponseEntity<>(clienteService.crearCliente(clienteNuevo), HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    @Operation(summary = "Actualizar perfil de cliente", description = "Modifica los datos personales y de contacto de un cliente existente. Accesible por la administración o por el propio usuario dueño del perfil.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Perfil de cliente modificado con éxito"),
-            @ApiResponse(responseCode = "400", description = "Datos de actualización inválidos o ID corrupto", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No se encontró el cliente especificado", content = @Content)
-    })
-    public ResponseEntity<ClienteResponse> actualizarCliente(
-            @Parameter(description = "UUID público del cliente a modificar", example = "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d") @PathVariable UUID id,
-            @Valid @RequestBody ClienteRequest clienteNuevo) {
-        return ResponseEntity.ok(clienteService.actualizarCliente(id, clienteNuevo));
-    }
-
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @securityService.esElPropioCliente(#id)")
-    @Operation(summary = "Dar de baja lógicamente una cuenta de cliente", description = "Deshabilita el estado de la cuenta (`estado = false`), bloqueando el inicio de sesión del cliente pero preservando sus datos históricos de consumos y reservas.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Cuenta de cliente dada de baja con éxito (Sin contenido)", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado - Privilegios insuficientes", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
-    })
-    public ResponseEntity<Void> borrarCliente(
-            @Parameter(description = "UUID público del cliente a dar de baja", example = "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
-            @PathVariable UUID id) {
-        clienteService.borrarCliente(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}/reactivar")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Reactivar cuenta de cliente", description = "Restablece el acceso y operatividad de una cuenta de cliente previamente suspendida o dada de baja lógicamente (`estado = true`).")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cuenta de cliente reactivada con éxito"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado - Operación exclusiva del Administrador", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
-    })
-    public ResponseEntity<ClienteResponse> reactivarCliente(
-            @Parameter(description = "UUID público del cliente a reactivar", example = "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
-            @PathVariable UUID id) {
-        return ResponseEntity.ok(clienteService.reactivarCliente(id));
-    }
 
     @PatchMapping("/{id}/nombre-usuario")
     @PreAuthorize("hasRole('ADMIN') or @securityService.esElPropioCliente(#id)")
@@ -141,6 +84,15 @@ public class ClienteController {
             @Parameter(description = "UUID público del cliente", example = "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d") @PathVariable UUID id,
             @Valid @RequestBody CambioNombreUsuarioRequest request) {
         clienteService.cambiarNombreUsuarioCliente(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/me/baja")
+    @PreAuthorize("hasRole('CLIENTE')")
+    @Operation(summary = "El cliente se da de baja", description = "Pide motivo. Se rechaza si tiene reservas pendientes o confirmadas.")
+    public ResponseEntity<Void> darmeDeBaja(
+            @Parameter(hidden = true) Principal principal, @Valid @RequestBody BajaPropiaDTO body) {
+        gestionService.darseDeBaja(principal.getName(), body.motivo());
         return ResponseEntity.noContent().build();
     }
 

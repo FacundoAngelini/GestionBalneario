@@ -25,6 +25,8 @@ export const ROUTE_SEGMENTS = {
   empleados: 'empleados',
   nuevo: 'nuevo',
   editar: 'editar',
+  //clientes
+  clientes: 'clientes',
 
 
   unauthorized: 'no-autorizado'

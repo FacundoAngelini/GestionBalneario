@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Empleados.DTO;
 
 import com.Gestion.MiBalnearioGestion.Common.Validacion.CuitValido;
+import com.Gestion.MiBalnearioGestion.Common.Validacion.TelefonoValido;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -18,22 +19,26 @@ import java.util.UUID;
 @Schema(description = "Datos para dar de alta a un empleado, con su cuenta de acceso")
 public class EmpleadoDTO {
 
-    @NotBlank private String nombre;
-    @NotBlank private String apellido;
+
+    @NotBlank @Size(max = 50, message = "El nombre admite hasta 50 caracteres")
+    private String nombre;
+
+    @NotBlank @Size(max = 50, message = "El apellido admite hasta 50 caracteres")
+    private String apellido;
 
     @NotNull @Min(value = 1_000_000, message = "El DNI no es válido") @Max(value = 99_999_999, message = "El DNI no es válido")
     private Integer dni;
 
-    @NotBlank @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email tiene un formato inválido")
+    @NotBlank @Size(max = 75, message = "El email admite hasta 75 caracteres") @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "El email tiene un formato inválido")
     private String email;
 
-    @NotNull @Positive(message = "El sueldo debe ser mayor a 0")
+    @NotNull @Max(value = 999999999,message = "El sueldo no puede ser mayor de 999.999.999") @Positive(message = "El sueldo debe ser mayor a 0")
     private Double sueldo;
 
     @NotBlank @CuitValido
     private String cuit;
 
-    @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @Size(min = 9, max = 15)
+    @NotBlank @Pattern(regexp = "^[0-9]+$", message = "El teléfono debe contener solo números") @TelefonoValido
     private String telefono;
 
     @Valid @NotNull(message = "La dirección es obligatoria")

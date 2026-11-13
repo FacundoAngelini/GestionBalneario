@@ -22,6 +22,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final TokenRevocadoServicio tokenRevocado;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -36,6 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String jwt = authHeader.substring(7);
         try {
+            if (tokenRevocado.estaRevocado(jwt)) {
+                throw new JwtException("Token revocado"); // el catch de abajo responde 401
+            }
             final String username = jwtService.extractUsername(jwt);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

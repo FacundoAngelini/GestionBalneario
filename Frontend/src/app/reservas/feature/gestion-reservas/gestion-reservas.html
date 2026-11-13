@@ -79,8 +79,6 @@
     } @else {
       <ul class="lista-reservas">
         @for (r of visibles(); track r.publicId) {
-          @let a = accion();
-          @let enAccion = a?.reserva?.publicId === r.publicId;
           @let venc = vencimiento(r);
           @let aviso = avisoDeCobro(r);
           @let v = veredicto(r);
@@ -134,65 +132,27 @@
             }
                 
             @if (!soloLectura()) {
-            @if (enAccion && a) {
+             @if (anulandoId() === r.publicId) {
               <div class="confirmacion" role="alert">
-                @switch (a.tipo) {
-                  @case ('RECHAZAR') {
-                    <p><strong>¿Rechazar esta solicitud?</strong></p>
-                    <p>Los recursos se liberan.</p>
-                  }
-                  @case ('CANCELAR') {
-                    <p><strong>¿Cancelar esta reserva confirmada?</strong></p>
-                    <p>Los recursos se liberan.</p>
-                    @if (a.cocheras.length > 0) {
-                      <p>
-                        También se cancela la cochera asociada ({{ nombresDe(a.cocheras) }}): sin carpa
-                        ni sombrilla, no puede mantenerse.
-                      </p>
-                    }
-                  }
-                  @case ('COBRAR') {
-                    <p><strong>Registrar cobro en efectivo</strong></p>
-                    <dl class="datos">
-                      <dt>Total</dt>
-                      <dd>{{ formatoPrecio(r.montoTotal ?? 0) }}</dd>
-                      @if (hayDescuento()) {
-                        <dt>Descuento ({{ porcentajeDescuento() }} %)</dt>
-                        <dd>−{{ formatoPrecio(descuentoDe(r)) }}</dd>
-                      }
-                      <dt>A cobrar</dt>
-                      <dd>{{ formatoPrecio(montoACobrar(r)) }}</dd>
-                    </dl>
-                    @if (r.estadoReserva === 'PENDIENTE') {
-                      <p>La reserva también queda confirmada.</p>
-                    }
-                    <p class="field__hint">El monto final lo calcula el sistema. Queda registrado quién cobra.</p>
-                  }
-                  @case ('ANULAR_COBRO') {
-                    <p><strong>¿Anular el cobro de {{ formatoPrecio(r.cobro?.monto ?? 0) }}?</strong></p>
-                    <p>La reserva sigue confirmada, pero queda sin cobrar. Indicá el motivo (por ejemplo, un reembolso).</p>
-                    <div class="field">
-                      <label class="field__label" for="motivo">Motivo (obligatorio)</label>
-                      <input id="motivo" type="text" autocomplete="off" class="field__control"
-                             [formField]="fm.motivo" [attr.aria-invalid]="motivoLargo()">
-                      <p [class]="motivoLargo() ? 'field__error' : 'field__hint'">
-                        Entre {{ minMotivo }} y 300 caracteres. Queda registrado junto con tu usuario.
-                      </p>
-                    </div>
-                  }
-                }
-                @if (a.tipo === 'RECHAZAR' || a.tipo === 'CANCELAR') {
-                  <p class="field__hint">Esta acción no se puede deshacer.</p>
-                }
+                <p><strong>¿Anular el cobro de {{ formatoPrecio(r.cobro?.monto ?? 0) }}?</strong></p>
+                <p>La reserva sigue confirmada, pero queda sin cobrar. Indicá el motivo (por ejemplo, un reembolso).</p>
+                <div class="field">
+                  <label class="field__label" for="motivo">Motivo (obligatorio)</label>
+                  <input id="motivo" type="text" autocomplete="off" class="field__control"
+                         [formField]="fm.motivo" [attr.aria-invalid]="motivoLargo()">
+                  <p [class]="motivoLargo() ? 'field__error' : 'field__hint'">
+                    Entre {{ minMotivo }} y 300 caracteres. Queda registrado junto con tu usuario.
+                  </p>
+                </div>
                 <div class="acciones-reserva">
                   <button type="button" class="btn btn--secundario"
-                          [disabled]="procesando() === r.publicId" (click)="descartarAccion()">
+                          [disabled]="procesando() === r.publicId" (click)="descartarAnulacion()">
                     No, volver
                   </button>
                   <button type="button" class="btn btn--primary"
-                          [disabled]="procesando() === r.publicId || (a.tipo === 'ANULAR_COBRO' && !motivoValido())"
-                          (click)="confirmarAccion()">
-                    @if (procesando() === r.publicId) { Procesando… } @else { {{ textoConfirmar[a.tipo] }} }
+                          [disabled]="procesando() === r.publicId || !motivoValido()"
+                          (click)="confirmarAnulacion()">
+                    @if (procesando() === r.publicId) { Procesando… } @else { Sí, anular cobro }
                   </button>
                 </div>
               </div>

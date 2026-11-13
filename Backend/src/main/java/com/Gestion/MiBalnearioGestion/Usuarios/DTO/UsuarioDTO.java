@@ -1,6 +1,7 @@
 package com.Gestion.MiBalnearioGestion.Usuarios.DTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class UsuarioDTO {
     private UUID clienteId;
 
     @Schema(description = "Nombre de cuenta o alias del usuario en el sistema", example = "juan.perez")
+    @Size(max = 30, message = "El nombre de usuario no puede contener mas de 30 caracteres")
     private String nombreUsuario;
 
     @Schema(description = "Conjunto de roles o permisos asignados al usuario", example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")

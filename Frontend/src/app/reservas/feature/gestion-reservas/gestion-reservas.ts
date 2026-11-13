@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
 import { formatoFecha, formatoFechaHora, formatoRango, hoyIso } from '../../../core/utils/fechas';
 import { formatoPrecio } from '../../../core/utils/moneda';
@@ -19,6 +19,8 @@ import { ReservaService } from '../../data-access/reserva-service';
 import { HistorialReserva } from './historial-reservas/historial-reservas';
 import { mensajeAmigable } from '../../../core/utils/errores';
 import { AuthClient } from '../../../auth/data-access/auth-client';
+import { firstValueFrom } from 'rxjs';
+import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 
 const POR_PAGINA = 20;
 const MIN_MOTIVO = 5;
@@ -28,21 +30,6 @@ const ESTADOS_COBRABLES: ReservaEstado[] = ['PENDIENTE', 'CONFIRMADA', 'FINALIZA
 
 type Vista = 'PENDIENTES' | 'POR_COBRAR' | 'INGRESO' | 'TODAS';
 type FiltroEstado = 'TODOS' | ReservaEstado;
-type TipoAccion = 'RECHAZAR' | 'CANCELAR' | 'COBRAR' | 'ANULAR_COBRO';
-
-/** Una acción esperando que el personal la confirme. */
-interface AccionPendiente {
-  tipo: TipoAccion;
-  reserva: Reserva;
-  cocheras: Reserva[]; // cocheras que se cancelan junto con esta reserva
-}
-
-const TEXTO_CONFIRMAR: Record<TipoAccion, string> = {
-  RECHAZAR: 'Sí, rechazar',
-  CANCELAR: 'Sí, cancelar',
-  COBRAR: 'Sí, registrar cobro',
-  ANULAR_COBRO: 'Sí, anular cobro',
-};
 
 @Component({
   selector: 'app-gestion-reservas',
@@ -67,13 +54,12 @@ export class GestionReservas {
   protected readonly formatoRango = formatoRango;
   protected readonly formatoFechaHora = formatoFechaHora;
   protected readonly estados = ESTADOS;
-  protected readonly textoConfirmar = TEXTO_CONFIRMAR;
   protected readonly minMotivo = MIN_MOTIVO;
 
   protected readonly reservas = signal<Reserva[] | null>(null); // null = todavía no cargó
   protected readonly cargando = signal(false);
   protected readonly errorCarga = signal('');
-  protected readonly vista = signal<Vista>(this.auth.esPersonal() ? 'PENDIENTES' : 'INGRESO');  protected readonly accion = signal<AccionPendiente | null>(null);
+  protected readonly vista = signal<Vista>(this.auth.esPersonal() ? 'PENDIENTES' : 'INGRESO');  
   protected readonly procesando = signal<string | null>(null); // publicId de la reserva en trámite
   private readonly limite = signal(POR_PAGINA);
   private readonly descuento = signal(0); // % por pago en efectivo (solo para la vista previa)
@@ -90,6 +76,9 @@ export class GestionReservas {
     return largo >= MIN_MOTIVO && largo <= MAX_MOTIVO;
   });
   protected readonly motivoLargo = computed(() => this.datosMotivo().motivo.trim().length > MAX_MOTIVO);
+
+  private readonly dialogos = inject(Dialogos);
+  protected readonly anulandoId = signal<string | null>(null); // reserva cuyo cobro se está anulando
 
   // Las más antiguas primero: son las que vencen antes
   protected readonly pendientes = computed(() =>
@@ -177,6 +166,13 @@ export class GestionReservas {
       });
     });
     this.cargar();
+
+        // Si se llega desde la ficha de un cliente, se busca directamente en "Todas"
+    const buscar = inject(ActivatedRoute).snapshot.queryParamMap.get('buscar');
+    if (buscar) {
+      this.filtros.update((f) => ({ ...f, texto: buscar }));
+      this.vista.set('TODAS');
+    }
   }
 
   protected cargar(): void {
@@ -300,90 +296,108 @@ export class GestionReservas {
     });
   }
 
-  protected pedirRechazo(reserva: Reserva): void {
-    this.accion.set({ tipo: 'RECHAZAR', reserva, cocheras: [] });
-  }
-
-  protected pedirCobro(reserva: Reserva): void {
-    this.accion.set({ tipo: 'COBRAR', reserva, cocheras: [] });
-  }
-
-  protected pedirAnulacion(reserva: Reserva): void {
-    this.datosMotivo.set({ motivo: '' });
-    this.accion.set({ tipo: 'ANULAR_COBRO', reserva, cocheras: [] });
-  }
-
-  // Antes de pedir confirmación, se consulta qué más se cancelaría
-  protected pedirCancelacion(reserva: Reserva): void {
-    this.procesando.set(reserva.publicId);
-    this.reservaService.cocherasDependientes(reserva.publicId).subscribe({
-      next: (cocheras) => {
-        this.accion.set({ tipo: 'CANCELAR', reserva, cocheras });
-        this.procesando.set(null);
-      },
-      error: (e: HttpErrorResponse) => this.fallar(e),
-    });
-  }
-
-  protected descartarAccion(): void {
-    this.accion.set(null);
-  }
 
   protected verComprobante(reserva: Reserva): void {
     void this.router.navigateByUrl(`/${ROUTE_SEGMENTS.reservas}/${ROUTE_SEGMENTS.comprobante}/${reserva.publicId}`);
   }
 
-  protected confirmarAccion(): void {
-    const pendiente = this.accion();
-    if (!pendiente) return;
-    const { tipo, reserva, cocheras } = pendiente;
-    const id = reserva.publicId;
+  protected async pedirRechazo(reserva: Reserva): Promise<void> {
+    const confirmado = await this.dialogos.confirmar(
+      'Rechazar la solicitud',
+      `¿Rechazar la solicitud de ${reserva.clienteNombre}?\n${this.titulo(reserva)} · ${formatoRango(reserva.fechaInicio, reserva.fechaFin)}\n\n` +
+        'Los recursos se liberan. Esta acción no se puede deshacer.',
+      'Sí, rechazar',
+    );
+    if (!confirmado) return;
 
-    switch (tipo) {
-      case 'RECHAZAR':
-        this.procesando.set(id);
-        this.reservaService.rechazar(id).subscribe({
-          next: (actualizada) => this.terminar(actualizada, 'Solicitud rechazada'),
-          error: (e: HttpErrorResponse) => this.fallar(e),
-        });
-        break;
+    this.procesando.set(reserva.publicId);
+    this.reservaService.rechazar(reserva.publicId).subscribe({
+      next: (actualizada) => this.terminar(actualizada, 'Solicitud rechazada'),
+      error: (e: HttpErrorResponse) => this.fallar(e),
+    });
+  }
 
-      case 'CANCELAR':
-        this.procesando.set(id);
-        this.reservaService.cancelarAdministrativa(id, cocheras.length > 0).subscribe({
-          next: () => {
-            this.procesando.set(null);
-            this.accion.set(null);
-            this.snackBar.open('Reserva cancelada', 'Cerrar', { duration: 5000 });
-            this.cargar(); // también pudo cambiar una cochera asociada
-          },
-          error: (e: HttpErrorResponse) => this.fallar(e),
-        });
-        break;
-
-      case 'COBRAR':
-        this.procesando.set(id);
-        this.reservaService.registrarCobro(id).subscribe({
-          next: () => {
-            this.procesando.set(null);
-            this.accion.set(null);
-            this.contador.refrescar();
-            this.snackBar.open('Cobro registrado', 'Cerrar', { duration: 5000 });
-            this.verComprobante(reserva); // el comprobante se puede imprimir desde ahí
-          },
-          error: (e: HttpErrorResponse) => this.fallar(e),
-        });
-        break;
-
-      case 'ANULAR_COBRO':
-        if (!this.motivoValido()) return;
-        this.procesando.set(id);
-        this.reservaService.anularCobro(id, this.datosMotivo().motivo.trim()).subscribe({
-          next: (actualizada) => this.terminar(actualizada, 'Cobro anulado'),
-          error: (e: HttpErrorResponse) => this.fallar(e),
-        });
-        break;
+  // Antes de confirmar, se consulta qué más se cancelaría
+  protected async pedirCancelacion(reserva: Reserva): Promise<void> {
+    this.procesando.set(reserva.publicId);
+    let cocheras: Reserva[];
+    try {
+      cocheras = await firstValueFrom(this.reservaService.cocherasDependientes(reserva.publicId));
+    } catch (e) {
+      this.fallar(e as HttpErrorResponse);
+      return;
     }
+    this.procesando.set(null);
+
+    const aviso =
+      cocheras.length > 0
+        ? `\n\nTambién se cancela la cochera asociada (${this.nombresDe(cocheras)}): sin carpa ni sombrilla, no puede mantenerse.`
+        : '';
+    const confirmado = await this.dialogos.confirmar(
+      'Cancelar la reserva',
+      `¿Cancelar la reserva confirmada de ${reserva.clienteNombre}?\n${this.titulo(reserva)} · ${formatoRango(reserva.fechaInicio, reserva.fechaFin)}\n\n` +
+        `Los recursos se liberan.${aviso}\n\nEsta acción no se puede deshacer.`,
+      'Sí, cancelar',
+    );
+    if (!confirmado) return;
+
+    this.procesando.set(reserva.publicId);
+    this.reservaService.cancelarAdministrativa(reserva.publicId, cocheras.length > 0).subscribe({
+      next: () => {
+        this.procesando.set(null);
+        this.snackBar.open('Reserva cancelada', 'Cerrar', { duration: 5000 });
+        this.cargar(); // también pudo cambiar una cochera asociada
+      },
+      error: (e: HttpErrorResponse) => this.fallar(e),
+    });
+  }
+
+  protected async pedirCobro(reserva: Reserva): Promise<void> {
+    const lineas = [`Total: ${formatoPrecio(reserva.montoTotal ?? 0)}`];
+    if (this.hayDescuento()) {
+      lineas.push(`Descuento por efectivo (${this.porcentajeDescuento()} %): −${formatoPrecio(this.descuentoDe(reserva))}`);
+    }
+    lineas.push(`A cobrar en efectivo: ${formatoPrecio(this.montoACobrar(reserva))}`);
+
+    const confirmado = await this.dialogos.confirmar(
+      'Registrar cobro',
+      `${reserva.clienteNombre} · ${this.titulo(reserva)}\n\n${lineas.join('\n')}` +
+        `${reserva.estadoReserva === 'PENDIENTE' ? '\n\nLa reserva también queda confirmada.' : ''}\n\n` +
+        'El monto final lo calcula el sistema. Queda registrado quién cobra.',
+      'Sí, registrar cobro',
+    );
+    if (!confirmado) return;
+
+    this.procesando.set(reserva.publicId);
+    this.reservaService.registrarCobro(reserva.publicId).subscribe({
+      next: () => {
+        this.procesando.set(null);
+        this.contador.refrescar();
+        this.snackBar.open('Cobro registrado', 'Cerrar', { duration: 5000 });
+        this.verComprobante(reserva); // el comprobante se puede imprimir desde ahí
+      },
+      error: (e: HttpErrorResponse) => this.fallar(e),
+    });
+  }
+
+  // Anular un cobro pide un motivo: se resuelve con un panel dentro de la tarjeta
+  protected pedirAnulacion(reserva: Reserva): void {
+    this.datosMotivo.set({ motivo: '' });
+    this.anulandoId.set(reserva.publicId);
+  }
+
+  protected descartarAnulacion(): void {
+    this.anulandoId.set(null);
+  }
+
+  protected confirmarAnulacion(): void {
+    const id = this.anulandoId();
+    if (!id || !this.motivoValido()) return;
+    this.procesando.set(id);
+    this.reservaService.anularCobro(id, this.datosMotivo().motivo.trim()).subscribe({
+      next: (actualizada) => this.terminar(actualizada, 'Cobro anulado'),
+      error: (e: HttpErrorResponse) => this.fallar(e),
+    });
   }
 
   // Una reserva modificada: se reemplaza en la lista con lo que devolvió el backend
@@ -393,14 +407,14 @@ export class GestionReservas {
     );
     this.contador.fijar(this.pendientes().length);
     this.procesando.set(null);
-    this.accion.set(null);
+    this.anulandoId.set(null);
     this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
   }
 
   private fallar(e: HttpErrorResponse): void {
     this.procesando.set(null);
-    this.accion.set(null);
-    this.snackBar.open(this.mensajeDeError(e), 'Cerrar', { duration: 8000 });
+    this.anulandoId.set(null);
+    void this.dialogos.avisar('error', 'No se pudo completar la acción', this.mensajeDeError(e));
     this.cargar(); // el estado pudo haber cambiado (por ejemplo, si venció)
   }
 
