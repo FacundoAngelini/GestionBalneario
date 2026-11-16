@@ -39,7 +39,23 @@
         <dt>Código</dt>
         <dd class="codigo">{{ p.publicId }}</dd>
       </dl>
+
+      @if (esAdmin()) {
+        <button type="button" class="btn btn--secundario"
+                [disabled]="actualizandoDisponibilidad()"
+                (click)="cambiarDisponibilidad(!p.productoDisponible)">
+          @if (actualizandoDisponibilidad()) {
+            Actualizando…
+          } @else {
+            {{ p.productoDisponible ? 'Dar de baja' : 'Reactivar' }}
+          }
+        </button>
+      }
     </article>
+  }
+
+  @if (errorDisponibilidad(); as mensaje) {
+    <p class="field__error" role="alert">{{ mensaje }}</p>
   }
 
   <div class="acciones-reserva">
