@@ -27,7 +27,7 @@ public class TicketController {
     private final ITicketService ticketService;
 
     @GetMapping("/{publicId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO', 'CAJERO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION', 'CAJERO')")
     @Operation(summary = "Buscar ticket por ID público", description = "Recupera un comprobante fiscal o ticket comercial específico a partir de su identificador único.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ticket encontrado y recuperado con éxito"),
@@ -42,7 +42,7 @@ public class TicketController {
     }
 
     @GetMapping("/pago/{pagoPublicId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Obtener ticket asociado a un pago", description = "Permite a la administración recuperar el comprobante comercial emitido que corresponde a una transacción financiera específica.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ticket asociado al pago recuperado con éxito"),
@@ -57,7 +57,7 @@ public class TicketController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar tickets emitidos", description = "Herramienta de auditoría para la administración del balneario/restaurante. Filtra tickets por rango de fecha y hora exacta, o por la actividad de facturación de un empleado en particular.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de tickets filtrados obtenido con éxito"),

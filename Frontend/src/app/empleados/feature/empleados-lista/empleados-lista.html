@@ -1,0 +1,92 @@
+<section class="empleados">
+  <header class="empleados__cabecera">
+    <h1>Empleados</h1>
+    <a class="btn btn--primary" routerLink="/empleados/nuevo">Nuevo empleado</a>
+  </header>
+
+  <div class="card filtros-empleados">
+    <div class="field">
+      <label class="field__label" for="buscar">Buscar</label>
+      <input id="buscar" type="search" class="field__control" autocomplete="off"
+             placeholder="Nombre, apellido o DNI" [formField]="f.texto">
+    </div>
+    <div class="field">
+      <label class="field__label" for="rol">Rol</label>
+      <select id="rol" class="field__control" [formField]="f.rol">
+        <option value="">Todos los roles</option>
+        @for (r of opcionesRol; track r.valor) {
+          <option [value]="r.valor">{{ r.etiqueta }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="sector">Sector</label>
+      <select id="sector" class="field__control" [formField]="f.sector">
+        <option value="">Todos los sectores</option>
+        @for (s of sectores(); track s.publicId) {
+          <option [value]="s.publicId">{{ s.nombre }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="estado">Estado</label>
+      <select id="estado" class="field__control" [formField]="f.estado">
+        <option value="">Todos los estados</option>
+        @for (e of estados; track e) {
+          <option [value]="e">{{ etiquetaEstado[e] }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+    <button type="button" class="btn btn--secundario" (click)="cargar()">Reintentar</button>
+  }
+
+  @if (cargando() && empleados() === null) {
+    <p role="status">Cargando empleados…</p>
+  }
+
+  @if (empleados() !== null) {
+    <p class="field__hint" role="status">
+      {{ filtrados().length }} {{ filtrados().length === 1 ? 'empleado' : 'empleados' }}
+    </p>
+
+    @if (filtrados().length === 0) {
+      <div class="card vacio"><p>No hay empleados que coincidan con los filtros.</p></div>
+    } @else {
+      <div class="tabla-contenedor">
+        <table class="tabla" role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th role="columnheader" scope="col">Empleado</th>
+              <th role="columnheader" scope="col">DNI</th>
+              <th role="columnheader" scope="col">Rol</th>
+              <th role="columnheader" scope="col">Sector</th>
+              <th role="columnheader" scope="col">Estado</th>
+              <th role="columnheader" scope="col"><span class="solo-lector">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody role="rowgroup">
+            @for (e of filtrados(); track e.publicId) {
+              <tr role="row">
+                <td role="cell" data-label="Empleado"><strong>{{ e.apellido }}, {{ e.nombre }}</strong></td>
+                <td role="cell" data-label="DNI">{{ formatoDni(e.dni) }}</td>
+                <td role="cell" data-label="Rol">{{ etiquetaRol(e) }}</td>
+                <td role="cell" data-label="Sector">{{ e.sector?.nombre ?? '—' }}</td>
+                <td role="cell" data-label="Estado">
+                  <span class="estado" [class]="claseEstado[e.estadoEmpleado]">{{ etiquetaEstado[e.estadoEmpleado] }}</span>
+                </td>
+                <td role="cell" data-label="">
+                  <a class="btn btn--secundario" [routerLink]="['/empleados', e.publicId]"
+                     [attr.aria-label]="'Ver la ficha de ' + e.nombre + ' ' + e.apellido">Ver ficha</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>

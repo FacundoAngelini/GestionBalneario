@@ -14,6 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { AuthClient } from '../../auth/data-access/auth-client';
 import { ETIQUETA_ROL } from '../../auth/data-access/auth-model';
+import { PendientesReservas } from '../../reservas/data-access/pendientes-reservas';
+import { SeleccionReserva } from '../../reservas/data-access/seleccion-reserva';
 
 @Component({
   imports: [CdkTrapFocus, MatButtonModule, MatIconModule, RouterLink],
@@ -27,11 +29,16 @@ import { ETIQUETA_ROL } from '../../auth/data-access/auth-model';
 export class Header {
   private readonly auth = inject(AuthClient);
   private readonly router = inject(Router);
+  private readonly seleccion = inject(SeleccionReserva);
 
   protected readonly logueado = this.auth.usuarioLogueado;
   protected readonly nombreUsuario = this.auth.nombreUsuario;
-  protected readonly rol = computed(
-    () => ETIQUETA_ROL[this.auth.roles()[0]] ?? '',
+  protected readonly rol = this.auth.etiquetaRol;
+  protected readonly esCliente = this.auth.esCliente;
+  protected readonly esPersonal = this.auth.esPersonal;
+  protected readonly pendientes = inject(PendientesReservas).cantidad;
+    protected readonly etiquetaCatalogo = computed(() =>
+    this.auth.esCliente() ? 'Reservar' : 'Ver recursos',
   );
 
   protected readonly menuPerfilAbierto = signal(false);
@@ -71,7 +78,8 @@ export class Header {
     }
   }
 
-  protected cerrarSesion(): void {
+   protected cerrarSesion(): void {
+    this.seleccion.limpiar();
     this.auth.logout();
     this.cerrarMenuPerfil(false);
     this.router.navigateByUrl('/');

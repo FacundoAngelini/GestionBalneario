@@ -1,0 +1,113 @@
+<section class="solicitud">
+  <header>
+    <h1>Confirmar solicitud</h1>
+    @if (!resultado()) {
+      <p class="field__hint">Revisá lo que elegiste antes de enviarlo.</p>
+    }
+  </header>
+
+  @if (resultado(); as r) {
+    <div class="card exito" role="status">
+      <h2>{{ r.noCreadas ? 'Solicitud enviada parcialmente' : '¡Solicitud enviada!' }}</h2>
+      <p>
+        Quedó pendiente de confirmación. El personal la revisa dentro de las
+        {{ horasConfirmar }} horas; si no se confirma en ese plazo, vence y los recursos se liberan.
+      </p>
+      <p>{{ textoPago }}</p>
+    </div>
+
+    @for (item of r.creadas; track item.reserva.publicId) {
+      <article class="card seccion">
+        <h3>{{ item.nombres }}</h3>
+        <dl class="datos">
+          <dt>Período</dt>
+          <dd>{{ formatoRango(item.reserva.fechaInicio, item.reserva.fechaFin) }}</dd>
+          <dt>Modalidad</dt>
+          <dd>{{ etiquetaModalidad[item.reserva.modalidad] }}</dd>
+          @if (item.reserva.montoTotal != null) {
+            <dt>Total</dt>
+            <dd>{{ formatoPrecio(item.reserva.montoTotal) }}</dd>
+          }
+          <dt>Estado</dt>
+          <dd>{{ etiquetaEstado[item.reserva.estadoReserva] }}</dd>
+          <dt>Código</dt>
+          <dd class="codigo">{{ item.reserva.publicId }}</dd>
+        </dl>
+      </article>
+    }
+
+    @if (r.noCreadas) {
+      <div class="card seccion" role="alert">
+        <h3>No se pudo solicitar</h3>
+        <p><strong>{{ r.noCreadas }}</strong></p>
+        <p class="field__error">{{ r.motivo }}</p>
+        <p class="field__hint">Podés intentarlo de nuevo desde el catálogo.</p>
+      </div>
+    }
+
+    <div class="acciones-solicitud">
+      <a class="btn btn--secundario" routerLink="/catalogo">Seguir mirando el catálogo</a>
+      <a class="btn btn--primary" routerLink="/reservas/mis-reservas">Ver mis reservas</a>
+    </div>
+  } @else {
+    <form class="solicitud__form" (submit)="confirmar($event)" novalidate>
+      <section class="card seccion">
+        <h2>Tu estadía</h2>
+        <dl class="datos">
+          <dt>Modalidad</dt>
+          <dd>{{ modalidadTexto() }}</dd>
+          <dt>Período</dt>
+          <dd>{{ periodoTexto() }}</dd>
+        </dl>
+      </section>
+
+      <section class="card seccion">
+        <h2>Recursos elegidos</h2>
+        <ul class="lista-recursos">
+          @for (l of lineas(); track l.recurso.publicId) {
+            <li>
+              <span>
+                {{ l.recurso.nombre }}
+                <span class="field__hint">· {{ etiquetaTipo[l.recurso.tipo] }} · {{ l.recurso.sectorNombre }}</span>
+              </span>
+              <strong>{{ formatoPrecio(l.total) }}</strong>
+            </li>
+          }
+        </ul>
+        <p class="total">
+          <span>Total</span>
+          <strong>{{ formatoPrecio(seleccion.total()) }}</strong>
+        </p>
+      </section>
+
+      <section class="card seccion">
+        <h2>Qué pasa después</h2>
+        <ol class="pasos">
+          <li>Tu solicitud queda <strong>pendiente</strong>. No genera ningún cobro online.</li>
+          <li>
+            El personal la confirma dentro de las {{ horasConfirmar }} horas. Si no se confirma en ese
+            plazo, vence y los recursos se liberan.
+          </li>
+          <li>{{ textoPago }}</li>
+          <li>Podés cancelarla hasta {{ horasCancelar }} horas antes de la entrada.</li>
+        </ol>
+      </section>
+
+      @if (sinIdCliente()) {
+        <p class="field__error" role="alert">
+          No pudimos identificar tu cuenta. Cerrá sesión y volvé a ingresar.
+        </p>
+      }
+      @if (errorEnvio()) {
+        <p class="field__error" role="alert">{{ errorEnvio() }}</p>
+      }
+
+      <div class="acciones-solicitud">
+        <a class="btn btn--secundario" routerLink="/catalogo">Volver al catálogo</a>
+        <button type="submit" class="btn btn--primary" [disabled]="!puedeEnviar()">
+          @if (enviando()) { Enviando… } @else { Enviar solicitud }
+        </button>
+      </div>
+    </form>
+  }
+</section>

@@ -17,6 +17,7 @@ import { firstValueFrom } from 'rxjs';
 import { contraseniaSegura, noBlanco } from '../../../core/validators/validadores';
 import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 import { UsuarioClient } from '../../data-access/usuarios.client';
+import { OjoContrasenia } from '../../../shared/ojo-contrasenia/ojo-contrasenia';
 
 interface CambiarContraseniaForm {
   contraseniaActual: string;
@@ -26,7 +27,7 @@ interface CambiarContraseniaForm {
 
 @Component({
   selector: 'app-cambiar-contrasenia',
-  imports: [FormRoot, FormField, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [FormRoot, FormField, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, OjoContrasenia],
   templateUrl: './cambiar-contrasenia.html',
   styleUrl: './perfil-form.css',
 })
@@ -34,11 +35,9 @@ export class CambiarContrasenia {
   private readonly usuarioClient = inject(UsuarioClient);
   private readonly dialogos = inject(Dialogos);
 
-  readonly clientePublicId = input.required<string>();
   readonly cambiada = output<void>();
   readonly cancelada = output<void>();
 
-  protected readonly verContrasenias = signal(false);
 
   private readonly modelo = signal<CambiarContraseniaForm>({
     contraseniaActual: '',
@@ -79,9 +78,9 @@ export class CambiarContrasenia {
 
           try {
             const { contraseniaActual, nuevaContrasenia } = campos().value();
-            await firstValueFrom(
-              this.usuarioClient.cambiarContrasenia(this.clientePublicId(), { contraseniaActual, nuevaContrasenia }),
-            );
+          await firstValueFrom(
+         this.usuarioClient.cambiarContrasenia({ contraseniaActual, nuevaContrasenia }),
+        );
             await this.dialogos.avisar('exito', 'Contraseña actualizada', 'Tu contraseña se cambió correctamente.');
             this.cambiada.emit();
             return undefined;

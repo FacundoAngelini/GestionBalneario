@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface CocheraRepositorio extends JpaRepository<CocheraEntity, Long>, JpaSpecificationExecutor<CocheraEntity> {
     Optional<CocheraEntity> findByPublicId(UUID Id);
     Optional<CocheraEntity> findByNumeroCochera(int numero);
+    long countBySectorPublicId(UUID sectorPublicId);
+    boolean existsByNumeroCocheraBetween(int desde, int hasta);
 }

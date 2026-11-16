@@ -14,6 +14,9 @@ import java.util.UUID;
 @Builder
 @Schema(description = "DTO utilizado para procesar la cancelación de una reserva existente")
 public class CancelarReservaDTO {
+    @Schema(description = "Confirma que también se cancelen las cocheras que quedarían sin carpa o sombrilla. " +
+            "Si hay cocheras afectadas y no es true, la cancelación se rechaza", example = "false")
+    private Boolean cancelarCocherasAsociadas;
 
     @Schema(description = "UUID público de la reserva que se desea cancelar", example = "b9f8e7d6-c5b4-a3f2-e1d0-9c8b7a6f5e4d")
     private UUID publicId;

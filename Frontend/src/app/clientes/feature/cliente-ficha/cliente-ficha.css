@@ -1,0 +1,92 @@
+.ficha {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 50rem;
+  margin-inline: auto;
+}
+
+.ficha :is(h1, h2) {
+  margin-bottom: var(--espacio-2);
+}
+
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+.ficha__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.ficha__cabecera h1 {
+  overflow-wrap: anywhere;
+}
+
+.acciones-ficha {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.acciones-ficha .btn {
+  width: 100%;
+}
+
+.bloque,
+.panel-estado {
+  display: grid;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+}
+
+.panel-estado__form {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.reservas-cliente {
+  display: grid;
+  gap: var(--espacio-3);
+  list-style: none;
+}
+
+.reservas-cliente li {
+  display: grid;
+  gap: 0.15rem;
+  padding-left: var(--espacio-3);
+  border-left: 3px solid var(--color-borde);
+  overflow-wrap: anywhere;
+}
+
+.reservas-cliente__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+
+.bloque > .btn {
+  justify-self: start;
+}
+
+@media (min-width: 40rem) {
+  .acciones-ficha {
+    display: flex;
+  }
+
+  .acciones-ficha .btn {
+    width: auto;
+  }
+
+  .bloque,
+  .panel-estado {
+    padding: var(--espacio-5);
+  }
+}

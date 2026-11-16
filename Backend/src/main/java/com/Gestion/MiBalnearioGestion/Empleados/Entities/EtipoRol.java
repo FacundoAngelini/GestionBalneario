@@ -8,5 +8,6 @@ public enum EtipoRol {
     GERENTE,
     REPARTIDOR,
     ADMINISTRATIVO,
-    EMPLEADO
+    EMPLEADO,
+    ADMINISTRADOR
 }

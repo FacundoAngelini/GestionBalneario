@@ -7,15 +7,20 @@
 }
 
 .marca {
+  min-width: 0;
+  overflow: hidden;
   font-family: var(--fuente-titulos);
   font-size: 1.4rem;
   font-weight: 700;
   color: inherit;
   text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sesion {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 1rem;
 }
@@ -37,6 +42,7 @@
 }
 
 .btn-header {
+  min-width: 0;
   --mat-button-outlined-label-text-color: var(--color-texto-sobre-primario);
   --mat-button-outlined-outline-color: var(--color-texto-sobre-primario);
   --mat-button-outlined-state-layer-color: var(--color-texto-sobre-primario);
@@ -53,7 +59,8 @@
   color: var(--color-texto-sobre-primario);
 }
 
-.texto-salir {
+.texto-salir,
+.texto-boton {
   display: none;
 }
 
@@ -136,6 +143,8 @@
 }
 
 .perfil-panel-contenido {
+  display: grid;
+  gap: 0.25rem;
   margin-top: 1.5rem;
 }
 
@@ -150,7 +159,9 @@
 .opcion-perfil {
   display: flex;
   width: 100%;
+  min-height: 3rem;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.65rem;
   padding: 0.75rem;
   border-radius: var(--radio-chico);
@@ -167,20 +178,42 @@
   margin-left: auto;
 }
 
+/* En celular solo lo imprescindible; el resto aparece desde 600px */
+.btn-panel,
+.solo-escritorio {
+  display: none;
+}
+
 @media (min-width: 600px) {
+  .btn-panel,
+  .solo-escritorio {
+    display: inline-flex;
+  }
+
   .usuario {
     display: flex;
   }
 
-  .texto-salir {
+  .texto-salir,
+  .texto-boton {
     display: inline;
   }
 }
 
 @media (max-width: 480px) {
-  :host { gap: 0.5rem; min-width: 0; }
-  .marca { font-size: 1.2rem; }
-  .sesion { gap: 0.25rem; }
+  :host {
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .marca {
+    font-size: 1.2rem;
+  }
+
+  .sesion {
+    gap: 0.25rem;
+  }
+
   .btn-header,
   .btn-registro {
     --mat-button-outlined-horizontal-padding: 12px;

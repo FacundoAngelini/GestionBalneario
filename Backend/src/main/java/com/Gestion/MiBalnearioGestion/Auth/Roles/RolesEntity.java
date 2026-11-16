@@ -4,6 +4,8 @@ import com.Gestion.MiBalnearioGestion.Auth.Permisos.Permisos;
 import com.Gestion.MiBalnearioGestion.Auth.Permisos.PermisosEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +24,7 @@ public class RolesEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private Roles role;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)

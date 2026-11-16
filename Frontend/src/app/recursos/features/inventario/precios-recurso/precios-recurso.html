@@ -1,0 +1,106 @@
+<details class="precios">
+  <summary>Precios ({{ ordenados().length }})</summary>
+
+  @if (!cargados()) {
+    <p class="field__hint">Los precios no están disponibles en este momento.</p>
+  } @else {
+    @if (ordenados().length === 0) {
+      <p class="field__hint">Este recurso todavía no tiene precios cargados.</p>
+    }
+
+    <ul class="precios__lista">
+      @for (p of ordenados(); track p.publicId) {
+        <li class="precios__fila" [class.precios__fila--activa]="editandoId() === p.publicId">
+          <div class="precios__datos">
+            <strong>{{ etiquetaModalidad[p.modalidad] }}</strong>
+            <span>{{ formatoPrecio(p.precio) }}</span>
+            <span class="estado" [class]="claseEstado[estadoDe(p)]">{{ etiquetaEstado[estadoDe(p)] }}</span>
+          </div>
+          <p class="field__hint">{{ formatoRango(p.fechaVigencia, p.fechaCaducada) }}</p>
+          @if (esAdmin() && editandoId() === null) {
+            <button type="button" class="btn btn--secundario"
+                    [attr.aria-label]="'Editar precio ' + etiquetaModalidad[p.modalidad]"
+                    (click)="empezarEdicion(p)">Editar</button>
+          }
+        </li>
+      }
+    </ul>
+
+    @if (esAdmin() && editandoId() === null) {
+      <button type="button" class="btn btn--secundario" (click)="empezarNuevo()">Agregar precio</button>
+    }
+
+    @if (esAdmin() && editandoId() !== null) {
+      <form class="precios__form" (submit)="guardar($event)" novalidate>
+        <h4>{{ esNuevo() ? 'Nuevo precio' : 'Editar precio de ' + etiquetaModalidad[modelo().modalidad] }}</h4>
+
+        <div class="precios__campos">
+          @if (esNuevo()) {
+            <div class="field">
+              <label class="field__label" [for]="'modalidad-' + sufijo()">Modalidad</label>
+              <select [id]="'modalidad-' + sufijo()" class="field__control" [formField]="f.modalidad">
+                @for (m of modalidades; track m) {
+                  <option [value]="m">{{ etiquetaModalidad[m] }}</option>
+                }
+              </select>
+            </div>
+          }
+
+          <div class="field">
+            <label class="field__label" [for]="'precio-' + sufijo()">Precio ($)</label>
+            <input [id]="'precio-' + sufijo()" type="text" inputmode="decimal" autocomplete="off"
+                   class="field__control" [value]="textoPrecio()" (input)="cambiarPrecio($event)"
+                   [attr.aria-invalid]="!!errores().precio">
+            @if (errores().precio) {
+              <p class="field__error">{{ errores().precio }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" [for]="'desde-' + sufijo()">Vigente desde</label>
+            <input [id]="'desde-' + sufijo()" class="field__control control-fecha" readonly
+                   placeholder="dd/mm/aaaa"
+                   [matDatepicker]="calendarioDesde" [value]="fechaDesde()"
+                   (dateChange)="elegirFecha('fechaVigencia', $event.value)"
+                   (click)="calendarioDesde.open()"
+                   [attr.aria-invalid]="!!errores().desde || !!errores().superposicion">
+            <mat-datepicker #calendarioDesde panelClass="calendario-brisa" [touchUi]="esMovil" />
+            @if (errores().desde) {
+              <p class="field__error">{{ errores().desde }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" [for]="'hasta-' + sufijo()">Vigente hasta</label>
+            <input [id]="'hasta-' + sufijo()" class="field__control control-fecha" readonly
+                   placeholder="dd/mm/aaaa"
+                   [matDatepicker]="calendarioHasta" [value]="fechaHasta()" [min]="fechaDesde()"
+                   (dateChange)="elegirFecha('fechaCaducada', $event.value)"
+                   (click)="calendarioHasta.open()"
+                   [attr.aria-invalid]="!!errores().hasta || !!errores().superposicion">
+            <mat-datepicker #calendarioHasta panelClass="calendario-brisa" [touchUi]="esMovil" />
+            @if (errores().hasta) {
+              <p class="field__error">{{ errores().hasta }}</p>
+            }
+          </div>
+        </div>
+
+        @if (errores().superposicion) {
+          <p class="field__error" role="alert">{{ errores().superposicion }}</p>
+        }
+        @if (errorGuardado()) {
+          <p class="field__error" role="alert">{{ errorGuardado() }}</p>
+        }
+
+        <div class="acciones-reserva">
+          <button type="button" class="btn btn--secundario" [disabled]="guardando()" (click)="cancelar()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn--primary" [disabled]="!valido() || guardando()">
+            @if (guardando()) { Guardando… } @else { Guardar precio }
+          </button>
+        </div>
+      </form>
+    }
+  }
+</details>

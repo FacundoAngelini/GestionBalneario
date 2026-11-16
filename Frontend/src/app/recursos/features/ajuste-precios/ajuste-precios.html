@@ -1,0 +1,148 @@
+<section class="ajuste">
+  <header>
+    <a class="enlace-volver" routerLink="/recursos">← Volver al inventario</a>
+    <h1>Actualizar precios</h1>
+    <p class="field__hint">
+      Cambia de una vez los precios de muchos recursos. Primero ves una vista previa: no se guarda
+      nada hasta que lo confirmás.
+    </p>
+  </header>
+
+  <form class="card ajuste__form" (submit)="previsualizar($event)" novalidate>
+    <h2>¿Qué precios cambiar?</h2>
+    <div class="ajuste__campos">
+      <div class="field">
+        <label class="field__label" for="tipo">Tipo de recurso</label>
+        <select id="tipo" class="field__control" [formField]="f.tipo">
+          @for (t of tipos; track t) {
+            <option [value]="t">{{ etiquetaPlural[t] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="sector">Sector</label>
+        <select id="sector" class="field__control" [formField]="f.sectorPublicId">
+          <option value="">Todos los sectores</option>
+          @for (s of sectores(); track s.publicId) {
+            <option [value]="s.publicId">{{ s.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="modalidad">Modalidad</label>
+        <select id="modalidad" class="field__control" [formField]="f.modalidad"
+                [attr.aria-invalid]="!!errores().modalidad">
+          <option value="">Todas las modalidades</option>
+          @for (m of modalidades; track m) {
+            <option [value]="m">{{ etiquetaModalidad[m] }}</option>
+          }
+        </select>
+        @if (errores().modalidad) {
+          <p class="field__error">{{ errores().modalidad }}</p>
+        }
+      </div>
+    </div>
+
+    <h2>¿Cómo?</h2>
+    <div class="ajuste__campos">
+      <div class="field">
+        <label class="field__label" for="operacion">Operación</label>
+        <select id="operacion" class="field__control" [formField]="f.operacion">
+          <option value="PORCENTAJE">Subir o bajar un porcentaje</option>
+          <option value="MONTO_FIJO">Fijar un monto</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="valor">
+          {{ esPorcentaje() ? 'Porcentaje (%)' : 'Monto ($)' }}
+        </label>
+        <input id="valor" type="text" inputmode="decimal" autocomplete="off" class="field__control"
+               [value]="textoValor()" (input)="cambiarValor($event)"
+               [attr.aria-invalid]="!!errores().valor && !!textoValor()">
+        @if (errores().valor && textoValor()) {
+          <p class="field__error">{{ errores().valor }}</p>
+        } @else if (esPorcentaje()) {
+          <p class="field__hint">Usá un número negativo para bajar (por ejemplo, -5).</p>
+        }
+      </div>
+    </div>
+
+    <p class="field__hint">
+      Se modifican los precios que todavía no vencieron (vigentes y futuros). Las reservas ya hechas
+      conservan su monto.
+    </p>
+
+    <button type="submit" class="btn btn--primary" [disabled]="!valido() || procesando()">
+      @if (procesando() && !confirmando()) { Calculando… } @else { Ver vista previa }
+    </button>
+  </form>
+
+  @if (error()) {
+    <p class="field__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (previaVigente(); as p) {
+    <section class="card ajuste__previa" aria-labelledby="titulo-previa">
+      <h2 id="titulo-previa">Vista previa</h2>
+
+      @if (p.preciosAfectados === 0) {
+        <p role="status">No hay precios vigentes o futuros que coincidan con esa selección.</p>
+      } @else {
+        <p role="status">
+          Se modificarían <strong>{{ p.preciosAfectados }}</strong>
+          {{ p.preciosAfectados === 1 ? 'precio' : 'precios' }} de
+          <strong>{{ p.recursosAfectados }}</strong>
+          {{ p.recursosAfectados === 1 ? 'recurso' : 'recursos' }}.
+        </p>
+
+        <ul class="ejemplos">
+          @for (e of p.ejemplos; track $index) {
+            <li>
+              <strong>{{ e.recurso }}</strong> · {{ etiquetaModalidad[e.modalidad] }}:
+              <span class="antes">{{ formatoPrecio(e.precioActual) }}</span>
+              →
+              <strong>{{ formatoPrecio(e.precioNuevo) }}</strong>
+            </li>
+          }
+        </ul>
+        @if (p.preciosAfectados > p.ejemplos.length) {
+          <p class="field__hint">Se muestran los primeros {{ p.ejemplos.length }} ejemplos.</p>
+        }
+
+        @if (confirmando()) {
+          <div class="confirmacion" role="alert">
+            <p><strong>¿Aplicar el cambio a {{ p.preciosAfectados }} precios?</strong></p>
+            <p class="field__hint">Esta acción no se puede deshacer.</p>
+            <div class="acciones-reserva">
+              <button type="button" class="btn btn--secundario" [disabled]="procesando()"
+                      (click)="descartarConfirmacion()">No, volver</button>
+              <button type="button" class="btn btn--primary" [disabled]="procesando()" (click)="aplicar()">
+                @if (procesando()) { Aplicando… } @else { Sí, aplicar }
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="acciones-reserva">
+            <button type="button" class="btn btn--primary" (click)="pedirConfirmacion()">
+              Aplicar cambios
+            </button>
+          </div>
+        }
+      }
+    </section>
+  }
+
+  @if (aplicado(); as r) {
+    <div class="card exito" role="status">
+      <h2>Listo</h2>
+      <p>
+        Se actualizaron {{ r.preciosAfectados }} {{ r.preciosAfectados === 1 ? 'precio' : 'precios' }}
+        de {{ r.recursosAfectados }} {{ r.recursosAfectados === 1 ? 'recurso' : 'recursos' }}.
+      </p>
+      <a class="btn btn--secundario" routerLink="/recursos">Volver al inventario</a>
+    </div>
+  }
+</section>

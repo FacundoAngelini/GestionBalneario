@@ -1,0 +1,25 @@
+<form [formRoot]="formulario" class="perfil-form" [attr.aria-busy]="formulario().submitting()">
+  <p class="nota">
+    Podés darte de baja si no tenés reservas pendientes ni confirmadas. Tus datos y tu historial se conservan.
+  </p>
+
+  <mat-form-field>
+    <mat-label>Motivo</mat-label>
+    <input matInput type="text" autocomplete="off" [formField]="formulario.motivo" />
+    <mat-hint>Entre 5 y 300 caracteres</mat-hint>
+    <mat-error>{{ formulario.motivo().errors().at(0)?.message }}</mat-error>
+  </mat-form-field>
+
+  <div class="form-acciones">
+    <button matButton="outlined" type="button" [disabled]="formulario().submitting()" (click)="cancelado.emit()">
+      Cancelar
+    </button>
+    <button matButton="filled" type="submit">
+      @if (formulario().submitting()) {
+        <mat-spinner diameter="22" aria-label="Procesando la baja" />
+      } @else {
+        Dar de baja mi cuenta
+      }
+    </button>
+  </div>
+</form>

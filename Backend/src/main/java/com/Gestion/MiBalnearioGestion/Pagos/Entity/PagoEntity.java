@@ -5,7 +5,9 @@ import com.Gestion.MiBalnearioGestion.Pagos.Entity.Enum.MetodoPago;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -33,6 +35,7 @@ public class PagoEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private EestadoPago eestadoPago;
 
     @Column(name="fecha_pago", nullable = false)

@@ -6,6 +6,7 @@ import {
   form,
   FormField,
   FormRoot,
+  maxLength,
   pattern,
   TreeValidationResult,
 } from '@angular/forms/signals';
@@ -16,10 +17,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { firstValueFrom } from 'rxjs';
 import { buscarPais, PAISES, separarTelefono } from '../../../core/constants/paises.constants';
-import { noBlanco, telefonoSegunPais } from '../../../core/validators/validadores';
+import { noBlanco, telefonoSegunPais, tope } from '../../../core/validators/validadores';
 import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 import { UsuarioClient } from '../../data-access/usuarios.client';
 import { PerfilCliente } from '../../data-access/usuario-model';
+import { LIMITES } from '../../../core/constants/limites.constants';
 
 interface EditarPerfilForm {
   nombre: string;
@@ -53,6 +55,8 @@ export class PerfilEditar implements OnInit {
 
   protected readonly paises = PAISES;
 
+  protected readonly limites = LIMITES;
+
   private readonly modelo = signal<EditarPerfilForm>({
     nombre: '',
     apellido: '',
@@ -78,9 +82,12 @@ export class PerfilEditar implements OnInit {
     this.modelo,
     (campos) => {
       noBlanco(campos.nombre, 'El nombre es obligatorio');
+      tope(campos.nombre, LIMITES.nombre);
       noBlanco(campos.apellido, 'El apellido es obligatorio');
+      tope(campos.apellido, LIMITES.apellido);
 
       noBlanco(campos.email, 'El email es obligatorio');
+      tope(campos.email, LIMITES.email);
       pattern(campos.email, /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/, {
         message: 'Formato inválido: en minúsculas y con dominio de 2 o 3 letras (ej: nombre@correo.com)',
       });
@@ -148,6 +155,9 @@ export class PerfilEditar implements OnInit {
       return [{ fieldTree: campos.email, kind: 'servidor', message: 'Ya existe un cliente con ese email' }];
     }
     if (estado === 409 && /tel[eé]fono/i.test(mensaje)) {
+      return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'Ya existe un cliente con ese teléfono' }];
+    }
+    if (estado === 409) {
       return [{ fieldTree: campos.telefono, kind: 'servidor', message: 'Ya existe un cliente con ese teléfono' }];
     }
 

@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface SombrillaRepositorio extends JpaRepository<SombrillaEntity, Long>, JpaSpecificationExecutor<SombrillaEntity> {
     Optional<SombrillaEntity> findByPublicId(UUID publicId);
     Optional<SombrillaEntity> findByNumero(int numero);
+    long countBySectorPublicId(UUID sectorPublicId);
+    boolean existsByNumeroBetween(int desde, int hasta);
 }

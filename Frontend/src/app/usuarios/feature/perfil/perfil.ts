@@ -4,24 +4,40 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { AuthClient } from '../../../auth/data-access/auth-client';
 import { ETIQUETA_ROL } from '../../../auth/data-access/auth-model';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
+import { EstadoEmpleado, ETIQUETA_ESTADO_EMPLEADO } from '../../../empleados/data-access/empleado-model';
+import { HistorialEmpleado } from '../../../empleados/feature/historial-empleado/historial-empleado';
 import { UsuarioClient } from '../../data-access/usuarios.client';
-import { ETIQUETA_TIPO_PERFIL, PerfilCliente } from '../../data-access/usuario-model';
+import { ETIQUETA_TIPO_PERFIL, PerfilCliente, PerfilEmpleado } from '../../data-access/usuario-model';
 import { CambiarContrasenia } from './cambiar-contraseña';
 import { CambiarUsuario } from './cambiar-usuario';
 import { PerfilEditar } from './perfil-editar';
+import { PerfilEditarEmpleado } from './perfil-editar-empleado';
+import { SolicitarBaja } from './solicitar-baja';
 
-type ModoPerfil = 'ver' | 'editar' | 'contrasenia' | 'usuario';
+type ModoPerfil = 'ver' | 'editar' | 'contrasenia' | 'usuario' | 'baja';
 
 @Component({
   selector: 'app-perfil',
-  imports: [DatePipe, MatButtonModule, MatIconModule, PerfilEditar, CambiarContrasenia, CambiarUsuario],
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatIconModule,
+    PerfilEditar,
+    PerfilEditarEmpleado,
+    CambiarContrasenia,
+    CambiarUsuario,
+    HistorialEmpleado,
+    SolicitarBaja,
+  ],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
 })
 export class Perfil {
   private readonly usuarioClient = inject(UsuarioClient);
+  private readonly auth = inject(AuthClient);
   private readonly router = inject(Router);
   private readonly ubicacion = inject(Location);
 
@@ -34,6 +50,16 @@ export class Perfil {
   protected readonly cliente = computed(() => this.perfil.value()?.cliente ?? null);
   protected readonly empleado = computed(() => this.perfil.value()?.empleado ?? null);
   protected readonly ficha = computed(() => this.cliente() ?? this.empleado());
+
+  // Un empleado suspendido, de vacaciones o de licencia ve su perfil pero no puede modificarlo
+  protected readonly restringido = this.auth.restringido;
+  protected readonly puedeModificar = computed(() => !this.restringido());
+
+  protected readonly mensajeRestringido = computed(() => {
+    const estado = this.auth.estadoEmpleado() as EstadoEmpleado | null;
+    const nombre = estado ? ETIQUETA_ESTADO_EMPLEADO[estado] : '';
+    return `Estado de tu cuenta: ${nombre}. Por ahora solo podés ver tus datos y su historial; no podés modificarlos.`;
+  });
 
   protected readonly nombreCompleto = computed(() => {
     const ficha = this.ficha();
@@ -59,6 +85,10 @@ export class Perfil {
       : 'Tu cuenta todavía no tiene una ficha de cliente o empleado asociada.',
   );
 
+  protected etiquetaEstado(valor: string): string {
+    return ETIQUETA_ESTADO_EMPLEADO[valor as EstadoEmpleado] ?? valor;
+  }
+
   /** Vuelve a la pantalla anterior; si entró directo por URL, va al panel. */
   protected volver(): void {
     if ((history.state?.navigationId ?? 0) > 1) {
@@ -70,6 +100,11 @@ export class Perfil {
 
   protected alGuardar(clienteActualizado: PerfilCliente): void {
     this.perfil.value.update((actual) => (actual ? { ...actual, cliente: clienteActualizado } : actual));
+    this.modo.set('ver');
+  }
+
+  protected alGuardarEmpleado(empleadoActualizado: PerfilEmpleado): void {
+    this.perfil.value.update((actual) => (actual ? { ...actual, empleado: empleadoActualizado } : actual));
     this.modo.set('ver');
   }
 }

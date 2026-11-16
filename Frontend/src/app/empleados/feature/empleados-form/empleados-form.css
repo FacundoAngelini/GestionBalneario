@@ -1,0 +1,83 @@
+.formulario,
+.formulario__cuerpo {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.formulario {
+  max-width: 50rem;
+  margin-inline: auto;
+}
+
+.formulario :is(h1, h2) {
+  margin-bottom: var(--espacio-2);
+}
+
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem; 
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+.bloque {
+  display: grid;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+.formulario mat-form-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  align-items: start; 
+  gap: var(--espacio-4);
+}
+
+.lista-problemas {
+  display: grid;
+  gap: var(--espacio-1);
+  margin-top: var(--espacio-2);
+  padding-left: var(--espacio-5);
+}
+
+.campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.acciones-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+.acciones-form > * {
+  width: 100%;
+}
+
+.acciones-form mat-spinner {
+  --mat-progress-spinner-active-indicator-color: var(--color-texto-sobre-primario);
+}
+
+@media (min-width: 30rem) {
+  .acciones-form {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .acciones-form > * {
+    width: auto;
+  }
+}
+
+@media (min-width: 40rem) {
+  .bloque {
+    padding: var(--espacio-5);
+  }
+}

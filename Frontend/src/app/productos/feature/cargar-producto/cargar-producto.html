@@ -1,0 +1,54 @@
+<form class="producto-form" novalidate (submit)="guardar($event)">
+  <h2>Cargar producto al menú</h2>
+
+  <div class="campo">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" type="text" autocomplete="off" [formField]="productoForm.nombre" />
+    @if (productoForm.nombre().touched() && productoForm.nombre().invalid()) {
+      @for (error of productoForm.nombre().errors(); track error.kind) {
+        <small class="error">{{ error.message }}</small>
+      }
+    }
+  </div>
+
+  <div class="campo">
+    <label for="precio">Precio</label>
+    <input id="precio" type="number" step="0.01" [formField]="productoForm.precio" />
+    @if (productoForm.precio().touched() && productoForm.precio().invalid()) {
+      @for (error of productoForm.precio().errors(); track error.kind) {
+        <small class="error">{{ error.message }}</small>
+      }
+    }
+  </div>
+
+  <div class="campo">
+    <label for="categoria">Categoría</label>
+    <select id="categoria" [formField]="productoForm.categoria">
+      <option value="" disabled>Seleccionar...</option>
+      @for (c of categorias; track c.valor) {
+        <option [value]="c.valor">{{ c.etiqueta }}</option>
+      }
+    </select>
+    @if (productoForm.categoria().touched() && productoForm.categoria().invalid()) {
+      @for (error of productoForm.categoria().errors(); track error.kind) {
+        <small class="error">{{ error.message }}</small>
+      }
+    }
+  </div>
+
+  <label class="check">
+    <input type="checkbox" [formField]="productoForm.productoDisponible" />
+    Disponible para la venta
+  </label>
+
+  @if (errorServidor(); as mensaje) {
+    <p class="error" role="alert">{{ mensaje }}</p>
+  }
+  @if (exito(); as mensaje) {
+    <p class="exito" role="status">{{ mensaje }}</p>
+  }
+
+  <button type="submit" [disabled]="guardando()">
+    {{ guardando() ? 'Guardando...' : 'Guardar producto' }}
+  </button>
+</form>

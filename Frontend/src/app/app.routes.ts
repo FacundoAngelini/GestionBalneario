@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard, guestGuard } from './auth/data-access/auth.guard';
 import { ROUTE_SEGMENTS } from './core/constants/route-segments.constants';
-import { authGuard, guestGuard, roleGuard } from './auth/data-access/auth.guard';
 
 export const routes: Routes = [
   {
@@ -9,7 +9,7 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/features/auth.routes').then(m => m.authRoutes)
   },
 
-  //pantalla de error
+  // Pantalla de error
   {
     path: ROUTE_SEGMENTS.unauthorized,
     loadComponent: () => import('./core/UI/unauthorized').then(m => m.Unauthorized)
@@ -24,6 +24,16 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./core/UI/inicio/inicio').then(m => m.Inicio)
+      },
+      {
+        path: ROUTE_SEGMENTS.productos,
+        loadChildren: () =>
+          import('./productos/productos.routes').then((m) => m.productosPublicRoutes)
+      },
+      {
+        path: ROUTE_SEGMENTS.catalogo,
+        loadComponent: () =>
+        import('./recursos/features/catalogo/catalogo').then((m) => m.Catalogo)
       }
     ]
   },
@@ -33,7 +43,7 @@ export const routes: Routes = [
     path: '',
     canActivate: [authGuard],
     loadComponent: () => import('./shared/main/main').then(m => m.Main),
-     children: [
+    children: [
       {
         path: ROUTE_SEGMENTS.panel,
         loadComponent: () => import('./core/UI/panel/panel').then(m => m.Panel)
@@ -41,6 +51,27 @@ export const routes: Routes = [
       {
         path: ROUTE_SEGMENTS.perfil,
         loadComponent: () => import('./usuarios/feature/perfil/perfil').then(m => m.Perfil)
+      },
+      {
+        path: ROUTE_SEGMENTS.recursos,
+        loadChildren: () => import('./recursos/recursos.routes').then(m => m.recursosRoutes)
+      },
+      {
+        path: ROUTE_SEGMENTS.productos,
+        loadChildren: () =>
+          import('./productos/productos.routes').then((m) => m.productosPrivateRoutes)
+      },
+      {
+        path: ROUTE_SEGMENTS.reservas,
+        loadChildren: () => import('./reservas/reservas-routes').then((m) => m.reservasRoutes)
+      },
+      {
+        path: ROUTE_SEGMENTS.clientes,
+        loadChildren: () => import('./clientes/clientes.routes').then(m => m.clientesRoutes)
+      },
+    {
+        path: ROUTE_SEGMENTS.empleados,
+        loadChildren: () => import('./empleados/empleados.routes').then(m => m.empleadosRoutes)
       }
     ]
   },

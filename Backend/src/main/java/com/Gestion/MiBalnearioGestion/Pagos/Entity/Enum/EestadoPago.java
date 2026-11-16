@@ -4,5 +4,6 @@ public enum EestadoPago {
     PAGADO,
     PENDIENTE,
     EN_PROCESO,
-    RECHAZADO
+    RECHAZADO,
+    ANULADO
 }

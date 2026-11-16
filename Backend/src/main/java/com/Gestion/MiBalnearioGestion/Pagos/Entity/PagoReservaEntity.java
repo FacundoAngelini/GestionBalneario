@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="pago_reserva")
 @Getter
@@ -24,4 +26,10 @@ public class PagoReservaEntity extends PagoEntity {
     private ReservaEntity reserva;
     @Column(name = "preference_id_mp")
     private String preferenceIdMp;
+
+    @Column(name = "cobrado_por")
+    private String cobradoPor;
+
+    @Column(name = "fecha_hora_cobro")
+    private LocalDateTime fechaHoraCobro;
 }

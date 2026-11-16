@@ -1,0 +1,64 @@
+<section class="pagina">
+  <div class="acciones-pagina no-imprimir">
+    <a class="btn btn--secundario" [routerLink]="volverA()">Volver</a>
+    @if (comprobante()) {
+      <button type="button" class="btn btn--primary" (click)="imprimir()">Imprimir</button>
+    }
+  </div>
+
+  @if (cargando()) {
+    <p role="status">Cargando comprobante…</p>
+  }
+
+  @if (error()) {
+    <p class="field__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (comprobante(); as c) {
+    <article class="card comprobante">
+      <header class="comprobante__cabecera">
+        <h1>ArenaDesk</h1>
+        <p>Comprobante de cobro N° {{ numero() }}</p>
+        <p class="field__hint">{{ formatoFechaHora(c.fecha) }}</p>
+      </header>
+
+      <dl class="datos">
+        <dt>Cliente</dt>
+        <dd>{{ c.clienteNombre }}</dd>
+        <dt>DNI</dt>
+        <dd>{{ c.clienteDni.toLocaleString('es-AR') }}</dd>
+        <dt>Modalidad</dt>
+        <dd>{{ etiquetaModalidad[c.modalidad] }}</dd>
+        <dt>Período</dt>
+        <dd>{{ formatoRango(c.fechaInicio, c.fechaFin) }}</dd>
+      </dl>
+
+      <h2>Detalle</h2>
+      <ul class="comprobante__recursos">
+        @for (r of c.recursos; track r.publicId) {
+          <li>
+            {{ r.nombre }}
+            @if (r.tipo) { <span class="field__hint">· {{ etiquetaTipo[r.tipo] }}</span> }
+          </li>
+        }
+      </ul>
+
+      <div class="comprobante__totales">
+        <p><span>Total de la reserva</span><strong>{{ formatoPrecio(c.subtotal) }}</strong></p>
+        @if (c.descuentoMonto > 0) {
+          <p><span>Descuento por efectivo ({{ c.descuentoPorcentaje }} %)</span><strong>−{{ formatoPrecio(c.descuentoMonto) }}</strong></p>
+        }
+        <p class="total"><span>Total cobrado</span><strong>{{ formatoPrecio(c.total) }}</strong></p>
+      </div>
+
+      <dl class="datos">
+        <dt>Medio de pago</dt>
+        <dd>{{ etiquetaMetodo[c.metodoPago] }}</dd>
+        @if (c.cobradoPor) {
+          <dt>Cobrado por</dt>
+          <dd>{{ c.empleado ?? c.cobradoPor }}</dd>
+        }
+      </dl>
+    </article>
+  }
+</section>

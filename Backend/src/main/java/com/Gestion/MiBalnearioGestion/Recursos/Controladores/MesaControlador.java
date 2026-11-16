@@ -52,7 +52,7 @@ public class MesaControlador {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO', 'CAJERO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION', 'CAJERO')")
     @Operation(summary = "Obtener una mesa por ID", description = "Recupera la información detallada de una mesa utilizando su UUID público. Accesible por personal autorizado (incluye CAJERO).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Mesa encontrada con éxito"),
@@ -68,7 +68,7 @@ public class MesaControlador {
 
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO', 'CAJERO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION', 'CAJERO')")
     @Operation(summary = "Listar y filtrar mesas", description = "Obtiene un listado de mesas aplicando filtros avanzados opcionales por número físico y capacidad de comensales.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de mesas obtenido con éxito"),

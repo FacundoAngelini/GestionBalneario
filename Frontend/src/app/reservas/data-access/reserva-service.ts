@@ -1,44 +1,92 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
 import { environment } from '../../core/environments/environment';
 import {
-  CancelarReserva,
-  CheckoutResponse,
+  CancelarReservaRequest,
+  ClienteBusqueda,
+  Comprobante,
+  EventoReserva,
   Reserva,
-  ReservaFiltros,
+  ReservaPresencialRequest,
+  ReservaPresencialResponse,
+  ReservaRequest,
 } from './reserva-model';
 
 @Service()
 export class ReservaService {
-  private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/reservas`;
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/reservas`;
 
-  crearReservaInicial(reserva: Reserva): Observable<Reserva> {
-    return this.http.post<Reserva>(this.apiUrl, reserva);
+  // ---- Cliente ----
+  reservarSinPago(pedido: ReservaRequest) {
+    return this.http.post<Reserva>(`${this.apiUrl}/sin-pago`, pedido);
   }
 
-  checkoutOnline(reserva: Reserva): Observable<CheckoutResponse> {
-    return this.http.post<CheckoutResponse>(`${this.apiUrl}/checkout-online`, reserva);
-  }
-
-  obtenerPorId(id: string): Observable<Reserva> {
-    return this.http.get<Reserva>(`${this.apiUrl}/${id}`);
-  }
-
-  listar(filtros: ReservaFiltros = {}): Observable<Reserva[]> {
-    let params = new HttpParams();
-    for (const [key, value] of Object.entries(filtros)) {
-      if (value) params = params.set(key, value);
-    }
+  misReservas(clientePublicId: string) {
+    const params = new HttpParams().set('clientePublicId', clientePublicId);
     return this.http.get<Reserva[]>(this.apiUrl, { params });
   }
 
-  cancelar(dto: CancelarReserva): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/cancelar`, dto);
+  cancelar(pedido: CancelarReservaRequest) {
+    return this.http.put<void>(`${this.apiUrl}/cancelar`, pedido);
   }
 
-  cancelarAdministrativo(id: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}/cancelar-administrativo`, {});
+  // ---- Cliente y personal ----
+  /** Cocheras que quedarían sin carpa ni sombrilla si se cancela esta reserva. */
+  cocherasDependientes(reservaPublicId: string) {
+    return this.http.get<Reserva[]>(`${this.apiUrl}/${reservaPublicId}/cocheras-dependientes`);
+  }
+
+  comprobante(publicId: string) {
+    return this.http.get<Comprobante>(`${this.apiUrl}/${publicId}/cobro`);
+  }
+
+  // ---- Personal ----
+  todas() {
+    return this.http.get<Reserva[]>(this.apiUrl);
+  }
+
+  pendientes() {
+    const params = new HttpParams().set('estado', 'PENDIENTE');
+    return this.http.get<Reserva[]>(this.apiUrl, { params });
+  }
+
+  confirmar(publicId: string) {
+    return this.http.put<Reserva>(`${this.apiUrl}/${publicId}/confirmar`, {});
+  }
+
+  rechazar(publicId: string) {
+    return this.http.put<Reserva>(`${this.apiUrl}/${publicId}/rechazar`, {});
+  }
+
+  cancelarAdministrativa(publicId: string, cancelarCocheras: boolean) {
+    const params = new HttpParams().set('cancelarCocherasAsociadas', cancelarCocheras);
+    return this.http.put<void>(`${this.apiUrl}/${publicId}/cancelar-administrativo`, {}, { params });
+  }
+
+  registrarCobro(publicId: string) {
+    return this.http.post<Comprobante>(`${this.apiUrl}/${publicId}/cobro`, { metodoPago: 'EFECTIVO' });
+  }
+
+  anularCobro(publicId: string, motivo: string) {
+    return this.http.put<Reserva>(`${this.apiUrl}/${publicId}/cobro/anular`, { motivo });
+  }
+
+  historial(publicId: string) {
+    return this.http.get<EventoReserva[]>(`${this.apiUrl}/${publicId}/historial`);
+  }
+
+  // ---- Mostrador ----
+  crearPresencial(pedido: ReservaPresencialRequest) {
+    return this.http.post<ReservaPresencialResponse>(`${this.apiUrl}/presencial`, pedido);
+  }
+
+  buscarClientePorDni(dni: number) {
+    const params = new HttpParams().set('dni', dni);
+    return this.http.get<ClienteBusqueda>(`${environment.apiUrl}/clientes/buscar`, { params });
+  }
+
+  configuracionPago() {
+    return this.http.get<{ descuentoEfectivo: number }>(`${environment.apiUrl}/configuracion/pagos`);
   }
 }

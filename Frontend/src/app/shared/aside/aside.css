@@ -1,0 +1,55 @@
+.menu {
+  padding: var(--espacio-4);
+}
+
+.menu-lista {
+  display: grid;
+  gap: var(--espacio-1);
+  list-style: none;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: 2.75rem; 
+  padding: 0 var(--espacio-3);
+  border-radius: var(--radio-sm);
+  color: var(--color-texto);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--transicion);
+}
+
+.menu-link:hover {
+  background: var(--color-fondo);
+}
+
+.menu-link:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+/* Página actual */
+.menu-link.activo {
+  background: var(--color-primario);
+  color: var(--color-texto-sobre-primario);
+}
+
+.menu-insignia {
+  min-width: 1.5rem;
+  margin-left: auto;
+  padding: 0 var(--espacio-2);
+  border-radius: 999px;
+  background: var(--color-error);
+  color: var(--color-texto-sobre-primario);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* En el item activo el fondo ya es oscuro: se invierten los colores */
+.menu-link.activo .menu-insignia {
+  background: var(--color-texto-sobre-primario);
+  color: var(--color-primario);
+}

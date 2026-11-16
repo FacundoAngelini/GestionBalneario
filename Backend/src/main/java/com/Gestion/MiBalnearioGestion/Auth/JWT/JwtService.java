@@ -1,5 +1,9 @@
 package com.Gestion.MiBalnearioGestion.Auth.JWT;
 
+import com.Gestion.MiBalnearioGestion.Auth.Credenciales.Entity.CredencialEntity;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EEstadoEmpleado;
+import com.Gestion.MiBalnearioGestion.Empleados.Entities.EmpleadoEntity;
+import com.Gestion.MiBalnearioGestion.Usuarios.Entity.UsuarioEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -33,6 +37,9 @@ public class JwtService {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -41,8 +48,25 @@ public class JwtService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
+        // ID público del cliente o empleado: lo usa el frontend para "Mis reservas" y para reservar
+        if (userDetails instanceof CredencialEntity credencial && credencial.getUsuario() != null) {
+            UsuarioEntity usuario = credencial.getUsuario();
+            if (usuario.getCliente() != null) {
+                claims.put("publicId", usuario.getCliente().getPublicId().toString());
+            } else if (usuario.getEmpleado() != null) {
+                EmpleadoEntity empleado = usuario.getEmpleado();
+                claims.put("publicId", empleado.getPublicId().toString());
+                claims.put("estadoEmpleado", empleado.getEstadoEmpleado().name());
+                // Suspendido, de vacaciones o de licencia: entra, pero solo puede ver su perfil y su historial.
+                // Se aplica al iniciar sesión: tarda hasta lo que dura el token en reflejarse.
+                if (empleado.getEstadoEmpleado() != EEstadoEmpleado.ACTIVO) {
+                    authorities.stream().filter(a -> a.startsWith("ROLE_")).findFirst()
+                            .ifPresent(rol -> claims.put("rolOriginal", rol));
+                    authorities = List.of("ROLE_RESTRINGIDO");
+                }
+            }
+        }
         claims.put("authorities", authorities);
-
         return buildToken(claims, userDetails, jwtExpiration);
     }
 

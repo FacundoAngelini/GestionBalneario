@@ -2,12 +2,18 @@
   <mat-form-field>
     <mat-label>Nombre</mat-label>
     <input matInput type="text" autocomplete="given-name" [formField]="formulario.nombre" />
+    <mat-hint align="end" [class.contador-lleno]="formulario.nombre().value().length >= limites.nombre">
+    {{ formulario.nombre().value().length }}/{{ limites.nombre }}
+    </mat-hint>
     <mat-error>{{ formulario.nombre().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Apellido</mat-label>
     <input matInput type="text" autocomplete="family-name" [formField]="formulario.apellido" />
+    <mat-hint align="end" [class.contador-lleno]="formulario.apellido().value().length >= limites.apellido">
+    {{ formulario.apellido().value().length }}/{{ limites.apellido }}
+    </mat-hint>
     <mat-error>{{ formulario.apellido().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 
@@ -29,11 +35,14 @@
   <mat-form-field>
     <mat-label>Email</mat-label>
     <input matInput type="email" autocomplete="email" [formField]="formulario.email" />
+    <mat-hint align="end" [class.contador-lleno]="formulario.email().value().length >= limites.email">
+    {{ formulario.email().value().length }}/{{ limites.email }}
+    </mat-hint>
     <mat-error>{{ formulario.email().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 
   <div class="fila-telefono">
-    <mat-form-field class="campo-pais">
+    <mat-form-field>
       <mat-label>País</mat-label>
       <mat-select [formField]="formulario.pais">
         @for (p of paises; track p.prefijo) {
@@ -42,7 +51,7 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field class="campo-telefono">
+    <mat-form-field>
       <mat-label>Teléfono</mat-label>
       <span matTextPrefix>+{{ paisElegido().prefijo }}&nbsp;</span>
       <input matInput type="tel" inputmode="numeric" autocomplete="tel-national" [formField]="formulario.telefono" />

@@ -1,0 +1,22 @@
+<details class="historial" (toggle)="alAlternar($event)">
+  <summary>Historial de acciones</summary>
+
+  @if (error()) {
+    <p class="field__error" role="alert">{{ error() }}</p>
+  } @else if (eventos() === null) {
+    <p class="field__hint" role="status">Cargando…</p>
+  } @else {
+    <ol class="historial__lista">
+      @for (e of eventos(); track e.publicId) {
+        <li>
+          <strong>{{ etiqueta[e.accion] }}</strong>
+          <span class="field__hint">
+            {{ formatoFechaHora(e.fecha) }} · {{ e.usuario }}@if (e.empleado) { ({{ e.empleado }}) }
+          </span>
+          @if (e.detalle) { <span>{{ e.detalle }}</span> }
+          @if (e.motivo) { <span>Motivo: {{ e.motivo }}</span> }
+        </li>
+      }
+    </ol>
+  }
+</details>

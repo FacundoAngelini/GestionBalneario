@@ -1,0 +1,123 @@
+<section class="ficha">
+  <a class="enlace-volver" routerLink="/empleados">← Volver a empleados</a>
+
+  @if (cargando()) {
+    <p role="status">Cargando ficha…</p>
+  }
+
+  @if (error()) {
+    <p class="field__error" role="alert">{{ error() }}</p>
+  }
+
+  @if (empleado(); as e) {
+    <header class="ficha__cabecera">
+      <div>
+        <h1>{{ e.nombre }} {{ e.apellido }}</h1>
+        <p class="field__hint">{{ rolTexto(e) }}@if (e.sector) { · {{ e.sector.nombre }} }</p>
+      </div>
+      <span class="estado" [class]="claseEstado[e.estadoEmpleado]">{{ etiquetaEstado[e.estadoEmpleado] }}</span>
+    </header>
+
+    @if (e.editable) {
+      <div class="acciones-ficha">
+        <a class="btn btn--secundario" [routerLink]="['/empleados', e.publicId, 'editar']">Editar datos</a>
+        <button type="button" class="btn btn--primary" (click)="abrirPanel()" [disabled]="panelAbierto()">
+          Cambiar estado
+        </button>
+      </div>
+    } @else {
+      <p class="aviso" role="note">
+        Solo lectura: no podés modificar a este empleado (es de tu mismo rango o de uno superior).
+      </p>
+    }
+
+    @if (panelAbierto()) {
+      <form class="card panel-estado" (submit)="cambiarEstado($event)" novalidate>
+        <h2>Cambiar estado</h2>
+
+        <div class="field">
+          <label class="field__label" for="nuevo-estado">Nuevo estado</label>
+          <select id="nuevo-estado" class="field__control" [formField]="f.estado"
+                  [attr.aria-invalid]="false">
+            <option value="">Elegí un estado</option>
+            @for (d of destinos(); track d) {
+              <option [value]="d">{{ etiquetaDestino(d) }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="motivo-estado">
+            Motivo @if (motivoObligatorio()) { (obligatorio) } @else { (opcional) }
+          </label>
+          <input id="motivo-estado" type="text" autocomplete="off" class="field__control"
+                 [formField]="f.motivo" [attr.aria-invalid]="!!errores().motivo && modelo().motivo.length > 0">
+          @if (errores().motivo && (modelo().motivo.length > 0 || motivoObligatorio())) {
+            <p class="field__hint">{{ errores().motivo }}</p>
+          } @else {
+            <p class="field__hint">Queda registrado en el historial, junto con tu usuario.</p>
+          }
+        </div>
+
+        @if (modelo().estado === 'INACTIVO') {
+          <p class="aviso" role="note">Con la baja, el empleado no podrá iniciar sesión.</p>
+        } @else if (modelo().estado && modelo().estado !== 'ACTIVO') {
+          <p class="aviso" role="note">
+            El empleado podrá ingresar, pero solo para ver su perfil y su historial. Se aplica la próxima vez que inicie sesión.
+          </p>
+        }
+
+        @if (errorEstado()) {
+          <p class="field__error" role="alert">{{ errorEstado() }}</p>
+        }
+
+        <div class="acciones-reserva">
+          <button type="button" class="btn btn--secundario" [disabled]="guardando()" (click)="cerrarPanel()">Cancelar</button>
+          <button type="submit" class="btn btn--primary" [disabled]="!valido() || guardando()">
+            @if (guardando()) { Guardando… } @else { Confirmar cambio }
+          </button>
+        </div>
+      </form>
+    }
+
+    <article class="card bloque">
+      <h2>Datos personales</h2>
+      <dl class="datos">
+        <dt>Nombre</dt><dd>{{ e.nombre }} {{ e.apellido }}</dd>
+        <dt>DNI</dt><dd>{{ e.dni.toLocaleString('es-AR') }}</dd>
+        <dt>Email</dt><dd>{{ e.email }}</dd>
+        <dt>Teléfono</dt><dd>{{ e.telefono }}</dd>
+        @if (e.direccion; as d) {
+          <dt>Domicilio</dt><dd>{{ d.calle }} {{ d.numero }}, {{ d.ciudad }}, {{ d.provincia }}</dd>
+        }
+      </dl>
+    </article>
+
+    <article class="card bloque">
+      <h2>Datos laborales</h2>
+      <dl class="datos">
+        <dt>Rol</dt><dd>{{ rolTexto(e) }}</dd>
+        <dt>Sector</dt><dd>{{ e.sector?.nombre ?? '—' }}</dd>
+        <dt>Estado</dt><dd>{{ etiquetaEstado[e.estadoEmpleado] }}</dd>
+        <dt>CUIT</dt><dd>{{ e.cuit }}</dd>
+        @if (e.sueldo !== null) {
+          <dt>Sueldo</dt><dd>{{ formatoPrecio(e.sueldo) }}</dd>
+        }
+      </dl>
+    </article>
+
+    @if (e.nombreUsuario) {
+      <article class="card bloque">
+        <h2>Cuenta</h2>
+        <dl class="datos">
+          <dt>Usuario</dt><dd>{{ e.nombreUsuario }}</dd>
+        </dl>
+        <p class="field__hint">Su contraseña la cambia él mismo desde "Mi perfil".</p>
+      </article>
+    }
+
+    <article class="card bloque">
+      <app-historial-empleado [empleadoId]="e.publicId" [huella]="huella()" />
+    </article>
+  }
+</section>

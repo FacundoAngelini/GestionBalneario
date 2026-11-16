@@ -53,7 +53,7 @@ public class SombrillaControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Obtener una sombrilla por ID", description = "Recupera la información detallada de una sombrilla utilizando su UUID público.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sombrilla encontrada con éxito"),
@@ -68,7 +68,7 @@ public class SombrillaControlador {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar sombrillas", description = "Obtiene un listado de sombrillas aplicando filtros opcionales por numeración física y tamaño.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de sombrillas obtenido con éxito"),

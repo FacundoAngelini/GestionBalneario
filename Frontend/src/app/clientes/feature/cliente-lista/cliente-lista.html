@@ -1,0 +1,77 @@
+<section class="clientes">
+  <header class="clientes__cabecera">
+    <h1>Clientes</h1>
+    <a class="btn btn--primary" routerLink="/clientes/nuevo">Nuevo cliente</a>
+  </header>
+
+   <form class="card filtros-clientes" (submit)="$event.preventDefault()" novalidate>
+    <div class="field">
+      <label class="field__label" for="buscar">Buscar</label>
+      <input id="buscar" type="search" class="field__control" autocomplete="off"
+             placeholder="Nombre, apellido, DNI, email o teléfono" [formField]="f.texto">
+    </div>
+    <div class="field">
+      <label class="field__label" for="estado">Estado</label>
+      <select id="estado" class="field__control" [formField]="f.estado">
+        <option value="ACTIVOS">Activos</option>
+        <option value="BAJA">Dados de baja</option>
+        <option value="TODOS">Todos</option>
+      </select>
+    </div>
+  </form>
+
+  @if (cargando()) {
+    <p class="field__hint" role="status">Buscando…</p>
+  }
+
+  @if (errorCarga()) {
+    <p class="field__error" role="alert">{{ errorCarga() }}</p>
+  }
+
+  @if (clientes() !== null) {
+    <p class="field__hint" role="status">
+      {{ clientes()!.length }} {{ clientes()!.length === 1 ? 'cliente' : 'clientes' }}
+      @if (hayMas()) { · se muestran los primeros {{ maxResultados }}: afiná la búsqueda para ver el resto }
+    </p>
+
+    @if (clientes()!.length === 0) {
+      <div class="card vacio"><p>No hay clientes que coincidan con la búsqueda.</p></div>
+    } @else {
+      <div class="tabla-contenedor">
+        <table class="tabla" role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th role="columnheader" scope="col">Cliente</th>
+              <th role="columnheader" scope="col">DNI</th>
+              <th role="columnheader" scope="col">Email</th>
+              <th role="columnheader" scope="col">Teléfono</th>
+              <th role="columnheader" scope="col">Alta</th>
+              <th role="columnheader" scope="col">Estado</th>
+              <th role="columnheader" scope="col"><span class="solo-lector">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody role="rowgroup">
+            @for (c of clientes(); track c.publicId) {
+              <tr role="row">
+                <td role="cell" data-label="Cliente"><strong>{{ c.apellido }}, {{ c.nombre }}</strong></td>
+                <td role="cell" data-label="DNI">{{ formatoDni(c.dni) }}</td>
+                <td role="cell" data-label="Email">{{ c.email }}</td>
+                <td role="cell" data-label="Teléfono">{{ c.telefono }}</td>
+                <td role="cell" data-label="Alta">{{ formatoFecha(c.fechaAlta) }}</td>
+                <td role="cell" data-label="Estado">
+                  <span class="estado" [class]="c.estado ? 'estado--confirmada' : 'estado--cerrada'">
+                    {{ c.estado ? 'Activo' : 'Dado de baja' }}
+                  </span>
+                </td>
+                <td role="cell" data-label="">
+                  <a class="btn btn--secundario" [routerLink]="['/clientes', c.publicId]"
+                     [attr.aria-label]="'Ver la ficha de ' + c.nombre + ' ' + c.apellido">Ver ficha</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>

@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Entity;
 
+import com.Gestion.MiBalnearioGestion.Recursos.Enum.EModalidad;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -26,6 +27,10 @@ public class PrecioRecursoEntity {
 
     @Column(name="precio", nullable = false)
     private double precio;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "modalidad", nullable = false, columnDefinition = "varchar(20) default 'DIA'")
+    private EModalidad modalidad;
 
     @Column(name="fecha_vigencia", nullable = false)
     private LocalDate fechaVigencia;

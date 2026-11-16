@@ -1,0 +1,69 @@
+
+.pagina {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.acciones-pagina {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.acciones-pagina .btn {
+  width: 100%;
+}
+
+.comprobante {
+  display: grid;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+.comprobante__cabecera {
+  text-align: center;
+}
+
+.comprobante h1,
+.comprobante h2 {
+  margin-bottom: var(--espacio-2);
+}
+
+.comprobante__recursos {
+  display: grid;
+  gap: var(--espacio-1);
+  list-style: none;
+}
+
+.comprobante__totales {
+  display: grid;
+  gap: var(--espacio-2);
+  padding-block: var(--espacio-3);
+  border-block: 1px solid var(--color-borde);
+}
+
+.comprobante__totales p {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.comprobante__totales .total {
+  font-size: 1.2rem;
+}
+
+@media (min-width: 40rem) {
+  .acciones-pagina {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .acciones-pagina .btn {
+    width: auto;
+  }
+
+  .comprobante {
+    padding: var(--espacio-5);
+  }
+}

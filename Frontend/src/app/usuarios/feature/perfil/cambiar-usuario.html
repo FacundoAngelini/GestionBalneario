@@ -5,6 +5,9 @@
     <mat-label>Nuevo nombre de usuario</mat-label>
     <input matInput type="text" autocomplete="username" [formField]="formulario.nuevoNombreUsuario" />
     <mat-hint>Después del cambio vas a tener que volver a iniciar sesión</mat-hint>
+    <mat-hint align="end" [class.contador-lleno]="formulario.nuevoNombreUsuario().value().length >= limites.nombre">
+    {{ formulario.nuevoNombreUsuario().value().length }}/{{ limites.nombre }}
+    </mat-hint>
     <mat-error>{{ formulario.nuevoNombreUsuario().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 

@@ -1,0 +1,58 @@
+
+.gestion {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+.gestion :is(h1, h2, h3) {
+  margin-bottom: var(--espacio-2);
+}
+
+.gestion__cabecera {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.gestion__acciones {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.gestion__acciones .btn {
+  width: 100%;
+}
+
+/* Tantas columnas como entren (mínimo 14rem): 1 en celular, 2 en pantallas más anchas */
+.filtros-reservas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+.dni {
+  color: var(--color-texto-suave);
+  font-weight: 400;
+}
+
+.veredicto .estado {
+  padding: 0.35rem var(--espacio-4);
+  font-size: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .gestion__cabecera {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .gestion__acciones {
+    display: flex;
+  }
+
+  .gestion__acciones .btn {
+    width: auto;
+  }
+}

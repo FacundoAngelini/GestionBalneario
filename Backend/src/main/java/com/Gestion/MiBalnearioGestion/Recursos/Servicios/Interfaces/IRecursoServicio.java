@@ -1,5 +1,6 @@
 package com.Gestion.MiBalnearioGestion.Recursos.Servicios.Interfaces;
 
+import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoCatalogoDTO;
 import com.Gestion.MiBalnearioGestion.Recursos.DTO.RecursoDTO;
 
 import java.time.LocalDate;
@@ -16,4 +17,5 @@ public interface IRecursoServicio {
                                  Boolean reservableVerdad);
     void borrarRecurso(UUID IdPublico);
     List<RecursoDTO> listarDisponiblesParaElCliente(LocalDate fechaInicio, LocalDate fechaFin);
+    public List<RecursoCatalogoDTO> listarCatalogo(LocalDate fechaInicio, LocalDate fechaFin, String tipo);
 }

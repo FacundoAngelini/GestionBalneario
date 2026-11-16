@@ -1,12 +1,14 @@
 <form [formRoot]="formulario" class="perfil-form" [attr.aria-busy]="formulario().submitting()">
-  <mat-form-field>
+    <mat-form-field>
     <mat-label>Contraseña actual</mat-label>
     <input
       matInput
-      [type]="verContrasenias() ? 'text' : 'password'"
+      [type]="ojoActual.visible() ? 'text' : 'password'"
       autocomplete="current-password"
       [formField]="formulario.contraseniaActual"
     />
+    <app-ojo-contrasenia #ojoActual matSuffix etiqueta="contraseña actual"
+                         [deshabilitado]="formulario().submitting()" />
     <mat-error>{{ formulario.contraseniaActual().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 
@@ -14,21 +16,12 @@
     <mat-label>Nueva contraseña</mat-label>
     <input
       matInput
-      [type]="verContrasenias() ? 'text' : 'password'"
+      [type]="ojoNueva.visible() ? 'text' : 'password'"
       autocomplete="new-password"
       [formField]="formulario.nuevaContrasenia"
     />
-    <button
-      matIconButton
-      matSuffix
-      type="button"
-      [disabled]="formulario().submitting()"
-      [attr.aria-label]="verContrasenias() ? 'Ocultar contraseñas' : 'Mostrar contraseñas'"
-      [attr.aria-pressed]="verContrasenias()"
-      (click)="verContrasenias.set(!verContrasenias())"
-    >
-      <mat-icon>{{ verContrasenias() ? 'visibility_off' : 'visibility' }}</mat-icon>
-    </button>
+    <app-ojo-contrasenia #ojoNueva matSuffix etiqueta="nueva contraseña"
+                         [deshabilitado]="formulario().submitting()" />
     <mat-hint>8 a 20 caracteres, con mayúscula, minúscula, número y símbolo (@ $ ! % * ? &)</mat-hint>
     <mat-error>{{ formulario.nuevaContrasenia().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
@@ -37,10 +30,12 @@
     <mat-label>Repetir nueva contraseña</mat-label>
     <input
       matInput
-      [type]="verContrasenias() ? 'text' : 'password'"
+      [type]="ojoConfirmacion.visible() ? 'text' : 'password'"
       autocomplete="new-password"
       [formField]="formulario.confirmacion"
     />
+    <app-ojo-contrasenia #ojoConfirmacion matSuffix etiqueta="repetición de contraseña"
+                         [deshabilitado]="formulario().submitting()" />
     <mat-error>{{ formulario.confirmacion().errors().at(0)?.message }}</mat-error>
   </mat-form-field>
 

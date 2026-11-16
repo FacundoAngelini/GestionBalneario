@@ -38,8 +38,8 @@ public class CocheraControlador {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
-    @Operation(summary = "Actualizar una cochera existente", description = "Modifica los datos de una cochera mediante su UUID. Accesible por personal autorizado.")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Actualizar una cochera existente", description = "Modifica los datos de una cochera mediante su UUID. Requiere rol ADMIN.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cochera actualizada con éxito"),
             @ApiResponse(responseCode = "400", description = "ID erróneo o parámetros de URL inválidos", content = @Content),
@@ -54,7 +54,7 @@ public class CocheraControlador {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Buscar una cochera por ID", description = "Recupera la información detallada de una cochera específica usando su UUID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cochera encontrada con éxito"),
@@ -69,7 +69,7 @@ public class CocheraControlador {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRATIVO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'ADMINISTRACION')")
     @Operation(summary = "Listar y filtrar cocheras", description = "Obtiene un listado de cocheras aplicando filtros opcionales por número físico de plaza.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listado de cocheras obtenido con éxito"),
