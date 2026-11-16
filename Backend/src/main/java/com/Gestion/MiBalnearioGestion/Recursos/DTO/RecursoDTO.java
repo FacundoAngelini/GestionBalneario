@@ -23,7 +23,7 @@ public class RecursoDTO {
 
     @Schema(description = "Nombre identificatorio o descriptivo del recurso", example = "Carpa Standard Lateral")
     @NotBlank
-    @Size(max = LimitesRecursos.MAX_NOMBRE, message = "El nombre admite hasta 31 caracteres")
+    @Size(max = LimitesRecursos.MAX_NOMBRE_BASE, message = "El nombre admite hasta 25 caracteres")
     private String nombre;
 
     @Schema(description = "Indica si el recurso se encuentra disponible para ser reservado por los clientes", example = "true")
@@ -31,6 +31,6 @@ public class RecursoDTO {
     private Boolean esReservable;
 
     @Schema(description = "UUID público del sector de la organización al cual pertenece este recurso", example = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d")
-    @NotNull
+    @NotNull(message = "El SectorPublicId no puede estar vacio")
     private UUID sectorPublicId;
 }
