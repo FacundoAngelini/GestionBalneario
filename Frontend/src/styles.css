@@ -1,44 +1,46 @@
-:root {
-  /* ===== Colores de Marca (Primitivos) ===== */
-  --color-oceano: #0B3C5D;
-  --color-oceano-oscuro: #082C45;
-  --color-turquesa: #2BA6A0;
-  --color-turquesa-oscuro: #1B7A75;
-  --color-arena: #D9A66B;
 
-  /* ===== Colores Funcionales / Semánticos ===== */
+:root {
+  /* ===== Colores de marca ===== */
+  --color-oceano: #102f46;
+  --color-oceano-oscuro: #0a2436;
+  --color-turquesa: #28a99d;
+  --color-turquesa-oscuro: #1d8179;
+  --color-arena: #e9c9a0;
+
+  /* ===== Colores funcionales ===== */
   --color-primario: var(--color-oceano);
   --color-primario-hover: var(--color-oceano-oscuro);
   --color-acento: var(--color-turquesa);
   --color-foco: var(--color-turquesa-oscuro);
 
-  /* ===== Superficies y Fondo ===== */
-  --color-fondo: #FAF7F2;
-  --color-superficie: #FFFFFF;
+  /* ===== Superficies y fondo ===== */
+  --color-fondo: #f5f7f6;
+  --color-superficie: #ffffff;
+  --color-superficie-secundaria: #edf2f0;
 
-  /* ===== Texto y Bordes ===== */
-  --color-texto: #1B2A35;
-  --color-texto-suave: #52606B;
-  --color-texto-sobre-primario: #FFFFFF;
-  --color-borde: #E3DDD0;
-  --color-borde-campo: #7B8791;
+  /* ===== Texto y bordes ===== */
+  --color-texto: #202d37;
+  --color-texto-suave: #64727c;
+  --color-texto-sobre-primario: #ffffff;
+  --color-borde: #e1e8e5;
+  --color-borde-campo: #aab8b4;
 
   /* ===== Estados ===== */
-  --color-error: #B3261E;
-  --color-error-fondo: #FCEAE8;
-  --color-exito: #1E6B45;
-  --color-exito-fondo: #E4F4EB;
-  --color-advertencia: #7A5200;
-  --color-advertencia-fondo: #FFF3D6;
-  --color-info: #1F6FA8;
-  --color-info-fondo: #E8F2FA;
+  --color-error: #b3261e;
+  --color-error-fondo: #fceae8;
+  --color-exito: #1e6b45;
+  --color-exito-fondo: #e4f4eb;
+  --color-advertencia: #7a5200;
+  --color-advertencia-fondo: #fff3d6;
+  --color-info: #1f6fa8;
+  --color-info-fondo: #e8f2fa;
   --color-requerido: var(--color-error);
 
   /* ===== Tipografía ===== */
   --fuente-titulos: 'Cormorant Garamond', Georgia, serif;
   --fuente-texto: 'Manrope', system-ui, sans-serif;
 
-  /* ===== Escala de Espaciado ===== */
+  /* ===== Escala de espaciado ===== */
   --espacio-1: 0.25rem;
   --espacio-2: 0.5rem;
   --espacio-3: 0.75rem;
@@ -46,29 +48,46 @@
   --espacio-5: 1.5rem;
   --espacio-6: 2rem;
 
-  /* ===== Formas, Transiciones y Sombras ===== */
+  /* ===== Formas, transiciones y sombras ===== */
   --radio-sm: 0.5rem;
   --radio-chico: 8px;
   --radio-medio: 12px;
   --radio: 0.75rem;
   --radio-grande: 20px;
-  --sombra: 0 2px 10px rgb(11 60 93 / 0.08);
-  --sombra-suave: 0 2px 12px rgba(11, 60, 93, 0.08);
-  --transicion: 150ms ease;
 
-  /* ===== Layout y Z-Index ===== */
+  --sombra: 0 2px 10px rgb(16 47 70 / 0.06);
+  --sombra-suave: 0 4px 16px rgb(16 47 70 / 0.08);
+  --sombra-elevada: 0 12px 32px rgb(16 47 70 / 0.12);
+
+  --transicion: 180ms ease;
+
+  /* ===== Layout y z-index ===== */
   --altura-header: 4rem;
   --z-overlay: 14;
   --z-aside: 15;
   --z-header: 20;
 
-  /* ===== Mapeo Angular Material ===== */
+  /* ===== Integración con Angular Material ===== */
   --mat-sys-primary: var(--color-primario);
   --mat-sys-on-primary: var(--color-texto-sobre-primario);
+  --mat-sys-primary-container: #d8e8f0;
+  --mat-sys-on-primary-container: var(--color-oceano);
+
+  --mat-sys-secondary: var(--color-acento);
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-secondary-container: #d1f2ed;
+  --mat-sys-on-secondary-container: #123f3b;
+
+  --mat-sys-tertiary: #a8753e;
+  --mat-sys-on-tertiary: #ffffff;
+
   --mat-sys-error: var(--color-error);
   --mat-sys-surface: var(--color-superficie);
   --mat-sys-on-surface: var(--color-texto);
   --mat-sys-on-surface-variant: var(--color-texto-suave);
+  --mat-sys-surface-container: var(--color-fondo);
+  --mat-sys-surface-container-low: #f8faf9;
+  --mat-sys-surface-container-high: var(--color-superficie-secundaria);
   --mat-sys-outline: var(--color-borde-campo);
   --mat-sys-outline-variant: var(--color-borde);
 
@@ -76,6 +95,7 @@
   --mat-button-filled-container-height: 3rem;
   --mat-form-field-outlined-container-shape: var(--radio-chico);
 }
+
 
 *,
 *::after,
@@ -85,21 +105,43 @@
   padding: 0;
 }
 
+
 html {
-  font-size: clamp(1rem, 0.95rem + 0.25vh, 1.125rem);
+  min-height: 100%;
+  font-size: clamp(1rem, 0.95rem + 0.15vw, 1.125rem);
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100vh;
   background-color: var(--color-fondo);
   color: var(--color-texto);
   font-family: var(--fuente-texto);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-texto);
+  font-family: var(--fuente-texto);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.titulo-editorial {
   font-family: var(--fuente-titulos);
+  font-weight: 600;
 }
 
-p, span, a, label {
+p,
+span,
+a,
+label {
   font-family: var(--fuente-texto);
 }
 

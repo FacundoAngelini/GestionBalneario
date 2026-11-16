@@ -39,3 +39,5 @@ replay_pid21668.log
 
 ### env Docker ###
 .env
+node_modules
+node_modules
