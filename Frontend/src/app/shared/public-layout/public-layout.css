@@ -20,7 +20,6 @@
 }
 
 .pie {
-  padding: 1rem;
-  background-color: var(--color-superficie);
-  text-align: center;
+  padding: 0;
+  background-color: var(--color-primario);
 }

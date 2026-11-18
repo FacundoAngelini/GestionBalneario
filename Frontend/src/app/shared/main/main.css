@@ -19,12 +19,15 @@
   position: sticky;
   top: 0;
   z-index: var(--z-header);
+
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
   grid-area: header;
   height: var(--altura-header);
   padding-inline: 1rem;
+
   border-bottom: 2px solid var(--color-turquesa);
   color: var(--color-texto-sobre-primario);
   background-color: var(--color-primario);

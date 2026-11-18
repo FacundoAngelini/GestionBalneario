@@ -20,11 +20,14 @@
   object-fit: cover;
   object-position: center;
 }
-
 .hero__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgb(11 61 92 / .35), rgb(11 61 92 / .65));
+  background: linear-gradient(
+    to bottom,
+    rgb(10 36 54 / 0.35),
+    rgb(10 36 54 / 0.72)
+  );
 }
 
 .hero__content {
@@ -37,14 +40,22 @@
 
 .hero h1 {
   margin: 0 0 1rem;
-  font-size: clamp(2rem, 8vw, 3.5rem);
-  line-height: 1.15;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(2.8rem, 7vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+   color: #e4efae;
 }
 
 .hero p {
-  margin: 0 0 1.5rem;
-  font-size: 1.0625rem;
-  line-height: 1.5;
+  max-width: 34rem;
+  margin: 0 auto 1.75rem;
+  font-family: var(--fuente-texto);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.7;
+  text-wrap: balance;
 }
 
 /* ---------- TARJETAS (base = una columna) ---------- */

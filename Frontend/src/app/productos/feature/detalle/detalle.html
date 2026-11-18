@@ -1,6 +1,11 @@
+
 <section class="detalle">
-  <header>
+  <header class="detalle__introduccion">
+    <span class="detalle__seccion">GESTIÓN DE PRODUCTOS</span>
     <h1>Detalle del producto</h1>
+    <p class="field__hint">
+      Consultá la información y disponibilidad del producto.
+    </p>
   </header>
 
   @if (producto.isLoading()) {
@@ -10,19 +15,25 @@
   @if (producto.error()) {
     <div class="card vacio" role="alert">
       <p class="field__error">No se pudo cargar el producto.</p>
-      <button type="button" class="btn btn--secundario" (click)="producto.reload()">
+      <button
+        type="button"
+        class="btn btn--secundario"
+        (click)="producto.reload()"
+      >
         Reintentar
       </button>
     </div>
   }
 
   @if (producto.value(); as p) {
-    <article class="card">
+    <article class="card detalle__producto">
       <div class="detalle__cabecera">
         <h2>{{ p.nombre }}</h2>
-        <span class="estado"
-              [class.estado--confirmada]="p.productoDisponible"
-              [class.estado--cerrada]="!p.productoDisponible">
+        <span
+          class="estado"
+          [class.estado--confirmada]="p.productoDisponible"
+          [class.estado--cerrada]="!p.productoDisponible"
+        >
           {{ p.productoDisponible ? 'Disponible' : 'No disponible' }}
         </span>
       </div>
@@ -30,35 +41,183 @@
       <dl class="datos">
         <dt>Nombre</dt>
         <dd>{{ p.nombre }}</dd>
+
         <dt>Categoría</dt>
         <dd>{{ etiquetaCategoria[p.categoria] }}</dd>
+
         <dt>Precio</dt>
         <dd>{{ formatoPrecio(p.precio) }}</dd>
+
         <dt>Disponibilidad</dt>
-        <dd>{{ p.productoDisponible ? 'Disponible para la venta' : 'Sin stock o deshabilitado' }}</dd>
+        <dd>
+          {{ p.productoDisponible ? 'Disponible para la venta' : 'Sin stock o deshabilitado' }}
+        </dd>
+
         <dt>Código</dt>
         <dd class="codigo">{{ p.publicId }}</dd>
       </dl>
 
-      @if (esAdmin()) {
-        <button type="button" class="btn btn--secundario"
-                [disabled]="actualizandoDisponibilidad()"
-                (click)="cambiarDisponibilidad(!p.productoDisponible)">
-          @if (actualizandoDisponibilidad()) {
-            Actualizando…
-          } @else {
-            {{ p.productoDisponible ? 'Dar de baja' : 'Reactivar' }}
-          }
-        </button>
+      @if (puedeGestionar() && !editando()) {
+        <div class="detalle__acciones">
+          <button
+            type="button"
+            class="btn btn--secundario"
+            (click)="editar()"
+          >
+            Editar producto
+          </button>
+
+          <button
+            type="button"
+            class="btn"
+            [class.btn--secundario]="p.productoDisponible"
+            [class.btn--primary]="!p.productoDisponible"
+            [disabled]="actualizandoDisponibilidad()"
+            (click)="cambiarDisponibilidad(!p.productoDisponible)"
+          >
+            @if (actualizandoDisponibilidad()) {
+              Actualizando…
+            } @else {
+              {{ p.productoDisponible ? 'Dar de baja' : 'Reactivar' }}
+            }
+          </button>
+        </div>
       }
     </article>
+
+    @if (puedeGestionar() && editando()) {
+      <form
+        class="producto-form card"
+        novalidate
+        (submit)="guardarEdicion($event)"
+      >
+        <div class="producto-form__cabecera">
+          <div>
+            <span class="detalle__seccion">EDICIÓN</span>
+            <h2>Modificar producto</h2>
+          </div>
+          <p class="field__hint">
+            Actualizá los datos que necesites.
+          </p>
+        </div>
+
+        <section class="producto-form__seccion">
+          <h3>Información del producto</h3>
+
+          <div class="field">
+            <label class="field__label" for="nombre">
+              Nombre del producto
+            </label>
+            <input
+              id="nombre"
+              class="field__control"
+              type="text"
+              autocomplete="off"
+              [formField]="productoForm.nombre"
+            />
+            @if (productoForm.nombre().touched() && productoForm.nombre().invalid()) {
+              @for (error of productoForm.nombre().errors(); track error.kind) {
+                <small class="field__error">{{ error.message }}</small>
+              }
+            }
+          </div>
+
+          <div class="producto-form__fila">
+            <div class="field">
+              <label class="field__label" for="precio">Precio</label>
+              <input
+                id="precio"
+                class="field__control"
+                type="number"
+                step="0.01"
+                [formField]="productoForm.precio"
+              />
+              @if (productoForm.precio().touched() && productoForm.precio().invalid()) {
+                @for (error of productoForm.precio().errors(); track error.kind) {
+                  <small class="field__error">{{ error.message }}</small>
+                }
+              }
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="categoria">Categoría</label>
+              <select
+                id="categoria"
+                class="field__control"
+                [formField]="productoForm.categoria"
+              >
+                <option value="" disabled>Seleccionar...</option>
+                @for (c of categorias; track c.valor) {
+                  <option [value]="c.valor">{{ c.etiqueta }}</option>
+                }
+              </select>
+              @if (productoForm.categoria().touched() && productoForm.categoria().invalid()) {
+                @for (error of productoForm.categoria().errors(); track error.kind) {
+                  <small class="field__error">{{ error.message }}</small>
+                }
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="producto-form__seccion">
+          <h3>Disponibilidad</h3>
+
+          <label class="producto-form__disponibilidad">
+            <input
+              type="checkbox"
+              [formField]="productoForm.productoDisponible"
+            />
+            <span>
+              <strong>Disponible para la venta</strong>
+              <small>
+                El producto aparecerá como disponible en el menú.
+              </small>
+            </span>
+          </label>
+        </section>
+
+        @if (errorEdicion(); as mensaje) {
+          <p class="producto-form__mensaje producto-form__mensaje--error" role="alert">
+            {{ mensaje }}
+          </p>
+        }
+
+        <div class="producto-form__acciones">
+          <button
+            type="button"
+            class="btn btn--secundario"
+            [disabled]="guardandoEdicion()"
+            (click)="cancelarEdicion()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn--primary"
+            [disabled]="guardandoEdicion()"
+          >
+            {{ guardandoEdicion() ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    }
   }
 
   @if (errorDisponibilidad(); as mensaje) {
     <p class="field__error" role="alert">{{ mensaje }}</p>
   }
 
+  @if (exitoEdicion(); as mensaje) {
+    <p class="producto-form__mensaje producto-form__mensaje--exito" role="status">
+      {{ mensaje }}
+    </p>
+  }
+
   <div class="acciones-reserva">
-    <a class="btn btn--secundario" routerLink="/productos">Volver al menú</a>
+    <a class="btn btn--secundario" routerLink="/productos">
+      Volver al menú
+    </a>
   </div>
 </section>

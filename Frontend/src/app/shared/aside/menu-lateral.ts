@@ -54,9 +54,17 @@ export class MenuLateral {
       ruta: `/${ROUTE_SEGMENTS.empleados}`,
       roles: ROLES_GESTION_EMPLEADOS,
     },
+    {
+  etiqueta: 'Productos',
+  icono: 'shopping_bag',
+  ruta: `/${ROUTE_SEGMENTS.productos}`,
+  roles: [ROLES.ADMIN, ROLES.GERENTE],
+},
   ];
 
   // Solo los ítems que el usuario logueado puede ver
   readonly items = computed(() => this.todos.filter((item) => this.auth.tieneAlgunRol(item.roles)));
   readonly hayItems = computed(() => this.items().length > 0);
+  
 }
+

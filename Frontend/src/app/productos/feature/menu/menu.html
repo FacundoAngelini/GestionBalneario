@@ -1,7 +1,19 @@
+
 <section class="menu">
-  <header>
-    <h1>Menú</h1>
-    <p class="field__hint">Conocé los productos que tenemos para vos.</p>
+  <header class="menu__cabecera">
+    <div class="menu__introduccion">
+      <span class="menu__seccion">PRODUCTOS</span>
+      <h1>Menú</h1>
+      <p class="field__hint">Conocé los productos que tenemos para vos.</p>
+    </div>
+
+    @if (puedeVerTodos())  {
+      <div class="menu__acciones">
+        <a class="btn btn--primary" routerLink="/productos/cargar">
+          Cargar producto
+        </a>
+      </div>
+    }
   </header>
 
   @if (productos.isLoading()) {
@@ -18,13 +30,20 @@
   @if (productos.hasValue()) {
     @if (categorias().length > 1) {
       <div class="vistas" role="group" aria-label="Filtrar por categoría">
-        <button type="button" class="chip" [attr.aria-pressed]="categoriaActiva() === null"
-                (click)="categoriaActiva.set(null)">
+        <button
+          type="button"
+          class="chip"
+          [attr.aria-pressed]="categoriaActiva() === null"
+          (click)="categoriaActiva.set(null)">
           Todos
         </button>
+
         @for (c of categorias(); track c) {
-          <button type="button" class="chip" [attr.aria-pressed]="categoriaActiva() === c"
-                  (click)="categoriaActiva.set(c)">
+          <button
+            type="button"
+            class="chip"
+            [attr.aria-pressed]="categoriaActiva() === c"
+            (click)="categoriaActiva.set(c)">
             {{ etiquetaCategoria[c] }}
           </button>
         }
@@ -34,7 +53,7 @@
     @if (visibles().length === 0) {
       <div class="card vacio" role="status">
         <p>
-          @if (esAdmin()) {
+          @if (puedeVerTodos()) {
             Todavía no hay productos cargados en el menú.
           } @else {
             No hay productos disponibles en el menú.
@@ -47,9 +66,10 @@
           <li class="card producto">
             <div class="producto__cabecera">
               <h3 class="producto__titulo">{{ p.nombre }}</h3>
-              <span class="estado"
-                    [class.estado--confirmada]="p.productoDisponible"
-                    [class.estado--cerrada]="!p.productoDisponible">
+              <span
+                class="estado"
+                [class.estado--confirmada]="p.productoDisponible"
+                [class.estado--cerrada]="!p.productoDisponible">
                 {{ p.productoDisponible ? 'Disponible' : 'No disponible' }}
               </span>
             </div>
@@ -62,7 +82,11 @@
             </dl>
 
             <div class="acciones-reserva">
-              <a class="btn btn--secundario" [routerLink]="['/productos', p.publicId]">Ver más</a>
+              <a
+                class="btn btn--secundario"
+                [routerLink]="['/productos', p.publicId]">
+                Ver más
+              </a>
             </div>
           </li>
         }
