@@ -10,31 +10,132 @@
   margin-bottom: var(--espacio-2);
 }
 
-.gestion__cabecera {
-  display: grid;
+.reserva__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding-bottom: var(--espacio-3);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.reserva__titulo {
+  min-width: 0;
+  margin: 0;
+  color: var(--color-primario);
+  font-size: 1.3rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+
+.reserva > .veredicto {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin: 0;
+}
+
+.reserva > .field__hint,
+.reserva > .field__error {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.reserva > .field__error {
+  padding: var(--espacio-3) var(--espacio-4);
+  border-left: 3px solid var(--color-error);
+  border-radius: var(--radio-sm);
+  background: var(--color-error-fondo);
+}
+
+.reserva > .field__hint {
+  color: var(--color-texto-suave);
+}
+
+.reserva .confirmacion {
   gap: var(--espacio-3);
 }
 
-.gestion__acciones {
+.reserva .confirmacion > p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.reserva .confirmacion .field {
   display: grid;
   gap: var(--espacio-2);
 }
 
-.gestion__acciones .btn {
-  width: 100%;
+
+.gestion > .btn {
+  justify-self: center;
+}
+.reserva .datos {
+  display: grid;
+  grid-template-columns: minmax(5rem, auto) minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--espacio-2) var(--espacio-4);
 }
 
+.reserva .datos dt {
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.reserva .datos dd {
+  min-width: 0;
+  color: var(--color-texto);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.reserva .datos .dni {
+  color: var(--color-texto-suave);
+  font-weight: 400;
+}
+
+.reserva .datos .codigo {
+  color: var(--color-primario);
+  font-size: 0.85rem;
+}
+
+
+.gestion__cabecera h1 {
+  margin: 0;
+}
+
+.gestion__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
+.gestion__acciones .btn {
+  width: auto;
+}
 /* Tantas columnas como entren (mínimo 14rem): 1 en celular, 2 en pantallas más anchas */
 .filtros-reservas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: var(--espacio-4);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-3);
   padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie-secundaria);
 }
 
-.dni {
-  color: var(--color-texto-suave);
-  font-weight: 400;
+
+.filtros-reservas .field__control {
+  width: 100%;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde-campo);
+  border-radius: var(--radio-sm);
+  color: var(--color-texto);
+  font: inherit;
 }
 
 .veredicto .estado {
@@ -42,17 +143,102 @@
   font-size: 1rem;
 }
 
+
+.vistas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+  padding-bottom: var(--espacio-2);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.vistas .chip {
+  position: relative;
+  min-height: 2.75rem;
+  padding-inline: var(--espacio-4);
+  border: 1px solid transparent;
+  border-radius: var(--radio-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  font: inherit;
+  font-weight: 600;
+  transition:
+    color var(--transicion),
+    background var(--transicion);
+}
+
+.vistas .chip:hover:not(:disabled) {
+  background: var(--color-superficie-secundaria);
+  color: var(--color-primario);
+}
+
+.vistas .chip[aria-pressed="true"] {
+  background: var(--color-superficie-secundaria);
+  color: var(--color-primario);
+}
+
+.vistas .chip[aria-pressed="true"]::after {
+  position: absolute;
+  right: var(--espacio-3);
+  bottom: -0.6rem;
+  left: var(--espacio-3);
+  height: 3px;
+  border-radius: 999px;
+  background: var(--color-acento);
+  content: "";
+}
+
+.acciones-reserva {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-2);
+  padding-top: var(--espacio-3);
+  border-top: 1px solid var(--color-borde);
+}
+
+.acciones-reserva .btn {
+  width: auto;
+}
+
+.gestion__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+}
+
+
 @media (min-width: 40rem) {
-  .gestion__cabecera {
-    grid-template-columns: 1fr auto;
-    align-items: center;
+  .gestion__acciones .btn {
+    width: auto;
   }
 
+  .filtros-reservas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--espacio-4);
+  }
+}
+
+@media (max-width: 39.999rem) {
   .gestion__acciones {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .gestion__acciones .btn {
-    width: auto;
+    width: 100%;
+  }
+
+  .acciones-reserva {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .acciones-reserva .btn {
+    width: 100%;
   }
 }
