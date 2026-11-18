@@ -11,14 +11,29 @@
   gap: var(--espacio-4);
   margin-top: var(--espacio-4);
 }
-
 .card {
+  display: grid;
+  gap: var(--espacio-4);
   padding: var(--espacio-4);
 }
 
-/* Tu styles.css resetea todos los márgenes a 0, así que los títulos necesitan su espacio acá */
-.page h1,
 .card h2 {
+  margin: 0;
+  padding-bottom: var(--espacio-2);
+  border-bottom: 2px solid var(--color-turquesa);
+  color: var(--color-primario);
+  font-size: 1.35rem;
+}
+
+/* ---- Campos ---- */
+.form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-3) var(--espacio-4);
+}
+
+/* Tu styles.css resetea todos los márgenes a 0, así que los títulos necesitan su espacio acá */
+.page h1 {
   margin-bottom: var(--espacio-3);
 }
 
@@ -34,38 +49,74 @@
 }
 
 .resumen {
-  margin: var(--espacio-4) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin: 0;
   padding: var(--espacio-3) var(--espacio-4);
-  border-left: 4px solid var(--color-arena);
-  background: var(--color-fondo);
+  border-left: 4px solid var(--color-turquesa);
   border-radius: var(--radio-sm);
+  background: var(--color-superficie-secundaria);
+  color: var(--color-texto);
+  line-height: 1.6;
   overflow-wrap: anywhere;
 }
 
+.resumen strong {
+  color: var(--color-primario);
+  font-size: 1.1rem;
+}
+
+
+/* ---- Fechas y precios ---- */
+.card > .field__hint {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.card .precios {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-3) var(--espacio-4);
+}
+
+.card .aviso {
+  padding: var(--espacio-3);
+  border-left: 4px solid var(--color-turquesa);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie-secundaria);
+  color: var(--color-texto);
+}
+
 .lista-calculados {
+  display: grid;
+  gap: var(--espacio-2);
   margin: var(--espacio-2) 0 0;
   padding-left: var(--espacio-5);
 }
 
+.lista-calculados li {
+  line-height: 1.5;
+}
 
-/* Celular: ayuda arriba, botón debajo y a todo el ancho */
+
 .acciones {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-2);
+  display: grid;
+  gap: var(--espacio-3);
 }
 
 .acciones__ayuda {
   margin: 0;
-  text-align: center;
-}
-.acciones .btn {
-  width: 100%;
-  /* Tu regla global ".acciones > button" lo deja en 2.5rem; acá se sube a 44px, el mínimo para tocar con el dedo */
-  height: auto;
-  min-height: 2.75rem;
+  color: var(--color-texto-suave);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
+.acciones .btn {
+  width: 100%;
+  min-height: 2.75rem;
+}
 
 /* El nombre se achica y el precio nunca se parte: así no empuja el borde derecho */
 .lista-recursos li {
@@ -82,11 +133,37 @@
 }
 
 
+.page__cabecera {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.page__introduccion {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.page__introduccion h1 {
+  margin: 0;
+  color: var(--color-primario);
+}
+
+.page__introduccion p {
+  margin: 0;
+}
+
+.page__paso {
+  color: var(--color-turquesa-oscuro);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
 /* ---- Pantallas medianas (tablet) ---- */
 @media (min-width: 30rem) {
-  .precios {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .card .precios {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 }
 
 @media (min-width: 40rem) {
@@ -99,20 +176,13 @@
     margin-top: var(--espacio-5);
   }
 
-  .card {
-    padding: var(--espacio-5);
-  }
-
-  .form-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  
 
   .campo-ancho {
     grid-column: 1 / -1;
   }
-
-    .acciones {
-    flex-direction: row;
+  .acciones {
+    display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: var(--espacio-4);
@@ -124,12 +194,13 @@
 
   .acciones .btn {
     width: auto;
+    min-width: 12rem;
   }
 }
 
 /* ---- Pantallas grandes (escritorio) ---- */
 @media (min-width: 60rem) {
-  .precios {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  .card .precios {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 }

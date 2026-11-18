@@ -4,20 +4,51 @@
   max-width: 60rem;
   margin-inline: auto;
 }
+.item__campos .field__label {
+  display: block;
+  min-height: 2.5rem;
+}
 
 /* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
 .inventario :is(h1, h2, h3) {
   margin-bottom: var(--espacio-2);
 }
 
+
+/* ---- Encabezado ---- */
 .inventario__cabecera {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
   gap: var(--espacio-3);
 }
 
+.inventario__introduccion {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.inventario__introduccion h1 {
+  margin: 0;
+  color: var(--color-primario);
+}
+
+.inventario__introduccion p {
+  margin: 0;
+}
+
+.inventario__paso {
+  color: var(--color-turquesa-oscuro);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.inventario__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
+/* ---- Filtros ---- */
 .filtros-inventario {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
@@ -25,7 +56,9 @@
   padding: var(--espacio-4);
 }
 
-/* min(100%, 18rem): nunca más angosto que el contenedor, así no desborda en celulares chicos */
+
+
+/* ---- Lista de recursos ---- */
 .lista-items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
@@ -33,72 +66,145 @@
   list-style: none;
 }
 
+/* ---- Tarjeta ---- */
 .item {
   display: flex;
   flex-direction: column;
   gap: var(--espacio-3);
   padding: var(--espacio-4);
-}
-
-.item__acciones {
-  margin-top: auto;
-}
-
-.item__acciones .btn {
-  width: 100%;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .item--inactivo {
   border-style: dashed;
-  opacity: 0.8;
+  background: var(--color-superficie-secundaria);
 }
 
 .item__cabecera {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--espacio-2);
 }
 
 .item__nombre {
   margin: 0;
-  font-size: 1.25rem;
+  color: var(--color-primario);
+  font-size: 1.3rem;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
+/* ---- Acción ---- */
+.item__acciones {
+  margin-top: auto;
+  padding-top: var(--espacio-2);
+  border-top: 1px solid var(--color-borde);
+}
+
+.item__acciones .btn {
+  width: 100%;
+}
+
+/* ---- Datos del recurso ---- */
+.item > .datos {
+  display: grid;
+  grid-template-columns: minmax(5rem, auto) minmax(0, 1fr);
+  gap: var(--espacio-2) var(--espacio-3);
+  margin: 0;
+  padding: var(--espacio-3);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie-secundaria);
+}
+
+.item > .datos dt {
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+}
+
+.item > .datos dd {
+  margin: 0;
+  color: var(--color-texto);
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+
 /* Formulario de edición dentro de la tarjeta */
+
+
+/* ---- Edición del recurso ---- */
 .item__form {
   display: grid;
   gap: var(--espacio-4);
+  padding-top: var(--espacio-2);
+}
+
+.item__form > .item__nombre {
+  margin: 0;
+  padding-bottom: var(--espacio-3);
+  border-bottom: 2px solid var(--color-turquesa);
+  color: var(--color-primario);
+  font-size: 1.35rem;
 }
 
 .item__campos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: var(--espacio-4);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-3) var(--espacio-4);
 }
 
 .campo-ancho {
   grid-column: 1 / -1;
 }
 
+
+.campo-ancho {
+  grid-column: 1 / -1;
+}
+
+
 .casilla {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--espacio-3);
-  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+  min-height: 2.75rem;
+  padding: var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie-secundaria);
+  color: var(--color-texto);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  cursor: pointer;
 }
 
 .casilla input {
   width: 1.25rem;
   height: 1.25rem;
   flex-shrink: 0;
-  accent-color: var(--color-primario);
+  margin-top: 0.1rem;
+  accent-color: var(--color-turquesa-oscuro);
 }
 
 .inventario__acciones {
   display: flex;
   flex-wrap: wrap;
   gap: var(--espacio-2);
+}
+
+@media (min-width: 40rem) {
+  .inventario__cabecera {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .item__campos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

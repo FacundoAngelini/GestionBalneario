@@ -1,36 +1,53 @@
+
 <div class="app-grid-layout" [class.sin-aside]="!menu.hayItems()">
+
   <header class="area-header">
-    <!-- botón visible solo en celular, y solo si hay menú -->
     @if (menu.hayItems()) {
       <button
+        matIconButton
         class="btn-hamburguesa"
         type="button"
-        aria-label="Abrir menú"
+        [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+        aria-controls="menu-lateral"
         [attr.aria-expanded]="menuAbierto()"
         (click)="toggleMenu()"
-      >☰</button>
+      >
+        <mat-icon aria-hidden="true">
+          {{ menuAbierto() ? 'close' : 'menu' }}
+        </mat-icon>
+      </button>
     }
-    <app-header></app-header>
+
+    <app-header />
   </header>
 
-  <!-- recibe la clase abierto si es true -->
   @if (menu.hayItems()) {
-    <aside class="area-aside" [class.abierto]="menuAbierto()">
-      <app-aside (navegar)="menuAbierto.set(false)"></app-aside>
+    <aside
+      id="menu-lateral"
+      class="area-aside"
+      [class.abierto]="menuAbierto()"
+    >
+      <div class="aside-contenido">
+        <app-aside (navegar)="menuAbierto.set(false)" />
+      </div>
     </aside>
   }
-  
-  <main class="area-main" (click)="menuAbierto.set(false)">
-    <!--al tocar main, se cierra menu -->
-    <router-outlet></router-outlet>
+
+  <main class="area-main">
+    <router-outlet />
   </main>
-  
+
   <footer class="area-footer">
-    <app-footer></app-footer>
+    <app-footer />
   </footer>
+
 </div>
 
-<!-- caoa osucra para el clu cuando este abieerto -->
 @if (menuAbierto()) {
-  <div class="overlay" (click)="toggleMenu()"></div>
+  <button
+    class="overlay"
+    type="button"
+    aria-label="Cerrar menú"
+    (click)="menuAbierto.set(false)"
+  ></button>
 }

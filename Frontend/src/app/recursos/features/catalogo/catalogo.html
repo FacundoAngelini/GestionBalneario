@@ -1,26 +1,40 @@
 <section class="catalogo">
-  <header>
-    <h1>Catálogo de recursos</h1>
-    @if (temporadaTexto()) {
-      <p class="field__hint">{{ temporadaTexto() }}</p>
-    }
-  </header>
-
-    @if (seleccion.clienteMostrador(); as c) {
-    <div class="aviso aviso--mostrador" role="status">
-      <span>
-        Reserva presencial para <strong>{{ c.nombre }} {{ c.apellido }}</strong>
-        (DNI {{ c.dni.toLocaleString('es-AR') }}).
-      </span>
-      <button type="button" class="btn btn--secundario" (click)="cancelarMostrador()">
-        Cancelar reserva presencial
-      </button>
-    </div>
+  
+<header class="catalogo__cabecera">
+  <span class="catalogo__paso">PASO 02 / 03</span>
+  <h1>Catálogo de recursos</h1>
+  <p class="field__hint">
+    Seleccioná los recursos disponibles para tu reserva.
+  </p>
+  @if (temporadaTexto()) {
+    <p class="catalogo__temporada">{{ temporadaTexto() }}</p>
   }
+</header>
+
+@if (seleccion.clienteMostrador(); as c) {
+  <div class="aviso aviso--mostrador" role="status">
+    <div class="aviso__datos">
+      <span class="catalogo__etiqueta">RESERVA PRESENCIAL</span>
+      <strong>{{ c.nombre }} {{ c.apellido }}</strong>
+      <span class="field__hint">DNI {{ c.dni.toLocaleString('es-AR') }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn--secundario"
+      (click)="cancelarMostrador()"
+    >
+      Cancelar reserva presencial
+    </button>
+  </div>
+}
+
 
   <form class="card busqueda" (submit)="enviar($event)" novalidate>
+  <div class="busqueda__cabecera">
     <h2>¿Cuándo querés venir?</h2>
-    
+    <p class="field__hint">Indicá la modalidad y las fechas de tu estadía.</p>
+  </div>
 
     <div class="busqueda__campos">
       <div class="field">
@@ -87,7 +101,10 @@
 
   @if (resultados(); as lista) {
     <section class="resultados" aria-labelledby="titulo-resultados">
-      <h2 id="titulo-resultados">Disponible: {{ periodoTexto() }}</h2>
+      <div class="resultados__cabecera">
+  <span class="catalogo__etiqueta">DISPONIBILIDAD</span>
+  <h2 id="titulo-resultados">Disponible para {{ periodoTexto() }}</h2>
+</div>
       @if (!puedeElegir()) {
         <p class="aviso" role="note">
           Estás viendo el catálogo como {{ rol() }}. Para reservar en el mostrador, empezá desde
@@ -106,7 +123,7 @@
       </div>
 
       @if (sinTarifa() > 0) {
-        <p class="field__hint">
+        <p class="recurso__detalle">
           Hay {{ sinTarifa() }} {{ sinTarifa() === 1 ? 'recurso' : 'recursos' }} libres que no se muestran
           porque no tienen tarifa cargada para esta modalidad.
         </p>
@@ -126,7 +143,7 @@
                 <span class="etiqueta">{{ etiquetaTipo[t.recurso.tipo] }}</span>
               </div>
 
-              <p class="field__hint">{{ t.recurso.sectorNombre }} · {{ t.detalle }}</p>
+             <p class="recurso__detalle">{{ t.recurso.sectorNombre }} · {{ t.detalle }}</p>
 
               <div class="recurso__precio">
                 <span class="recurso__total">{{ formatoPrecio(t.total) }}</span>

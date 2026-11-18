@@ -1,42 +1,486 @@
+
+/* =========================================
+   CONTENEDOR GENERAL
+========================================= */
+
 .panel {
   display: grid;
-  gap: var(--espacio-4);
-  max-width: 60rem;
+  width: 100%;
+  max-width: 76rem;
+  min-width: 0;
+  gap: clamp(1.5rem, 3vw, 2rem);
   margin-inline: auto;
 }
 
-.panel h1,
-.card h2 {
-  margin-bottom: var(--espacio-2);
-}
+/* =========================================
+   BIENVENIDA
+========================================= */
 
-.panel .card {
+.panel-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 17rem;
+  overflow: hidden;
+  padding: clamp(1.75rem, 5vw, 3.5rem);
+  border: 1px solid #dfbd91;
+  border-radius: 1.25rem;
+
+  background-color: #e9c9a0;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(246, 239, 229, 0.88) 0%,
+      rgba(246, 239, 229, 0.62) 38%,
+      rgba(246, 239, 229, 0.08) 75%,
+      rgba(246, 239, 229, 0) 100%
+    ),
+    url('/images/imagen-saludo.jpg');
+
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #102f46;
+}
+.panel-hero__contenido {
+  position: relative;
+  z-index: 1;
+
   display: grid;
-  gap: var(--espacio-3);
   justify-items: start;
-  align-content: start; 
-}
-.panel .card .acciones-panel {
-  margin-top: auto; 
-}
+  gap: 0.85rem;
 
-.acciones-panel {
-  display: grid;
-  gap: var(--espacio-2);
   width: 100%;
+  max-width: 38rem;
+  min-width: 0;
 }
 
-.grilla-panel {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  align-items: stretch; 
-  gap: var(--espacio-4);
+.panel-hero__eyebrow {
+  margin: 0;
+
+  color: #76502d;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
 }
+
+.panel-hero h1 {
+  margin: 0;
+
+  color: #102f46;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(2.5rem, 5vw, 3.7rem);
+  font-weight: 600;
+  line-height: 1.05;
+
+  overflow-wrap: anywhere;
+}
+
+.panel-hero__descripcion {
+  max-width: 32rem;
+  margin: 0;
+
+  color: #344b5a;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.panel-hero__rol {
+  display: inline-block;
+  margin: 0.25rem 0 0;
+  padding: 0.4rem 0.85rem;
+
+  border: 1px solid rgba(16, 47, 70, 0.18);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.48);
+  color: #102f46;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   SECCIONES
+========================================= */
+
+.panel-seccion {
+  display: grid;
+  min-width: 0;
+  gap: 1.25rem;
+}
+.panel-seccion__cabecera {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.panel-seccion__cabecera h2 {
+  margin: 0;
+
+  color: var(--color-primario);
+  font-family: var(--fuente-titulos);
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.panel-seccion__cabecera > p:last-child {
+  max-width: 42rem;
+  margin: 0;
+
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+/* =========================================
+   ETIQUETAS Y TEXTO
+========================================= */
+
+.panel-etiqueta {
+  color: #176c62;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.panel-destacado h3,
+.panel-reservas h3,
+.panel-modulo h3,
+.panel-consulta h3 {
+  margin: 0;
+  color: #102f46;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.panel-destacado p,
+.panel-reservas p,
+.panel-modulo p,
+.panel-consulta p {
+  margin: 0;
+  color: #344b5a;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+/* =========================================
+   RESERVAS
+========================================= */
+
+.panel-reservas,
+.panel-destacado {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--color-borde);
+  border-top: 4px solid var(--color-turquesa);
+  border-radius: 1rem;
+  background: var(--color-superficie-secundaria);
+}
+
+.panel-reservas {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.panel-destacado__contenido,
+.panel-reservas__contenido {
+  display: grid;
+  justify-items: start;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.panel-destacado h3 {
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+}
+
+.panel-reservas__contador {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+
+  width: 5.5rem;
+  min-height: 5.5rem;
+  padding: 0.5rem;
+
+  border-radius: 0.9rem;
+  background: var(--color-primario);
+  color: var(--color-texto-sobre-primario);
+  text-align: center;
+}
+
+.panel-reservas__contador strong {
+  font-size: 2rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-reservas__contador span {
+  color: #dcebe9;
+  font-size: 0.7rem;
+}
+
+/* =========================================
+   MÓDULOS SECUNDARIOS
+========================================= */
+
+.panel-modulos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+
+.panel-modulo {
+  position: relative;
+
+  display: flex;
+  min-width: 0;
+  min-height: 14rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem;
+
+  border: 1px solid var(--color-borde);
+  border-top: 3px solid var(--color-turquesa);
+  border-radius: 1rem;
+
+  background: var(--color-superficie);
+  color: var(--color-texto);
+
+  box-shadow: var(--sombra);
+}
+
+.panel-modulo__contenido {
+  display: grid;
+  justify-items: start;
+  gap: 0.65rem;
+}
+
+.panel-modulo__enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  color: var(--color-primario);
+  font-size: 0.875rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: var(--color-borde-campo);
+  text-underline-offset: 0.25rem;
+}
+
+.panel-modulo__enlace::after {
+  content: "↗";
+  text-decoration: none;
+}
+
+.panel-modulo__enlace:hover {
+  text-decoration-color: var(--color-primario);
+}
+
+/* =========================================
+   PANEL DESTACADO DEL CLIENTE
+========================================= */
+
+.panel-destacado h3 {
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+}
+
+.panel-destacado--cliente .panel-etiqueta {
+  color: #176c62;
+}
+
+/* =========================================
+   CONSULTA DEL CARPERO
+========================================= */
+
+.panel-consulta {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 2rem);
+
+  border: 1px solid var(--color-borde);
+  border-top: 4px solid var(--color-turquesa);
+  border-radius: 1rem;
+
+  background: var(--color-superficie-secundaria);
+}
+
+.panel-consulta > div:first-child {
+  display: grid;
+  justify-items: start;
+  gap: 0.65rem;
+}
+
+.panel-consulta .panel-etiqueta {
+  color: #365d78;
+}
+
+/* =========================================
+   AVISOS DE CUENTA
+========================================= */
+
+.panel-aviso {
+  display: grid;
+  gap: 1.25rem;
+
+  padding: clamp(1.25rem, 4vw, 2rem);
+
+  border-radius: 1rem;
+}
+
+.panel-aviso__contenido {
+  display: grid;
+  justify-items: start;
+  gap: 0.65rem;
+}
+
+.panel-aviso h2 {
+  margin: 0;
+  color: #102f46;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.panel-aviso p {
+  margin: 0;
+  color: #344b5a;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.panel-aviso--restringido {
+  border: 1px solid var(--color-advertencia-fondo);
+  border-left: 4px solid var(--color-advertencia);
+  background: var(--color-advertencia-fondo);
+}
+
+.panel-aviso--restringido .panel-etiqueta {
+  color: var(--color-advertencia);
+}
+
+.panel-aviso--informativo {
+  border: 1px solid var(--color-info-fondo);
+  border-left: 4px solid var(--color-info);
+  background: var(--color-info-fondo);
+}
+
+.panel-aviso--informativo .panel-etiqueta {
+  color: var(--color-info);
+}
+
+/* =========================================
+   ACCIONES
+========================================= */
+
+.panel-acciones {
+  display: grid;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.panel-acciones .btn {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Asegurar contraste del botón secundario */
+
+.panel .btn--secundario {
+  color: #102f46;
+}
+
+/* =========================================
+   TABLET
+========================================= */
 
 @media (min-width: 40rem) {
-  .acciones-panel {
+  .panel-modulos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panel-acciones {
     display: flex;
     flex-wrap: wrap;
     width: auto;
+  }
+
+  .panel-acciones .btn {
+    width: auto;
+  }
+}
+
+/* =========================================
+   ESCRITORIO
+========================================= */
+
+@media (min-width: 68rem) {
+  .panel-modulos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .panel-reservas {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .panel-consulta {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+/* =========================================
+   INTERACCIÓN Y ACCESIBILIDAD
+========================================= */
+
+.panel a:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel-modulo,
+  .panel-destacado,
+  .panel-reservas {
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .panel-modulo:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .panel-hero {
+    min-height: 14rem;
+    padding: 1.5rem;
+
+    background-position: 60% center;
+  }
+
+  .panel-hero h1 {
+    font-size: clamp(2.2rem, 10vw, 2.8rem);
+  }
+
+  .panel-reservas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel-reservas__contador {
+    width: 100%;
+    min-height: 4.5rem;
   }
 }

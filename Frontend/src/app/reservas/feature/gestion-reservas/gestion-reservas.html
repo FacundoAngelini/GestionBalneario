@@ -1,15 +1,33 @@
 <section class="gestion">
-  <header class="gestion__cabecera">
-    <h1>Gestión de reservas</h1>
-    <div class="gestion__acciones">
-      <button type="button" class="btn btn--secundario" [disabled]="cargando()" (click)="cargar()">
-        @if (cargando()) { Actualizando… } @else { Actualizar }
-      </button>
-      @if (!soloLectura()) {
-        <a class="btn btn--primary" routerLink="/reservas/presencial">Nueva reserva presencial</a>
+  
+<header class="gestion__cabecera">
+  <h1>Gestión de reservas</h1>
+
+  <div class="gestion__acciones">
+    <button
+      type="button"
+      class="btn btn--secundario"
+      [disabled]="cargando()"
+      (click)="cargar()"
+    >
+      @if (cargando()) {
+        Actualizando…
+      } @else {
+        Actualizar
       }
-    </div>
-  </header>
+    </button>
+
+    @if (!soloLectura()) {
+      <a
+        class="btn btn--primary"
+        routerLink="/reservas/presencial"
+      >
+        Nueva reserva presencial
+      </a>
+    }
+  </div>
+</header>
+
 
   @if (errorCarga()) {
     <p class="field__error" role="alert">{{ errorCarga() }}</p>
@@ -42,30 +60,45 @@
     </div>
 
     @if (vista() === 'TODAS' || vista() === 'INGRESO') {
-      <div class="card filtros-reservas">
-        <div class="field">
-          <label class="field__label" for="buscar">Buscar</label>
-          <input id="buscar" type="search" class="field__control" autocomplete="off"
-                 placeholder="Cliente, DNI, recurso o código" [formField]="f.texto">
-          @if (vista() === 'INGRESO') {
-            <p class="field__hint">
-              Sin búsqueda se ven las reservas en curso hoy. Buscá para encontrar cualquier reserva vigente.
-            </p>
-          }
-        </div>
-        @if (vista() === 'TODAS') {
-          <div class="field">
-            <label class="field__label" for="estado">Estado</label>
-            <select id="estado" class="field__control" [formField]="f.estado">
-              <option value="TODOS">Todos</option>
-              @for (e of estados; track e) {
-                <option [value]="e">{{ etiquetaEstado[e] }}</option>
-              }
-            </select>
-          </div>
-        }
-      </div>
+      
+<div class="filtros-reservas">
+  <div class="field">
+    <label class="field__label" for="buscar">Buscar</label>
+    <input
+      id="buscar"
+      type="search"
+      class="field__control"
+      autocomplete="off"
+      placeholder="Cliente, DNI, recurso o código"
+      [formField]="f.texto"
+    >
+
+    @if (vista() === 'INGRESO') {
+      <p class="field__hint">
+        Sin búsqueda se ven las reservas en curso hoy.
+        Buscá para encontrar cualquier reserva vigente.
+      </p>
     }
+  </div>
+
+  @if (vista() === 'TODAS') {
+    <div class="field">
+      <label class="field__label" for="estado">Estado</label>
+      <select
+        id="estado"
+        class="field__control"
+        [formField]="f.estado"
+      >
+        <option value="TODOS">Todos</option>
+        @for (e of estados; track e) {
+          <option [value]="e">{{ etiquetaEstado[e] }}</option>
+        }
+      </select>
+    </div>
+  }
+</div>
+}
+
 
     @if (visibles().length === 0) {
       <div class="card vacio" role="status">

@@ -4,10 +4,12 @@ import { Header } from '../header/header';
 import { Aside } from '../aside/aside';
 import { Footer } from '../footer/footer';
 import { MenuLateral } from '../aside/menu-lateral';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, Header, Aside, Footer],
+  imports: [RouterOutlet, Header, Aside, Footer, MatButtonModule, MatIconModule],
   templateUrl: './main.html',
   styleUrl: './main.css'
 })

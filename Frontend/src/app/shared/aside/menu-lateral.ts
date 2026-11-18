@@ -1,12 +1,13 @@
 import { computed, inject, Service, Signal } from '@angular/core';
 import { AuthClient } from '../../auth/data-access/auth-client';
+import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
+import { PendientesReservas } from '../../reservas/data-access/pendientes-reservas';
 import {
+  ROLES,
   ROLES_GESTION_EMPLEADOS,
   ROLES_PERSONAL,
   ROLES_VER_RESERVAS,
 } from '../../auth/data-access/roles.constants';
-import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
-import { PendientesReservas } from '../../reservas/data-access/pendientes-reservas';
 
 export interface ItemMenu {
   etiqueta: string;
@@ -22,6 +23,12 @@ export class MenuLateral {
   private readonly pendientes = inject(PendientesReservas);
 
   private readonly todos: readonly ItemMenu[] = [
+    {
+      etiqueta: 'Mis reservas',
+      icono: 'event_available',
+      ruta: '/reservas/mis-reservas',
+      roles: [ROLES.CLIENTE],
+    },
     {
       etiqueta: 'Gestión de reservas',
       icono: 'event_note',
@@ -47,9 +54,17 @@ export class MenuLateral {
       ruta: `/${ROUTE_SEGMENTS.empleados}`,
       roles: ROLES_GESTION_EMPLEADOS,
     },
+    {
+  etiqueta: 'Productos',
+  icono: 'shopping_bag',
+  ruta: `/${ROUTE_SEGMENTS.productos}`,
+  roles: [ROLES.ADMIN, ROLES.GERENTE],
+},
   ];
 
   // Solo los ítems que el usuario logueado puede ver
   readonly items = computed(() => this.todos.filter((item) => this.auth.tieneAlgunRol(item.roles)));
   readonly hayItems = computed(() => this.items().length > 0);
+  
 }
+

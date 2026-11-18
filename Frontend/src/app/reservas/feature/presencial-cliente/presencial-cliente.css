@@ -1,21 +1,51 @@
 
 .presencial {
   display: grid;
-  gap: var(--espacio-4);
+  gap: var(--espacio-5);
   max-width: 40rem;
   margin-inline: auto;
 }
 
+.presencial__cabecera {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
 .presencial :is(h1, h2) {
-  margin-bottom: var(--espacio-2);
+  margin: 0;
+}
+
+.presencial__introduccion {
+  display: grid;
+  gap: var(--espacio-2);
+  padding-left: var(--espacio-4);
+  border-left: 3px solid var(--color-acento);
+}
+
+.presencial__introduccion h1 {
+  color: var(--color-primario);
+}
+
+.presencial__paso,
+.presencial__etiqueta {
+  color: var(--color-acento-oscuro);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
 }
 
 .enlace-volver {
   display: inline-flex;
   align-items: center;
-  min-height: 2.75rem; 
+  width: fit-content;
+  min-height: 2.75rem;
   color: var(--color-primario);
   font-weight: 600;
+  text-decoration: none;
+}
+
+.enlace-volver:hover {
+  color: var(--color-acento-oscuro);
 }
 
 .presencial__form,
@@ -25,9 +55,55 @@
   padding: var(--espacio-4);
 }
 
+.presencial__formulario {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
 .presencial__form .btn,
 .presencial__cliente .btn {
   width: 100%;
+}
+
+.presencial__cliente {
+  border-top: 3px solid var(--color-acento);
+}
+
+.presencial__cliente-datos {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.presencial__cliente h2 {
+  color: var(--color-primario);
+  font-size: 1.5rem;
+}
+
+.presencial__cliente-datos p {
+  margin: 0;
+  color: var(--color-texto-suave);
+}
+
+.presencial__crear {
+  width: fit-content;
+}
+
+.presencial__cliente > .field__error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.presencial__cliente-accion {
+  min-width: 0;
+}
+
+.presencial__cliente-accion .field__error {
+  margin: 0;
+}
+
+.presencial__cliente:has(.presencial__cliente-accion .field__error)
+.presencial__cliente-accion {
+  grid-column: 1 / -1;
 }
 
 @media (min-width: 40rem) {
@@ -36,9 +112,18 @@
     padding: var(--espacio-5);
   }
 
+  .presencial__formulario {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
   .presencial__form .btn,
   .presencial__cliente .btn {
     width: auto;
-    justify-self: end;
+  }
+
+  .presencial__cliente {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
   }
 }
