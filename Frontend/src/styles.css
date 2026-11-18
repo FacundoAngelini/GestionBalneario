@@ -145,7 +145,7 @@ label {
   font-family: var(--fuente-texto);
 }
 
-button:not([class*="mat-"]) {
+button:not([class*="mat-"]):not(.btn):not(.chip)  {
   background-color: var(--color-primario);
   color: var(--color-texto-sobre-primario);
   border: none;
@@ -157,15 +157,15 @@ button:not([class*="mat-"]) {
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-button:not([class*="mat-"]):hover:not(:disabled) {
+button:not([class*="mat-"]):not(.btn):not(.chip):hover:not(:disabled)  {
   background-color: var(--color-primario-hover);
 }
 
-button:not([class*="mat-"]):active:not(:disabled) {
+button:not([class*="mat-"]):not(.btn):not(.chip):active:not(:disabled)  {
   transform: scale(0.97);
 }
 
-button:not([class*="mat-"]):disabled {
+button:not([class*="mat-"]):not(.btn):not(.chip):disabled {
   background-color: var(--color-borde);
   color: var(--color-texto-suave);
   cursor: not-allowed;
@@ -266,27 +266,23 @@ button:not([class*="mat-"]):disabled {
 
 /* ===== Calendario (Angular Material) con la paleta Brisa Marina ===== */
 .calendario-brisa {
-  /* Fondo, texto y forma de la tarjeta del calendario */
   --mat-datepicker-calendar-container-background-color: var(--color-superficie);
-  --mat-datepicker-calendar-container-text-color: var(--color-texto, #1f2d3a);
+  --mat-datepicker-calendar-container-text-color: var(--color-texto);
   --mat-datepicker-calendar-container-shape: var(--radio-medio);
-  --mat-datepicker-calendar-container-elevation-shadow: 0 1rem 2.5rem rgb(11 60 93 / 0.18);
+  --mat-datepicker-calendar-container-elevation-shadow: var(--sombra-elevada);
 
-  /* Textos y flechas del encabezado */
-  --mat-datepicker-calendar-text-color: var(--color-texto, #1f2d3a);
-  --mat-datepicker-calendar-header-text-color: var(--color-oceano, #0b3c5d);
-  --mat-datepicker-calendar-period-button-text-color: var(--color-oceano, #0b3c5d);
-  --mat-datepicker-calendar-period-button-icon-color: var(--color-oceano, #0b3c5d);
-  --mat-datepicker-calendar-navigation-button-icon-color: var(--color-oceano, #0b3c5d);
+  --mat-datepicker-calendar-text-color: var(--color-texto);
+  --mat-datepicker-calendar-header-text-color: var(--color-oceano);
+  --mat-datepicker-calendar-period-button-text-color: var(--color-oceano);
+  --mat-datepicker-calendar-period-button-icon-color: var(--color-oceano);
+  --mat-datepicker-calendar-navigation-button-icon-color: var(--color-oceano);
 
-  /* Día elegido, día de hoy y día bajo el mouse */
-  --mat-datepicker-calendar-date-selected-state-background-color: var(--color-oceano, #0b3c5d);
-  --mat-datepicker-calendar-date-selected-state-text-color: #fff;
-  --mat-datepicker-calendar-date-today-outline-color: var(--color-turquesa, #2ba6a0);
-  --mat-datepicker-calendar-date-hover-state-background-color: rgb(43 166 160 / 0.15);
-  --mat-datepicker-calendar-date-focus-state-background-color: rgb(43 166 160 / 0.25);
+  --mat-datepicker-calendar-date-selected-state-background-color: var(--color-oceano);
+  --mat-datepicker-calendar-date-selected-state-text-color: #ffffff;
+  --mat-datepicker-calendar-date-today-outline-color: var(--color-turquesa);
+  --mat-datepicker-calendar-date-hover-state-background-color: rgb(40 169 157 / 0.15);
+  --mat-datepicker-calendar-date-focus-state-background-color: rgb(40 169 157 / 0.25);
 }
-
 /* Botón deshabilitado */
 .btn:disabled,
 .btn--primary:disabled {
@@ -324,7 +320,7 @@ a.btn {
 
 /* ---- Desplegables (select): flecha propia y mismo aspecto en todos los navegadores ---- */
 select.field__control {
-  --icono-flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3C5D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --icono-flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23102F46' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   appearance: none;
   padding-right: 2.75rem;
   background: var(--color-superficie) var(--icono-flecha) no-repeat right var(--espacio-3) center / 1.25rem;
@@ -338,7 +334,7 @@ select.field__control[aria-invalid='true'] {
 
 /* ---- Campo de fecha con ícono de calendario ---- */
 .control-fecha {
-  --icono-calendario: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3C5D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E");
+  --icono-calendario: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23102F46' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E");
   padding-right: 2.75rem;
   background: var(--color-superficie) var(--icono-calendario) no-repeat right var(--espacio-3) center / 1.25rem;
   cursor: pointer;

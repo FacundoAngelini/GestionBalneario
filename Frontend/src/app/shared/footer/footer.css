@@ -1,13 +1,25 @@
-
 :host {
   display: block;
   width: 100%;
+  padding: 1.15rem 1rem;
+  border-top: 3px solid var(--color-turquesa);
+  background: var(--color-primario);
+  color: var(--color-texto-sobre-primario);
 }
 
 p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   line-height: 1.5;
   text-align: center;
-  text-wrap: balance;
+}
+
+strong {
+  font-weight: 800;
+  letter-spacing: 0.03em;
 }

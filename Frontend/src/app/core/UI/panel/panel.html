@@ -1,27 +1,40 @@
 
 <section class="panel">
 
-  <header class="panel-header">
-    <div>
-      <p class="panel-eyebrow">ARENADESK · PANEL DE CONTROL</p>
-      <h1>Hola, {{ nombre() }}</h1>
-      <p class="panel-rol">{{ rol() }}</p>
-    </div>
-  </header>
+  <header class="panel-hero">
+  <div class="panel-hero__contenido">
+    <p class="panel-hero__eyebrow">
+      ARENADESK · ESPACIO DE GESTIÓN
+    </p>
+
+    <h1>Hola, {{ nombre() }}</h1>
+
+    <p class="panel-hero__descripcion">
+      Todo lo que necesitás para gestionar tu espacio, en un solo lugar.
+    </p>
+
+    <p class="panel-hero__rol">{{ rol() }}</p>
+  </div>
+</header>
 
   @if (restringido()) {
-    <article class="card panel-card panel-card--estado" role="status">
-      <div class="panel-card-contenido">
-        <span class="panel-card-etiqueta">Estado de cuenta</span>
+    <article
+      class="panel-aviso panel-aviso--restringido"
+      role="status"
+    >
+      <div class="panel-aviso__contenido">
+        <span class="panel-etiqueta">ESTADO DE CUENTA</span>
+
         <h2>Tu cuenta tiene el acceso limitado</h2>
+
         <p>
           Estado de tu cuenta:
           <strong>{{ estadoTexto() }}</strong>.
-          Por ahora podés ver tu perfil y su historial.
+          Por ahora solo podés ver tu perfil y su historial.
         </p>
       </div>
 
-      <div class="acciones-panel">
+      <div class="panel-acciones">
         <a class="btn btn--primary" routerLink="/perfil">
           Ver mi perfil
         </a>
@@ -30,125 +43,191 @@
   }
 
   @if (esCliente()) {
-    <article class="card panel-card panel-card--principal">
-      <div class="panel-card-contenido">
-        <span class="panel-card-etiqueta">Experiencia de playa</span>
-        <h2>Reservá tu lugar</h2>
-        <p>
-          Elegí tus fechas y mirá qué carpas, sombrillas y cocheras hay libres.
-        </p>
-      </div>
+    <section
+      class="panel-seccion"
+      aria-labelledby="panel-cliente-titulo"
+    >
+      <header class="panel-seccion__cabecera">
+        <p class="panel-seccion__eyebrow">ESPACIO DE CLIENTE</p>
+        <h2 id="panel-cliente-titulo">
+          Tu próxima visita empieza acá
+        </h2>
+      </header>
 
-      <div class="acciones-panel">
-        <a class="btn btn--primary" routerLink="/catalogo">
-          Ver disponibilidad
-        </a>
-        <a class="btn btn--secundario" routerLink="/reservas/mis-reservas">
-          Mis reservas
-        </a>
-      </div>
-    </article>
+      <article class="panel-destacado panel-destacado--cliente">
+        <div class="panel-destacado__contenido">
+          <span class="panel-etiqueta">PLANIFICÁ TU DÍA</span>
+
+          <h3>Reservá tu lugar</h3>
+
+          <p>
+            Elegí tus fechas y mirá qué carpas, sombrillas y cocheras
+            hay libres.
+          </p>
+        </div>
+
+        <div class="panel-acciones">
+          <a class="btn btn--primary" routerLink="/catalogo">
+            Ver disponibilidad
+          </a>
+
+          <a
+            class="btn btn--secundario"
+            routerLink="/reservas/mis-reservas"
+          >
+            Mis reservas
+          </a>
+        </div>
+      </article>
+    </section>
   }
 
   @if (esPersonal()) {
-    <div class="panel-seccion">
-      <div class="panel-seccion-cabecera">
-        <h2>Gestión del balneario</h2>
-        <p>Accesos rápidos a las operaciones del establecimiento.</p>
-      </div>
+    <section
+      class="panel-seccion"
+      aria-labelledby="panel-gestion-titulo"
+    >
+      <header class="panel-seccion__cabecera">
+        <p class="panel-seccion__eyebrow">OPERACIONES</p>
 
-      <div class="grilla-panel">
+        <h2 id="panel-gestion-titulo">
+          Gestión del balneario
+        </h2>
 
-        <article class="card panel-card panel-card--destacada">
-          <div class="panel-card-contenido">
-            <span class="panel-card-etiqueta">Operaciones</span>
-            <h3>Reservas</h3>
-            <p>Solicitudes por confirmar:</p>
-            <strong class="panel-contador">{{ pendientes() }}</strong>
-          </div>
+        <p>
+          Accedé a las principales áreas de trabajo del establecimiento.
+        </p>
+      </header>
 
-          <div class="acciones-panel">
-            <a class="btn btn--primary" routerLink="/reservas/gestion">
-              Gestionar reservas
-            </a>
-            <a class="btn btn--secundario" routerLink="/reservas/presencial">
-              Reserva presencial
-            </a>
-          </div>
-        </article>
+      <article class="panel-reservas">
+        <div class="panel-reservas__contenido">
+          <span class="panel-etiqueta">OPERACIÓN PRINCIPAL</span>
 
-        <article class="card panel-card">
-          <div class="panel-card-contenido">
-            <span class="panel-card-etiqueta">Personas</span>
+          <h3>Reservas</h3>
+
+          <p>Solicitudes por confirmar</p>
+        </div>
+
+        <div
+          class="panel-reservas__contador"
+          [attr.aria-label]="pendientes() + ' solicitudes por confirmar'"
+        >
+          <strong>{{ pendientes() }}</strong>
+          <span>pendientes</span>
+        </div>
+
+        <div class="panel-acciones">
+          <a
+            class="btn btn--primary"
+            routerLink="/reservas/gestion"
+          >
+            Gestionar reservas
+          </a>
+
+          <a
+            class="btn btn--secundario"
+            routerLink="/reservas/presencial"
+          >
+            Reserva presencial
+          </a>
+        </div>
+      </article>
+
+      <div class="panel-modulos">
+
+        <article class="panel-modulo panel-modulo--clientes">
+          <div class="panel-modulo__contenido">
+            <span class="panel-etiqueta">PERSONAS</span>
+
             <h3>Clientes</h3>
-            <p>Altas, modificaciones y estados de los clientes.</p>
+
+            <p>
+              Altas, modificaciones y estados de los clientes.
+            </p>
           </div>
 
-          <div class="acciones-panel">
-            <a class="btn btn--secundario" routerLink="/clientes">
-              Ver clientes
-            </a>
-          </div>
+          <a class="panel-modulo__enlace" routerLink="/clientes">
+            Explorar clientes
+          </a>
         </article>
 
-        <article class="card panel-card">
-          <div class="panel-card-contenido">
-            <span class="panel-card-etiqueta">Recursos</span>
+        <article class="panel-modulo panel-modulo--inventario">
+          <div class="panel-modulo__contenido">
+            <span class="panel-etiqueta">RECURSOS</span>
+
             <h3>Inventario</h3>
-            <p>Carpas, sombrillas y cocheras, con sus precios.</p>
+
+            <p>
+              Carpas, sombrillas y cocheras, con sus precios.
+            </p>
           </div>
 
-          <div class="acciones-panel">
-            <a class="btn btn--primary" routerLink="/recursos">
-              Ver inventario
-            </a>
-          </div>
+          <a class="panel-modulo__enlace" routerLink="/recursos">
+            Explorar inventario
+          </a>
         </article>
 
         @if (gestionaEmpleados()) {
-          <article class="card panel-card">
-            <div class="panel-card-contenido">
-              <span class="panel-card-etiqueta">Personal</span>
+          <article class="panel-modulo panel-modulo--empleados">
+            <div class="panel-modulo__contenido">
+              <span class="panel-etiqueta">EQUIPO</span>
+
               <h3>Empleados</h3>
-              <p>Altas, modificaciones y estados del personal.</p>
+
+              <p>
+                Altas, modificaciones y estados del personal.
+              </p>
             </div>
 
-            <div class="acciones-panel">
-              <a class="btn btn--primary" routerLink="/empleados">
-                Gestionar empleados
-              </a>
-            </div>
+            <a class="panel-modulo__enlace" routerLink="/empleados">
+              Gestionar empleados
+            </a>
           </article>
         }
 
       </div>
-    </div>
+    </section>
   }
 
   @if (esCarpero()) {
-    <article class="card panel-card">
-      <div class="panel-card-contenido">
-        <span class="panel-card-etiqueta">Operaciones</span>
-        <h2>Reservas</h2>
-        <p>
-          Podés consultar las reservas de los clientes.
-          No podés modificarlas.
-        </p>
-      </div>
+    <section
+      class="panel-seccion"
+      aria-labelledby="panel-carpero-titulo"
+    >
+      <header class="panel-seccion__cabecera">
+        <p class="panel-seccion__eyebrow">CONSULTA OPERATIVA</p>
+        <h2 id="panel-carpero-titulo">Reservas del balneario</h2>
+      </header>
 
-      <div class="acciones-panel">
-        <a class="btn btn--primary" routerLink="/reservas/gestion">
-          Ver reservas
-        </a>
-      </div>
-    </article>
+      <article class="panel-consulta">
+        <div>
+          <span class="panel-etiqueta">CONSULTA</span>
+          <h3>Reservas</h3>
+          <p>
+            Podés consultar las reservas de los clientes.
+            No podés modificarlas.
+          </p>
+        </div>
+
+        <div class="panel-acciones">
+          <a
+            class="btn btn--primary"
+            routerLink="/reservas/gestion"
+          >
+            Ver reservas
+          </a>
+        </div>
+      </article>
+    </section>
   }
 
   @if (sinFunciones()) {
-    <article class="card panel-card panel-card--estado" role="status">
-      <div class="panel-card-contenido">
-        <span class="panel-card-etiqueta">Cuenta</span>
+    <article class="panel-aviso panel-aviso--informativo" role="status">
+      <div class="panel-aviso__contenido">
+        <span class="panel-etiqueta">CUENTA</span>
+
         <h2>Tu perfil todavía no tiene funciones</h2>
+
         <p>
           Por ahora tu rol solo puede iniciar sesión.
           Las funciones para tu perfil se van a habilitar en próximas versiones.

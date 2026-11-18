@@ -15,22 +15,20 @@
 }
 
 /* Header */
-
 .area-header {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-
   display: flex;
   align-items: center;
   gap: 0.5rem;
-
   grid-area: header;
   height: var(--altura-header);
-  padding-inline: 0.75rem;
-
+  padding-inline: 1rem;
+  border-bottom: 2px solid var(--color-turquesa);
   color: var(--color-texto-sobre-primario);
   background-color: var(--color-primario);
+  box-shadow: 0 2px 12px rgba(10, 36, 54, 0.12);
 }
 
 /* Botón de navegación móvil */
@@ -50,7 +48,7 @@
 .area-main {
   grid-area: main;
   min-width: 0;
-  padding: clamp(1rem, 3vw, 1.5rem);
+  padding: clamp(1rem, 3vw, 1.75rem);
 }
 /* Navegación lateral */
 
@@ -142,7 +140,7 @@
 
     overflow: visible;
 
-    background-color: var(--color-superficie);
+    background-color: var(--color-superficie-secundaria);
     box-shadow: none;
     border-right: 1px solid var(--color-borde);
 

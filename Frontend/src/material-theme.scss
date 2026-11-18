@@ -15,36 +15,5 @@ html {
     )
   );
 
-  // Identidad visual ArenaDesk
-  --mat-sys-primary: #102f46;
-  --mat-sys-on-primary: #ffffff;
-  --mat-sys-primary-container: #d8e8f0;
-  --mat-sys-on-primary-container: #102f46;
-
-  --mat-sys-secondary: #28a99d;
-  --mat-sys-on-secondary: #ffffff;
-  --mat-sys-secondary-container: #d1f2ed;
-  --mat-sys-on-secondary-container: #123f3b;
-
-  --mat-sys-tertiary: #a8753e;
-  --mat-sys-on-tertiary: #ffffff;
-  --mat-sys-tertiary-container: #f5e4cf;
-  --mat-sys-on-tertiary-container: #4b321b;
-
-  --mat-sys-surface: #ffffff;
-  --mat-sys-on-surface: #202d37;
-  --mat-sys-surface-container: #f5f7f6;
-  --mat-sys-surface-container-low: #f8faf9;
-  --mat-sys-surface-container-high: #edf1ef;
-  --mat-sys-outline: #cbd5d2;
-  --mat-sys-outline-variant: #e1e8e5;
-}
-
-body {
   color-scheme: light;
-  background-color: #f5f7f6;
-  color: #202d37;
-  font-family: Manrope, sans-serif;
-  margin: 0;
-  min-height: 100%;
 }

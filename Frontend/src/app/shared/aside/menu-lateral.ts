@@ -1,12 +1,13 @@
 import { computed, inject, Service, Signal } from '@angular/core';
 import { AuthClient } from '../../auth/data-access/auth-client';
+import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
+import { PendientesReservas } from '../../reservas/data-access/pendientes-reservas';
 import {
+  ROLES,
   ROLES_GESTION_EMPLEADOS,
   ROLES_PERSONAL,
   ROLES_VER_RESERVAS,
 } from '../../auth/data-access/roles.constants';
-import { ROUTE_SEGMENTS } from '../../core/constants/route-segments.constants';
-import { PendientesReservas } from '../../reservas/data-access/pendientes-reservas';
 
 export interface ItemMenu {
   etiqueta: string;
@@ -22,6 +23,12 @@ export class MenuLateral {
   private readonly pendientes = inject(PendientesReservas);
 
   private readonly todos: readonly ItemMenu[] = [
+    {
+      etiqueta: 'Mis reservas',
+      icono: 'event_available',
+      ruta: '/reservas/mis-reservas',
+      roles: [ROLES.CLIENTE],
+    },
     {
       etiqueta: 'Gestión de reservas',
       icono: 'event_note',

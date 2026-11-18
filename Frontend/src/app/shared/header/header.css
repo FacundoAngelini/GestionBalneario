@@ -11,26 +11,34 @@
 /* Marca */
 
 .marca {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
   min-width: 0;
-  overflow: hidden;
-  color: inherit;
-  font-family: var(--fuente-titulos);
-  font-size: clamp(1.2rem, 2vw, 1.6rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
   text-decoration: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
+.marca img {
+  display: block;
+  width: auto;
+  height: 2.8rem;
+  max-width: min(10.5rem, 28vw);
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.marca:hover img {
+  transform: scale(1.03);
+}
 /* Acciones de sesión */
 
 .sesion {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.6rem;
 }
+
 
 .usuario {
   display: none;
@@ -59,6 +67,7 @@
 .btn-header {
   min-width: 0;
   min-height: 2.5rem;
+  border-radius: 0.65rem;
 
   --mat-button-outlined-label-text-color: var(--color-texto-sobre-primario);
   --mat-button-outlined-outline-color: rgba(255, 255, 255, 0.55);
@@ -79,6 +88,8 @@
 .btn-perfil {
   flex-shrink: 0;
   color: var(--color-texto-sobre-primario);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.7rem;
 }
 
 .btn-salir {
@@ -93,6 +104,15 @@
 .btn-panel,
 .solo-escritorio {
   display: none;
+}
+
+.btn-header,
+.btn-registro,
+.btn-perfil {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 /* Foco accesible */
@@ -274,7 +294,6 @@
 }
 
 /* Celulares pequeños */
-
 @media (max-width: 30rem) {
   :host {
     gap: 0.35rem;
@@ -285,7 +304,7 @@
   }
 
   .sesion {
-    gap: 0.15rem;
+    gap: 0.4rem;
   }
 
   .btn-header,
@@ -294,8 +313,20 @@
     --mat-button-filled-horizontal-padding: 8px;
     --mat-button-text-horizontal-padding: 6px;
   }
-}
 
+  .marca img {
+    height: 2.25rem;
+    max-width: min(8rem, 27vw);
+  }
+
+  .btn-perfil,
+  .btn-salir {
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+  }
+}
 /* Movimiento reducido */
 
 @media (prefers-reduced-motion: reduce) {
