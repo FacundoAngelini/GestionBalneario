@@ -1,163 +1,191 @@
-#  ArenaDesk
+# ArenaDesk — Sistema de Gestión de Balneario (MVP)
 
----
-**ArenaDesk** es un sistema de administración integral para balnearios dedicado a la gestión de empleados, recursos y clientes. El proyecto se encuentra en desarrollo, presentando su primer version de backend con el uso de **Java y Spring Boot**. 
-Enfoque MVC con el fin de crear una APIRest/Restish.
+**ArenaDesk** es una aplicación web full-stack diseñada para administrar las operaciones principales de un balneario. Esta versión (MVP) centraliza la gestión de recursos —carpas, sombrillas y cocheras—, tarifas, reservas, cobros presenciales, clientes, empleados y visualización de catálogo de productos.
 
----
-
-##  Propósito del Proyecto
-
-Este sistema busca brindar un entorno simplificado e intuitivo para empleados y clientes de un balneario. Se pretende que la aplicacion conecte a los empleados con sus tareas diarias, facilitar al cliente la interacción con el balneario para aprovechar el uso del mismo (reservas,pedidos,notificaciones) y a los administradores con la recolección/manejo de datos útiles sobre otros empleados y/o recursos del balneario.
+> **Nota de alcance:** Esta documentación describe exclusivamente el **Producto Mínimo Viable (MVP)**. No incluye funcionalidades descartadas o postergadas, aunque existan clases o código parcial relacionado en el repositorio.
 
 ---
 
-##  Funcionalidades Principales
+## Propósito del Proyecto
 
-- ABM, filtrado y persistencia de empleados y clientes.
-- Servicio de reserva/pedidos/entregas en gastronomia y recursos disponibles(Carpas,Sombrillas, Canchas, etc), especializado para clientes.
-- Servicios de pago, confirmación, con marco de seguridad e implementacion de Servicio/APIs externas(MercadoPago,SMTP).
-- Registro y autenticación con manejo de roles.
-- Alta y gestión extensible de recursos, productos y sectores.
-- Envío notificaciones por e-mails (bienvenida,reservas y pagos).
-- Documentación técnica automática de la API mediante Swagger / OpenAPI.
+Brindar un entorno centralizado e intuitivo para conectar la operación diaria del personal del balneario con la experiencia de los clientes. Permite gestionar reservas de espacio, controlar la disponibilidad en tiempo real, administrar tarifas por temporada/período y registrar cobros presenciales con auditoría completa de movimientos.
 
 ---
 
-## Arquitectura interna
+## Alcance del MVP
 
-El proyecto sigue una arquitectura en capas:
+### Funcionalidades Incluidas
 
-- **Controller**: exposición de endpoints.
-- **Service**: lógica de negocio.
-- **Repository**: acceso a datos.
-- **DTOs**: transferencia de información.
-- **ModelMapper**: conversión entre entidades y DTOs.
-- **Config**:
-  - Configuración de Spring Security.
-  - Gestión de autenticación y autorización mediante JWT.
-  - Definición de Beans (ModelMapper, PasswordEncoder, etc.).
-  - Configuración de Swagger/OpenAPI.
+| Módulo | Funcionalidades |
+| :--- | :--- |
+| **Cuentas y Sesión** | Registro de clientes, inicio y cierre de sesión con JWT, revocación de token en logout y gestión de datos de cuenta propia. |
+| **Roles y Permisos** | Control de acceso diferenciado para *Administración*, *Gerente*, *Administrador*, *Carpero* y *Cliente*. |
+| **Recursos** | Catálogo de carpas, sombrillas y cocheras; consulta de disponibilidad; ABM, baja lógica, carga masiva y validaciones de datos. |
+| **Tarifas** | Asignación de precios por recurso y modalidad (*día, quincena, mes y temporada*), consulta y ajuste masivo con vista previa. |
+| **Reservas** | Solicitud web por clientes, carga presencial, confirmación, rechazo, cancelación, vencimiento automático y finalización. |
+| **Cobros** | Registro presencial en efectivo, descuento configurable, anulación con motivo obligatorio y emisión de comprobante interno. |
+| **Auditoría** | Trazabilidad histórica de operaciones críticas (quién ejecutó la acción, cuándo y detalle). |
+| **Clientes** | Listado, búsqueda por DNI, ficha e historial, alta, modificación, baja lógica y reactivación según permisos. |
+| **Empleados** | ABM de personal, asignación de roles, cambios de estado, baja lógica y jerarquía de permisos. |
+| **Catálogo de Productos** | Registro y visualización informativa de productos disponibles en el sistema (sin carrito ni pedidos). |
+
+### Funcionalidades Fuera del Alcance (MVP)
+La presencia de dependencias o clases parciales en el código no implica que estas características estén activas o disponibles:
+* **Pedidos gastronómicos y restaurante:** Sin carrito de compras, flujos de cocina, despacho, mozos ni repartidores.
+* **Pagos online (Mercado Pago):** Sin integración de pasarela de pagos ni checkout web; todos los cobros son presenciales y en efectivo.
+* **Notificaciones por correo (SMTP):** Sin envío de emails de bienvenida, comprobantes ni recuperación de contraseña.
+* **Aplicaciones móviles nativas:** Entrega exclusivamente como aplicación web responsive.
 
 ---
 
-##  Tecnologías/Herramientas 
+## Arquitectura General
+
+ArenaDesk implementa una arquitectura **Cliente-Servidor** desacoplada:
+
+* **Frontend (Angular 22):** Presenta la interfaz de usuario, gestiona la navegación, valida formularios y consume la API mediante HTTP/JSON.
+* **Backend (Spring Boot):** Expone endpoints REST bajo `/api/v1`, aplica reglas de negocio, valida entradas y controla seguridad mediante JWT (`Authorization: Bearer <token>`).
+* **Base de Datos (MySQL):** Persistencia relacional administrada vía Spring Data JPA / Hibernate.
+
+### Estructura del Repositorio
+
+```text
+GestionBalneario/
+├── Backend/    # Código fuente API REST (Java / Spring Boot) y configuración de BD
+├── Frontend/   # Aplicación web SPA (Angular 22)
+└── docs/       # Documentación técnica, diagramas y planes de prueba
+```
+
+---
+
+## Tecnologías y Herramientas
+
+### Frontend
+* **Angular 22** (Componentes, Signals y Signal Forms)
+* **TypeScript, HTML5 y CSS3**
+* **Angular Material**
 
 ### Backend
-- **Java 21**
-- **Spring Boot 3.4.5**
-  - Spring Web (REST)
-  - Spring WebMVC Test y UI.
-  - Spring Data JPA
-  - Spring Security (JWT y roles)
-  - Spring Mail
-  - Spring Validation
-- **JJWT** (manejo de tokens)
-- **MySQL** (base de datos relacional)
-- **SpringDoc OpenAPI** (Swagger)
-- **Lombok**
-- **ModelMapper**
+* **Java 21** & **Spring Boot**
+* **Spring Web** (API REST)
+* **Spring Security & JWT** (Autenticación y autorización por roles)
+* **Spring Data JPA / Hibernate** (ORM)
+* **Spring Validation**
+* **SpringDoc OpenAPI / Swagger** (Documentación interactiva)
 
-### API/Servicio externo:
-- MercadoPagoAPI.
-- Servidor SMTP Gmail.
+### Base de Datos e Infraestructura
+* **MySQL** (Motor relacional)
+* **Docker & Docker Compose**
+* **Git & GitHub**
 
 ---
 
-##  Dependencias en `pom.xml`
+## Roles y Permisos
 
-Entre las más relevantes se incluyen:
+Los permisos efectivos se validan en el backend para cada operación:
 
-- `spring-boot-starter-web` → Exposición de endpoints REST.
-- `spring-boot-starter-security` → Manejo de roles y autenticación JWT.
-- `spring-boot-starter-data-jpa` → ORM con Hibernate.
-- `spring-boot-starter-validation` → Validación de formularios.
-- `spring-boot-starter-mail` → Envío de emails automáticos.
-- `springdoc-openapi-starter-webmvc-ui` → Swagger UI para documentación.
-- `jjwt-api`, `jjwt-impl`, `jjwt-jackson` → Seguridad JWT.
-- `mysql-connector-j` → Conexión a base de datos.
-- `lombok` → Reducción de boilerplate.
-- `modelmapper` → Mapeo de entidades y DTOs.
-- `sdk-java`, `com.mercadopago` → API MercadoPago.
-
+| Perfil | Permisos y Alcance |
+| :--- | :--- |
+| **Visitante** | Acceso al inicio, visualización de catálogo y registro/login. |
+| **Cliente** | Consulta de disponibilidad, solicitud y gestión de reservas propias, cancelación (hasta 48 h antes), consulta de comprobantes y perfil. |
+| **Carpero** | Consulta de reservas operativas (solo lectura, sin modificación). |
+| **Administración** | Gestión operativa de reservas, carga presencial, cobros en efectivo, consulta de inventario y ABM de clientes. |
+| **Gerente** | Funciones administrativas y gestión de empleados de jerarquía inferior. |
+| **Administrador** | Acceso ampliado: gestión de recursos, tarifas, carga masiva, catálogo de productos y configuraciones del sistema. |
 
 ---
 
-##  Roles y Permisos
+## Reglas de Negocio Principales
 
-- **Admin:** ABM de sectores, reservas, recursos, empleados, clientes. Acceso total a las funciones desarrolladas.
-- **Gerente:** ABM de empleados, pedidos, entregas y productos. Acceso a consultas de cliente/empleados y pagos.
-- **Administración:** M de empleados, ABM de clientes. Acceso a consultas cliente/empleados/reservas/recursos/pagos.
-- **Empleado:** Consulta de reservas, pedidos, entregas, productos, sectores y recursos.
-- **Cajero:** ABM pedidos/entregas. Acceso a consultas de reservas,productos y pagos.
-- **Mozo:** Consulta de reservas, pedidos y productos.
-- **Repartidor:** Consulta de reservas, pedidos, entregas y productos.
-- **Cliente:** ABM de reservas personales, AB de pedidos personales, consulta de historial de pagos/pedidos personales.
-
----
-## Instalación y ejecución
-
-### Configuración
-
-Configurar las credenciales en:
-
-[![application.yaml](https://img.shields.io/badge/application-yaml-blue)](https://github.com/FacundoAngelini/GestionBalneario/blob/main/src/main/resources/application.yaml)
-
-src/main/resources/application.yaml
-
-
-## Variables de Entorno
-
-| Variable               | Descripción                                                                      |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| DB_URL                 | URL de conexión a la base de datos MySQL.                                        |
-| DB_USERNAME            | Usuario de la base de datos MySQL.                                               |
-| DB_PASSWORD            | Contraseña de la base de datos MySQL.                                            |
-| JWT_SECRET             | Clave utilizada para la firma de tokens JWT.                                     |
-| JWT_EXPIRATION         | Tiempo de expiración del token JWT en milisegundos.                              |
-| JWT_REFRESH_EXPIRATION | Tiempo de expiración del refresh token JWT en milisegundos.                      |
-| MP_ACCESS_TOKEN        | Token de acceso de la API de Mercado Pago.                                       |
-| MP_REDIRECT_URL        | URL de redirección utilizada durante las pruebas de pagos (Ngrok).               |
-| MP_WEBHOOK_URL         | URL utilizada para recibir WebHooks de Mercado Pago durante las pruebas (Ngrok). |
-| MAIL_USERNAME          | Cuenta pública del balneario : balnearioapiutn@gmail.com                         |
-| GMAIL_APP              | Contraseña de aplicación generada por Gmail para SMTP.                           |
-
-
-Crear .env al nivel de src, para testing.
-
-[![application.yaml](https://img.shields.io/badge/.env-example-blue)](https://github.com/FacundoAngelini/GestionBalneario/blob/main/.envExample)
-
-
-### Ejecutar
-
-docker-compose up --build
-
+* **Recursos y Tarifas:** Las cocheras solo pueden reservarse asociadas a una carpa o sombrilla (no de forma independiente). Los ajustes masivos de tarifas requieren vista previa antes de confirmarse.
+* **Reservas:** Deben estar dentro de la temporada vigente y no se permiten fechas pasadas ni superposición de períodos para un mismo recurso. Las solicitudes web quedan pendientes de confirmación y pasan a `VENCIDA` si no se confirman en plazo.
+* **Cobros:** El cobro en efectivo y la confirmación de reserva son pasos separados. Para cancelar una reserva ya cobrada, primero se debe anular el cobro registrando un motivo. El comprobante emitido es interno y no fiscal.
+* **Bajas Lógicas:** Clientes, empleados y recursos utilizan baja lógica para preservar la integridad histórica y auditoría.
 
 ---
 
-## Modelo de Base de Datos
+## API REST & Documentación
 
-[Ver DER completo](DER.pdf)
+El backend expone sus endpoints bajo el prefijo `/api/v1`. Con el servidor activo, la documentación completa y ejecutable está disponible en:
+
+* **Swagger UI:** `http://localhost:8080/swagger-ui.html`
+
+### Endpoints Principales de Referencia
+
+| Módulo | Método y Ruta | Descripción |
+| :--- | :--- | :--- |
+| **Auth** | `POST /api/v1/auth/login` | Inicio de sesión y obtención de token JWT. |
+| **Auth** | `POST /api/v1/auth/register` | Registro de nuevo cliente. |
+| **Auth** | `POST /api/v1/auth/refresh` | Renovación de sesión mediante refresh token. |
+| **Auth** | `POST /api/v1/auth/logout` | Cierre de sesión y revocación del token activo. |
+| **Recursos** | `GET /api/v1/recursos/catalogo` | Consulta general del catálogo de recursos. |
+| **Recursos** | `GET /api/v1/recursos/disponibles` | Consulta de disponibilidad por rango de fechas. |
+| **Recursos** | `POST /api/v1/recursos/lote` | Carga masiva de recursos. |
+| **Reservas** | `POST /api/v1/reservas/sin-pago` | Solicitud de reserva web por cliente. |
+| **Reservas** | `POST /api/v1/reservas/presencial` | Registro directo de reserva en mostrador. |
+| **Cobros** | `POST /api/v1/reservas/{id}/cobro` | Registro de cobro presencial en efectivo. |
+| **Cobros** | `PUT /api/v1/reservas/{id}/cobro/anular` | Anulación de cobro con motivo obligatorio. |
+| **Clientes** | `GET /api/v1/clientes/buscar?dni=` | Búsqueda de cliente por documento. |
 
 ---
 
-##  Contexto Académico
+## Instalación y Ejecución
 
-Este proyecto fue desarrollado en el marco de la **Tecnicatura Universitaria en Programación** en la **Universidad Tecnológica Nacional (UTN) – Facultad Regional Mar del Plata**, como trabajo final integrador de las materias Programación III y Metodología de Sistemas I.  
+### Requisitos Previos
+* **JDK 21**
+* **Node.js y npm** (compatibles con Angular 22)
+* **MySQL** (si se ejecuta de forma local sin contenedores)
+* **Docker y Docker Compose** (opcional, para despliegue contenerizado)
 
-Docentes: 
-- **Eduardo Mango**
-- **Lucrecia Bazán**
-- **Diego Maidana**
+### Configuración Inicial
+1. Crear una base de datos MySQL vacía (ej. `balneario`).
+2. Configurar las credenciales de base de datos y parámetros JWT en `Backend/src/main/resources/application.properties` o mediante variables de entorno.
+3. En el primer arranque, el `DataLoader` inicializa roles, permisos, sectores, temporada y usuarios de prueba *(cambiar las credenciales por defecto fuera de desarrollo)*.
 
-  
-Fecha de entrega: **16 de Junio, 2026**
+### Opción 1: Ejecución con Docker Compose
+Desde la raíz del repositorio (`GestionBalneario/`):
+
+```bash
+docker compose up --build
+```
+*(Para detener los servicios: `docker compose down`)*
+
+### Opción 2: Ejecución Manual por Separado
+
+**1. Backend (Puerto `8080`):**
+```bash
+cd Backend
+# Linux / macOS
+./mvnw spring-boot:run
+
+# Windows
+mvnw.cmd spring-boot:run
+```
+
+**2. Frontend (Puerto `4200`):**
+```bash
+cd Frontend
+npm install
+npm start
+```
 
 ---
 
-##  Autores
+## Pruebas y Limitaciones Conocidas
 
-- **Facundo Ariel Angelini**
-- **Francisco Carné**
-  
+* **Verificación:** El sistema cuenta con un plan de pruebas funcionales manuales (validaciones, roles, autenticación y alta de recursos con evidencia documentada), sin suite de pruebas automatizadas en esta entrega.
+* **Esquema de BD:** Gestionado mediante `ddl-auto` de Hibernate (sin migraciones versionadas como Flyway/Liquibase).
+* **Sesiones y Paginación:** La revocación de permisos o cambio de estado de un empleado aplica al expirar su token actual. Algunos listados aplican filtrado del lado del cliente.
+
 ---
+
+## Contexto Académico
+
+Este proyecto fue desarrollado en el marco de la **Tecnicatura Universitaria en Programación (TUP)** en la **Universidad Tecnológica Nacional (UTN) – Facultad Regional Mar del Plata**, correspondiente a la materia **Programación IV**.
+
+### Docentes
+* **Quimey D'Agostino**
+* **Nicanor Dondero**
+
+### Autores
+* **Facundo Ariel Angelini**
+* **Francisco Carné**
