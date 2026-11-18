@@ -1,12 +1,18 @@
 <section class="ajuste">
-  <header>
-    <a class="enlace-volver" routerLink="/recursos">← Volver al inventario</a>
+ <header class="ajuste__cabecera">
+  <a class="enlace-volver" routerLink="/recursos">
+    ← Volver al inventario
+  </a>
+
+  <div class="ajuste__introduccion">
+    <span class="ajuste__paso">GESTIÓN DE PRECIOS</span>
     <h1>Actualizar precios</h1>
     <p class="field__hint">
-      Cambia de una vez los precios de muchos recursos. Primero ves una vista previa: no se guarda
-      nada hasta que lo confirmás.
+      Modificá los precios de varios recursos en una sola operación.
+      Primero revisá la vista previa; los cambios solo se aplican cuando los confirmás.
     </p>
-  </header>
+  </div>
+</header>
 
   <form class="card ajuste__form" (submit)="previsualizar($event)" novalidate>
     <h2>¿Qué precios cambiar?</h2>

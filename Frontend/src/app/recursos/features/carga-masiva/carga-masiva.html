@@ -1,8 +1,14 @@
 <main class="page">
-  <header>
+<header class="page__cabecera">
+  <div class="page__introduccion">
+    <span class="page__paso">GESTIÓN DE RECURSOS</span>
     <h1>Carga masiva de recursos</h1>
-    <p class="field__hint">Creá muchos recursos iguales de una vez. Solo cambia el número.</p>
-  </header>
+    <p class="field__hint">
+      Creá varios recursos de una vez, manteniendo sus características
+      y diferenciándolos por numeración.
+    </p>
+  </div>
+</header>
 
   <form class="page__form" (submit)="guardar($event)" novalidate>
     <section class="card">

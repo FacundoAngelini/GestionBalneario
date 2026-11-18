@@ -1,18 +1,30 @@
 <section class="inventario">
-  <header class="inventario__cabecera">
-    <div>
-      <h1>Inventario de recursos</h1>
-      @if (!esAdmin()) {
-        <p class="field__hint">Solo lectura: los cambios los realiza el administrador.</p>
-      }
-    </div>
-        @if (esAdmin()) {
-      <div class="inventario__acciones">
-        <a class="btn btn--secundario" routerLink="/recursos/precios">Actualizar precios</a>
-        <a class="btn btn--primary" routerLink="/recursos/carga-masiva">Carga masiva</a>
-      </div>
+<header class="inventario__cabecera">
+  <div class="inventario__introduccion">
+    <span class="inventario__paso">GESTIÓN DE RECURSOS</span>
+    <h1>Inventario de recursos</h1>
+    @if (!esAdmin()) {
+      <p class="field__hint">
+        Solo lectura: los cambios los realiza el administrador.
+      </p>
+    } @else {
+      <p class="field__hint">
+        Consultá y administrá los recursos del balneario.
+      </p>
     }
-  </header>
+  </div>
+
+  @if (esAdmin()) {
+    <div class="inventario__acciones">
+      <a class="btn btn--secundario" routerLink="/recursos/precios">
+        Actualizar precios
+      </a>
+      <a class="btn btn--primary" routerLink="/recursos/carga-masiva">
+        Carga masiva
+      </a>
+    </div>
+  }
+</header>
 
   <div class="vistas" role="group" aria-label="Tipo de recurso">
     @for (t of tipos; track t) {

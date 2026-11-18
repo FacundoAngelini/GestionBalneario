@@ -2,8 +2,12 @@
   display: block;
 }
 
+
+/* ---- Precios ---- */
 .precios {
-  padding-top: var(--espacio-1);
+  display: grid;
+  gap: var(--espacio-2);
+  padding-top: var(--espacio-2);
   border-top: 1px solid var(--color-borde);
 }
 
@@ -11,14 +15,15 @@
   display: flex;
   align-items: center;
   min-height: 2.75rem;
+  color: var(--color-primario);
   font-weight: 700;
   cursor: pointer;
 }
 
 .precios__lista {
   display: grid;
-  gap: var(--espacio-3);
-  margin-top: var(--espacio-2);
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-1);
   list-style: none;
 }
 
@@ -28,19 +33,31 @@
   padding: var(--espacio-3);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-sm);
+  background: var(--color-superficie);
 }
 
-
 .precios__fila--activa {
-  border-color: var(--color-primario);
+  border-color: var(--color-turquesa-oscuro);
+  background: var(--color-superficie-secundaria);
 }
 
 .precios__datos {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: var(--espacio-2) var(--espacio-3);
 }
+
+.precios__datos strong {
+  color: var(--color-primario);
+}
+
+.precios__datos > span:nth-child(2) {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-primario);
+}
+
 
 .precios__form {
   display: grid;
