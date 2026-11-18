@@ -29,7 +29,8 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
+      # Sobrescribe DB_URL solo para el contenedor de Docker apuntando al servicio 'db' y puerto interno 3306
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}?useSSL=false&serverTimezone=America/Argentina/Buenos_Aires&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
