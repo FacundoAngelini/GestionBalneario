@@ -241,7 +241,7 @@ export class GestionReservas {
   /** Cuánto hace que se pidió y cuánto falta para que venza (solo las pendientes). */
   protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
     if (r.estadoReserva !== 'PENDIENTE' || !r.fechaCreacion) return null;
-    const creada = new Date(r.fechaCreacion.slice(0, 19)).getTime();
+    const creada = new Date(r.fechaCreacion).getTime();
     if (Number.isNaN(creada)) return null;
 
     const transcurridas = (Date.now() - creada) / 3_600_000;
@@ -251,7 +251,7 @@ export class GestionReservas {
     if (restantes <= 0) {
       return { texto: `Pedida ${pedida} · plazo vencido, se libera en instantes`, urgente: true };
     }
-    const vence = restantes < 1 ? 'menos de 1 hora' : `${Math.floor(restantes)} h`;
+    const vence = restantes < 1 ? 'menos de 1 hora' : `${Math.ceil(restantes)} h`;
     return { texto: `Pedida ${pedida} · vence en ${vence}`, urgente: restantes < 6 };
   }
 

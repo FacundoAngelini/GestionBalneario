@@ -1,26 +1,53 @@
+
 <section class="hero">
-  <img ngSrc="/images/hero-playa.webp" fill priority
-       alt="Playa con sombrillas y mar en un día soleado" />
+  <img
+    ngSrc="/images/hero-playa.webp"
+    fill
+    priority
+    alt="Playa con sombrillas y mar en un día soleado"
+  />
+
   <div class="hero__overlay"></div>
+
   <div class="hero__content">
     <h1>Tu lugar junto al mar</h1>
-<p>
-  Descubrí nuestros servicios, reservá tu espacio y disfrutá de una
-  experiencia junto al mar.
-</p>
-    <a routerLink="/reservas/mis-reservas" class="btn btn--primary">Reservar ahora</a>
+
+    <p>
+      Descubrí nuestros servicios, reservá tu espacio y disfrutá de una
+      experiencia junto al mar.
+    </p>
+
+    @if (mostrarReserva()) {
+      <a [routerLink]="rutaReserva()" class="btn btn--primary">
+        Reservar ahora
+      </a>
+    }
   </div>
 </section>
 
 <section class="accesos" aria-label="Accesos rápidos">
   @for (a of accesos; track a.ruta) {
-    <article class="card">
-      <img [ngSrc]="a.imagen" width="600" height="400" [alt]="a.alt" />
-      <div class="card__body">
-        <h2>{{ a.titulo }}</h2>
-        <p>{{ a.texto }}</p>
-        <a [routerLink]="a.ruta" class="btn btn--primary">{{ a.cta }}</a>
-      </div>
-    </article>
+    @if (a.titulo !== 'Reservá tu lugar' || mostrarReserva()) {
+      <article class="card">
+        <img
+          [ngSrc]="a.imagen"
+          width="600"
+          height="400"
+          [alt]="a.alt"
+        />
+
+        <div class="card__body">
+          <h2>{{ a.titulo }}</h2>
+          <p>{{ a.texto }}</p>
+
+          <a
+            [routerLink]="a.titulo === 'Reservá tu lugar' ? rutaReserva() : a.ruta"
+            class="btn btn--primary"
+          >
+            {{ a.cta }}
+          </a>
+        </div>
+      </article>
+    }
   }
 </section>
