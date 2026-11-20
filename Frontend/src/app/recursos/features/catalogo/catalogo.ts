@@ -4,7 +4,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { AuthClient } from '../../../auth/data-access/auth-client';
 import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants';
@@ -27,6 +26,7 @@ import {
 } from '../../data-access/recurso-model';
 import { RecursoService } from '../../data-access/recurso-service';
 import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
+import { Router, RouterLink } from '@angular/router';
 
 const POR_PAGINA = 24;
 const MODALIDADES: Modalidad[] = ['DIA', 'QUINCENA', 'MES', 'TEMPORADA'];
@@ -75,7 +75,7 @@ const textoDias = (dias: number): string => `${dias} ${dias === 1 ? 'dÃ­a' : 'dÃ
 
 @Component({
   selector: 'app-catalogo',
-  imports: [FormField, MatDatepickerModule],
+  imports: [FormField, MatDatepickerModule, RouterLink],
   providers: [provideNativeDateAdapter(), { provide: MAT_DATE_LOCALE, useValue: 'es-AR' }],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.css',
@@ -151,6 +151,10 @@ export class Catalogo {
     const inicio = t ? desdeIso(t.inicioTemporada) : null;
     return inicio && inicio > this.hoy ? inicio : this.hoy;
   });
+
+protected usuarioLogueado(): boolean {
+  return this.auth.usuarioLogueado();
+}
 
   protected readonly temporadaTexto = computed(() => {
     const t = this.temporada();

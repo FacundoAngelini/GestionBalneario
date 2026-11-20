@@ -1,6 +1,11 @@
-import { Routes } from '@angular/router';
+import { CanMatchFn, Routes } from '@angular/router';
 import { authGuard, guestGuard } from './auth/data-access/auth.guard';
 import { ROUTE_SEGMENTS } from './core/constants/route-segments.constants';
+import { AuthClient } from './auth/data-access/auth-client';
+import { inject } from '@angular/core';
+import { productosPublicRoutes } from './productos/productos.routes';
+const soloVisitantes: CanMatchFn = () =>
+  !(inject(AuthClient)).usuarioLogueado();
 
 export const routes: Routes = [
   {
@@ -26,15 +31,17 @@ export const routes: Routes = [
         loadComponent: () => import('./core/UI/inicio/inicio').then(m => m.Inicio)
       },
       {
-        path: ROUTE_SEGMENTS.productos,
-        loadChildren: () =>
-          import('./productos/productos.routes').then((m) => m.productosPublicRoutes)
+       path: ROUTE_SEGMENTS.productos,
+       canMatch: [soloVisitantes],
+       loadChildren: () =>
+       import('./productos/productos.routes')
+      .then(m => m.productosPublicRoutes)
       },
       {
         path: ROUTE_SEGMENTS.catalogo,
         loadComponent: () =>
         import('./recursos/features/catalogo/catalogo').then((m) => m.Catalogo)
-      }
+      },
     ]
   },
 

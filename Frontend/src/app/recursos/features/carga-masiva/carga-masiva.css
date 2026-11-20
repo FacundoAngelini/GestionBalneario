@@ -32,7 +32,6 @@
   gap: var(--espacio-3) var(--espacio-4);
 }
 
-/* Tu styles.css resetea todos los márgenes a 0, así que los títulos necesitan su espacio acá */
 .page h1 {
   margin-bottom: var(--espacio-3);
 }
@@ -46,6 +45,27 @@
 /* Separación entre el contenido de una tarjeta y lo que viene debajo */
 .nota {
   margin-top: var(--espacio-4);
+}
+
+.carga-masiva__volver {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.carga-masiva__volver:hover {
+  color: var(--color-turquesa-oscuro);
+}
+
+.carga-masiva__volver:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 4px;
+  border-radius: var(--radio-sm);
 }
 
 .resumen {

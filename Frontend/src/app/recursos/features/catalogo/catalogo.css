@@ -29,6 +29,27 @@
   font-weight: 800;
   letter-spacing: 0.1em;
 }
+.catalogo__volver {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.catalogo__volver:hover {
+  color: var(--color-turquesa-oscuro);
+}
+
+.catalogo__volver:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 4px;
+  border-radius: var(--radio-sm);
+}
+  
 
 .catalogo__temporada {
   width: fit-content;

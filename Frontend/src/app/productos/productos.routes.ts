@@ -24,12 +24,25 @@ export const productosPublicRoutes: Routes = [
 ];
 
 // Privadas: solamente ADMIN puede cargar productos
+
 export const productosPrivateRoutes: Routes = [
- {
-  path: ROUTE_SEGMENTS.cargarProducto,
-  canActivate: [roleGuard],
-  data: { roles: [ROLES.ADMIN, ROLES.GERENTE] },
-  loadComponent: () =>
-    import('./feature/cargar-producto/cargar-producto').then((m) => m.CargarProducto),
-},
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./feature/menu/menu').then(m => m.Menu),
+  },
+  {
+    matcher: detalleMatcher,
+    loadComponent: () =>
+      import('./feature/detalle/detalle').then(m => m.Detalle),
+  },
+  {
+    path: ROUTE_SEGMENTS.cargarProducto,
+    canActivate: [roleGuard],
+    data: { roles: [ROLES.ADMIN, ROLES.GERENTE] },
+    loadComponent: () =>
+      import('./feature/cargar-producto/cargar-producto')
+        .then(m => m.CargarProducto),
+  },
 ];

@@ -87,54 +87,43 @@ export class ConfirmarSolicitud {
     () => this.seleccion.periodo() !== null && !this.sinIdCliente() && !this.enviando(),
   );
 
-  // Carpas y sombrillas primero; las cocheras después (la cochera exige un alojamiento ya reservado)
-  private readonly grupos = computed(() =>
-    [this.seleccion.alojamientos(), this.seleccion.cocheras()].filter((g) => g.length > 0),
-  );
+   protected async confirmar(evento: Event): Promise<void> {
+  evento.preventDefault();
 
-  protected async confirmar(evento: Event): Promise<void> {
-    evento.preventDefault();
-    const periodo = this.seleccion.periodo();
-    const clienteId = this.clienteId();
-    if (!periodo || !clienteId || this.enviando()) return;
+  const periodo = this.seleccion.periodo();
+  const clienteId = this.clienteId();
 
-    this.enviando.set(true);
-    this.errorEnvio.set('');
+  if (!periodo || !clienteId || this.enviando()) return;
 
-    const grupos = this.grupos();
-    const creadas: ReservaCreada[] = [];
-    let motivo = '';
+  this.enviando.set(true);
+  this.errorEnvio.set('');
 
-    for (const recursos of grupos) {
-      try {
-        const reserva = await firstValueFrom(
-          this.reservaService.reservarSinPago({
-            clientePublicId: clienteId,
-            fechaInicio: periodo.fechaInicio,
-            fechaFin: periodo.fechaFin, // el fin real de la modalidad
-            modalidad: periodo.modalidad,
-            recursosPublicIds: recursos.map((r) => r.publicId),
-          }),
-        );
-        creadas.push({ reserva, nombres: this.nombres(recursos) });
-      } catch (error) {
-        motivo = this.mensajeDeError(error);
-        break; // si falla un grupo, no se intenta el siguiente
-      }
-    }
-    this.enviando.set(false);
+  const recursos = this.seleccion.elegidos();
 
-    // No se creó nada: se queda en la pantalla para corregir o reintentar
-    if (creadas.length === 0) {
-      this.errorEnvio.set(motivo);
-      return;
-    }
+  try {
+    const reserva = await firstValueFrom(
+      this.reservaService.reservarSinPago({
+        clientePublicId: clienteId,
+        fechaInicio: periodo.fechaInicio,
+        fechaFin: periodo.fechaFin,
+        modalidad: periodo.modalidad,
+        recursosPublicIds: recursos.map((r) => r.publicId),
+      }),
+    );
 
-    // Como se corta en el primer error, lo que no se creó son los grupos que siguen
-    const noCreadas = this.nombres(grupos.slice(creadas.length).flat());
     this.seleccion.limpiar();
-    this.resultado.set({ creadas, noCreadas, motivo });
+
+    this.resultado.set({
+      creadas: [{ reserva, nombres: this.nombres(recursos) }],
+      noCreadas: '',
+      motivo: '',
+    });
+  } catch (error) {
+    this.errorEnvio.set(this.mensajeDeError(error));
+  } finally {
+    this.enviando.set(false);
   }
+}
 
   private nombres(recursos: RecursoCatalogo[]): string {
     return recursos.map((r) => r.nombre).join(', ');

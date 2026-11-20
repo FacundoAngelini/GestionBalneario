@@ -3,6 +3,15 @@
   <header class="menu__cabecera">
     <div class="menu__introduccion">
       <span class="menu__seccion">PRODUCTOS</span>
+        @if (usuarioLogueado()) {
+        <a class="menu__volver" routerLink="/panel">
+          ← Volver al panel
+        </a>
+      } @else {
+        <a class="menu__volver" routerLink="/">
+          ← Volver al inicio
+        </a>
+      }
       <h1>Menú</h1>
       <p class="field__hint">Conocé los productos que tenemos para vos.</p>
     </div>

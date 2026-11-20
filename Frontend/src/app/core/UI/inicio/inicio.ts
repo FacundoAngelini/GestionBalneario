@@ -1,6 +1,8 @@
+
 import { NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthClient } from '../../../auth/data-access/auth-client';
 
 @Component({
   selector: 'app-inicio',
@@ -9,6 +11,22 @@ import { RouterLink } from '@angular/router';
   styleUrl: './inicio.css',
 })
 export class Inicio {
+  private readonly auth = inject(AuthClient);
+
+  protected readonly mostrarReserva = computed(() => {
+    // Los visitantes siguen viendo el acceso a reservar.
+    if (!this.auth.usuarioLogueado()) return true;
+
+    // Los clientes y el personal autorizado pueden reservar.
+    return this.auth.esCliente() || this.auth.esPersonal();
+  });
+
+  protected readonly rutaReserva = computed(() => {
+    return this.auth.esPersonal()
+      ? '/reservas/presencial'
+      : '/reservas/mis-reservas';
+  });
+
   protected readonly accesos = [
     {
       titulo: 'Reservá tu lugar',
