@@ -2,10 +2,23 @@
   
 <header class="catalogo__cabecera">
   <span class="catalogo__paso">PASO 02 / 03</span>
+
   <h1>Catálogo de recursos</h1>
+
+  @if (usuarioLogueado()) {
+    <a class="catalogo__volver" routerLink="/panel">
+      ← Volver al panel
+    </a>
+  } @else {
+    <a class="catalogo__volver" routerLink="/">
+      ← Volver al inicio
+    </a>
+  }
+
   <p class="field__hint">
     Seleccioná los recursos disponibles para tu reserva.
   </p>
+
   @if (temporadaTexto()) {
     <p class="catalogo__temporada">{{ temporadaTexto() }}</p>
   }

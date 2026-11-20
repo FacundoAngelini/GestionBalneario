@@ -26,7 +26,7 @@ import { ROUTE_SEGMENTS } from '../../../core/constants/route-segments.constants
 import { formatoPrecio, interpretarPrecio } from '../../../core/utils/moneda';
 import { Dialogos } from '../../../shared/mensaje-dialog/dialogos';
 import { mensajeAmigable } from '../../../core/utils/errores';
-
+import { RouterLink } from '@angular/router';
 
 
 // Límites de negocio (el backend tiene que aplicar los mismos)
@@ -78,7 +78,7 @@ const modeloInicial = () => ({
 
 @Component({
   selector: 'app-carga-masiva',
-  imports: [FormField, MatDatepickerModule],
+  imports: [FormField, MatDatepickerModule, RouterLink],
   providers: [provideNativeDateAdapter(), { provide: MAT_DATE_LOCALE, useValue: 'es-AR' }],
   templateUrl: './carga-masiva.html',
   styleUrl: './carga-masiva.css',

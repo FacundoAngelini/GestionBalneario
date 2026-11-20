@@ -12,6 +12,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { CategoriaProducto, ProductoRequest } from '../../data-access/producto-model';
 import { ProductoService } from '../../data-access/producto-service';
+import { RouterLink } from '@angular/router';
 
 interface ProductoFormModel {
   nombre: string;
@@ -43,7 +44,7 @@ const nuevoProducto = (): ProductoFormModel => ({
 });
 
 @Component({
-  imports: [FormField],
+  imports: [FormField, RouterLink],
   selector: 'app-cargar-producto',
   styleUrl: './cargar-producto.css',
   templateUrl: './cargar-producto.html',
