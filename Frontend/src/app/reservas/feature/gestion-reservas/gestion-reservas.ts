@@ -104,13 +104,13 @@ export class GestionReservas {
     );
   });
 
-  // Las que estan en curso hoy (es lo que se ve sin buscar)
+
   protected readonly vigentesHoy = computed(() => {
     const hoy = hoyIso();
     return this.vigentes().filter((r) => r.fechaInicio <= hoy);
   });
 
-  // Con busqueda se encuentra cualquier reserva vigente (por ejemplo, alguien que llega un dia antes)
+
   private readonly ingreso = computed(() => {
     const buscado = this.filtros().texto.trim().toLowerCase();
     const base = buscado
@@ -144,7 +144,7 @@ export class GestionReservas {
   protected readonly hayMas = computed(() => this.lista().length > this.limite());
 
   constructor() {
-    // Al cambiar de pestaña o de filtros, se vuelve a la primera página
+   
     effect(() => {
       this.vista();
       this.filtros();
@@ -231,7 +231,7 @@ export class GestionReservas {
     return this.descuento();
   }
 
-  // Cambia cuando la reserva cambia, para que su historial se vuelva a pedir
+  
   protected huella(r: Reserva): string {
     return `${r.estadoReserva}|${r.cobro?.fecha ?? ''}`;
   }
@@ -327,7 +327,7 @@ protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
     });
   }
 
-  // Antes de confirmar, se consulta qué más se cancelaría
+  
   protected async pedirCancelacion(reserva: Reserva): Promise<void> {
     this.procesando.set(reserva.publicId);
     let cocheras: Reserva[];
@@ -384,13 +384,13 @@ protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
         this.procesando.set(null);
         this.contador.refrescar();
         this.snackBar.open('Cobro registrado', 'Cerrar', { duration: 5000 });
-        this.verComprobante(reserva); // el comprobante se puede imprimir desde ahí
+        this.verComprobante(reserva); 
       },
       error: (e: HttpErrorResponse) => this.fallar(e),
     });
   }
 
-  // Anular un cobro pide un motivo: se resuelve con un panel dentro de la tarjeta
+  
   protected pedirAnulacion(reserva: Reserva): void {
     this.datosMotivo.set({ motivo: '' });
     this.anulandoId.set(reserva.publicId);
