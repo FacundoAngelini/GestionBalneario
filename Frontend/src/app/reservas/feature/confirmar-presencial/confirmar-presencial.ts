@@ -90,10 +90,6 @@ export class ConfirmarPresencial {
     () => this.cliente() !== null && this.seleccion.periodo() !== null && !this.enviando(),
   );
 
-  // Carpas y sombrillas primero; las cocheras después (la cochera exige un alojamiento ya reservado)
-  private readonly grupos = computed(() =>
-    [this.seleccion.alojamientos(), this.seleccion.cocheras()].filter((g) => g.length > 0),
-  );
 
   constructor() {
     this.reservaService.configuracionPago().subscribe({
@@ -103,52 +99,48 @@ export class ConfirmarPresencial {
   }
 
   protected async confirmar(evento: Event): Promise<void> {
-    evento.preventDefault();
-    const periodo = this.seleccion.periodo();
-    const cliente = this.cliente();
-    if (!periodo || !cliente || this.enviando()) return;
+  evento.preventDefault();
 
-    this.enviando.set(true);
-    this.errorEnvio.set('');
+  const periodo = this.seleccion.periodo();
+  const cliente = this.cliente();
 
-    const cobrarAhora = this.modelo().cobrarAhora;
-    const grupos = this.grupos();
-    const creadas: ReservaCreada[] = [];
-    let motivo = '';
+  if (!periodo || !cliente || this.enviando()) return;
 
-    for (const recursos of grupos) {
-      try {
-        const respuesta = await firstValueFrom(
-          this.reservaService.crearPresencial({
-            clientePublicId: cliente.publicId,
-            fechaInicio: periodo.fechaInicio,
-            fechaFin: periodo.fechaFin,
-            modalidad: periodo.modalidad,
-            recursosPublicIds: recursos.map((r) => r.publicId),
-            cobrarAhora,
-          }),
-        );
-        creadas.push({ respuesta, nombres: this.nombres(recursos) });
-      } catch (error) {
-        motivo = this.mensajeDeError(error);
-        break; // si falla un grupo, no se intenta el siguiente
-      }
-    }
-    this.enviando.set(false);
+  this.enviando.set(true);
+  this.errorEnvio.set('');
 
-    if (creadas.length === 0) {
-      this.errorEnvio.set(motivo);
-      return;
-    }
+  const recursos = this.seleccion.elegidos();
 
-    const noCreadas = this.nombres(grupos.slice(creadas.length).flat());
-    this.resultado.set({ cliente, creadas, noCreadas, motivo });
+  try {
+    const respuesta = await firstValueFrom(
+      this.reservaService.crearPresencial({
+        clientePublicId: cliente.publicId,
+        fechaInicio: periodo.fechaInicio,
+        fechaFin: periodo.fechaFin,
+        modalidad: periodo.modalidad,
+        recursosPublicIds: recursos.map((r) => r.publicId),
+        cobrarAhora: this.modelo().cobrarAhora,
+      }),
+    );
+
+    this.resultado.set({
+      cliente,
+      creadas: [{ respuesta, nombres: this.nombres(recursos) }],
+      noCreadas: '',
+      motivo: '',
+    });
+
     this.seleccion.limpiar();
+  } catch (error) {
+    this.errorEnvio.set(this.mensajeDeError(error));
+  } finally {
+    this.enviando.set(false);
   }
+}
 
-  private nombres(recursos: RecursoCatalogo[]): string {
-    return recursos.map((r) => r.nombre).join(', ');
-  }
+private nombres(recursos: RecursoCatalogo[]): string {
+  return recursos.map((r) => r.nombre).join(', ');
+}
 
   private mensajeDeError(error: unknown): string {
     if (error instanceof HttpErrorResponse) {

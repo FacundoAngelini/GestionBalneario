@@ -1,6 +1,5 @@
 package com.Gestion.MiBalnearioGestion.Auth.Credenciales.DTO;
 
-import com.Gestion.MiBalnearioGestion.Auth.Validaciones.Telefono;
 import com.Gestion.MiBalnearioGestion.Common.Validacion.TelefonoValido;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;

@@ -238,23 +238,35 @@ export class GestionReservas {
     return `${r.estadoReserva}|${r.cobro?.fecha ?? ''}`;
   }
 
-  /** Cuánto hace que se pidió y cuánto falta para que venza (solo las pendientes). */
-  protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
-    if (r.estadoReserva !== 'PENDIENTE' || !r.fechaCreacion) return null;
-    const creada = new Date(r.fechaCreacion).getTime();
-    if (Number.isNaN(creada)) return null;
+protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
+  if (r.estadoReserva !== 'PENDIENTE' || !r.fechaCreacion) return null;
 
-    const transcurridas = (Date.now() - creada) / 3_600_000;
-    const restantes = HORAS_PARA_CONFIRMAR - transcurridas;
-    const pedida = transcurridas < 1 ? 'hace menos de 1 hora' : `hace ${Math.floor(transcurridas)} h`;
+  const creada = new Date(r.fechaCreacion).getTime();
+  if (Number.isNaN(creada)) return null;
 
-    if (restantes <= 0) {
-      return { texto: `Pedida ${pedida} · plazo vencido, se libera en instantes`, urgente: true };
-    }
-    const vence = restantes < 1 ? 'menos de 1 hora' : `${Math.ceil(restantes)} h`;
-    return { texto: `Pedida ${pedida} · vence en ${vence}`, urgente: restantes < 6 };
+  const transcurridas = (Date.now() - creada) / 3_600_000;
+  const restantes = HORAS_PARA_CONFIRMAR - transcurridas;
+
+  console.log('CONTROL DE VENCIMIENTO', {
+    fechaCreacionBackend: r.fechaCreacion,
+    fechaInterpretada: new Date(creada).toString(),
+    horaActualNavegador: new Date().toString(),
+    horasTranscurridas: transcurridas,
+    horasRestantes: restantes,
+    horasConfiguradas: HORAS_PARA_CONFIRMAR,
+  });
+
+  const pedida = transcurridas < 1
+    ? 'hace menos de 1 hora'
+    : `hace ${Math.floor(transcurridas)} h`;
+
+  if (restantes <= 0) {
+    return { texto: `Pedida ${pedida} · plazo vencido, se libera en instantes`, urgente: true };
   }
 
+  const vence = restantes < 1 ? 'menos de 1 hora' : `${Math.ceil(restantes)} h`;
+  return { texto: `Pedida ${pedida} · vence en ${vence}`, urgente: restantes < 6 };
+}
   /** Aviso para las confirmadas o terminadas que siguen sin cobrarse. */
   protected avisoDeCobro(r: Reserva): string | null {
     if (r.cobro || !['CONFIRMADA', 'FINALIZADA'].includes(r.estadoReserva)) return null;

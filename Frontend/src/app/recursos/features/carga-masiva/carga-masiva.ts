@@ -274,27 +274,29 @@ protected readonly listo = computed(
 
   private readonly tipoElegido = computed(() => this.modelo().tipo);
 
-  constructor() {
-    // Al cargar la temporada, la usamos como rango de fechas por defecto
-    effect(() => {
-      const t = this.temporada();
-      if (t) {
-        this.modelo.update((m) => ({
-          ...m,
-          fechaVigencia: t.inicioTemporada,
-          fechaCaducada: t.finTemporada,
-        }));
-      }
-    });
-    // Al cambiar el tipo, sugerimos el prefijo del nombre ("Carpa", "Sombrilla"...)
-    effect(() => {
-      const tipo = this.tipoElegido();
-      untracked(() =>
-        this.modelo.update((m) => ({ ...m, prefijoNombre: ETIQUETA_TIPO_RECURSO[tipo] })),
-      );
-    });
-  }
+constructor() {
+  effect(() => {
+  const t = this.temporada();
 
+  if (!t) return;
+
+  this.modelo.update((m) => ({
+    ...m,
+    fechaVigencia: m.fechaVigencia || t.inicioTemporada,
+    fechaCaducada: m.fechaCaducada || t.finTemporada,
+  }));
+});
+  // Al cambiar el tipo, sugerimos el prefijo del nombre.
+  effect(() => {
+    const tipo = this.tipoElegido();
+    untracked(() =>
+      this.modelo.update((m) => ({
+        ...m,
+        prefijoNombre: ETIQUETA_TIPO_RECURSO[tipo],
+      })),
+    );
+  });
+}
    protected readonly formatoPrecio = formatoPrecio;
 
   protected cambiarPrecio(clave: ClavePrecio, evento: Event): void {
@@ -305,11 +307,17 @@ protected readonly listo = computed(
     this.modelo.update((m) => ({ ...m, [clave]: valor }));
   }
   
-protected elegirFecha(campo: 'fechaVigencia' | 'fechaCaducada', fecha: Date | null): void {
+protected elegirFecha(
+  campo: 'fechaVigencia' | 'fechaCaducada',
+  fecha: Date | null,
+): void {
   const valor = fecha ? aIso(fecha) : '';
-  this.modelo.update((m) =>
-    campo === 'fechaVigencia' ? { ...m, fechaVigencia: valor } : { ...m, fechaCaducada: valor },
-  );
+
+  this.modelo.update((m) => ({
+    ...m,
+    [campo]: valor,
+  }));
+
   this.f[campo]().markAsTouched();
 }
 
@@ -354,20 +362,25 @@ protected guardar(evento: Event): void {
 
   // formulario como recien abierto, con las fechas d ela temporada.
  private reiniciar(): void {
-    const actual = this.modelo();
-    const cantidad = actual.numeroHasta - actual.numeroDesde + 1;
-    this.modelo.set({
-      ...modeloInicial(),
-      tipo: actual.tipo,
-      prefijoNombre: ETIQUETA_TIPO_RECURSO[actual.tipo],
-      sectorPublicId: actual.sectorPublicId,
-      fechaVigencia: actual.fechaVigencia,
-      fechaCaducada: actual.fechaCaducada,
-      numeroDesde: actual.numeroHasta + 1, // sigue donde terminó el lote anterior
-      numeroHasta: actual.numeroHasta + cantidad,
-    });
-    this.textosPrecio.set({ precioDia: '', precioQuincena: '', precioMes: '', precioTemporada: '' });
-  }
+  const actual = this.modelo();
+  const cantidad = actual.numeroHasta - actual.numeroDesde + 1;
+
+  this.modelo.set({
+    ...modeloInicial(),
+    tipo: actual.tipo,
+    prefijoNombre: ETIQUETA_TIPO_RECURSO[actual.tipo],
+    sectorPublicId: actual.sectorPublicId,
+    numeroDesde: actual.numeroHasta + 1,
+    numeroHasta: actual.numeroHasta + cantidad,
+  });
+
+  this.textosPrecio.set({
+    precioDia: '',
+    precioQuincena: '',
+    precioMes: '',
+    precioTemporada: '',
+  });
+}
 
   private armarPeticion(): RecursoLoteRequest {
     const m = this.modelo();

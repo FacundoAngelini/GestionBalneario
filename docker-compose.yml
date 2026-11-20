@@ -1,5 +1,4 @@
 services:
-
   db:
     image: mysql:8.0
     container_name: balneario_db
@@ -9,6 +8,8 @@ services:
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      TZ: America/Argentina/Buenos_Aires
+    command: --default-time-zone=-03:00
     ports:
       - "3307:3306"
     volumes:
@@ -29,7 +30,8 @@ services:
     env_file:
       - .env
     environment:
-      # Sobrescribe DB_URL solo para el contenedor de Docker apuntando al servicio 'db' y puerto interno 3306
+      TZ: America/Argentina/Buenos_Aires
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=America/Argentina/Buenos_Aires"
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}?useSSL=false&serverTimezone=America/Argentina/Buenos_Aires&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
