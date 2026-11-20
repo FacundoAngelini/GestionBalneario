@@ -28,7 +28,10 @@ public interface RecursoRepositorio extends JpaRepository<RecursoEntity, Long>, 
     @Query("SELECT r FROM RecursoEntity r LEFT JOIN FETCH r.precioRecurso WHERE r.publicId = :publicId")
     Optional<RecursoEntity> findByPublicIdWithPrecios(@Param("publicId") UUID publicId);
 
-    @Query("SELECT r FROM RecursoEntity r WHERE r.esReservable = true AND r.id NOT IN (" +
+    @Query("SELECT r FROM RecursoEntity r " +
+            "WHERE r.esReservable = true " +
+            "AND EXISTS (SELECT 1 FROM r.precioRecurso p WHERE p.fechaVigencia <= :fechaInicio AND p.fechaCaducada >= :fechaFin) " +
+            "AND r.id NOT IN (" +
             "    SELECT DISTINCT rec.id FROM ReservaEntity res " +
             "    JOIN res.recursos rec " +
             "    WHERE res.estadoReserva IN :estadosConflictivos " +
