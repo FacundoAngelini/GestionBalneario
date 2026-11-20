@@ -25,6 +25,27 @@
   margin: 0;
 }
 
+.carga-producto__volver {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.carga-producto__volver:hover {
+  color: var(--color-turquesa-oscuro);
+}
+
+.carga-producto__volver:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 4px;
+  border-radius: var(--radio-sm);
+}
+
 .carga-producto__seccion {
   color: var(--color-turquesa-oscuro);
   font-size: 0.75rem;

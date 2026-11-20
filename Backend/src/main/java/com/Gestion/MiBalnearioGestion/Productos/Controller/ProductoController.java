@@ -95,7 +95,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{publicId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE'')")
     @Operation(summary = "Dar de baja un producto", description = "Realiza la baja o deshabilitación del producto del sistema mediante su UUID público. Devuelve una respuesta vacía.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Producto dado de baja con éxito (Sin contenido de respuesta)", content = @Content),
@@ -111,7 +111,7 @@ public class ProductoController {
     }
 
     @PatchMapping("/{publicId}/reactivar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     @Operation(summary = "Reactivar un producto", description = "Vuelve a habilitar un producto previamente borrado o dado de baja para reintegrarlo al stock disponible.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Producto reactivado con éxito"),

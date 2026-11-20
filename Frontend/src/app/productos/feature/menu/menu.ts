@@ -22,8 +22,10 @@ export class Menu {
   protected readonly etiquetaCategoria = ETIQUETA_CATEGORIA;
   protected readonly formatoPrecio = formatoPrecio;
   protected readonly esAdmin = this.auth.esAdmin;
-  protected readonly categoriaActiva = signal<CategoriaProducto | null>(null);
-
+  protected readonly categoriaActiva = signal<CategoriaProducto | null>(null);  
+  protected usuarioLogueado(): boolean {
+  return this.auth.usuarioLogueado();
+}
   protected readonly puedeVerTodos = computed(() => {
     const roles = this.auth.roles();
 

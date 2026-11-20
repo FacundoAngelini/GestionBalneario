@@ -3,6 +3,9 @@
   <div class="page__introduccion">
     <span class="page__paso">GESTIÓN DE RECURSOS</span>
     <h1>Carga masiva de recursos</h1>
+    <a class="carga-masiva__volver" routerLink="/recursos">
+     ← Volver al inventario
+   </a>
     <p class="field__hint">
       Creá varios recursos de una vez, manteniendo sus características
       y diferenciándolos por numeración.
@@ -173,47 +176,44 @@
         Los precios valen para este rango de fechas. Fuera de él, el recurso no se alquila.
       </p>
 
-      <div class="form-grid nota">
+      <div class="field">
+  <label class="field__label" for="vigencia">Vigente desde</label>
+  <input
+    id="vigencia"
+    class="field__control control-fecha"
+    readonly
+    placeholder="dd/mm/aaaa"
+    [matDatepicker]="calendarioDesde"
+    [value]="fechaDesde()"
+    [min]="hoy"
+    (dateChange)="elegirFecha('fechaVigencia', $event.value)"
+    (click)="calendarioDesde.open()"
+    [attr.aria-invalid]="!!errores().fechaDesde"
+  />
+  <mat-datepicker #calendarioDesde panelClass="calendario-brisa" [touchUi]="esMovil" />
+  @if (errores().fechaDesde) {
+    <p class="field__error">{{ errores().fechaDesde }}</p>
+  }
+</div>
         <div class="field">
-          <label class="field__label" for="vigencia">Vigente desde</label>
-          <input
-            id="vigencia"
-            class="field__control control-fecha"
-            readonly
-            placeholder="dd/mm/aaaa"
-            [matDatepicker]="calendarioDesde"
-            [value]="fechaDesde()"
-            [min]="hoy"
-            (dateChange)="elegirFecha('fechaVigencia', $event.value)"
-            (click)="calendarioDesde.open()"
-            [attr.aria-invalid]="!!errores().fechaDesde"
-          />
-          <mat-datepicker #calendarioDesde panelClass="calendario-brisa" [touchUi]="esMovil" />
-          @if (errores().fechaDesde) {
-            <p class="field__error">{{ errores().fechaDesde }}</p>
-          }
-        </div>
-        <div class="field">
-          <label class="field__label" for="caducidad">Vigente hasta</label>
-          <input
-            id="caducidad"
-            class="field__control control-fecha"
-            readonly
-            placeholder="dd/mm/aaaa"
-            [matDatepicker]="calendarioHasta"
-            [value]="fechaHasta()"
-            [min]="fechaDesde() ?? hoy"
-            (dateChange)="elegirFecha('fechaCaducada', $event.value)"
-            (click)="calendarioHasta.open()"
-            [attr.aria-invalid]="!!errores().fechaHasta"
-          />
-          <mat-datepicker #calendarioHasta panelClass="calendario-brisa" [touchUi]="esMovil" />
-          @if (errores().fechaHasta) {
-            <p class="field__error">{{ errores().fechaHasta }}</p>
-          }
-        </div>
-      </div>
-
+  <label class="field__label" for="caducidad">Vigente hasta</label>
+  <input
+    id="caducidad"
+    class="field__control control-fecha"
+    readonly
+    placeholder="dd/mm/aaaa"
+    [matDatepicker]="calendarioHasta"
+    [value]="fechaHasta()"
+    [min]="fechaDesde() ?? hoy"
+    (dateChange)="elegirFecha('fechaCaducada', $event.value)"
+    (click)="calendarioHasta.open()"
+    [attr.aria-invalid]="!!errores().fechaHasta"
+  />
+  <mat-datepicker #calendarioHasta panelClass="calendario-brisa" [touchUi]="esMovil" />
+  @if (errores().fechaHasta) {
+    <p class="field__error">{{ errores().fechaHasta }}</p>
+  }
+</div>
       <div class="form-grid precios nota">
         @for (p of camposPrecio; track p.id) {
           <div class="field">

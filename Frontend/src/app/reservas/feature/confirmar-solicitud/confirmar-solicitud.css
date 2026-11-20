@@ -16,6 +16,27 @@
   margin-bottom: var(--espacio-2);
 }
 
+
+.solicitud__volver {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.solicitud__volver:hover {
+  color: var(--color-turquesa-oscuro);
+}
+
+.solicitud__volver:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 4px;
+  border-radius: var(--radio-sm);
+}
 .seccion {
   display: grid;
   gap: var(--espacio-3);
@@ -52,9 +73,13 @@
   display: grid;
   gap: var(--espacio-3);
 }
-
 .acciones-solicitud .btn {
   width: 100%;
+}
+
+.acciones-solicitud .solicitud__volver {
+  justify-self: start;
+  align-self: center;
 }
 
 .total {
