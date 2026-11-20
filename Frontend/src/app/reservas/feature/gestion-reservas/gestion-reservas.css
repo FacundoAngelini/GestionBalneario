@@ -117,7 +117,7 @@
 .gestion__acciones .btn {
   width: auto;
 }
-/* Tantas columnas como entren (mínimo 14rem): 1 en celular, 2 en pantallas más anchas */
+/* Tantas columnas como entren  */
 .filtros-reservas {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

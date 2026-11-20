@@ -1,6 +1,4 @@
-/* Mobile first: lo de abajo es para celular; el @media acomoda los botones en pantallas más anchas. */
 
-.solicitud,
 .solicitud__form {
   display: grid;
   gap: var(--espacio-4);
@@ -11,7 +9,7 @@
   margin-inline: auto;
 }
 
-/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
+
 .solicitud :is(h1, h2, h3) {
   margin-bottom: var(--espacio-2);
 }
@@ -68,7 +66,7 @@
   padding-left: var(--espacio-5);
 }
 
-/* Botones: apilados en celular (el principal queda abajo, al alcance del pulgar) */
+
 .acciones-solicitud {
   display: grid;
   gap: var(--espacio-3);

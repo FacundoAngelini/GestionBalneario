@@ -1,7 +1,6 @@
 import { buscarPais } from '../constants/paises.constants';
 export const esNumero = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 
-// Valida un entero dentro de un rango; devuelve el mensaje de error o null si esta bien
 export const errorEntero = (
   valor: unknown,
   min: number,

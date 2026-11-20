@@ -13,7 +13,6 @@ export interface ClienteUpdateRequest {
   apellido: string;
   email: string;
   telefono: string;
-  // DNI se omite a propósito: el backend no lo acepta en este endpoint
 }
 export interface CambioContraseniaRequest {
   contraseniaActual: string;

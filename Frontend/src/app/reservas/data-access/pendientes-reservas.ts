@@ -5,7 +5,6 @@ import { ReservaService } from './reserva-service';
 
 const CADA_MS = 60_000;
 
-/** Cantidad de solicitudes esperando confirmación. Solo se consulta si hay personal logueado. */
 @Service()
 export class PendientesReservas {
   private readonly auth = inject(AuthClient);
@@ -34,12 +33,12 @@ export class PendientesReservas {
     });
   }
 
-  /** Para cuando una pantalla ya sabe el número real (evita esperar al próximo minuto). */
+  /** Para cuando una pantalla ya sabe el número real. */
   fijar(n: number): void {
     this.cantidad.set(n);
   }
 
-    /** Vuelve a consultar ahora mismo (después de cobrar, por ejemplo). */
+    /** Vuelve a consultar ahora mismo  */
   refrescar(): void {
     this.reservaService
       .pendientes()

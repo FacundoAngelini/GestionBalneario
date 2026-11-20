@@ -22,7 +22,6 @@ export const CLASE_ESTADO_EMPLEADO: Record<EstadoEmpleado, string> = {
   INACTIVO: 'estado--cerrada',
 };
 
-/** Roles que se pueden elegir al dar de alta. Los administradores y los gerentes solo los crea un administrador. */
 export interface RolOpcion {
   valor: string;
   etiqueta: string;
@@ -39,18 +38,18 @@ export const ROLES_ALTA: RolOpcion[] = [
   { valor: 'ROLE_REPARTIDOR', etiqueta: 'Repartidor', soloAdmin: false },
 ];
 
-/** Suspender, dar licencia, dar de baja y reactivar piden un motivo (5 a 300 caracteres). */
+/** Suspender, dar licencia, dar de baja y reactivar piden un motivo . */
 export const pideMotivo = (actual: EstadoEmpleado, nuevo: EstadoEmpleado): boolean =>
   nuevo === 'SUSPENDIDO' || nuevo === 'LICENCIA' || nuevo === 'INACTIVO' || actual === 'INACTIVO';
 
-/** A qué estados se puede pasar desde el actual (una baja solo se reactiva). */
+/** A qué estados se puede pasar desde el actual . */
 export const estadosDestino = (actual: EstadoEmpleado): EstadoEmpleado[] =>
   actual === 'INACTIVO' ? ['ACTIVO'] : ESTADOS_EMPLEADO.filter((e) => e !== actual);
 
 export const MIN_MOTIVO = 5;
 export const MAX_MOTIVO = 300;
 
-/** Ficha de un empleado, tal como la devuelve el backend (lista y detalle). */
+/** Ficha de un empleado. */
 export interface Empleado {
   publicId: string;
   nombre: string;
@@ -67,7 +66,7 @@ export interface Empleado {
   usuarioPublicId: string | null;
   nombreUsuario: string | null;
   rolSeguridad: string | null;
-  editable: boolean; // lo decide el backend: ¿quien consulta puede modificar a este empleado?
+  editable: boolean; 
 }
 
 export interface EmpleadoUpdateRequest {

@@ -18,7 +18,6 @@ export class HistorialEmpleado {
   private readonly empleadoService = inject(EmpleadoService);
 
   readonly empleadoId = input.required<string>();
-  /** Cambia cuando la ficha cambió (estado, datos...): el historial se vuelve a pedir. */
   readonly huella = input('');
 
   protected readonly etiqueta = ETIQUETA_ACCION_EMPLEADO;
@@ -44,7 +43,6 @@ export class HistorialEmpleado {
     if (abierto && this.eventos() === null) this.cargar();
   }
 
-  // "ACTIVO → SUSPENDIDO" se muestra como "Activo → Suspendido"
   protected detalle(texto: string): string {
     return texto.replace(new RegExp(`\\b(${ESTADOS_EMPLEADO.join('|')})\\b`, 'g'), (estado) =>
       ETIQUETA_ESTADO_EMPLEADO[estado as EstadoEmpleado],

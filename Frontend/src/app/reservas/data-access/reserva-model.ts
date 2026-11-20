@@ -22,7 +22,6 @@ export const ETIQUETA_ESTADO_RESERVA: Record<ReservaEstado, string> = {
   VENCIDA: 'Vencida',
 };
 
-//* Clase de color de cada estado (definidas en styles.css)
 export const CLASE_ESTADO: Record<ReservaEstado, string> = {
   PENDIENTE: 'estado--pendiente',
   CONFIRMADA: 'estado--confirmada',
@@ -32,7 +31,6 @@ export const CLASE_ESTADO: Record<ReservaEstado, string> = {
   VENCIDA: 'estado--cerrada',
 };
 
-//* Plazos del negocio (el backend aplica los mismos)
 export const HORAS_PARA_CONFIRMAR = 48;
 export const HORAS_PARA_CANCELAR = 48;
 
@@ -73,7 +71,7 @@ export const ETIQUETA_ACCION: Record<AccionReserva, string> = {
   COBRO_ANULADO: 'Cobro anulado',
 };
 
-//* Interfaces de solicitudes (Request)
+//* Interfaces de solicitudes 
 
 export interface ReservaRequest {
   clientePublicId: string;
@@ -91,7 +89,6 @@ export interface CancelarReservaRequest {
   cancelarCocherasAsociadas: boolean;
 }
 
-//* Mirrors CancelarReservaDTO.java
 export interface CancelarReserva {
   publicId?: string;
   clientePublicId: string;
@@ -104,7 +101,6 @@ export interface ReservaPresencialRequest extends ReservaRequest {
   cobrarAhora: boolean;
 }
 
-//* Query params of GET /reservas (all optional)
 
 export interface ReservaFiltros {
   estado?: ReservaEstado;
@@ -113,7 +109,6 @@ export interface ReservaFiltros {
   clientePublicId?: string;
 }
 
-//* Interfaces de respuestas (Response / DTO)
 
 export interface Reserva {
   publicId: string;
@@ -131,16 +126,12 @@ export interface Reserva {
   cobro?: CobroResumen | null;
 }
 
-//* Lo que devuelve el backend (ReservaDTO.java). Todo viene siempre completo.
 
 export interface RecursoResumen {
   publicId: string;
   nombre: string;
   tipo: TipoRecurso | null;
 }
-
-//* Mirrors CheckoutResponseDTO.java
-//* para mp
 
 export interface CheckoutResponse {
   reservaPublicId: string;
@@ -154,8 +145,6 @@ export interface ReservaPresencialResponse {
   reserva: Reserva;
   comprobante: Comprobante | null;
 }
-
-//* Interfaces de cobros y comprobantes
 
 export interface CobroResumen {
   monto: number;
@@ -196,7 +185,6 @@ export interface EventoReserva {
   detalle: string | null;
 }
 
-//* Cliente encontrado por DNI en el mostrador
 
 export interface ClienteBusqueda {
   publicId: string;
@@ -206,8 +194,7 @@ export interface ClienteBusqueda {
   activo: boolean;
 }
 
-//* Signal form model: plain data, dates stay as 'yyyy-MM-dd' strings
-//* so they bind directly to <input type="date"> and match the backend LocalDate.
+
 
 export interface ReservaFormModel {
   clientePublicId: string;
@@ -236,7 +223,6 @@ export const reservaSchema = schema<ReservaFormModel>((path) => {
       : undefined,
   );
 
-  //* ISO yyyy-MM-dd strings compare correctly as text.
   validate(path.fechaFin, ({ value, valueOf }) => {
     const fin = value();
     const inicio = valueOf(path.fechaInicio);

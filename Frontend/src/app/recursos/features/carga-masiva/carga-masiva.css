@@ -1,5 +1,3 @@
-/* Mobile first: lo de abajo es para celular; los @media agregan columnas en pantallas más grandes. */
-
 .page {
   max-width: 60rem;
   margin-inline: auto;
@@ -42,7 +40,6 @@
   gap: var(--espacio-4);
 }
 
-/* Separación entre el contenido de una tarjeta y lo que viene debajo */
 .nota {
   margin-top: var(--espacio-4);
 }
@@ -138,7 +135,6 @@
   min-height: 2.75rem;
 }
 
-/* El nombre se achica y el precio nunca se parte: así no empuja el borde derecho */
 .lista-recursos li {
   align-items: flex-start;
 }

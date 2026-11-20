@@ -13,7 +13,7 @@ export const empleadosRoutes: Routes = [
     loadComponent: () => import('./feature/empleados-lista/empleados-lista').then((m) => m.EmpleadosLista),
   },
   {
-    path: ROUTE_SEGMENTS.nuevo, // antes de ":id", si no "nuevo" se tomaría como un id
+    path: ROUTE_SEGMENTS.nuevo,
     ...acceso,
     loadComponent: () => import('./feature/empleados-form/empleados-form').then((m) => m.EmpleadoForm),
   },

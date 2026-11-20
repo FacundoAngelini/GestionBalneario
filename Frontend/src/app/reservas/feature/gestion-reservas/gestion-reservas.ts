@@ -62,7 +62,7 @@ export class GestionReservas {
   protected readonly vista = signal<Vista>(this.auth.esPersonal() ? 'PENDIENTES' : 'INGRESO');  
   protected readonly procesando = signal<string | null>(null); // publicId de la reserva en trámite
   private readonly limite = signal(POR_PAGINA);
-  private readonly descuento = signal(0); // % por pago en efectivo (solo para la vista previa)
+  private readonly descuento = signal(0);
 
   // Filtros de la pestaña "Todas"
   protected readonly filtros = signal({ texto: '', estado: 'TODOS' as FiltroEstado });
@@ -96,7 +96,7 @@ export class GestionReservas {
       .sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio)),
   );
 
-    // Reservas que eetsna llegando en pendientes o condirmadas que otdavia no terminaron // Reservas que pueden estar llegando: pendientes o confirmadas que todavía no terminaron
+    // Reservas que pueden estar llegando: pendientes o confirmadas que todavía no terminaron
   private readonly vigentes = computed(() => {
     const hoy = hoyIso();
     return (this.reservas() ?? []).filter(
@@ -104,13 +104,13 @@ export class GestionReservas {
     );
   });
 
-  // Las que estan en curso hoy (es lo que se ve sin buscar)
+
   protected readonly vigentesHoy = computed(() => {
     const hoy = hoyIso();
     return this.vigentes().filter((r) => r.fechaInicio <= hoy);
   });
 
-  // Con busqueda se encuentra cualquier reserva vigente (por ejemplo, alguien que llega un dia antes)
+
   private readonly ingreso = computed(() => {
     const buscado = this.filtros().texto.trim().toLowerCase();
     const base = buscado
@@ -144,7 +144,7 @@ export class GestionReservas {
   protected readonly hayMas = computed(() => this.lista().length > this.limite());
 
   constructor() {
-    // Al cambiar de pestaña o de filtros, se vuelve a la primera página
+   
     effect(() => {
       this.vista();
       this.filtros();
@@ -156,7 +156,6 @@ export class GestionReservas {
         error: () => this.descuento.set(0),
       });
     }
-        // Si el contador (que consulta cada minuto) cambia y la lista quedó desfasada, se recarga sola
     effect(() => {
       const n = this.contador.cantidad();
       untracked(() => {
@@ -167,7 +166,6 @@ export class GestionReservas {
     });
     this.cargar();
 
-        // Si se llega desde la ficha de un cliente, se busca directamente en "Todas"
     const buscar = inject(ActivatedRoute).snapshot.queryParamMap.get('buscar');
     if (buscar) {
       this.filtros.update((f) => ({ ...f, texto: buscar }));
@@ -233,7 +231,7 @@ export class GestionReservas {
     return this.descuento();
   }
 
-  // Cambia cuando la reserva cambia, para que su historial se vuelva a pedir
+  
   protected huella(r: Reserva): string {
     return `${r.estadoReserva}|${r.cobro?.fecha ?? ''}`;
   }
@@ -329,7 +327,7 @@ protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
     });
   }
 
-  // Antes de confirmar, se consulta qué más se cancelaría
+  
   protected async pedirCancelacion(reserva: Reserva): Promise<void> {
     this.procesando.set(reserva.publicId);
     let cocheras: Reserva[];
@@ -386,13 +384,13 @@ protected vencimiento(r: Reserva): { texto: string; urgente: boolean } | null {
         this.procesando.set(null);
         this.contador.refrescar();
         this.snackBar.open('Cobro registrado', 'Cerrar', { duration: 5000 });
-        this.verComprobante(reserva); // el comprobante se puede imprimir desde ahí
+        this.verComprobante(reserva); 
       },
       error: (e: HttpErrorResponse) => this.fallar(e),
     });
   }
 
-  // Anular un cobro pide un motivo: se resuelve con un panel dentro de la tarjeta
+  
   protected pedirAnulacion(reserva: Reserva): void {
     this.datosMotivo.set({ motivo: '' });
     this.anulandoId.set(reserva.publicId);

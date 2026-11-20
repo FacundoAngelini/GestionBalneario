@@ -57,14 +57,12 @@ export class MisReservas {
   protected readonly vista = signal<Vista>('ACTIVAS');
   protected readonly procesando = signal<string | null>(null); // publicId de la reserva en tramite
 
-  // Las activas, de la más próxima a la más lejana
   protected readonly activas = computed(() =>
     (this.reservas() ?? [])
       .filter((r) => this.esActiva(r))
       .sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio)),
   );
 
-  // El historial, de la mas reciente a la más vieja
   protected readonly historial = computed(() =>
     (this.reservas() ?? [])
       .filter((r) => !this.esActiva(r))
@@ -169,7 +167,7 @@ export class MisReservas {
         },
       });
   }
-  // Lleva al catálogo con la modalidad (y las fechas, si siguen en el futuro) ya cargadas
+  // Lleva al catálogo con la modalidad  ya cargadas
   protected reservarDeNuevo(r: Reserva): void {
     const futura = r.fechaInicio >= hoyIso();
     this.seleccion.busqueda.set({

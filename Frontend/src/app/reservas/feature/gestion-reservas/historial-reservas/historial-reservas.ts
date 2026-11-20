@@ -3,7 +3,6 @@ import { formatoFechaHora } from '../../../../core/utils/fechas';
 import { ETIQUETA_ACCION, EventoReserva } from '../../../data-access/reserva-model';
 import { ReservaService } from '../../../data-access/reserva-service';
 
-/** Desplegable con las acciones hechas sobre una reserva. Se pide al abrirlo, no antes. */
 @Component({
   selector: 'app-historial-reserva',
   templateUrl: './historial-reservas.html',
@@ -13,7 +12,7 @@ export class HistorialReserva {
   private readonly reservaService = inject(ReservaService);
 
   readonly reservaId = input.required<string>();
-  /** Cambia cuando la reserva cambió (cobro, estado...): el historial se vuelve a pedir. */
+  /** Cambia cuando la reserva cambió  */
   readonly huella = input('');
 
   protected readonly etiqueta = ETIQUETA_ACCION;

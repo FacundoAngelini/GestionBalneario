@@ -237,7 +237,6 @@ export class ClienteForm {
     });
   }
 
-  // Traduce los errores del backend a mensajes en el campo que corresponde
   private manejarError(error: unknown, campos: FieldTree<ClienteFormModelo>): TreeValidationResult {
     if (!(error instanceof HttpErrorResponse)) {
       this.errorEnvio.set('Ocurrió un error inesperado. Intentá de nuevo');

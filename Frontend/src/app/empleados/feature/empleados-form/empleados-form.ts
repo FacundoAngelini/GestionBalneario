@@ -96,7 +96,6 @@ export class EmpleadoForm {
   protected readonly limites = LIMITES;
   private readonly dialogos = inject(Dialogos);
 
-  // Sin id en la ruta es un alta; con id, una edición
   protected readonly id = inject(ActivatedRoute).snapshot.paramMap.get('id');
   protected readonly esAlta = this.id === null;
   protected readonly paises = PAISES;
@@ -119,7 +118,7 @@ export class EmpleadoForm {
 
   protected readonly paisElegido = computed(() => buscarPais(this.modelo().pais) ?? PAISES[0]);
 
-    // Cajero, mozo y repartidor se pueden crear, pero todavía no tienen pantallas
+    // Cajero, mozo y repartidor se pueden crear, pero todavía no tienen pantallas, es para un futuro
   protected readonly rolSinPantallas = computed(() =>
     ['ROLE_CAJERO', 'ROLE_MOZO', 'ROLE_REPARTIDOR'].includes(this.modelo().rolSolicitado),
   );
@@ -243,7 +242,7 @@ export class EmpleadoForm {
               );
               if (eleccion === 'secundaria') {
                 this.modelo.set({ ...MODELO_INICIAL });
-                this.formulario().reset(); // limpia también lo "tocado", para que no aparezcan errores en un formulario nuevo
+                this.formulario().reset(); 
                 return undefined;
               }
             } else {

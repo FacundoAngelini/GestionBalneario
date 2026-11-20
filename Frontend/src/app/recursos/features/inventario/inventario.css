@@ -9,7 +9,6 @@
   min-height: 2.5rem;
 }
 
-/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
 .inventario :is(h1, h2, h3) {
   margin-bottom: var(--espacio-2);
 }
@@ -133,10 +132,6 @@
   font-weight: 600;
   overflow-wrap: anywhere;
 }
-
-
-/* Formulario de edición dentro de la tarjeta */
-
 
 /* ---- Edición del recurso ---- */
 .item__form {

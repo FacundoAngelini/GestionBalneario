@@ -29,7 +29,6 @@ const ETIQUETA_ESTADO_PRECIO: Record<EstadoPrecio, string> = {
   VENCIDO: 'Vencido',
 };
 
-// Clases de color definidas en styles.css
 const CLASE_ESTADO_PRECIO: Record<EstadoPrecio, string> = {
   VIGENTE: 'estado--confirmada',
   FUTURO: 'estado--pendiente',
@@ -75,11 +74,9 @@ export class PreciosRecurso {
   protected readonly formatoPrecio = formatoPrecio;
   protected readonly formatoRango = formatoRango;
 
-  // En celular el calendario se abre como ventana modal; en pantallas grandes como desplegable
   protected readonly esMovil =
     typeof window !== 'undefined' && window.matchMedia('(max-width: 40rem)').matches;
 
-  // Para que los id de los campos sean únicos aunque haya varias tarjetas con el formulario abierto
   protected readonly sufijo = computed(() => this.recurso().publicId);
 
   // Por modalidad y dentro de cada una el período más reciente primero

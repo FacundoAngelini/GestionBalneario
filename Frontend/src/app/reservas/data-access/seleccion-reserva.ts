@@ -3,7 +3,7 @@ import { Modalidad, RecursoCatalogo } from '../../recursos/data-access/recurso-m
 import { diasEntre, totalRecurso } from './periodo-reserva';
 import { ClienteBusqueda } from './reserva-model';
 
-/** Lo que el usuario tiene cargado en el buscador (se conserva al ir al login y volver). */
+
 export interface Busqueda {
   fechaInicio: string; 
   fechaFin: string; // solo se usa con la modalidad Por dia
@@ -37,7 +37,6 @@ export class SeleccionReserva {
     return p ? diasEntre(p.fechaInicio, p.fechaFin) : 0;
   });
 
-  /** Total de todo lo elegido, con la regla del backend. */
   readonly total = computed(() => {
     const p = this.periodo();
     if (!p) return 0;
@@ -68,10 +67,6 @@ export class SeleccionReserva {
     this.elegidos.update((lista) => lista.filter((r) => r.publicId !== publicId));
   }
 
-  /**
-   * Tras una busqueda nueva: guarda el periodo y conserva solo los recursos elegidos que siguen
-   * libres (reemplazados por los datos frescos). Devuelve cuántos se perdieron.
-   */
   aplicarBusqueda(periodo: Periodo, disponibles: RecursoCatalogo[]): number {
     const ids = this.idsElegidos();
     const siguen = disponibles.filter((r) => ids.has(r.publicId));

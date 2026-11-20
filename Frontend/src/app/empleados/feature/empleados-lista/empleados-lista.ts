@@ -38,7 +38,7 @@ export class EmpleadosLista {
     { initialValue: [] as Sector[] },
   );
 
-  protected readonly empleados = signal<Empleado[] | null>(null); // null = todavía no cargó
+  protected readonly empleados = signal<Empleado[] | null>(null); 
   protected readonly cargando = signal(false);
   protected readonly errorCarga = signal('');
 

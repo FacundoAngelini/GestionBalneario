@@ -50,12 +50,12 @@ export class AjustePrecios {
   protected readonly modelo = signal({
     tipo: 'CARPA' as TipoRecurso,
     sectorPublicId: '',
-    modalidad: '' as '' | Modalidad, // '' = todas
+    modalidad: '' as '' | Modalidad, 
     operacion: 'PORCENTAJE' as OperacionAjuste,
     valor: null as number | null,
   });
   protected readonly f = form(this.modelo);
-  protected readonly textoValor = signal(''); // lo que se ve en el campo (con puntos de mil)
+  protected readonly textoValor = signal(''); 
 
   protected readonly procesando = signal(false);
   protected readonly error = signal('');
@@ -104,7 +104,7 @@ export class AjustePrecios {
     return v && v.clave === this.claveActual() ? v.resultado : null;
   });
 
-  // Al cambiar la operación el valor cambia de significado (% o $): se vacía el campo
+  // Al cambiar la operación el valor cambia de significado
   private readonly operacion = computed(() => this.modelo().operacion);
 
   constructor() {
