@@ -101,7 +101,7 @@ public class ReservaServicio implements IReservaServicio{
             if (!recurso.isEsReservable()) {
                 throw new RecursoOcupadoException("El recurso " + recurso.getNombre() + " esta desactivado", "RecursoEntity");
             }
-            double precio = obtenerPrecioVigente(recurso, fechaInicio, modalidad);
+            double precio = obtenerPrecioVigente(recurso, fechaInicio, fechaFin, modalidad);
             montoTotal += (modalidad == EModalidad.DIA) ? precio * diasEstadia : precio;
             recursosEntities.add(recurso);
         }
@@ -396,18 +396,19 @@ public class ReservaServicio implements IReservaServicio{
 
 
 
-    private double obtenerPrecioVigente(RecursoEntity recurso, LocalDate fechaReserva, EModalidad modalidad){
+    private double obtenerPrecioVigente(RecursoEntity recurso, LocalDate fechaInicio, LocalDate fechaFin, EModalidad modalidad){
         if (recurso.getPrecioRecurso() == null || recurso.getPrecioRecurso().isEmpty()) {
             throw new EntidadNoEncontradaException("El recurso no tiene ninguna tarifa configurada"+ recurso.getPublicId().toString(), "RecursoEntity");
         }
 
         return recurso.getPrecioRecurso().stream()
                 .filter(precio -> precio.getModalidad() == modalidad
-                        && !fechaReserva.isBefore(precio.getFechaVigencia())
-                        && !fechaReserva.isAfter(precio.getFechaCaducada()))
+                        && !fechaInicio.isBefore(precio.getFechaVigencia())
+                        && !fechaFin.isAfter(precio.getFechaCaducada()))
                 .map(PrecioRecursoEntity::getPrecio)
                 .findFirst()
-                .orElseThrow(() -> new EntidadNoEncontradaException("No existe una tarifa vigente para la fecha solicitada: " + fechaReserva,
+                .orElseThrow(() -> new EntidadNoEncontradaException(
+                        "No existe una tarifa vigente para todo el período de " + fechaInicio + " a " + fechaFin + ". Este recurso no estará disponible en esas fechas",
                         recurso.getPublicId().toString()));
     }
 
