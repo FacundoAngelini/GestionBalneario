@@ -29,13 +29,11 @@ import { mensajeAmigable } from '../../../core/utils/errores';
 import { RouterLink } from '@angular/router';
 
 
-// Límites de negocio (el backend tiene que aplicar los mismos)
 const MAX_POR_LOTE = 200;
 const MAX_NOMBRE = 25;
 export const MAX_NOMBRE_RECURSO = MAX_NOMBRE + 1 + String(MAX_NUMERO).length;
 
-// Cuánto vale cada modalidad respecto de la inmediata superior.
-// MES depende de la cantidad de meses del rango de fechas (se calcula aparte).
+
 const DIVISOR_QUINCENA = 2; // quincena = mes / 2
 const DIVISOR_DIA = 15; // día = quincena / 15
 const DIAS_POR_MES = 30;
@@ -118,7 +116,7 @@ export class CargaMasiva {
   return capacidades[this.modelo().tamanio];
 });
 
-  // En celular el calendario se abre como ventana modal (touchUi); en pantallas grandes, como desplegable.
+  // En celular el calendario se abre como ventana modal, en pantallas grandes, como desplegable.
   protected readonly esMovil =
     typeof window !== 'undefined' && window.matchMedia('(max-width: 40rem)').matches;
 
@@ -134,19 +132,16 @@ protected readonly camposPrecio = [
 ];
 
   protected readonly enviando = signal(false);
-  // Lo que se ve escrito en cada campo de precio (con puntos de mil); el modelo guarda el número
+  // Lo que se ve escrito en cada campo de precio el modelo guarda el número
 protected readonly textosPrecio = signal<Record<ClavePrecio, string>>({
   precioDia: '',
   precioQuincena: '',
   precioMes: '',
   precioTemporada: '',
 });
-
-  // ---- Fechas (como Date, para el calendario de Material) ----
   protected readonly fechaDesde = computed(() => desdeIso(this.modelo().fechaVigencia));
   protected readonly fechaHasta = computed(() => desdeIso(this.modelo().fechaCaducada));
 
-  // ---- Numeración ----
   protected readonly cantidad = computed(() => {
     const { numeroDesde: d, numeroHasta: h } = this.modelo();
     return esNumero(d) && esNumero(h) && h >= d ? h - d + 1 : 0;
@@ -161,12 +156,6 @@ protected readonly textosPrecio = signal<Record<ClavePrecio, string>>({
     return Math.max(1, dias / DIAS_POR_MES);
   });
 
-  /**
-   * Precios que se van a enviar. Una modalidad vacía (o en 0) se calcula a partir de la
-   * inmediata más larga que sí esté cargada:
-   *   mes = temporada / meses del rango · quincena = mes / 2 · día = quincena / 15
-   * Si no hay ninguna más larga cargada, esa modalidad no se ofrece.
-   */
   protected readonly preciosFinales = computed<PrecioFinal[]>(() => {
     const m = this.modelo();
     const ingresado: Record<Modalidad, number | null> = {
@@ -184,7 +173,7 @@ protected readonly textosPrecio = signal<Record<ClavePrecio, string>>({
     const orden: Modalidad[] = ['TEMPORADA', 'MES', 'QUINCENA', 'DIA'];
 
     const resultado: PrecioFinal[] = [];
-    let anterior: number | null = null; // valor sin redondear de la modalidad superior
+    let anterior: number | null = null; 
 
     for (const modalidad of orden) {
       const propio = ingresado[modalidad];
@@ -209,14 +198,12 @@ protected readonly textosPrecio = signal<Record<ClavePrecio, string>>({
     this.preciosFinales().filter((p) => p.calculado),
   );
   protected readonly sinPrecios = computed(() => this.preciosFinales().length === 0);
-  // Hoy a las 00:00, para que el calendario no deje elegir días pasados
 protected readonly hoy = (() => {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d;
 })();
 
-// Un solo lugar con TODAS las reglas. Cada clave es un campo: texto de error o null si está bien.
 protected readonly errores = computed(() => {
   const m = this.modelo();
   const esCarpa = m.tipo === 'CARPA';
@@ -266,7 +253,6 @@ protected readonly errores = computed(() => {
   };
 });
 
-// El botón "Crear" se habilita solo cuando no hay ningún error y hay al menos un precio
 protected readonly listo = computed(
   () => Object.values(this.errores()).every((e) => e === null) && !this.sinPrecios(),
 );
@@ -286,7 +272,6 @@ constructor() {
     fechaCaducada: m.fechaCaducada || t.finTemporada,
   }));
 });
-  // Al cambiar el tipo, sugerimos el prefijo del nombre.
   effect(() => {
     const tipo = this.tipoElegido();
     untracked(() =>
@@ -360,7 +345,6 @@ protected guardar(evento: Event): void {
     }
   }
 
-  // formulario como recien abierto, con las fechas d ela temporada.
  private reiniciar(): void {
   const actual = this.modelo();
   const cantidad = actual.numeroHasta - actual.numeroDesde + 1;

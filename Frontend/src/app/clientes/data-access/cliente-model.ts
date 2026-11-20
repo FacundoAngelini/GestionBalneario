@@ -65,5 +65,5 @@ export interface EventoCliente {
   detalle: string | null;
 }
 
-/** El listado devuelve a lo sumo esta cantidad de resultados (el servidor aplica el mismo tope). */
+/** El listado devuelve a lo sumo esta cantidad de resultados */
 export const MAX_RESULTADOS_CLIENTES = 200;

@@ -10,7 +10,7 @@
 .historial summary {
   display: flex;
   align-items: center;
-  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+  min-height: 2.75rem; 
   font-weight: 700;
   cursor: pointer;
 }

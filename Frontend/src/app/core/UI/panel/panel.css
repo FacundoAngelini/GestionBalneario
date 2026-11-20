@@ -1,8 +1,3 @@
-
-/* =========================================
-   CONTENEDOR GENERAL
-========================================= */
-
 .panel {
   display: grid;
   width: 100%;
@@ -11,10 +6,6 @@
   gap: clamp(1.5rem, 3vw, 2rem);
   margin-inline: auto;
 }
-
-/* =========================================
-   BIENVENIDA
-========================================= */
 
 .panel-hero {
   position: relative;
@@ -101,11 +92,6 @@
   font-weight: 700;
 }
 
-
-/* =========================================
-   SECCIONES
-========================================= */
-
 .panel-seccion {
   display: grid;
   min-width: 0;
@@ -134,9 +120,6 @@
   font-size: 0.9rem;
   line-height: 1.6;
 }
-/* =========================================
-   ETIQUETAS Y TEXTO
-========================================= */
 
 .panel-etiqueta {
   color: #176c62;
@@ -164,10 +147,6 @@
   font-size: 0.9rem;
   line-height: 1.65;
 }
-
-/* =========================================
-   RESERVAS
-========================================= */
 
 .panel-reservas,
 .panel-destacado {
@@ -224,9 +203,6 @@
   font-size: 0.7rem;
 }
 
-/* =========================================
-   MÓDULOS SECUNDARIOS
-========================================= */
 
 .panel-modulos {
   display: grid;
@@ -284,9 +260,6 @@
   text-decoration-color: var(--color-primario);
 }
 
-/* =========================================
-   PANEL DESTACADO DEL CLIENTE
-========================================= */
 
 .panel-destacado h3 {
   font-size: clamp(1.4rem, 3vw, 1.8rem);
@@ -296,9 +269,7 @@
   color: #176c62;
 }
 
-/* =========================================
-   CONSULTA DEL CARPERO
-========================================= */
+
 
 .panel-consulta {
   display: grid;
@@ -323,9 +294,6 @@
   color: #365d78;
 }
 
-/* =========================================
-   AVISOS DE CUENTA
-========================================= */
 
 .panel-aviso {
   display: grid;
@@ -376,9 +344,6 @@
   color: var(--color-info);
 }
 
-/* =========================================
-   ACCIONES
-========================================= */
 
 .panel-acciones {
   display: grid;
@@ -395,15 +360,11 @@
   text-align: center;
 }
 
-/* Asegurar contraste del botón secundario */
 
 .panel .btn--secundario {
   color: #102f46;
 }
 
-/* =========================================
-   TABLET
-========================================= */
 
 @media (min-width: 40rem) {
   .panel-modulos {
@@ -421,9 +382,7 @@
   }
 }
 
-/* =========================================
-   ESCRITORIO
-========================================= */
+
 
 @media (min-width: 68rem) {
   .panel-modulos {
@@ -440,9 +399,7 @@
   }
 }
 
-/* =========================================
-   INTERACCIÓN Y ACCESIBILIDAD
-========================================= */
+
 
 .panel a:focus-visible {
   outline: 3px solid var(--color-foco);

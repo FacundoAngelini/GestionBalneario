@@ -52,7 +52,7 @@ export function contraseniaSegura<TPathKind extends PathKind = PathKind.Root>(
   });
 }
 
-/** convierte una función texto → mensaje de error o null , en una regla de signal forms */
+/** convierte una función texto en  mensaje de error o null , en una regla de signal forms */
 export function regla<TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
   comprobar: (valor: string) => string | null,

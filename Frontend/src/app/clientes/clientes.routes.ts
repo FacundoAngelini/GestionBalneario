@@ -13,7 +13,7 @@ export const clientesRoutes: Routes = [
     loadComponent: () => import('./feature/cliente-lista/cliente-lista').then((m) => m.ClientesLista),
   },
   {
-    path: ROUTE_SEGMENTS.nuevo, // antes de ":id", si no "nuevo" se tomaría como un id
+    path: ROUTE_SEGMENTS.nuevo, 
     ...acceso,
     loadComponent: () => import('./feature/cliente-form/cliente-form').then((m) => m.ClienteForm),
   },

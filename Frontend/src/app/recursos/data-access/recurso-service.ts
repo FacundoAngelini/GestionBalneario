@@ -18,14 +18,12 @@ import {
   TipoRecurso,
 } from './recurso-model';
 
-// Un endpoint por tipo de recurso
 const RUTA_TIPO: Record<TipoRecurso, string> = {
   CARPA: 'recursos-carpas',
   SOMBRILLA: 'recursos-sombrillas',
   COCHERA: 'recursos-cocheras',
 };
 
-// Lo que devuelve el backend (los tres DTO juntos; cada tipo trae solo lo suyo)
 interface RecursoDto {
   publicId: string;
   nombre: string;
@@ -50,7 +48,6 @@ const aInventario = (tipo: TipoRecurso, r: RecursoDto): RecursoInventario => ({
   tamanio: r.tamanio ?? null,
 });
 
-// El PUT de cada tipo espera su propio DTO
 const aPeticion = (tipo: TipoRecurso, d: DatosRecurso) => {
   const base = {
     nombre: d.nombre.trim(),

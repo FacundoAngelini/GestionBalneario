@@ -18,7 +18,7 @@ export const ETIQUETA_TIPO_RECURSO: Record<TipoRecurso, string> = {
 export interface PrecioModalidad {
   modalidad: Modalidad;
   precio: number;
-  fechaVigencia: string;   // 'YYYY-MM-DD'
+  fechaVigencia: string;  
   fechaCaducada: string;
 }
 
@@ -63,7 +63,7 @@ export const ETIQUETA_TAMANIO: Record<TamanioSombrilla, string> = {
   GRANDE: 'Grande',
 };
 
-// Un recurso tal como se ve en el inventario (los tres tipos, normalizados)
+// Un recurso tal como se ve en el inventario 
 export interface RecursoInventario {
   publicId: string;
   tipo: TipoRecurso;

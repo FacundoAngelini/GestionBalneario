@@ -62,7 +62,7 @@ export class GestionReservas {
   protected readonly vista = signal<Vista>(this.auth.esPersonal() ? 'PENDIENTES' : 'INGRESO');  
   protected readonly procesando = signal<string | null>(null); // publicId de la reserva en trámite
   private readonly limite = signal(POR_PAGINA);
-  private readonly descuento = signal(0); // % por pago en efectivo (solo para la vista previa)
+  private readonly descuento = signal(0);
 
   // Filtros de la pestaña "Todas"
   protected readonly filtros = signal({ texto: '', estado: 'TODOS' as FiltroEstado });

@@ -71,9 +71,7 @@ export class Inventario {
     () => new Map(this.sectores().map((s) => [s.publicId, s.nombre])),
   );
 
-  // ---- Estado de la pantalla ----
   protected readonly tipoActivo = signal<TipoRecurso>('CARPA');
-  // Cada tipo se pide la primera vez que se abre su pestaña (null = todavía no se pidió)
   private readonly datos = signal<Record<TipoRecurso, RecursoInventario[] | null>>({
     CARPA: null,
     SOMBRILLA: null,
@@ -100,7 +98,6 @@ export class Inventario {
   protected readonly hayMas = computed(() => this.filtrados().length > this.limite());
   protected readonly cargado = computed(() => this.datos()[this.tipoActivo()] !== null);
 
-  // ---- Edición (solo administrador) ----
   protected readonly editandoId = signal<string | null>(null);
   protected readonly edicion = signal<DatosRecurso>({ ...EDICION_VACIA });
   protected readonly fe = form(this.edicion);
@@ -144,7 +141,6 @@ export class Inventario {
   );
 
   constructor() {
-    // Al cambiar de pestaña o de filtros, se vuelve a la primera página
     effect(() => {
       this.tipoActivo();
       this.filtros();

@@ -1,6 +1,6 @@
 import { Modalidad } from '../../recursos/data-access/recurso-model';
 
-/** 'YYYY-MM-DD' → Date a medianoche LOCAL (no UTC). */
+/** 'YYYY-MM-DD' → Date a medianoche LOCAL . */
 export function parsearIso(iso: string): Date {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, m - 1, d);
@@ -25,14 +25,12 @@ function sumarDias(f: Date, n: number): Date {
   return new Date(f.getFullYear(), f.getMonth(), f.getDate() + n);
 }
 
-// Igual que LocalDate.plusMonths de Java: si el día no existe (31 → febrero), usa el último del mes.
 function sumarMeses(f: Date, n: number): Date {
   const mes = f.getMonth() + n;
   const ultimoDia = new Date(f.getFullYear(), mes + 1, 0).getDate();
   return new Date(f.getFullYear(), mes, Math.min(f.getDate(), ultimoDia));
 }
 
-/** Vista previa de la fecha de fin. El backend es quien decide el valor real. */
 export function calcularFechaFin(
   modalidad: Modalidad, inicioIso: string, finTemporadaIso: string, finDiaIso: string,
 ): string {

@@ -1,4 +1,3 @@
-// Largo máximo de los campos de texto (el backend aplica los mismos)
 export const LIMITES = {
   nombre: 50,
   apellido: 50,

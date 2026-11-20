@@ -6,7 +6,6 @@ const MS_POR_DIA = 86_400_000;
 const sumarDias = (fecha: Date, dias: number): Date =>
   new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + dias);
 
-//si el dia de ese mes no existee, se toma en cuenta el ultimo 
 const sumarMeses = (fecha: Date, meses: number): Date => {
   const destino = new Date(fecha.getFullYear(), fecha.getMonth() + meses, 1);
   const ultimoDia = new Date(destino.getFullYear(), destino.getMonth() + 1, 0).getDate();
@@ -51,7 +50,7 @@ export const precioVigente = (
     (p) => p.modalidad === modalidad && p.fechaVigencia <= inicio && inicio <= p.fechaCaducada,
   )?.precio ?? null;
 
-  /** Total de un recurso en el periodo (misma regla que ReservaServicio: solo por dia (multiplica por los dias). */
+  /** Total de un recurso en el periodo. */
 export function totalRecurso(
   recurso: RecursoCatalogo,
   modalidad: Modalidad,
@@ -63,7 +62,7 @@ export function totalRecurso(
   return modalidad === 'DIA' ? precio * dias : precio;
 }
 
-/**El cliente cancela hasta N horas antes de las 00:00 del primer día. */
+/**El cliente cancela hasta 48 horas antes de las 00:00 del primer día. */
 export const plazoDeCancelacionVigente = (fechaInicio: string, horas: number): boolean => {
   const inicio = desdeIso(fechaInicio);
   return !!inicio && Date.now() <= inicio.getTime() - horas * 3_600_000;

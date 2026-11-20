@@ -28,7 +28,7 @@ interface ReservaCreada {
 
 interface Resultado {
   creadas: ReservaCreada[];
-  noCreadas: string; // nombres de lo que no se pudo solicitar ('' si salió todo bien)
+  noCreadas: string; // nombres de lo que no se pudo solicitar ( si salió todo bien)
   motivo: string;
 }
 

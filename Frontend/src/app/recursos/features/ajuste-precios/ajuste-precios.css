@@ -6,7 +6,6 @@
   margin-inline: auto;
 }
 
-/* styles.css resetea los márgenes a 0, así que los títulos necesitan su espacio acá */
 .ajuste :is(h1, h2) {
   margin-bottom: var(--espacio-2);
 }
@@ -14,7 +13,7 @@
 .enlace-volver {
   display: inline-flex;
   align-items: center;
-  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+  min-height: 2.75rem; 
   color: var(--color-primario);
   font-weight: 600;
 }
@@ -25,7 +24,6 @@
   padding: var(--espacio-4);
 }
 
-/* Tantas columnas como entren (mínimo 12rem): 1 en celular, 2 o 3 en pantallas más anchas */
 .ajuste__campos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));

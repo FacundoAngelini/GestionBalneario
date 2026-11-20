@@ -1,3 +1,5 @@
+package com.Gestion.MiBalnearioGestion.Recursos;
+
 /**
  * Casos de prueba conceptuales para validar la vigencia de recursos en reservas
  * 

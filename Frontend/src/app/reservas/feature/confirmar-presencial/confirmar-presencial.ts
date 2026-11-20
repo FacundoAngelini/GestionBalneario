@@ -53,7 +53,7 @@ export class ConfirmarPresencial {
   protected readonly modelo = signal({ cobrarAhora: true });
   protected readonly f = form(this.modelo);
 
-  protected readonly descuento = signal(0); // % por pago en efectivo, lo define el administrador
+  protected readonly descuento = signal(0); // para un futuro el admin onga descuento 
   protected readonly enviando = signal(false);
   protected readonly errorEnvio = signal('');
   protected readonly resultado = signal<Resultado | null>(null);

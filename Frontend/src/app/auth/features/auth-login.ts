@@ -59,7 +59,6 @@ export class Login {
 
   private mensajeDeError(error: unknown): string {
     if (error instanceof HttpErrorResponse) {
-      // 401: el backend manda un mensaje claro ("Usuario o contraseña incorrecta" / cuenta deshabilitada).
       if (error.status === 401) return error.error?.message ?? 'Usuario o contraseña incorrecta';
       if (error.status === 0) return 'No se pudo conectar con el servidor';
     }

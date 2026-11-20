@@ -1,11 +1,6 @@
 export const formatoPrecio = (n: number): string =>
   n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
 
-/**
- * Interpreta lo que se escribe en un campo de precio.
- * Devuelve el texto con puntos de mil ("1234567" -> "1.234.567"; la coma es el decimal)
- * y el número real (null si el campo quedó vacío).
- */
 export function interpretarPrecio(entrada: string): { texto: string; valor: number | null } {
   const negativo = entrada.trim().startsWith('-');
 

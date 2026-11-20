@@ -34,7 +34,6 @@ export class ClientesLista {
   protected readonly hayMas = computed(() => (this.clientes()?.length ?? 0) >= MAX_RESULTADOS_CLIENTES);
 
   constructor() {
-    // Cada cambio de filtro busca solo, esperando 300 ms a que termine de escribir
     toObservable(this.filtros)
       .pipe(
         debounceTime(300),

@@ -12,7 +12,7 @@
 .enlace-volver {
   display: inline-flex;
   align-items: center;
-  min-height: 2.75rem; /* 44px: zona de toque cómoda */
+  min-height: 2.75rem; 
   color: var(--color-primario);
   font-weight: 600;
 }
