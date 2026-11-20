@@ -96,7 +96,7 @@ export class GestionReservas {
       .sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio)),
   );
 
-    // Reservas que eetsna llegando en pendientes o condirmadas que otdavia no terminaron // Reservas que pueden estar llegando: pendientes o confirmadas que todavía no terminaron
+    // Reservas que pueden estar llegando: pendientes o confirmadas que todavía no terminaron
   private readonly vigentes = computed(() => {
     const hoy = hoyIso();
     return (this.reservas() ?? []).filter(
@@ -156,7 +156,6 @@ export class GestionReservas {
         error: () => this.descuento.set(0),
       });
     }
-        // Si el contador (que consulta cada minuto) cambia y la lista quedó desfasada, se recarga sola
     effect(() => {
       const n = this.contador.cantidad();
       untracked(() => {
@@ -167,7 +166,6 @@ export class GestionReservas {
     });
     this.cargar();
 
-        // Si se llega desde la ficha de un cliente, se busca directamente en "Todas"
     const buscar = inject(ActivatedRoute).snapshot.queryParamMap.get('buscar');
     if (buscar) {
       this.filtros.update((f) => ({ ...f, texto: buscar }));
