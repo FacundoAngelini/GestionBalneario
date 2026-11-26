@@ -17,10 +17,11 @@ spring:
         format_sql: true
 
   mail:
-    host: smtp.gmail.com
+    host: smtp-relay.brevo.com
     port: 587
-    username: balnearioapiutn@gmail.com
+    username: ${MAIL_USERNAME}
     password: ${GMAIL_APP}
+    from: ${MAIL_FROM}
     properties:
       mail:
         smtp:
