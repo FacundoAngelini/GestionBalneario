@@ -13,7 +13,7 @@ JWT_EXPIRATION=jwt_expiration_ms
 JWT_REFRESH_EXPIRATION=jwt_expiration_refresh_rate_ms
 
 # MAIL
-MAIL_APP=gmail_api_password
+MAIL_PASSWORD=gmail_api_password
 
 # MercadoPago (Nosotros probamos Ngrok y nos funciono mejor Node.js)
 MP_ACCESS_TOKEN=mercadopago_developer_generated_key
