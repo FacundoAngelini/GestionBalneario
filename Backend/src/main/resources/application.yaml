@@ -20,7 +20,7 @@ spring:
     host: smtp-relay.brevo.com
     port: 587
     username: ${MAIL_USERNAME}
-    password: ${GMAIL_APP}
+    password: ${MAIL_APP}
     from: ${MAIL_FROM}
     properties:
       mail:
@@ -28,6 +28,10 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
   task:
     execution:
       pool:
@@ -54,6 +58,9 @@ mp:
     success: "${MP_REDIRECT_URL}/pago-exitoso"
     failure: "${MP_REDIRECT_URL}/pago-fallido"
 
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:4200}
 
 logging:
   level:

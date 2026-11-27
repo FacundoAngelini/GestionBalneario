@@ -12,10 +12,13 @@ JWT_TOKEN=jwt_token_generado
 JWT_EXPIRATION=jwt_expiration_ms
 JWT_REFRESH_EXPIRATION=jwt_expiration_refresh_rate_ms
 
-# Gmail
-GMAIL_APP=gmail_api_password
+# MAIL
+MAIL_APP=gmail_api_password
 
 # MercadoPago (Nosotros probamos Ngrok y nos funciono mejor Node.js)
 MP_ACCESS_TOKEN=mercadopago_developer_generated_key
 MP_REDIRECT_URL=servicio_test_webhook
 MP_WEBHOOK_URL=servicio_test_webhook
+
+#Frontend
+FRONTEND_URL:http://localhost:4200

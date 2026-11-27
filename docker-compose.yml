@@ -32,16 +32,22 @@ services:
     environment:
       TZ: America/Argentina/Buenos_Aires
       JAVA_TOOL_OPTIONS: "-Duser.timezone=America/Argentina/Buenos_Aires"
+
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}?useSSL=false&serverTimezone=America/Argentina/Buenos_Aires&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
       JWT_SECRET: ${JWT_SECRET}
       JWT_TOKEN: ${JWT_TOKEN}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
+
       MAIL_USERNAME: ${MAIL_USERNAME}
-      GMAIL_APP: ${GMAIL_APP}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_FROM: ${MAIL_FROM}
+
+      FRONTEND_URL: ${FRONTEND_URL}
+
       MP_ACCESS_TOKEN: ${MP_ACCESS_TOKEN}
       MP_REDIRECT_URL: ${MP_REDIRECT_URL}
       MP_WEBHOOK_URL: ${MP_WEBHOOK_URL}
