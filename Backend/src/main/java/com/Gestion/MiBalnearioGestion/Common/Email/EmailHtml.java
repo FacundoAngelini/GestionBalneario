@@ -214,23 +214,27 @@ final class EmailHtml {
 
             </body>
             </html>
-            """.formatted(
-                escapar(titulo),
-                AZUL,
-                escapar(preheader),
-                AZUL,
-                ARENA,
-                TURQUESA,
-                escapar(subtitulo),
-                AZUL,
-                escapar(titulo),
-                escapar(saludo),
-                escapar(introduccion),
-                crearTabla(filas.toString()),
-                boton,
-                bloqueAdvertencia,
-                AZUL
+            
+""".formatted(
+                escapar(titulo),                  // 1. Título HTML
+                AZUL,                             // 2. Color del texto
+                escapar(preheader),               // 3. Preheader
+                AZUL,                             // 4. Fondo del encabezado
+                ARENA,                            // 5. Borde del encabezado
+                TURQUESA,                         // 6. Color de sección
+                escapar(subtitulo),               // 7. Subtítulo
+                AZUL,                             // 8. Color del título
+                escapar(titulo),                  // 9. Título principal
+                escapar(subtitulo),               // 10. Texto secundario
+                AZUL,                             // 11. Color del saludo
+                escapar(saludo),                  // 12. Saludo
+                escapar(introduccion),            // 13. Introducción
+                crearTabla(filas.toString()),     // 14. Tabla
+                boton,                            // 15. Botón
+                bloqueAdvertencia,                // 16. Advertencia
+                AZUL                              // 17. Pie del correo
         );
+
     }
 
     private static String crearTabla(String filas) {
